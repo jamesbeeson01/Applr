@@ -12,6 +12,7 @@ GeomSlice
 }
 \description{
 A custom 'ggproto' object that provides the graphing aesthetics
-for the 'StatSlice' object
+for the 'StatSlice' object. This defines how the slice lines should look.
+It is essentially GeomLine with modified aesthetics
 }
 \keyword{datasets}

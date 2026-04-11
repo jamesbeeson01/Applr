@@ -1,0 +1,23 @@
+---
+title: "a_note_to_devs"
+output: html_document
+---
+
+Thank you for your wonderful contribution!
+
+This package was started with painstaking love by Cameron McClellan, and continued by James Beeson. A note on some of the files in the `for_devs` folder.
+
+- `dev_todo.Rmd` and `known_issues.Rmd` are great places to start for ideas of what to do next. Please keep these updated (unless you find a better way to communicate)
+- `decisions.Rmd` contains things that should not be forgotten. Read it.
+- `knowledge_base.Rmd` is a list of hard lessons learned that will help you navigate the complexities of low level R.
+- `Applr Presentation.pptx` is Cameron's powerpoint, giving a little extra context to the package's intent and history.
+
+I (James) have tried to provide future developers with anything they need to troubleshoot and continue the project. Please continue the tradition and keep files updated. Pass on your knowledge like those previous have given to you. 
+
+The project is organized to support Roxygen documentation, which you can read more about in `knowledge_base.Rmd`.
+
+You will find (as of the date of writing), there are multiple files that contain incomplete work and redundant functions (see `decisions.Rmd` on some of these). The package is currently a minimum viable product, but does not yet live up to its vision. I think you can piece together that vision and what remains in the other files in this folder.
+
+I think this package is worth publishing if it becomes polished - and what a beautiful thought to have BYU-Idaho immortalized in the R community. I hope you can make it happen!
+
+Feel free to reach out to me or Cameron if you have questions! jamesbeeson01@gmail.com

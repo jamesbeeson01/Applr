@@ -13,7 +13,11 @@ lm_latex(model)
 The equation of an indicated linear model with coefficients and variable names in LaTeX form
 }
 \description{
-Write out the equation of a linear model in LaTeX format
+Takes a fitted linear model and generates a properly formatted LaTeX equation
+suitable for inclusion in R Markdown documents, academic papers, or presentations.
+The output includes underbrace notation to clearly label predicted values and
+predictor variables, making it ideal for educational or presentation purposes.
+Coefficients are rounded to 3 significant figures.
 }
 \examples{
 \dontrun{

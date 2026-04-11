@@ -1,0 +1,355 @@
+---
+title: "Dev TODOs"
+output: html_document
+date: "2025-09-20"
+---
+
+# Priority
+
+- [ ] Fix errors in `known_issues.Rmd`
+- [ ] Add standards to `decisions.Rmd` (like error format)
+- [ ] Implement standards on `geom_slice`
+- [ ] Add complex or "real" models to `Comparison.Rmd`
+- [ ] Finish comprehensive error cases in `Comparison.Rmd`
+- [ ] Add edge cases to `Comparison.Rmd`
+- [ ] Test `scatter_3d`
+
+- [ ] Get geom_slice working under the most common conditions
+  - [ ] Any y transformation
+  - [x] An x axis matching its first variable
+  - [ ] Grouping
+  - [ ] Faceting
+  - [ ] A third invisible variable (y ~ x + x2)
+
+- [ ] Update code examples in README (particularly geom_slice)
+
+## Queue
+
+- [ ] Test use case of ggplot(data, aes(x, log(y))) + geom_slice(lm)
+- [ ] Also test ggplot(...) + ... + scale_y_log() or something like that
+- [ ] Error check that the data being plotted in ggplot is the same as the data the lm was fit to
+- [ ] Consider if the names `slice_2d` and `geom_slice` convey their function best
+- [ ] Clean up AI made files
+- [ ] Tidy repo in general...
+
+## New Features
+
+- [ ] `autoplot(lm)` (takes minimal arguments, feasts/ggtime is a good example)
+- [ ] Add an interval to `geom_slice` (like `geom_fit`)
+- [ ] Add an interval to `slice_2d` (like `geom_fit`)
+- [ ] Allow specifying to impute the min or max instead of default mean
+- [ ] Allow passing a range of values for a slice, plotting multiple lines in one function (ie x2=c(1,2,3),x3=c(1,4) plots 6 lines)
+- [ ] Add a 'band' function (or add to geom_slice). A good example (if I say so myself) is in `~/testing/student_models/beesonjames_LATE_664773_146922498_HouseSellingPrices-1.html`
+- [ ] New function for auto-labeling geom_slice lines (above is also one example)
+
+
+## Thoughts on Functions
+
+slice_2d comes under the pretense of plotting the model seamlessly. However, it does not work with y transformations or with much complexity. It plots one high dimensional line really well. It allows line customization, but not plot customization. add_slice_2d allows for more lines, but still functions the same way.
+
+drawit is meant to be explicit about what values the user puts in. It functions like add_slice_2d. I haven't investigated, but I am not sure it works with transformations either.
+
+I think slice_2d is too simplistic to be worth its weight at the moment. 
+
+So far the greatest promise is with geom_slice. It currently handles y transformations with various degrees of simplicity. I would honestly put all my cards in that box
+
+I tried to create captions for the slice_2d functions, but when you add additional lines, the captions write on top of each other. Also, how do you specify that this line is this value but that line is that value for the same variable? ggplot using a grouping to manage that and put it in the legend. Maybe I am just using base R wrong and there is a way, but a caption may not be ideal for add_slice_2d or drawit.
+
+## Warnings and Errors
+
+### slice_2d
+
+1.1 When a predictor variable is not specified
+
+- [x] Adjust to say what variable
+- [x] Add example, `Example: mpg = 20` 
+- [x] Finalize after Saunders email response
+
+```
+Slice variable not specified:
+ Use "var_name" = value to specify
+```
+
+```{r}
+model <- lm(mpg ~ disp + hp, data = mtcars)
+slice_2d(model)
+```
+
+1.2 When a predictor variable *is* specified
+
+- [x] Suppress warning somehow
+
+```
+Warning message:
+In plot.xy(xy.coords(x, y), type = type, ...) :
+  "disp" is not a graphical parameter
+```
+
+thoughts: I think it might be reading it in the ... portion. Perhaps when it is read in/interpreted, it could be removed from the list of parameters?
+
+1.3 When using vectors data$column instead of dataframe
+
+- [x] At least, add a warning message saying a dataframe is needed
+- [ ] Ideally, make it allowed
+
+```
+Error in `$<-.data.frame`(`*tmp*`, "preds", value = c(`1` = 23.1480910599887,  : 
+  replacement has 32 rows, data has 100
+```
+
+```
+'newdata' had 100 rows but variables found have 32 rows 
+```
+
+```{r}
+slice_2d(lm(mtcars$mpg ~ mtcars$disp + mtcars$hp))
+```
+
+To put it simply `mtcars$hp` is being evaluated incorrectly as its original data (with 32 rows) instead of new_data (with 100 rows). I have no idea why it is being evaluated in the wrong context. I think it is related to the fact that lm will name the variable `data$column` rather than `column`. So the final result is `new_data$"mtcars$hp"`. I don't know why this causes errors, but it occurs in predict(). I don't know the work around considering that predict needs a different.
+
+Part of the error is that these values are stored as calls rather than simple vectors. These examples from ChatGPT show the structure complexity.
+
+```{r}
+model <- lm(log(mtcars$hp) ~ mtcars$disp + mtcars$mpg)
+
+# see that the variables are calls, not simple names
+attr(terms(model), "variables")
+lapply(attr(terms(model), "variables"), deparse)
+
+# check term labels
+attr(terms(model), "term.labels")  # will show "mtcars$disp" "mtcars$mpg"
+all.vars(formula(model))           # will include 'mtcars' and the component names
+```
+
+```{r}
+model <- lm(log(hp) ~ disp + I(disp^2) + mpg, mtcars)
+
+# see that the variables are calls, not simple names
+attr(terms(model), "variables")
+lapply(attr(terms(model), "variables"), deparse)
+
+# check term labels
+attr(terms(model), "term.labels")  # will show "mtcars$disp" "mtcars$mpg"
+all.vars(formula(model))           # will include 'mtcars' and the component names
+```
+
+
+1.4 When only one variable is given such as lm(y ~ x)
+
+- [x] Throw an error for a single variable, or...
+- [x] Allow a single variable
+
+```
+Error in slice_2d(lm(x1 ~ x1)) : 
+  xaxis variable NA not found in the model.
+```
+
+```
+In addition: Warning messages:
+1: In model.matrix.default(mt, mf, contrasts) :
+  the response appeared on the right-hand side and was dropped
+2: In model.matrix.default(mt, mf, contrasts) :
+  problem with term 1 in model.matrix: no columns are assigned
+```
+
+```{r}
+x <- runif(30, 1, 2)
+y <- x
+
+slice_2d(lm(mpg ~ disp, data = mtcars))
+slice_2d(lm(y ~ x))
+```
+
+
+
+### add_slice_2d
+
+1.1 When lm has a y transformation, but the plot does not
+
+- [x] Warning message that slice is outside plot range
+
+```{r}
+x1 <- runif(30, 1, 2)
+x2 <- runif(30, 5, 82)
+y <- x1 + x2
+
+plot(1/y ~ x1)
+add_slice_2d(lm(1/y ~ x1 + x2)) # plots
+
+plot(y ~ x1)
+add_slice_2d(lm(1/y ~ x1 + x2)) # does not plot
+```
+
+### geom_slice
+
+1.1 "Value for ... not specified" prints a lot
+
+- [ ] Handle the check in setup_data, not in group
+
+1.2 "Value for ... not specified" when there shouldn't be
+
+I think this value is selected but unused in the prediction
+It may help to start with the linear model and work backwards
+
+- [ ] Understand repeat variables (quadratic terms)
+- [ ] Remove warning for this and similar cases
+
+```r
+Value for I(x^2) not specified. Using value  34.1108430036213
+Value for 1/y.1o not specified. Using value  0.401819453202188
+```
+
+1.3 Cannot handle x*x_pos for x axis
+
+- [ ] Find better methods to dissect calls, especially related to the data frame
+
+1.4 Alternate data type behavior unknown
+
+- [ ] Discover to what extend type conversion is needed and add or delete code
+
+1.5 Likely to break logic for deparsing a column name
+
+- [ ] 
+
+1.6 Untested y axis synchronization
+
+- [ ] Use a few test cases
+- [ ] Understand deeper what needs to happen
+
+Other qol
+
+- [ ] Remove compute layer
+- [ ] Move more things to setup_data
+- [ ] Clean up unused code
+- [ ] Clean up user facing function if possible
+
+# Thoughts
+
+- [ ] Improve organization, decide what goes where and order of TODOs
+
+Testing the README.md documentation code examples
+
+- [ ] Test thoroughly type mismatches, compare warnings and errors
+
+Increase clarity about the multidimensional nature of these functions.
+Increase clarity about "variable" = value
+
+Where are the transformations?
+
+- [ ] Add caption to charts
+
+- [ ] Try births78 models
+
+- [ ] Use the models Bro. Saunders provided (saved to "OneDrive")
+
+# README Examples
+
+## Quick start
+
+* geom_slice is missing a dependency for left_join (found in tidyverse)
+
+The facet example doesn't really show off the purpose of this function. Perhaps choose different variables or data set.
+
+I'm worried about the blindness of these functions. Students may not realize what it is actually showing because it chooses a view for them. I wonder if it should not guess and just require them to choose values. It does send a warning message, which is good. What if it changed the plot title to add more clarity.
+
+## slice_2d()
+
+Should xaxis be x instead?
+
+```{r}
+model <- lm(mpg ~ disp + hp, data = mtcars)
+slice_2d(model, xaxis = "hp")
+slice_2d(model, xaxis = "hp", disp = 250, n = 150, col = "blue", lwd = 2)
+model <- lm(mtcars$mpg ~ mtcars$disp + mtcars$hp)
+slice_2d(model)
+```
+
+```{r}
+model <- lm(mpg ~ as.factor(disp) + hp, data = mtcars)
+slice_2d(model)
+```
+
+
+
+## add_slice_2d()
+
+```{r}
+model <- lm(mpg ~ wt + am + qsec, data = mtcars)
+plot(mpg ~ wt, data = mtcars)
+# drawit(model = model, xaxis = "wt", am = 1, qsec = 17,
+#        col = "steelblue", lty = 1)
+add_slice_2d(model = model, xaxis = "wt", am = 1, qsec = 17)
+```
+
+## drawit()
+
+Likely a depricated version of slice_2d. Ask Cameron.
+
+- [ ] caption?
+
+```{r}
+model <- lm(mpg ~ wt + am + qsec, data = mtcars)
+plot(mpg ~ wt, data = mtcars)
+# drawit(model = model, xaxis = "wt", am = 1, qsec = 17,
+#        col = "steelblue", lty = 1)
+drawit(model = model, xaxis = "wt", am = 1, qsec = 17)
+```
+
+## geom_slice
+
+Just a bad example. Add a second one that is not faceted
+
+- [ ] Does not handle y transformations well
+
+```{r}
+# Model with log transformation
+model <- lm(log(mpg) ~ disp + hp, data = mtcars)
+
+# Auto-detects and handles transformation
+ggplot(mtcars, aes(x = disp, y = mpg)) +
+  geom_point() +
+  geom_slice(model = model, predict_vars = list(hp = 110))
+```
+
+
+## scatter_3d
+
+
+
+## lm_equation
+
+Works very well. It is not an end all 
+
+- [ ] Test transformations
+
+
+- Single value
+- Addition
+- Multiplication
+- Interaction
+- Y Transformation
+  - 1/y
+  - sqrt(y)
+  - log(y)
+  - exp(y)
+  - y^2
+- Quadratic
+- Exponential
+
+## lm_latex
+
+Same
+
+- [ ] Is there a beta option?
+
+- Single value
+- Addition
+- Multiplication
+- Interaction
+- Transformation
+- Quadratic
+- Exponential
+
+## theme_lc
+
+Cool. Captions?

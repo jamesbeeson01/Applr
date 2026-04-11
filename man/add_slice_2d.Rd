@@ -4,7 +4,14 @@
 \alias{add_slice_2d}
 \title{2D Slice to R Plot}
 \usage{
-add_slice_2d(model, xaxis = NA, n = 100, ...)
+add_slice_2d(
+  model,
+  xaxis = NA,
+  n = 100,
+  caption = FALSE,
+  back_transform = TRUE,
+  ...
+)
 }
 \arguments{
 \item{model}{A linear model}
@@ -13,13 +20,20 @@ add_slice_2d(model, xaxis = NA, n = 100, ...)
 
 \item{n}{Number of displayed points; default is 100}
 
+\item{caption}{Boolean to include caption with values of predictor variables not shown in the chart, FALSE by default}
+
+\item{back_transform}{Either 1) A function to back transform the predicted y values and interval bounds (e.g., \code{exp} or \verb{\\(x) exp(x)} for log-transformed models), or 2) a boolean stating whether it should apply a transformation or not (\code{FALSE} turns off back_transform). In most cases, this does not need to be specified as the function infers the transformation needed reliably.}
+
 \item{...}{Remaining vars (color, linetype, etc.)}
 }
 \value{
 A line added to a preexisting R plot displaying a 2D graphable slice of an HD model
 }
 \description{
-Take a slice from a linear model and add the displayed graph to a preexisting R plot
+Take a slice from a linear model and add the displayed graph to a preexisting R plot.
+This function is similar to slice_2d() but adds a line to an existing plot rather
+than creating a new one. Useful for overlaying multiple model slices or adding
+model predictions to scatter plots.
 }
 \examples{
 \dontrun{

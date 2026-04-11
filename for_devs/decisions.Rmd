@@ -1,0 +1,100 @@
+---
+title: "decisions"
+output: html_document
+---
+
+## Reason for Package
+
+The original intent of this package is to make life easier for a student in a linear regression class, especially for high dimensional models. Every decision is weighed by the ideas of simplicity and interpretability. The worst function would be one that makes life so easy that the user does not understand it.
+
+## Error Messages
+
+Most error messages should follow this format:
+
+**insert**
+
+Which can be implemented with this code template:
+
+```{r}
+# insert
+```
+
+## Naming conventions
+
+Variable names and such should follow this format:
+
+**insert**
+
+
+## X Range
+
+**The range of a model's line should be the range of a group, not the whole plot.** Consider grouped data where group A is modeled by `y = x^2` and only has data from 0 to 2. If the line is plotted from 0 to 10, it changes the y axis to a range of 100 instead of 4. 
+
+So, in `geom_slice` (where grouping is permitted), the x range should be computed by the min and max of the group (in `compute_group`), not by panel (in `compute_panel`). 
+
+If the plot weren't adjusted on the y axis from this line, it may be nice to have it fill the x rage where it is seen on the plot, especially working with high-dimensional models.
+
+
+## Communicating Imputed Values
+
+**To improve clarity, messages are sent to the console every time a value is imputed** (ie `mean` of `disp`). Without this, users may incorrectly conclude there is only one way to draw the high-dimensional model.
+
+### Captions
+
+**`slice_2d` additionally adds a caption to communicate hidden values.**
+
+There was thought to add captions for all functions, but this was largely abandoned due to several large issues:
+
+#### Base R
+
+Base R uses a "painter" system.
+
+When a new chart element is created, it is painted on as pixels, rather than as an object that can be accessed later. Because of this, **subsequent text appears on top of the previous text caption** (because it doesn't know there is already a caption). 
+
+- One solution is to place future captions below the previous, but the plot size can't be adjusted (it was already painted).
+
+- The next idea is to access the previous caption and update it. However, it is simply drawn on the plot and not accessible as an object. 
+
+- So, it could be made into an object and each caption an environment variable. This has two more problems:
+
+  - It doesn't reset with a new plot, and therefore will bleed into future plots. 
+  
+  - Additionally, a white rectangle needs to be painted on top of the existing text to accommodate the new text.
+
+Possible probably. Complicated definitely.
+
+By default captioning is on for slice_2d, but off for add_slice_2d, because slice_2d creates a fresh plot with nothing to overwrite.**
+
+#### ggplot
+
+For the ggplot functions, it just **breaks convention** to have a line function create a caption. Each element should do one thing well, and captioning is a second thing. It could be useful to add a separate captioning/annotation function.
+
+
+## Exclusion of $ in lm()
+
+**`lm`'s with `$` variables (ie `lm(mtcars$mpg ~ mtcars$disp)`) are not permitted.** 
+
+The predict function requires the column names of `newdata` to match `names(lm(...))`. The names the above `lm` would create are `"mtcars$mpg"` and `"mtcars$disp"`. Whatever happens in `predict` evaluates `mtcars$mpg` instead of evaluating a fitted y column, creating an unspecific error.
+
+I tried to allow them. Those are hours wasted.
+
+
+## Use of `predict()`
+
+This is the simplest way we know to get y values based on an `lm`, and it works well enough. It is a semi-arbitrary decision.
+
+
+## geom_slice vs geom_add_slice_2d vs geom_fit
+
+**These should be combined into one function.**
+
+In intense troubles getting `geom_slice` to work, `geom_add_slice_2d` was added to avoid low level ggplot and literally use the working logic from `add_slice_2d` (hence the name). It has serious limitations, but works in most contexts. In particular, it does not allow grouping or faceting. Each call is a new line. 
+
+`geom_fit` is another sub-standard function that does not follow package naming convensions, but is incredibly simple to follow and allows prediction and confidence intervals. It exists as an example with good use in simple contexts. Ideally, its extra functionality should be added to `geom_fit`.
+
+`geom_fit` is intended to allow high dimensional modeling with grouping and faceting integrated. It is for both exploration and visualization.
+
+
+## add_slice_2d vs drawit
+
+These two functions intend to create the same result by different means. `drawit` requires every column name to be passed and uses `curve` to plot, while `slice_2d` can impute and uses `predict` with `lines`. `drawit` has multiple issues and should probably be deprecated...

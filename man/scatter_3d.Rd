@@ -9,7 +9,7 @@ scatter_3d(model, n = 100, colors = c("blue", "yellow"))
 \arguments{
 \item{model}{A saved linear model with 2 predictor variables}
 
-\item{n}{Number of evaluations}
+\item{n}{Number of evaluations for creating the surface grid}
 
 \item{colors}{Colors used for the gradient scale}
 }
@@ -17,7 +17,11 @@ scatter_3d(model, n = 100, colors = c("blue", "yellow"))
 A 3D graph in the viewer section
 }
 \description{
-Plot a 3D-grapheable linear model
+Creates an interactive 3D visualization of a linear model with exactly 2 predictor variables.
+The function plots the original data points as scattered points in 3D space and overlays
+a semi-transparent regression surface showing the model predictions across the entire
+predictor space. This provides an intuitive way to understand how a linear model
+behaves across different combinations of two predictor variables.
 }
 \examples{
 \dontrun{

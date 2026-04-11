@@ -1,0 +1,335 @@
+---
+title: "Midterm Decision Recreation"
+output: 
+  html_document:
+    theme: cerulean
+    code_folding: hide
+---
+
+```{r, warning=FALSE, message=FALSE}
+pacman::p_load(
+  tidyverse,
+  car,
+  pander,
+  # Applr
+)
+
+# Load the local development version of Applr
+devtools::load_all(".")
+
+fresh_grades <- read_csv("Math425PastGrades.csv")
+grades <- fresh_grades %>% 
+  select(!c(Section)) %>% 
+  mutate(
+    across(where(is.character), as.factor),
+    MagicTwoGroups = as.factor(MagicTwoGroups),
+  ) %>% 
+  drop_na(MagicTwoGroups)
+
+# My known values
+my_midterm <- 85
+my_group <- 2
+
+# Remove magic group 1
+two <- grades %>% filter(MagicTwoGroups == 2)
+
+# Three best models
+both.lm <- lm(FinalExam ~ AssessmentQuizzes*MagicTwoGroups, data = grades)
+two.1o <- lm(1/FinalExam ~ Midterm, data = two)
+two.gender <- lm(1/FinalExam ~ Midterm + Gender, data = two)
+
+# prediction intervals
+p <- 1/predict(two.1o, data.frame(Midterm = my_midterm), interval = "prediction")
+p.tg <- 1/predict(two.gender, data.frame(Midterm = my_midterm, MagicTwoGroups = as.factor(my_group), Gender = "M"), interval = "prediction")
+p.b <- predict(both.lm, data.frame(AssessmentQuizzes = 100, MagicTwoGroups = as.factor(my_group)), interval = "prediction")
+```
+
+
+# Decision
+
+I have decided to keep my midterm score, expecting it will either enhance or do very little to my grade. This is advantageous for me because, despite my hope and intent, each model I considered predicted I will most likely do worse on the final exam, which would bring down my score greater if I drop my midterm. 
+
+I considered multiple linear models to make this decision, but settled on the following model, filtering out students in group 1:
+
+$$
+  \underbrace{\hat{Y_i}}_\text{Final Exam} = \frac {1} {0.0267 - 0.000167 \underbrace{X_{1i}}_\text{Midterm}}
+$$
+$$\underbrace{\hat{Y_i}}_{\text{Pred. 1/FinalExam}} = 0.0267 + -0.000167\underbrace{X_{1i}}_{\text{Midterm}}$$
+The benefits to this model over others is that it is more deterministic, having an $R^2$ of 0.5761 and highly significant P-values (both <2e-16). More importantly, it draws on variables I know concretely (midterm and magic group). The greatest drawback to this model is that it is hardly interpretable. With higher midterm scores, the final exam score increases at an increasing rate, and the y-intercept is irrelevant because no one in the data has scored so low as a 0. Secondly, its residual diagnostic plots are questionable at best.
+
+```{r}
+b <- two.1o$coef
+
+ggplot(two, aes(Midterm, FinalExam)) +
+  geom_point(color = "red") +
+  # geom_confidence(two.1o, trans = \(x) 1/x) +
+  geom_fit(two.1o) +
+  annotate("segment", x = my_midterm, xend = my_midterm, y = p[3], yend = 100, color = "green", linewidth = 1) + 
+  annotate("point", x = my_midterm, y = p[1], color = "green", size = 3) +
+  annotate("text", x = my_midterm, y = p[3] - 1, label = paste("Low pred:", round(p[3])), color = "#333333") + 
+  annotate("text", x = my_midterm, y = 103, label = paste0("High pred: 100 (", round(p[2]), ")"), color = "#333333") + 
+  annotate("text", x = my_midterm - 3, y = p[1] + 1, label = paste("Pred:", round(p[1])), color = "#333333", hjust = 1) +
+  
+  labs(
+    title = "Final Exam Prediction - Saunders MATH 425",
+    subtitle = "Based on past students' performance, data given by Brother Saunders",
+    x = "Midterm Exam Score",
+    y = "Final Exam Score"
+  ) +
+  theme_bw()
+```
+
+I am using this model despite its flaws because I am concerned with my own decision at this point in the semester when several things are already determined. I know I am in group 2 and I scored an 85 on the midterm. To get an idea of what my final exam score will be, I don't need to know anything else or even understand the model. I know the result of the model. If it were the start of the semester, I would want to know overall trends and what things I need to do in the future to score well on my exams. In that case, I would consider an alternative model, which I discuss below.
+
+
+# Model Selection
+
+## Process {.tabset .tabset-pills .tabset-fade}
+
+### Pairplot
+
+Starting with a pairplot, I found that Midterm scores were well correlated with Final Exam Scores. Coloring by several factors, I found the MagicTwoGroups to be most useful of any groupings.
+
+```{r}
+pairs(grades,  panel = panel.smooth, col = as.factor(grades$MagicTwoGroups))
+```
+
+
+### BoxCox
+
+The Box Cox plot was not very significant in my model choice, but told me a log transformation was likely not  Below are for three models I most considered.
+
+```{r}
+par(mfrow=c(1,3))
+boxCox(lm(FinalExam + 1 ~ (Midterm + 1) + MagicTwoGroups, data = grades), main="Two Groups Model")
+boxCox(lm(FinalExam ~ Midterm, data = two), main="Group 2 Only")
+boxCox(lm(FinalExam ~ Midterm + Gender, data = two), main="Group 2 with Gender")
+```
+
+
+### Transforming
+
+The decision to transform came after comparing the residuals to the predicted variable. There is a very clear arc. Running a 1/y regression gave me a significantly higher $R^2$ and lower P-values.
+
+```{r}
+pre.1o <- lm(FinalExam ~ Midterm, data = two)
+
+ggplot(two %>%
+  mutate(res = pre.1o$res), aes(res, FinalExam)) +
+  geom_jitter() +
+  labs(
+    x = "Residuals",
+    y = "Final Exam"
+  ) +
+  theme_bw()
+```
+
+## Models {.tabset .tabset-pills .tabset-fade}
+
+### Transformed {.tabset}
+
+#### Model
+
+This model is stated above in the decision portion of the analysis, and my process of arriving at this model is also explained. It is worth restating and showing the model before I go into more detail assessing the model in subsequent tabs.
+
+$$
+  \underbrace{Y_i}_\text{Final Exam} = \frac {1} { \ \ \beta_0 + \beta1 \underbrace{X_{1i}}_\text{Midterm}} \ \ where \ \epsilon_i \sim N(0, \sigma^2) 
+$$
+
+I will note that typically, $\beta_0$ represents y-intercept and $\beta_1$ represents slope. That is true in this case only in a transformed space, in which case the regression is a simple line. Transformed back into real space becomes less relevant numerically.
+
+Also of note is that this model is based on filtered data where "Magic" group 1 is taken out completely, with only group 2 being predicted by the model. This would not be useful for understanding class trends generally, but is useful to me who is in group 2.
+
+```{r}
+ggplot(two, aes(Midterm, FinalExam)) +
+  geom_point(color = "red") +
+  geom_fit(two.1o) +
+
+  labs(
+    title = "Final Exam Prediction - Transformed 1/Y",
+    x = "Midterm Exam Score",
+    y = "Final Exam Score"
+  ) +
+  theme_bw()
+```
+
+#### Summary
+
+Again, here is the resultant model.
+
+$$
+  \underbrace{\hat{Y_i}}_\text{Final Exam} = \frac {1} {0.0267 - 0.000167 \underbrace{X_{1i}}_\text{Midterm}}
+$$
+
+Two strengths of this model are the highly significant terms and relatively high R^2. The P-values of 1.983e-35 for $\beta_0$ and 5.612e-17 for $\beta_1$ show both terms are relevant to the accuracy of model. The $R^2$ shows the tightness of fit for the model. It means that the regression explains 57.6% of the variance in Final Exam scores.
+
+```{r}
+summary(two.1o) %>% pander()
+```
+
+#### Diagnosis
+
+The largest problem in this model is that it lacks constant variance. There is a clear megaphone pattern in the Residual vs. Fitted plot. The residuals under this transformation are fairly normal with some outliers. 
+
+```{r}
+par(mfrow=c(1,3))
+plot(two.1o, which=1:2)
+plot(two.1o$res)
+```
+
+#### Prediction
+
+Assuming this model is fairly accurate, I feel reassured that my Final Exam score is likely to be around 80%, and has a 2.5% chance of going anywhere below 60%. The upper bound goes well above 120, which is not possible, so it is capped at 100%, meaning it is perfectly reasonable that I could earn 100% on the Final Exam. One thing to note is that the lower and upper bounds are flipped because of the 1/y transformation.
+
+```{r}
+p %>% pander()
+```
+
+
+
+### Interpretable {.tabset}
+
+#### Model
+
+This is a different model that is far more interpretable. This model's strength lies in its actionability and comprehension.
+
+$$
+  \underbrace{Y_i}_\text{Final Exam} = \beta_0 + \beta1 \underbrace{X_{1i}}_{\text{Assessment} \\ \text{Quiz Score}} + \beta_2\underbrace{X_{2i}}_\text{"Magic"} + \beta_3\underbrace{X_{1i}X_{2i}}_\text{Interaction} \ \ where \ \epsilon_i \sim N(0, \sigma^2) 
+$$
+
+$$\underbrace{\hat{Y_i}}_{\text{Pred. FinalExam}} = 18.4 + 0.781\underbrace{X_{1i}}_{\text{AssessmentQuizzes}} + 33\underbrace{X_{2i}}_{\text{MagicTwoGroups}} - 0.38\underbrace{X_{3i}}_{\text{AssessmentQuizzes:MagicTwoGroups}}$$
+
+In this model, $\beta_0$ represents the Final Exam Score if the student got 0's on every Assessment Quiz, or the y-intercept. $\beta_1$ is the slope or rate of increase in Final Exam Score with every point increase of Assessment Quizzes. $\beta_2$ is the difference in y-intercept between the two "Magic" Groups, and $\beta_3$ is the difference in slopes.
+
+Something interesting seen in the graph is the difference in confidence between the two "Magic" groups. The tighter confidence of group 2 is one reason I removed group 1 from the transformed model.
+
+```{r}
+b.a <- both.lm$coef
+
+ggplot(grades, aes(AssessmentQuizzes, FinalExam, color = MagicTwoGroups)) +
+  geom_point() +
+  # geom_smooth(method = "lm", formula = y~x, alpha = 0.1) +
+  geom_fit(both.lm, data.frame(MagicTwoGroups = factor(1)), color = "red") +
+  geom_fit(both.lm, data.frame(MagicTwoGroups = factor(2))) +
+  
+  # stat_function(fun = function(x) b.a[1] + b.a[2]*x, aes(color = "1")) +
+  # stat_function(fun = function(x) b.a[1] + b.a[2]*x + b.a[3] + b.a[4]*x, aes(color = "2")) +
+  
+  labs(
+    title = "Final Exam Prediction - Two Groups, Interpretable",
+    x = "Assessment Quizzes Score",
+    y = "Final Exam Score"
+  ) +
+  theme_bw()
+```
+
+#### Summary
+
+$$
+  \underbrace{\hat{Y_i}}_\text{Final Exam} = 18.45 + 0.7813 \underbrace{X_{1i}}_{\text{Assessment} \\ \text{Quiz Score}} + 33.01 \underbrace{X_{2i}}_\text{"Magic"} - 0.3796 \underbrace{X_{1i}X_{2i}}_\text{Interaction}
+$$
+
+To interpret the above resultant model in clear terms, for every 1 point increase in a student's overall Assessment Quizzes score, the average Final Exam score increases by 0.7813 points for "Magic" group 1 individuals and 0.4017 for group 2 ($\beta_1 + \beta_3$). The average score for a group 1 student who earned a 0 on their overall Assessment Quizzes score is 18.45, and for a group 2 student it is 51.46.
+
+One small concern for this model is that the significance of the P-value for the interaction term is higher than we might expect. However, 0.01091 is still less than 0.05, the significance threshold.
+
+The $R^2$ of 0.4852 is relatively high compared to other models considered. The residual standard error is fairly high, which means there is a lot of variability that is not explained by the model, which comes out in a larger confidence and prediction interval.
+
+```{r}
+pander(summary(both.lm))
+```
+
+#### Diagnosis
+
+The diagnostic plots for this model look really good, which is another clear strength of this model. Normality strong with some outliers, and there is mostly constant variance.
+
+```{r}
+par(mfrow=c(1,3))
+plot(both.lm, which=1:2)
+plot(both.lm$res)
+```
+
+#### Prediction
+
+The following prediction is if I continue to get 100% assessment quiz scores, being in group 2. This prediction looks favorably for me in a hypothetical future, although I would still keep my midterm score because I would like to minimize risk, given such a wide confidence interval.
+
+```{r}
+p.b %>% pander()
+```
+
+
+
+### Genders {.tabset}
+
+#### Model
+
+$$
+  \underbrace{Y_i}_\text{Final Exam} = \frac {1} {\beta_0 + \beta_1 \underbrace{X_{1i}}_\text{Midterm} + \beta_2\underbrace{X_{2i}}_\text{Gender}} \ \ where \ \epsilon_i \sim N(0, \sigma^2) 
+$$
+
+This model is similar to the first, but it considers gender for a change in y-intercept (in the transformed space), which suggests a difference between men and women in their predicted Final Exam scores. The greatest strength of this model compared to others is that it looks pretty. Aside from that, it also has a higher $R^2$ and smaller Residual Standard Error. 
+
+```{r}
+b.tg <- two.gender$coef
+
+ggplot(two, aes(Midterm, FinalExam, color = Gender)) +
+  geom_point() +
+  stat_function(fun=function(x) 1/(b.tg[1] + b.tg[2]*x + b.tg[3]), aes(color = "M")) +
+  stat_function(fun=function(x) 1/(b.tg[1] + b.tg[2]*x), aes(color = "F")) +
+  
+  labs(
+    title = "Final Exam Prediction - 1/Y with Gender",
+    x = "Midterm Exam Score",
+    y = "Final Exam Score"
+  ) +
+  theme_bw()
+```
+
+
+#### Summary
+
+$$
+  \underbrace{\hat{Y_i}}_\text{Final Exam} = \frac {1} {0.0273 - 0.000164 \underbrace{X_{1i}}_\text{Midterm} - 0.00103\underbrace{X_{2i}}_\text{Gender}}
+$$
+
+The adjusted $R^2$ for this model is 0.5897, compared with 0.5761 for the original transformed model. The Residual Standard error is 0.00207 compared with 0.002104. The largest reason I did not choose this model (aside for being cancelled by feminists) is that the Gender term P-value of 0.05859 is barely insignificant (compared with $\alpha=0.05$). It is still close enough that I thought I would include it in this analysis. 
+
+```{r}
+two.gender %>% summary() %>% pander()
+```
+
+#### Diagnosis
+
+This model has much the same problems as the first, being slightly less normal. This is another reason why it could be considered less favorable. 
+
+```{r}
+par(mfrow=c(1,3))
+plot(two.gender, which=1:2)
+plot(two.gender$res)
+```
+
+#### Prediction
+
+This model gives me a very similar prediction interval as the first model. Aside from being a point or two higher, there is little else to comment on.
+
+```{r}
+p.tg %>% pander()
+```
+
+
+## Final Commentary
+
+In each of these models, the prediction interval was fairly large. The Final Exam score is not very deterministic at all. There is a lot of room for variability and randomness. Or we simply don't have the right variables to make a fully accurate prediction. In a way, I was concerned by the number of students who did generally well, but got a low exam score, but I wasn't necessarily surprised. 
+
+Something to restate is the difference in variation between the "Magic" group 1 and group 2. Also this is not explicitly in the data, I might suggest that it is hard to make a judgment call for something so subjective. It is also possible Brother Saunders may not know a few students as well, leading to a poor judgement. Thirdly, I would suggest there is such thing as the underdog effect. Someone knowing they have done poorly may be motivated by that knowledge and put in a stronger effort moving forward. 
+
+None of these models are perfect, but all were informative and revealed different insights from the data that have helped me decide to keep my Midterm score.
+
+
+
+
+
+
+
+
+

@@ -11,7 +11,7 @@ drawit(model, xaxis, ..., col = "black", lty = 1)
 
 \item{xaxis}{The xaxis of the plot and primary explanatory variable}
 
-\item{...}{Remaing variables; will throw warnings if not properly declared}
+\item{...}{Remaining variables; will throw warnings if not properly declared}
 
 \item{col}{Color of the line}
 
@@ -21,7 +21,11 @@ drawit(model, xaxis, ..., col = "black", lty = 1)
 A slice of a linear model in a base R plot
 }
 \description{
-A function to draw singular slices of a model in base R
+A function to draw singular slices of a model in base R. This function takes a more
+strict approach by building the prediction equation from model coefficients
+and requiring users to specify values for all predictor variables. Its original intent
+is to be most useful for regression battleship, and as a learning tool. By requiring
+entry of every value, it requires the student to think about what they are plotting.
 }
 \examples{
 \dontrun{

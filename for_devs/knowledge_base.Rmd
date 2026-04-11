@@ -1,0 +1,333 @@
+---
+title: "Knowledge Base"
+output: html_document
+---
+
+```{r}
+lm.example <- lm(log(mpg) ~ disp + hp, mtcars)
+```
+
+## Roxygen and Building the Package
+
+To understand the package and commenting structure, see this tutorial:
+
+https://hilaryparker.com/2014/04/29/writing-an-r-package-from-scratch/
+
+That explains it all. Just know that it is an easy way to create documentation and formatting to prepare a package for publishing. Run the following (also in `./scripts/use-roxygen.R`) to build the package:
+
+```{r}
+# install.packages("devtools")
+library(devtools)
+# devtools::install_github("klutometis/roxygen")
+# install.packages("roxygen2")
+library(roxygen2)
+
+devtools::document()
+```
+
+
+## Navigating and Investigating
+
+How do you navigate lm objects, formulas, and ggplot elements? That is a tough one, but here are a few hints.
+
+`typeof()` and `class` is helpful for getting a class, but it doesn't always show the full story. For example, both of these uses return the same result:
+
+```{r}
+typeof(4)      # "double"
+typeof(c(4,4)) # "double"
+
+class(4)       # "numeric"
+class(c(4,4))  # "numeric"
+```
+
+`str()` shows the structure of an object. It is very useful to see the whole story.
+
+```{r}
+str(4)         # num 4
+str(c(4,4))    # num [1:2] 4 4
+```
+
+lm and ggplot objects are an amalgamation of deep structure with many types and the str() output can get overwhelming. 
+
+To know how to read the output of `str()`, it helps to see some basic examples.
+
+```{r}
+str(4) # integer
+str("hi") # string
+str(c(4,4)) # vector
+str(list(4,4)) # list
+str(list(one=1, two="two")) # named list (like a dictionary)
+str(c(one=1, two="two")) # named vector
+str(matrix(c(1,2,3,4,5,6), 2, 3)) # matrix
+str(~ 4) # formula
+str(lm.example) # lm
+str(ggplot2::ggplot())
+```
+
+To start, though, treat them mostly like lists
+
+
+## lists
+
+Most structure is based on lists. Lists can be named or unnamed and support any type for each element. This is in contrast to vectors which support one type. Here are some ways to extract list items.
+
+See the list item keys or names with `names()` which returns a string (chr) array of list item names.
+
+```{r}
+names(list(jeff = 5, lacy = 6)) # returns c("jeff", "lacy)
+names(lm.example)
+```
+
+`$` accesses a list item by name. It does not need the full name
+
+```{r}
+lm.example$residuals # returns residuals
+lm.example$re        # returns residuals
+lm.example$r         # doesn't know which element to return
+lm.example$ra        # returns rank
+lm.example$Residuals # capitalization matters
+```
+
+List items are also accessed by index or name through bracket notation. Double brackets access the list item directly. Be careful about seeing the difference between single and double bracket results.
+
+```{r}
+list(jeff = 5, lacy = 6)['jeff']
+list(jeff = 5, lacy = 6)[1]
+list(jeff = 5, lacy = 6)[['jeff']]
+list(jeff = 5, lacy = 6)[[1]]
+list(jeff = 5, lacy = 6)['je'] # doesn't support partial names
+```
+
+When lists are inside lists, you may chain any of these methods. But you may have to play around between the them ($, 'name', #, single vs double bracket)
+
+```{r}
+lm.example$model[[1]][3]
+lm.example$model[[1]][[3]]  # same result
+lm.example$model[1][[3]]    # doesn't work ([1] returned a single element with a list in it)
+
+lm.example[['model']]$disp
+lm.example['model']$disp    # doesn't work (same issue as above)
+
+lm.example[[1]]['disp']
+lm.example[[1]]$disp        # doesn't work, actually a vector
+```
+
+If you attempt these methods and it fails to give the desired result, you might be looking at a vector which have one data type...
+
+```{r}
+list(one=1, two="two")
+c(one=1, two="two")
+
+list(one=1, two="two")$one
+c(one=1, two="two")$one
+
+list(one=1, two="two")['one']
+c(one=1, two="two")['one']
+
+list(one=1, two="two")[[2]]
+c(one=1, two="two")[[2]]
+```
+
+...or a matrix, which have two dimensions, not just one...
+
+```{r}
+matrix(c(1,2,3,4),2,2)
+matrix(c(1,2,3,4),2,2)[1]
+matrix(c(1,2,3,4),2,2)[2]
+matrix(c(1,2,3,4),2,2)[,1]
+matrix(c(1,2,3,4),2,2)[1,]
+matrix(c(1,2,3,4),2,2)[1,2]
+```
+
+...or you might be looking for an attribute.
+
+```{r}
+attr(lm.example, "class") # returns attribute
+attributes(lm.example)    # shows all attributes
+lm.example$class          # does not return what is desired
+```
+
+A good practice can be going down one level at a time and using `str()` again
+
+```{r}
+str(lm.example)
+lm.example$model
+str(lm.example$model)
+attr(lm.example$model, "terms")
+class(attr(lm.example$model, "terms"))
+attr(lm.example$model, "terms")[[2]]
+attr(lm.example$model, "terms")[[2]][[2]]
+```
+
+Not the most useful example, but it gets the point across. Navigating lists takes a lot of trial and error. Be patient.
+
+When it comes to getting data from an lm, it relies a lot on formulas.
+
+
+## formulas
+
+R has a formula object that stores both a mathematic formula and the environment it was created with so the formula can be stored as unexecuted code, then execute it later
+
+- **formula:** `~` and its surrounding variables, `log(y) ~ x + I(x2^2)`
+- **call**: an unevaluated function in the formula, ie `log(y)`
+- **function**: ie `log` or `function(x) ...`
+- **language**: what `typeof` returns for formulas and calls, you may also see in `str`
+
+To access the formula from an `lm`, use `formula()`
+
+```{r}
+form.example <- formula(lm.example)
+
+str(form.example)
+print(form.example)
+```
+
+To access the environment from a formula, use `environment()`.
+
+```{r}
+environment(form.example)
+```
+
+To retrieve parts of a formula, use bracket notation
+
+```{r}
+form.example[1]
+form.example[2]
+form.example[[2]]
+form.example[[2]][1]
+```
+
+Note that these are unevaluated expressions, **calls**, and representations of variables and functions, **symbols**.
+
+```{r}
+# calls
+str(form.example[2])
+str(form.example[[2]])
+str(form.example[[2]][1])
+
+# symbols
+str(form.example[[2]][[1]])
+str(form.example[[2]][[2]])
+```
+
+If you find yourself limited with using formulas, try the `rlang` package.
+
+
+## calls
+
+```{r}
+# sum(1, 2, 3)
+call("sum", 1, 2, 3)
+```
+
+To evaluate a call, use `eval`. It is not enough to simply put the variable somewhere.
+
+```{r}
+the_call <- call("sum", 1, 2, 3)
+
+print(the_call) # shows the call
+eval(the_call)  # evaluates sum(1, 2, 3)
+```
+
+Useful extensions of calls are `is.call`, `as.call`, and `do.call`. 
+
+`as.call` can be beneficial because it allows functions to be passed as a list with the first element being the function.
+
+```{r}
+is.call(the_call)
+as.call(c(sum, 1, 2, 3))
+```
+
+`do.call` is evaluated immediately and is a useful because it allows arguments to be passed as a list.
+
+```{r}
+paste(c(1, 2, 3))             # creates three strings
+do.call(paste, list(1, 2, 3)) # creates one string
+
+do.call(function(x) x^2 + 2, list(2))
+do.call(\(a, b, c) a + b * c, list(1, 2, 3))
+```
+
+Another benefit of calls is the ability to call it in a controlled environment. You can capture the current environment in a variable with `environment()`. This is used to specify what is being evaluated. 
+
+If you want to get crazy, here is an example of setting a custom environment.
+
+```{r}
+y <- NULL # to show prior variables don't impact the call
+
+new_call <- call("sum", quote(y), 2) # quote() prevents evaluation
+
+env <- new.env()
+env$y <- 100
+
+y <- 5
+
+eval(new_call)              # uses current environment
+eval(new_call, envir = env) # uses custom environment
+# 105
+```
+
+
+## ggplot and ggproto
+
+Outwardly, ggplot follows the principle of the grammar of graphics, and each element is added on top of the previous. In concept, each function does one thing well. 
+
+Inwardly, ggplot follows an object oriented nature of classes and inheritance. Each function or "geom" is a `ggproto` object. For the most part, these inherit from `Stat` and `Geom`. `Stat` is for managing data. `Geom` is for drawing/visuals.
+
+Here is a simple example of overriding a class, `GeomLine`
+
+```{r}
+GeomSkyLine <- ggproto(
+  "GeomSkyLine",       # new object name
+  GeomLine,            # object to inherit from
+  default_aes = aes(   # override the `default_aes` function
+    color = "skyblue"
+  )
+)
+```
+
+To create a new usable function `geom_add_num`, put it in a layer
+
+```{r}
+library(ggplot2)
+
+# 1. Define Stat to handle the 'num' parameter
+StatAddNum <- ggproto("StatAddNum", Stat,
+  compute_group = function(data, scales, num = 0) {
+    data$y <- data$y + num
+    data
+  }
+)
+
+# 2. Function accepting 'num' and passing other inherited arguments via '...'
+geom_add_num <- function(num = 0, ...) {
+  layer(
+    stat = StatAddNum, 
+    geom = "line", 
+    position = "identity", 
+    params = list(num = num, ...)
+  )
+}
+```
+
+You can create new functions, but there are a lot of functions that get inherited, including 
+
+- `compute_layer`: Operates on the entire dataset for the layer.
+
+- `compute_panel`: Operates on data within a single facet/panel.
+
+- `compute_group`: (Most common) Operates on data after it has been split into groups (e.g., by color or linetype).
+
+- `setup_params` / `setup_data`: Used to modify parameters or data before any computation begins.
+
+When computing, ggplot breaks down the data into abstractions, removing column names and replacing with `x`, `y`, `group`, and `PANEL`. You may see additional columns depending on the `Stat` operations that are inherited (like from `StatSmooth`). 
+
+You can always diagnose errors by printing the data at its current state, or even saving it to a global variable to explore it outside of calling the function.
+
+As you can see, this is not filled out in detail. You may need to have some detailed conversations with ChatGPT and record what you learn here. Don't forget that you can investigate functions, packages, and objects with a `?`. Try `?Geom` and `?Stat`.
+
+The rest is for you to fill out. Learn, explore, then pass that on to the next guy.
+
+Yours truly,
+James Beeson
+

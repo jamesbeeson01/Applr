@@ -2,9 +2,16 @@
 % Please edit documentation in R/geom_slice.R
 \name{geom_slice}
 \alias{geom_slice}
-\title{Geom_slice}
+\title{geom_slice}
 \usage{
-geom_slice(model, n = 100, inherit.aes = TRUE, predict_vars = list(), ...)
+geom_slice(
+  model,
+  n = 100,
+  inherit.aes = TRUE,
+  predict_vars = list(),
+  back_transform = NULL,
+  ...
+)
 }
 \arguments{
 \item{model}{A linear model provided by 'lm()'}
@@ -15,6 +22,11 @@ geom_slice(model, n = 100, inherit.aes = TRUE, predict_vars = list(), ...)
 
 \item{predict_vars}{A list of specified variables and values that specify the slice - not required}
 
+\item{back_transform}{Optional. Either NULL (auto-detect), a function for back-transforming predictions,
+or a character string ("log", "log10", "log2", "sqrt", "exp", "inverse") specifying the transformation
+to reverse. Use this when the model has a transformed response variable (e.g., log(y)) but the plot
+displays the original scale.}
+
 \item{...}{Other variables (color, alpha, etc.)}
 }
 \value{
@@ -22,7 +34,8 @@ A ggplot layer that displays the slice of the high dimensional model
 }
 \description{
 A 'ggplot' layer that takes a high dimensional model and displays the predicted
-model across each facet of a graph
+model across each facet of a graph. This is the main user-facing function for
+adding model slices to ggplot2 graphs.
 }
 \examples{
 \dontrun{
@@ -39,6 +52,18 @@ ggplot(mtcars, aes(x=disp, y=mpg))+
 geom_point()+
 facet_wrap(~hp)+
 geom_slice(model=model, predict_vars=list(gear=4))
+
+# Example: Model with log transformation (auto-detected)
+model <- lm(log(mpg) ~ disp + hp, data = mtcars)
+ggplot(mtcars, aes(x=disp, y=mpg))+
+geom_point()+
+geom_slice(model=model, predict_vars=list(hp=110))
+
+# Example: Manual back-transformation specification
+model <- lm(log(mpg) ~ disp + hp, data = mtcars)
+ggplot(mtcars, aes(x=disp, y=mpg))+
+geom_point()+
+geom_slice(model=model, back_transform="log")
 }
 
 }

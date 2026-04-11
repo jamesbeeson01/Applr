@@ -1,0 +1,13 @@
+---
+title: "known_issues"
+output: html_document
+---
+
+- `slice_2d` and its related functions use ... while `geom_slice` uses `names(model$model)`. The latter is a serious issue that is often invisible, and needs to be converted to the `slice_2d` implementation. 
+  - As to the reason, consider the simple example `model <- lm(y ~ I(x^2))`. `model$model` returns a `data.frame` with the prediction and used 
+
+- `detect_response_transform` found in `geom_slice.R` is vastly inferior to `get_inverse_function` in `get_inverse_function.R`, which is better with edge cases. Ideally, it should be replaced, but care needs to be taken that the change in return type (list vs function) is handled comprehensively.
+
+- `scatter_3d` has not been rigorously tested
+
+- `lm`'s with data accessed by `$` (ie `lm(mtcars$mpg ~ mtcars$disp)`) are currently not allowed. This should be extended to all accessed variables (ie `mtcars['mpg']`) because of how they are handled in the `predict` function. When this is fixed, `decisions.Rmd` should be updated.

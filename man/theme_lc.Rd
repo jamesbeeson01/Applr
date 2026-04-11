@@ -7,5 +7,9 @@
 theme_lc()
 }
 \description{
-Theme based off of Lauren Condie's work
+A custom ggplot2 theme that provides a cohesive, aesthetically pleasing color scheme
+and styling for statistical graphics. This theme sets both default geom aesthetics
+and plot theme elements to create a consistent visual style across all plots.
+The color palette uses warm, earthy tones that work well for academic and professional
+presentations.
 }

@@ -1,0 +1,1169 @@
+---
+title: "Testing Comparison"
+output: 
+  html_document:
+    theme: simplex
+    code_folding: show
+---
+
+# {.tabset}
+
+## Hide Setup
+
+## Show Setup
+
+```{r setup, message=FALSE}
+# Set knitr options to continue on error
+knitr::opts_chunk$set(error = TRUE)
+
+# imports
+pacman::p_load(
+  tidyverse,
+  devtools #Applr
+)
+
+# Load the local development version of Applr
+devtools::load_all(".")
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Number of observations
+n <- 50
+
+# Generate predictor variables
+x <- runif(n, -10, 10)
+x_pos <- runif(n, 0, 10)
+x_neg <- runif(n, -10, 0)
+x_switch <- sample(c(0, 1, 2), n, replace = TRUE)
+```
+
+# Models {.tabset}
+
+## x variations {.tabset .tabset-pills}
+
+### y ~ x {.tabset}
+
+#### Model
+```{r}
+y.single <- x
+lm.single <- lm(y.single ~ x)
+lm_equation(lm.single)
+```
+
+#### Base R
+```{r}
+plot(x, y.single, main = "Single Predictor: y ~ x", 
+     xlab = "x", ylab = "y", pch = 19, col = "steelblue")
+abline(lm.single, lwd = 2)
+```
+
+#### add_slice_2d
+```{r}
+plot(x, y.single, main = "Single Predictor: y ~ x", 
+     xlab = "x", ylab = "y", pch = 19, col = "steelblue")
+add_slice_2d(lm.single)
+```
+
+#### slice_2d
+```{r}
+slice_2d(lm.single)
+```
+
+#### drawit
+```{r}
+plot(x, y.single, main = "Single Predictor: y ~ x", 
+  xlab = "x", ylab = "y", pch = 19, col = "steelblue")
+drawit(lm.single, xaxis = "x")
+```
+
+#### geom_slice
+```{r}
+ggplot(data.frame(x, y.single), aes(x, y.single)) +
+  geom_point() +
+  geom_slice(lm.single)
+```
+
+#### geom_fit
+```{r}
+ggplot(data.frame(x, y.single), aes(x, y.single)) +
+  geom_point() +
+  geom_fit(lm.single)
+```
+
+#### geom_add_slice_2d
+
+```{r}
+ggplot(data.frame(x, y.single), aes(x, y.single)) +
+  geom_point() +
+  geom_add_slice_2d(lm.single)
+```
+
+### y ~ x + x_pos {.tabset}
+
+#### Model
+```{r}
+y.add <- x + x_pos
+lm.add <- lm(y.add ~ x + x_pos)
+lm_equation(lm.add)
+```
+
+#### Base R
+```{r}
+plot(x, y.add, main = "Additive: y ~ x + x_pos", 
+     xlab = "x", ylab = "y", pch = 19, col = "steelblue")
+points(x, fitted(lm.add), pch = 19, cex = 0.5)
+```
+
+#### add_slice_2d
+```{r}
+plot(x, y.add, main = "Additive: y ~ x + x_pos", 
+     xlab = "x", ylab = "y", pch = 19, col = "steelblue")
+add_slice_2d(lm.add)
+```
+
+#### slice_2d
+```{r}
+slice_2d(lm.add)
+```
+
+```{r}
+slice_2d(lm.add, xaxis = "x_pos", x = 0)
+```
+
+
+#### drawit
+```{r}
+plot(x, y.add, main = "Additive: y ~ x + x_pos", 
+  xlab = "x", ylab = "y", pch = 19, col = "steelblue")
+drawit(lm.add, xaxis = "x", x_pos = 0.007)
+```
+
+#### geom_slice
+```{r}
+ggplot(data.frame(x, y.add), aes(x, y.add)) +
+  geom_point() +
+  geom_slice(lm.add) +
+  geom_slice(lm.add, predict_vars = list(x_pos = 0.007))
+```
+
+#### geom_fit
+
+```{r}
+ggplot(data.frame(x, y.add), aes(x, y.add)) +
+  geom_point() +
+  geom_fit(lm.add)
+```
+
+```{r}
+ggplot(data.frame(x, y.add), aes(x, y.add)) +
+  geom_point() +
+  geom_fit(lm.add, new_data = data.frame(x_pos = 0.007))
+```
+
+#### geom_add_slice_2d
+
+```{r}
+ggplot(data.frame(x, y.add), aes(x, y.add)) +
+  geom_point() +
+  geom_add_slice_2d(lm.add)
+```
+
+```{r}
+ggplot(data.frame(x, y.add), aes(x, y.add)) +
+  geom_point() +
+  geom_add_slice_2d(lm.add, x_pos = 0.007)
+```
+
+### y ~ I(x\*x_pos) {.tabset}
+
+#### Model
+```{r}
+y.multiply <- x * x_pos
+lm.multiply <- lm(y.multiply ~ I(x*x_pos))
+lm_equation(lm.multiply)
+```
+
+#### Base R
+```{r}
+plot(x*x_pos, y.multiply, main = "Multiplicative: y ~ I(x*x_pos)", 
+     xlab = "x*x_pos", ylab = "y", pch = 19, col = "steelblue")
+abline(lm.multiply, lwd = 2)
+```
+
+#### add_slice_2d
+```{r}
+plot(x*x_pos, y.multiply, main = "Multiplicative: y ~ I(x*x_pos)", 
+     xlab = "x*x_pos", ylab = "y", pch = 19, col = "steelblue")
+add_slice_2d(lm.multiply)
+```
+
+```{r}
+plot(x, y.multiply, main = "Multiplicative: y ~ I(x*x_pos)", 
+     ylab = "y", pch = 19, col = "steelblue")
+add_slice_2d(lm.multiply, xaxis = "x")
+```
+
+#### slice_2d
+```{r}
+slice_2d(lm.multiply)
+```
+
+```{r}
+slice_2d(lm.multiply, xaxis = "x_pos")
+```
+
+```{r}
+slice_2d(lm.multiply, xaxis = "x*x_pos")
+```
+
+#### drawit
+```{r}
+plot(x*x_pos, y.multiply, main = "Multiplicative: y ~ I(x*x_pos)", 
+  xlab = "x*x_pos", ylab = "y", pch = 19, col = "steelblue")
+drawit(lm.multiply, xaxis = "I(x * x_pos)")
+```
+
+```{r}
+plot(x, y.multiply, main = "Multiplicative: y ~ I(x*x_pos)", 
+     ylab = "y", pch = 19, col = "steelblue")
+drawit(lm.multiply, xaxis = "x")
+```
+
+#### geom_slice
+
+```{r}
+ggplot(data.frame(x, x_pos, y.multiply), aes(x*x_pos, y.multiply)) +
+  geom_point() +
+  geom_slice(lm.multiply)
+```
+
+```{r}
+ggplot(data.frame(x, x_pos, y.multiply), aes(x, y.multiply)) +
+  geom_point() +
+  geom_slice(lm.multiply)
+```
+
+#### geom_fit
+
+```{r}
+ggplot(data.frame(x, x_pos, y.multiply), aes(x*x_pos, y.multiply)) +
+  geom_point() +
+  geom_fit(lm.multiply)
+```
+
+```{r}
+ggplot(data.frame(x, x_pos, y.multiply), aes(x, y.multiply)) +
+  geom_point() +
+  geom_fit(lm.multiply)
+```
+
+```{r}
+ggplot(data.frame(x, x_pos, y.multiply), aes(x, y.multiply)) +
+  geom_point() +
+  geom_fit(lm.multiply, new_data = data.frame(x_pos = 4.8))
+```
+
+#### geom_add_slice_2d
+
+```{r}
+ggplot(data.frame(x, x_pos, y.multiply), aes(x*x_pos, y.multiply)) +
+  geom_point() +
+  geom_add_slice_2d(lm.multiply)
+```
+
+```{r}
+ggplot(data.frame(x, x_pos, y.multiply), aes(x, y.multiply)) +
+  geom_point() +
+  geom_add_slice_2d(lm.multiply)
+```
+
+### y ~ x:x_switch {.tabset}
+
+#### Model
+```{r}
+y.interaction <- x * x_switch
+lm.interaction <- lm(y.interaction ~ x:x_switch)
+lm_equation(lm.interaction)
+```
+
+#### Base R
+```{r}
+plot(x, y.interaction, main = "Interaction: y ~ x:x_switch", 
+     xlab = "x", ylab = "y", pch = 19, 
+     col = c("steelblue", "darkgreen", "purple")[x_switch + 1])
+legend("topleft", legend = c("switch=0", "switch=1", "switch=2"),
+       col = c("steelblue", "darkgreen", "purple"), pch = 19, cex = 0.7)
+abline(lm.interaction)
+```
+
+#### add_slice_2d
+
+```{r}
+plot(x, y.interaction, main = "Interaction: y ~ x:x_switch", 
+     xlab = "x", ylab = "y", pch = 19, 
+     col = c("steelblue", "darkgreen", "purple")[x_switch + 1])
+add_slice_2d(lm.interaction, x_switch = 0)
+add_slice_2d(lm.interaction, x_switch = 1)
+add_slice_2d(lm.interaction, x_switch = 2)
+```
+
+#### slice_2d
+```{r}
+slice_2d(lm.interaction)
+```
+
+#### drawit
+
+```{r}
+plot(x, y.interaction, main = "Interaction: y ~ x:x_switch", 
+  xlab = "x", ylab = "y", pch = 19, 
+  col = c("steelblue", "darkgreen", "purple")[x_switch + 1])
+drawit(lm.interaction, xaxis = "x", x_switch = 0)
+drawit(lm.interaction, xaxis = "x", x_switch = 1)
+drawit(lm.interaction, xaxis = "x", x_switch = 2)
+```
+
+#### geom_slice
+
+```{r}
+ggplot(data.frame(x, y.interaction), aes(x, y.interaction, group = x_switch)) +
+  geom_point() +
+  geom_slice(lm.interaction, predict_vars = list(x_switch = 0)) +
+  geom_slice(lm.interaction, predict_vars = list(x_switch = 1)) +
+  geom_slice(lm.interaction, predict_vars = list(x_switch = 2))
+
+# geom_slice using grouping
+ggplot(data.frame(x, y.interaction), aes(x, y.interaction, color = factor(x_switch))) +
+  geom_point() +
+  geom_slice(lm.interaction)
+
+# geom_slice with faceting
+ggplot(data.frame(x, y.interaction), aes(x, y.interaction)) +
+  geom_point() +
+  geom_slice(lm.interaction) +
+  facet_wrap(~x_switch)
+```
+
+#### geom_fit
+
+```{r}
+ggplot(data.frame(x, y.interaction), aes(x, y.interaction, group = x_switch)) +
+  geom_point() +
+  geom_fit(lm.interaction, new_data = data.frame(x_switch = 0)) +
+  geom_fit(lm.interaction, new_data = data.frame(x_switch = 1)) +
+  geom_fit(lm.interaction, new_data = data.frame(x_switch = 2))
+
+# geom_fit using grouping
+ggplot(data.frame(x, y.interaction), aes(x, y.interaction, color = factor(x_switch))) +
+  geom_point() +
+  geom_fit(lm.interaction)
+
+# geom_fit with faceting
+ggplot(data.frame(x, y.interaction), aes(x, y.interaction)) +
+  geom_point() +
+  geom_fit(lm.interaction) +
+  facet_wrap(~x_switch)
+```
+
+#### geom_add_slice_2d
+
+```{r}
+ggplot(data.frame(x, y.interaction), aes(x, y.interaction, group = x_switch)) +
+  geom_point() +
+  geom_add_slice_2d(lm.interaction, x_switch = 0) +
+  geom_add_slice_2d(lm.interaction, x_switch = 1) +
+  geom_add_slice_2d(lm.interaction, x_switch = 2)
+
+# geom_add_slice_2d using grouping
+ggplot(data.frame(x, y.interaction), aes(x, y.interaction, color = factor(x_switch))) +
+  geom_point() +
+  geom_add_slice_2d(lm.interaction)
+
+# geom_add_slice_2d with faceting
+ggplot(data.frame(x, y.interaction), aes(x, y.interaction)) +
+  geom_point() +
+  geom_add_slice_2d(lm.interaction) +
+  facet_wrap(~x_switch)
+```
+
+### y ~ x + I(x^2) {.tabset}
+
+#### Model
+```{r}
+y.quadratic <- x + x^2
+lm.quadratic <- lm(y.quadratic ~ x + I(x^2))
+lm_equation(lm.quadratic)
+```
+
+#### Base R
+```{r}
+plot(x, y.quadratic, main = "Quadratic: y ~ x + I(x^2)", 
+     xlab = "x", ylab = "y", pch = 19, col = "steelblue")
+x_seq <- seq(min(x), max(x), length.out = 100)
+pred <- predict(lm.quadratic, newdata = data.frame(x = x_seq))
+lines(x_seq, pred, lwd = 2)
+```
+
+#### add_slice_2d
+```{r}
+plot(x, y.quadratic, main = "Quadratic: y ~ x + I(x^2)", 
+     xlab = "x", ylab = "y", pch = 19, col = "steelblue")
+add_slice_2d(lm.quadratic)
+```
+
+#### slice_2d
+```{r}
+slice_2d(lm.quadratic)
+```
+
+#### drawit
+```{r}
+plot(x, y.quadratic, main = "Quadratic: y ~ x + I(x^2)", 
+  xlab = "x", ylab = "y", pch = 19, col = "steelblue")
+drawit(lm.quadratic, xaxis = "x")
+drawit(lm.quadratic, xaxis = "x", I(x^2) = 50)
+drawit(lm.quadratic, xaxis = "x", `I(x^2)` = 50)
+```
+
+#### geom_slice
+```{r}
+ggplot(data.frame(x, y.quadratic), aes(x, y.quadratic)) +
+  geom_point() +
+  geom_slice(lm.quadratic)
+```
+
+#### geom_fit
+```{r}
+ggplot(data.frame(x, y.quadratic), aes(x, y.quadratic)) +
+  geom_point() +
+  geom_fit(lm.quadratic)
+```
+
+#### geom_add_slice_2d
+
+```{r}
+ggplot(data.frame(x, y.quadratic), aes(x, y.quadratic)) +
+  geom_point() +
+  geom_add_slice_2d(lm.quadratic)
+```
+
+## y transformations {.tabset .tabset-pills}
+
+### 1/y ~ x {.tabset}
+
+#### Model
+```{r}
+y.1o <- 1/x
+lm.1o <- lm(1/y.1o ~ x)
+lm_equation(lm.1o)
+```
+
+#### Base R
+```{r}
+plot(x, y.1o, main = "Inverse: 1/y ~ x", 
+     xlab = "x", ylab = "y", pch = 19, col = "steelblue")
+abline(lm.1o, lwd = 2)
+```
+
+#### add_slice_2d
+```{r}
+plot(x, y.1o, main = "Inverse: 1/y ~ x", 
+     xlab = "x", ylab = "y", pch = 19, col = "steelblue")
+add_slice_2d(lm.1o)
+```
+
+#### slice_2d
+```{r}
+slice_2d(lm.1o)
+```
+
+#### drawit
+```{r}
+plot(x, y.1o, main = "Inverse: 1/y ~ x", 
+  xlab = "x", ylab = "y", pch = 19, col = "steelblue")
+drawit(lm.1o, xaxis = "x")
+```
+
+#### geom_slice
+```{r}
+ggplot(data.frame(x, y.1o), aes(x, y.1o)) +
+  geom_point() +
+  geom_slice(lm.1o)
+```
+
+```{r}
+ggplot(data.frame(x, y.1o), aes(x, y.1o)) +
+  geom_point() +
+  geom_slice(lm.1o, back_transform = \(x) 1/x)
+```
+
+#### geom_fit
+```{r}
+ggplot(data.frame(x, y.1o), aes(x, y.1o)) +
+  geom_point() +
+  geom_fit(lm.1o)
+```
+
+```{r}
+ggplot(data.frame(x, y.1o), aes(x, y.1o)) +
+  geom_point() +
+  geom_fit(lm.1o, back_transform = \(x) 1/x)
+```
+
+```{r}
+ggplot(data.frame(x, y.1o), aes(x, 1/y.1o)) +
+  geom_point() +
+  geom_fit(lm.1o)
+```
+
+```{r}
+ggplot(data.frame(x, 1/y.1o), aes(x, y.1o)) +
+  geom_point() +
+  geom_fit(lm.1o, back_transform = FALSE)
+```
+
+#### geom_add_slice_2d
+
+```{r}
+ggplot(data.frame(x, y.1o), aes(x, y.1o)) +
+  geom_point() +
+  geom_add_slice_2d(lm.1o)
+```
+
+```{r}
+ggplot(data.frame(x, y.1o), aes(x, y.1o)) +
+  geom_point() +
+  geom_add_slice_2d(lm.1o, back_transform = \(x) 1/x)
+```
+
+### sqrt(y) ~ x_pos {.tabset}
+
+#### Model
+```{r}
+y.sqrt <- x_pos^2
+lm.sqrt <- lm(sqrt(y.sqrt) ~ x_pos)
+lm_equation(lm.sqrt)
+```
+
+#### Base R
+```{r}
+plot(x_pos, y.sqrt, main = "Square: sqrt(y) ~ x_pos", 
+     xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+x_seq <- seq(min(x_pos), max(x_pos), length.out = 100)
+pred <- predict(lm.sqrt, newdata = data.frame(x_pos = x_seq))^2
+lines(x_seq, pred, lwd = 2)
+```
+
+#### add_slice_2d
+```{r}
+plot(x_pos, y.sqrt, main = "Square: sqrt(y) ~ x_pos", 
+     xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+add_slice_2d(lm.sqrt)
+```
+
+#### slice_2d
+```{r}
+slice_2d(lm.sqrt)
+```
+
+#### drawit
+```{r}
+plot(x_pos, y.sqrt, main = "Square: sqrt(y) ~ x_pos", 
+  xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+drawit(lm.sqrt, xaxis = "x_pos")
+```
+
+#### geom_slice
+```{r}
+ggplot(data.frame(x_pos, y.sqrt), aes(x_pos, y.sqrt)) +
+  geom_point() +
+  geom_slice(lm.sqrt)
+```
+
+#### geom_fit
+```{r}
+ggplot(data.frame(x_pos, y.sqrt), aes(x_pos, y.sqrt)) +
+  geom_point() +
+  geom_fit(lm.sqrt)
+```
+
+#### geom_add_slice_2d
+```{r}
+ggplot(data.frame(x_pos, y.sqrt), aes(x_pos, y.sqrt)) +
+  geom_point() +
+  geom_add_slice_2d(lm.sqrt)
+```
+
+### log(y) ~ x_pos {.tabset}
+
+#### Model
+```{r}
+y.log <- exp(x_pos)
+lm.log <- lm(log(y.log) ~ x_pos)
+lm_equation(lm.log)
+```
+
+#### Base R
+```{r}
+plot(x_pos, y.log, main = "Exponential: log(y) ~ x_pos", 
+     xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+x_seq <- seq(min(x_pos), max(x_pos), length.out = 100)
+pred <- exp(predict(lm.log, newdata = data.frame(x_pos = x_seq)))
+lines(x_seq, pred, lwd = 2)
+```
+
+#### add_slice_2d
+```{r}
+plot(x_pos, y.log, main = "Exponential: log(y) ~ x_pos", 
+     xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+add_slice_2d(lm.log)
+```
+
+#### slice_2d
+```{r}
+slice_2d(lm.log)
+```
+
+#### drawit
+```{r}
+plot(x_pos, y.log, main = "Exponential: log(y) ~ x_pos", 
+  xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+drawit(lm.log, xaxis = "x_pos")
+```
+
+#### geom_slice
+```{r}
+ggplot(data.frame(x_pos, y.log), aes(x_pos, y.log)) +
+  geom_point() +
+  geom_slice(lm.log)
+```
+
+#### geom_fit
+```{r}
+ggplot(data.frame(x_pos, y.log), aes(x_pos, y.log)) +
+  geom_point() +
+  geom_fit(lm.log)
+```
+
+#### geom_add_slice_2d
+```{r}
+ggplot(data.frame(x_pos, y.log), aes(x_pos, y.log)) +
+  geom_point() +
+  geom_add_slice_2d(lm.log)
+```
+
+### exp(y) ~ x_pos {.tabset}
+
+#### Model
+```{r}
+y.exp <- log(x_pos)
+lm.exp <- lm(exp(y.exp) ~ x_pos)
+lm_equation(lm.exp)
+```
+
+#### Base R
+```{r}
+plot(x_pos, y.exp, main = "Logarithmic: exp(y) ~ x_pos", 
+     xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+x_seq <- seq(min(x_pos), max(x_pos), length.out = 100)
+pred <- log(predict(lm.exp, newdata = data.frame(x_pos = x_seq)))
+lines(x_seq, pred, lwd = 2)
+```
+
+#### add_slice_2d
+```{r}
+plot(x_pos, y.exp, main = "Logarithmic: exp(y) ~ x_pos", 
+     xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+add_slice_2d(lm.exp)
+```
+
+#### slice_2d
+```{r}
+slice_2d(lm.exp)
+```
+
+#### drawit
+```{r}
+plot(x_pos, y.exp, main = "Logarithmic: exp(y) ~ x_pos", 
+  xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+drawit(lm.exp, xaxis = "x_pos")
+```
+
+#### geom_slice
+```{r}
+ggplot(data.frame(x_pos, y.exp), aes(x_pos, y.exp)) +
+  geom_point() +
+  geom_slice(lm.exp)
+```
+
+#### geom_fit
+```{r}
+ggplot(data.frame(x_pos, y.exp), aes(x_pos, y.exp)) +
+  geom_point() +
+  geom_fit(lm.exp)
+```
+
+#### geom_add_slice_2d
+```{r}
+ggplot(data.frame(x_pos, y.exp), aes(x_pos, y.exp)) +
+  geom_point() +
+  geom_add_slice_2d(lm.exp)
+```
+
+### y^2 ~ x_pos {.tabset}
+
+#### Model
+```{r}
+y.2 <- sqrt(x_pos)
+lm.2 <- lm(y.2^2 ~ x_pos)
+lm_equation(lm.2)
+```
+
+#### Base R
+```{r}
+plot(x_pos, y.2, main = "Square Root: y^2 ~ x_pos", 
+     xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+x_seq <- seq(min(x_pos), max(x_pos), length.out = 100)
+pred <- sqrt(predict(lm.2, newdata = data.frame(x_pos = x_seq)))
+lines(x_seq, pred, lwd = 2)
+```
+
+#### add_slice_2d
+```{r}
+plot(x_pos, y.2, main = "Square Root: y^2 ~ x_pos", 
+     xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+add_slice_2d(lm.2)
+```
+
+#### slice_2d
+```{r}
+slice_2d(lm.2)
+```
+
+#### drawit
+```{r}
+plot(x_pos, y.2, main = "Square Root: y^2 ~ x_pos", 
+  xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+drawit(lm.2, xaxis = "x_pos")
+```
+
+#### geom_slice
+```{r}
+ggplot(data.frame(x_pos, y.2), aes(x_pos, y.2)) +
+  geom_point() +
+  geom_slice(lm.2)
+```
+
+#### geom_fit
+```{r}
+ggplot(data.frame(x_pos, y.2), aes(x_pos, y.2)) +
+  geom_point() +
+  geom_fit(lm.2)
+```
+
+#### geom_add_slice_2d
+```{r}
+ggplot(data.frame(x_pos, y.2), aes(x_pos, y.2)) +
+  geom_point() +
+  geom_add_slice_2d(lm.2)
+```
+
+## mtcars {.tabset .tabset-pills}
+
+### Model 
+
+```{r}
+lm.mtlog <- lm(log(mpg) ~ disp, mtcars)
+lm_equation(lm.mtlog)
+```
+
+### slice_2d
+
+```{r}
+slice_2d(lm.mtlog)
+```
+
+### geom_smooth
+
+```{r}
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_smooth()
+```
+
+### geom_slice
+
+```{r}
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_slice(lm.mtlog)
+```
+
+### geom_fit
+
+```{r}
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_fit(lm.mtlog)
+```
+
+```{r}
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_fit(lm.mtlog, interval = "prediction")
+```
+
+```{r}
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_fit(lm.mtlog) +
+  geom_fit(lm.mtlog, interval = "prediction")
+```
+
+```{r}
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_fit(lm.mtlog, se = FALSE)
+```
+
+### geom_add_slice_2d
+
+```{r}
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_add_slice_2d(lm.mtlog)
+```
+
+
+## mpg {.tabset .tabset-pills}
+
+### geom_fit
+
+```{r}
+lm.drv <- lm(hwy ~ displ + I(displ^2) + displ:drv, mpg)
+
+ggplot(mpg, aes(displ, hwy, color = drv)) +
+  geom_point() +
+  geom_fit(lm.drv, data.frame(drv = "4"), color = "red") +
+  geom_fit(lm.drv, data.frame(drv = "f"), color = "green") +
+  geom_fit(lm.drv, data.frame(drv = "r"), color = "blue") +
+  scale_color_manual(values = c("red", "green", "blue"))
+```
+
+
+## Student Made {.tabset .tabset-pills}
+
+### ***here {.tabset}
+
+## Hide
+
+# Intentional Errors {.tabset}
+
+## Non-lm Model {.tabset .tabset-pills}
+
+### Setup
+```{r}
+# Create a non-lm object
+not_a_model <- data.frame(y = c(1,2,3), x = c(4,5,6))
+```
+
+### slice_2d
+```{r}
+slice_2d(not_a_model)
+```
+
+### add_slice_2d
+```{r}
+plot(x, y.single, main = "Test")
+add_slice_2d(not_a_model)
+```
+
+### drawit
+```{r}
+plot(x, y.single, main = "Test")
+drawit(not_a_model)
+```
+
+### geom_slice
+```{r}
+ggplot(data.frame(x, y.single), aes(x, y.single)) +
+  geom_point() +
+  geom_slice(not_a_model)
+```
+
+### geom_fit
+```{r}
+ggplot(data.frame(x, y.single), aes(x, y.single)) +
+  geom_point() +
+  geom_fit(not_a_model)
+```
+
+### geom_add_slice_2d
+```{r}
+ggplot(data.frame(x, y.single), aes(x, y.single)) +
+  geom_point() +
+  geom_add_slice_2d(not_a_model)
+```
+
+## Invalid xaxis {.tabset .tabset-pills}
+
+### Setup
+```{r}
+# Model with x and x_pos
+y.test <- x + x_pos
+lm.test <- lm(y.test ~ x + x_pos)
+```
+
+### slice_2d - nonexistent variable
+```{r}
+slice_2d(lm.test, xaxis = "nonexistent_var")
+```
+
+### add_slice_2d - nonexistent variable
+```{r}
+plot(x, y.test, main = "Test")
+add_slice_2d(lm.test, xaxis = "nonexistent_var")
+```
+
+### slice_2d - factor variable
+```{r}
+mtcars2 <- mtcars
+mtcars2$cyl <- factor(mtcars2$cyl)
+lm.factor <- lm(mpg ~ cyl + hp, data = mtcars2)
+slice_2d(lm.factor, xaxis = "cyl")
+```
+
+### add_slice_2d - factor variable
+```{r}
+plot(1:10, 1:10, main = "Test")
+add_slice_2d(lm.factor, xaxis = "cyl")
+```
+
+### drawit - nonexistent variable
+```{r}
+plot(x, y.test, main = "Test")
+drawit(lm.test, xaxis = "nonexistent_var")
+```
+
+### geom_slice - nonexistent variable
+```{r}
+ggplot(data.frame(x, y.test), aes(x, y.test)) +
+  geom_point() +
+  geom_slice(lm.test, xaxis = "nonexistent_var")
+```
+
+### geom_fit - nonexistent variable
+
+NA
+
+### geom_add_slice_2d - nonexistent variable
+```{r}
+ggplot(data.frame(x, y.test), aes(x, y.test)) +
+  geom_point() +
+  geom_add_slice_2d(lm.test, xaxis = "nonexistent_var")
+```
+
+### geom_add_slice_2d - factor variable
+```{r}
+ggplot(mtcars2, aes(hp, mpg)) +
+  geom_point() +
+  geom_add_slice_2d(lm.factor, xaxis = "cyl")
+```
+
+## $ in Variable Names {.tabset .tabset-pills}
+
+### Setup
+```{r}
+# Create a model with $ in variable names
+df_with_dollar <- data.frame(y = y.single, x = x)
+lm.dollar <- lm(df_with_dollar$y ~ df_with_dollar$x)
+```
+
+### slice_2d
+```{r}
+slice_2d(lm.dollar)
+```
+
+### add_slice_2d
+```{r}
+plot(x, y.single, main = "Test")
+add_slice_2d(lm.dollar)
+```
+
+### drawit
+```{r}
+plot(x, y.single, main = "Test")
+drawit(lm.dollar)
+```
+
+### geom_slice
+```{r}
+ggplot(data.frame(x, y.single), aes(x, y.single)) +
+  geom_point() +
+  geom_slice(lm.dollar)
+```
+
+### geom_fit
+```{r}
+ggplot(data.frame(x, y.single), aes(x, y.single)) +
+  geom_point() +
+  geom_fit(lm.dollar)
+```
+
+### geom_add_slice_2d
+```{r}
+ggplot(data.frame(x, y.single), aes(x, y.single)) +
+  geom_point() +
+  geom_add_slice_2d(lm.dollar)
+```
+
+## Unsupported Variable Types {.tabset .tabset-pills}
+
+### Setup
+```{r}
+# Create model with character variable
+df_char <- data.frame(y = y.single, x = x, char_var = as.character(rep(c("a", "b"), length.out = n)))
+lm.char <- lm(y ~ x + char_var, data = df_char)
+```
+
+### slice_2d - character variable
+```{r}
+slice_2d(lm.char)
+```
+
+### add_slice_2d - character variable
+```{r}
+plot(x, y.single, main = "Test")
+add_slice_2d(lm.char)
+```
+
+### drawit - character variable
+```{r}
+plot(x, y.single, main = "Test")
+drawit(lm.char, xaxis = "x")
+```
+
+### geom_slice - character variable
+```{r}
+ggplot(df_char, aes(x, y)) +
+  geom_point() +
+  geom_slice(lm.char)
+```
+
+### geom_fit - character variable
+```{r}
+ggplot(df_char, aes(x, y)) +
+  geom_point() +
+  geom_fit(lm.char)
+```
+
+### geom_add_slice_2d - character variable
+```{r}
+ggplot(df_char, aes(x, y)) +
+  geom_point() +
+  geom_add_slice_2d(lm.char)
+```
+
+## Adding to Wrong Plot Type {.tabset .tabset-pills}
+
+### add_slice_2d - No Plot
+
+```{r}
+add_slice_2d(lm.single)
+```
+
+### add_slice_2d - Wrong Data
+
+```{r}
+plot(x_pos, y.multiply, main = "Multiplicative: y ~ I(x*x_pos)", 
+     xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+add_slice_2d(lm.log)
+```
+
+### add_slice_2d - Wrong xaxis
+
+```{r}
+plot(x_pos, y.multiply, main = "Multiplicative: y ~ I(x*x_pos)", 
+     xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+add_slice_2d(lm.multiply, xaxis = "x")
+```
+
+### add_slice_2d - Transformed y
+
+```{r}
+plot(log(y.log) ~ x_pos)
+add_slice_2d(lm.log)
+```
+
+## back_transform {.tabset .tabset-pills}
+
+### Not boolean or function {.tabset}
+
+#### slice_2d
+```{r}
+slice_2d(lm.1o, back_transform = "not_valid")
+```
+
+#### add_slice_2d
+```{r}
+plot(x, y.1o, main = "Inverse: 1/y ~ x", 
+     xlab = "x", ylab = "y", pch = 19, col = "steelblue")
+add_slice_2d(lm.1o, back_transform = 123)
+```
+
+#### geom_slice
+```{r}
+ggplot(data.frame(x, y.1o), aes(x, y.1o)) +
+  geom_point() +
+  geom_slice(lm.1o, back_transform = list(a = 1))
+```
+
+#### geom_fit
+```{r}
+ggplot(data.frame(x, y.log), aes(x, y.log)) +
+  geom_point() +
+  geom_fit(lm.log, back_transform = "invalid")
+```
+
+#### geom_add_slice_2d
+```{r}
+ggplot(data.frame(x, y.log), aes(x, y.log)) +
+  geom_point() +
+  geom_add_slice_2d(lm.log, back_transform = "invalid")
+```
+
+### Too many arguments {.tabset}
+
+#### slice_2d
+```{r}
+slice_2d(lm.1o, back_transform = function(x, y) 1/x)
+```
+
+#### add_slice_2d
+```{r}
+plot(x, y.1o, main = "Inverse: 1/y ~ x", 
+     xlab = "x", ylab = "y", pch = 19, col = "steelblue")
+add_slice_2d(lm.1o, back_transform = function(x, y, z) 1/x)
+```
+
+#### geom_slice
+```{r}
+ggplot(data.frame(x, y.1o), aes(x, y.1o)) +
+  geom_point() +
+  geom_slice(lm.1o, back_transform = function(x, extra_arg) 1/x)
+```
+
+#### geom_fit
+```{r}
+ggplot(data.frame(x, y.log), aes(x, y.log)) +
+  geom_point() +
+  geom_fit(lm.log, back_transform = function(x, y, z, w) exp(x))
+```
+
+#### geom_add_slice_2d
+```{r}
+ggplot(data.frame(x, y.log), aes(x, y.log)) +
+  geom_point() +
+  geom_add_slice_2d(lm.log, back_transform = function(x, y, z, w) exp(x))
+```

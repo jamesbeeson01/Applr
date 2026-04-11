@@ -4,7 +4,14 @@
 \alias{slice_2d}
 \title{2D Slicer}
 \usage{
-slice_2d(model, xaxis = NA, n = 100, ...)
+slice_2d(
+  model,
+  xaxis = NULL,
+  n = 100,
+  caption = TRUE,
+  back_transform = TRUE,
+  ...
+)
 }
 \arguments{
 \item{model}{A linear model}
@@ -13,13 +20,22 @@ slice_2d(model, xaxis = NA, n = 100, ...)
 
 \item{n}{Number of displayed points; default is 100}
 
+\item{caption}{Boolean to include caption with values of predictor variables not shown in the chart, TRUE by default}
+
+\item{back_transform}{Either 1) A function to back transform the predicted y values and interval bounds (e.g., \code{exp} or \verb{\\(x) exp(x)} for log-transformed models), or 2) a boolean stating whether it should apply a transformation or not (\code{FALSE} turns off back_transform). In most cases, this does not need to be specified as the function infers the transformation needed reliably.}
+
 \item{...}{Remaining vars (color, linetype, etc.)}
 }
 \value{
 A 2D graph of a sliced model
 }
 \description{
-Take a linear model and display a 2D slice in base R
+Take a linear model and display a 2D slice in base R. This function creates
+a new plot comparing the response y variable with one predictor x variable
+and displaying a linear model line with all other predictor variables
+held at constant values. For unspecified variables, the xaxis is assumed
+to be the first predictor in the model and all other variable are imputed
+(mean for numeric, most common for factors).
 }
 \examples{
 \dontrun{

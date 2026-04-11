@@ -13,7 +13,10 @@ lm_equation(model)
 The equation of an indicated linear model with coefficients and variable names
 }
 \description{
-Write out the equation of a linear model
+Takes a fitted linear model and returns a human-readable equation string showing
+the relationship between the response variable and predictors. This is useful for
+presenting model results in reports or understanding the mathematical form of the model.
+Coefficients are rounded to 3 significant figures for readability.
 }
 \examples{
 \dontrun{
