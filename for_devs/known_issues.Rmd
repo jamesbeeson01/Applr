@@ -11,3 +11,5 @@ output: html_document
 - `scatter_3d` has not been rigorously tested
 
 - `lm`'s with data accessed by `$` (ie `lm(mtcars$mpg ~ mtcars$disp)`) are currently not allowed. This should be extended to all accessed variables (ie `mtcars['mpg']`) because of how they are handled in the `predict` function. When this is fixed, `decisions.Rmd` should be updated.
+
+- `SliceLayer` in `geom_slice.R` inherits from a Layer *instance* (`my_layer`) rather than the `Layer` *class*. This is not the intended use of ggproto and is the root structural cause of faceting and grouping being incomplete — the hand-rolled `compute_statistic` override must replicate ggplot2's internal plumbing manually, which diverges when ggplot2's logic handles groups/NAs/panels. See `for_devs/ggplot_layer_internals.Rmd` for full detail.
