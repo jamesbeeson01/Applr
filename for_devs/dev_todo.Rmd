@@ -7,8 +7,10 @@ date: "2025-09-20"
 # Priority
 
 - [ ] Fix errors in `known_issues.Rmd`
-- [ ] Add standards to `decisions.Rmd` (like error format)
+- [x] Add standards to `decisions.Rmd` (like error format)
 - [ ] Implement standards on `geom_slice`
+- [ ] Roll out the `slice_*()` condition helpers (`R/conditions.R`) across the package — replace direct `stop()`/`warning()`/`message()` calls so all user-facing conditions follow the format in `decisions.Rmd`. Start with the non-conforming `geom_slice.R` message ("Value for ... not specified").
+- [ ] Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `xaxis`, `color`/`colors`), adding deprecation aliases for any public arguments that change.
 - [ ] Add complex or "real" models to `Comparison.Rmd`
 - [ ] Finish comprehensive error cases in `Comparison.Rmd`
 - [ ] Add edge cases to `Comparison.Rmd`
@@ -29,6 +31,7 @@ date: "2025-09-20"
 - [ ] Also test ggplot(...) + ... + scale_y_log() or something like that
 - [ ] Error check that the data being plotted in ggplot is the same as the data the lm was fit to
 - [ ] Consider if the names `slice_2d` and `geom_slice` convey their function best
+- [ ] Migrate fully to snake_case later (e.g. `xaxis` → `x_axis`, `color`/`colors`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.
 - [ ] Clean up AI made files
 - [ ] Tidy repo in general...
 
@@ -37,7 +40,7 @@ date: "2025-09-20"
 - [ ] `autoplot(lm)` (takes minimal arguments, feasts/ggtime is a good example)
 - [ ] Add an interval to `geom_slice` (like `geom_fit`)
 - [ ] Add an interval to `slice_2d` (like `geom_fit`)
-- [ ] Allow specifying to impute the min or max instead of default mean
+- [ ] Allow specifying impute method — min / max / median (numeric) — instead of the default mean; add `gs_` test cases for each when implemented. (Current impute types — numeric -> mean, factor/character -> mode — are covered by `gs_17`/`gs_18`.)
 - [ ] Allow passing a range of values for a slice, plotting multiple lines in one function (ie x2=c(1,2,3),x3=c(1,4) plots 6 lines)
 - [ ] Add a 'band' function (or add to geom_slice). A good example (if I say so myself) is in `~/testing/student_models/beesonjames_LATE_664773_146922498_HouseSellingPrices-1.html`
 - [ ] New function for auto-labeling geom_slice lines (above is also one example)

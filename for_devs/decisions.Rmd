@@ -9,21 +9,56 @@ The original intent of this package is to make life easier for a student in a li
 
 ## Error Messages
 
-Most error messages should follow this format:
+User-facing conditions use a **two-part format**: a first line stating *what
+happened* (naming the offending value), and — when the user can act on it — an
+indented second line stating *how to fix it* with a concrete, copy-pasteable
+example.
 
-**insert**
+Rules:
 
-Which can be implemented with this code template:
+- **Name the offending value.** Say *which* variable/argument is at fault, not just that something failed.
+- **Give a copy-pasteable hint.** Show real syntax the user can paste (`hp = 146.7`), not an abstract description.
+- **Typography:** backticks `` `x` `` for names (variables, arguments, columns); single quotes `'...'` for syntax examples; double quotes `"..."` for literal values and class names.
+- **Severity:** `slice_abort()` cannot proceed; `slice_warn()` proceeds but the result is likely wrong; `slice_inform()` reports a normal-but-hidden choice (e.g. an imputed value).
 
-```{r}
-# insert
+Use the helpers in `R/conditions.R` instead of bare `stop()` / `warning()` /
+`message()`, so the format lives in one place.
+
+```r
+# Cannot proceed
+slice_abort(
+  what = "`xaxis` variable \"wt\" not found in the model.",
+  hint = "Specify one of the model's predictors, such as 'xaxis = \"disp\"'."
+)
+#> Error: `xaxis` variable "wt" not found in the model.
+#>     Specify one of the model's predictors, such as 'xaxis = "disp"'.
+
+# Hidden-but-normal choice
+slice_inform(
+  what = "Value for `hp` not specified - Used mean: 146.7",
+  hint = "To choose a slice, use 'var_name = value', such as 'hp = 146.7'."
+)
+#> Value for `hp` not specified - Used mean: 146.7
+#>     To choose a slice, use 'var_name = value', such as 'hp = 146.7'.
 ```
 
 ## Naming conventions
 
-Variable names and such should follow this format:
+Follow the [tidyverse style guide](https://style.tidyverse.org/) (snake_case,
+`<-` for assignment, verbs for functions, nouns for objects). The
+**package-specific deltas** are:
 
-**insert**
+| Kind | Convention | Example |
+|---|---|---|
+| ggproto objects | `PascalCase`, `Stat`/`Geom` prefix | `StatSlice`, `GeomSlice` |
+| Layer constructors | `geom_*` / `stat_*` | `geom_slice` |
+| S3 methods | `generic.class` | `autoplot.lm` |
+| Role prefixes | `get_` (compute/accessor), `add_` (add to existing plot), `lm_` (lm helper) | `get_default_value`, `add_slice_2d`, `lm_equation` |
+| Dimensionality | `_2d` / `_3d` suffix | `slice_2d`, `scatter_3d` |
+
+Defer to base R / ggplot2 spelling when extending them (`inherit.aes`,
+`linewidth`, `newdata`). Axes use `xaxis`/`yaxis` for public arguments and
+`x` / `y` for internal/ggproto data columns.
 
 
 ## X Range
@@ -98,3 +133,14 @@ In intense troubles getting `geom_slice` to work, `geom_add_slice_2d` was added 
 ## add_slice_2d vs drawit
 
 These two functions intend to create the same result by different means. `drawit` requires every column name to be passed and uses `curve` to plot, while `slice_2d` can impute and uses `predict` with `lines`. `drawit` has multiple issues and should probably be deprecated...
+
+
+## Dependencies
+
+**`DESCRIPTION` now pins `ggplot2 (>= 3.5.0)` and declares `dplyr (>= 1.0.0)`.** (Decided 2026-06-01. Developed and tested against ggplot2 4.0.3, dplyr 1.2.0, R 4.5.3.)
+
+- **`ggplot2 (>= 3.5.0)`** — 3.5.0 is the first release to expose the `layer_class` argument to `layer()`. That argument is the documented, idiomatic fix for the `SliceLayer` structural issue (see `known_issues.Rmd` and `for_devs/ggplot_layer_internals.Rmd`): it lets `SliceLayer` inherit from the `Layer` *class* instead of a layer *instance*. Declaring the floor makes that fix path valid and guards against installs old enough to lack it. If we ever need to support < 3.5.0, a fallback is required (see the internals doc).
+
+- **`dplyr (>= 1.0.0)`** — `geom_slice.R` calls `select()`, `right_join()`, and `rename()` (and `%>%` was already imported in `NAMESPACE`), but `dplyr` was never listed in `DESCRIPTION` and those three verbs were not imported. It worked only because `dplyr` happened to be attached during `devtools::load_all()`; a built package would fail `R CMD check` ("no visible global function definition for 'select'"). Added `@importFrom dplyr select right_join rename` to the `StatSlice` roxygen block so `NAMESPACE` regenerates correctly. `1.0.0` (2020) is a safe floor — all three verbs and the tidyselect negation (`!x`) long predate it.
+
+Note: `NAMESPACE` was edited surgically to add the three `importFrom(dplyr, ...)` lines rather than via a full `devtools::document()` run, because the installed roxygen2 (7.3.3) differs from the pinned `RoxygenNote` (7.3.2) and an untracked `R/conditions.R` exists — a full regen would have produced unrelated churn. The next intentional `document()` run will reproduce these same lines from the roxygen tag.

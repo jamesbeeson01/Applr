@@ -22,6 +22,7 @@
 #'
 #' @import ggplot2
 #' @import rlang
+#' @importFrom dplyr select right_join rename
 #'
 #' @export
 StatSlice <- ggproto(
