@@ -8,8 +8,6 @@
 #         slope 0.5 and intercept 1, passing exactly through every point.
 #         A curved (exponential) line means it wrongly back-transformed.
 #         No errors.
-#         KNOWN ISSUE: currently warns "Computation failed in stat_slice():
-#         Can't convert a call to a string" and draws no slice line.
 
 source("testing/_setup.R")
 set.seed(123)

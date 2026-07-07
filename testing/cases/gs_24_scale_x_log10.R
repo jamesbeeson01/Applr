@@ -6,9 +6,6 @@
 #         must pass exactly through every point: on the log10 axis the line
 #         appears as a steepening upward curve (exponential-looking), NOT a
 #         straight line. No errors.
-#         KNOWN ISSUE: the stat receives log10-transformed x positions and
-#         feeds them to predict() as raw data, so the line is drawn nearly
-#         flat along the bottom instead of through the points.
 
 source("testing/_setup.R")
 set.seed(123)

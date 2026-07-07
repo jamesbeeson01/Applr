@@ -6,9 +6,6 @@
 #         pass exactly through every point: on the log10 axis the line appears
 #         as a rising curve that flattens to the right (log-looking), NOT a
 #         straight line. No errors.
-#         KNOWN ISSUE: raw-scale predictions are placed on the already
-#         log10-transformed panel, so the line shoots up to ~1e31 far above
-#         the points.
 
 source("testing/_setup.R")
 set.seed(123)

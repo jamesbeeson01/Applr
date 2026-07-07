@@ -5,8 +5,6 @@
 #         noise-free (y = 3*log(x) + 2 exactly, R^2 = 1), so the slice must be
 #         ONE straight line of slope 3 and intercept 2, passing exactly
 #         through every point. No errors.
-#         KNOWN ISSUE: currently warns "Computation failed in stat_slice():
-#         Can't convert a call to a string" and draws no slice line.
 
 source("testing/_setup.R")
 set.seed(123)
