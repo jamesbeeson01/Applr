@@ -119,17 +119,6 @@ I tried to allow them. Those are hours wasted.
 This is the simplest way we know to get y values based on an `lm`, and it works well enough. It is a semi-arbitrary decision.
 
 
-## geom_slice vs geom_add_slice_2d vs geom_fit
-
-**These should be combined into one function.**
-
-In intense troubles getting `geom_slice` to work, `geom_add_slice_2d` was added to avoid low level ggplot and literally use the working logic from `add_slice_2d` (hence the name). It has serious limitations, but works in most contexts. In particular, it does not allow grouping or faceting. Each call is a new line. 
-
-`geom_fit` is another sub-standard function that does not follow package naming convensions, but is incredibly simple to follow and allows prediction and confidence intervals. It exists as an example with good use in simple contexts. Ideally, its extra functionality should be added to `geom_fit`.
-
-`geom_fit` is intended to allow high dimensional modeling with grouping and faceting integrated. It is for both exploration and visualization.
-
-
 ## add_slice_2d vs drawit
 
 These two functions intend to create the same result by different means. `drawit` requires every column name to be passed and uses `curve` to plot, while `slice_2d` can impute and uses `predict` with `lines`. `drawit` has multiple issues and should probably be deprecated...
@@ -137,10 +126,7 @@ These two functions intend to create the same result by different means. `drawit
 
 ## Dependencies
 
-**`DESCRIPTION` now pins `ggplot2 (>= 3.5.0)` and declares `dplyr (>= 1.0.0)`.** (Decided 2026-06-01. Developed and tested against ggplot2 4.0.3, dplyr 1.2.0, R 4.5.3.)
+**`DESCRIPTION` now pins `ggplot2 (>= 3.5.0)`.** (Decided 2026-06-01. Developed and tested against ggplot2 4.0.3, R 4.5.3. `dplyr` was declared here until 2026-07-07, when its last uses were removed and it was dropped from `Imports`.)
 
 - **`ggplot2 (>= 3.5.0)`** — 3.5.0 is the first release to expose the `layer_class` argument to `layer()`. That argument is the documented, idiomatic fix for the `SliceLayer` structural issue (see `known_issues.Rmd` and `for_devs/ggplot_layer_internals.Rmd`): it lets `SliceLayer` inherit from the `Layer` *class* instead of a layer *instance*. Declaring the floor makes that fix path valid and guards against installs old enough to lack it. If we ever need to support < 3.5.0, a fallback is required (see the internals doc).
 
-- **`dplyr (>= 1.0.0)`** — `geom_slice.R` calls `select()`, `right_join()`, and `rename()`, but `dplyr` was never listed in `DESCRIPTION` and those three verbs were not imported. It worked only because `dplyr` happened to be attached during `devtools::load_all()`; a built package would fail `R CMD check` ("no visible global function definition for 'select'"). Added `@importFrom dplyr select right_join rename` to the `StatSlice` roxygen block so `NAMESPACE` regenerates correctly. `1.0.0` (2020) is a safe floor — all three verbs and the tidyselect negation (`!x`) long predate it.
-
-Note: `NAMESPACE` was edited surgically to add the three `importFrom(dplyr, ...)` lines rather than via a full `devtools::document()` run, because the installed roxygen2 (7.3.3) differs from the pinned `RoxygenNote` (7.3.2) and an untracked `R/conditions.R` exists — a full regen would have produced unrelated churn. The next intentional `document()` run will reproduce these same lines from the roxygen tag.

@@ -97,19 +97,17 @@ data-generation lines of a `gs_` case without regenerating its reference).
 | Prefix | Function under test | Type |
 |---|---|---|
 | `gs_` | `geom_slice` (granular; each has a reference image) | visual |
-| `gf_` | `geom_fit` | visual |
 | `s2_` | `slice_2d` | visual |
 | `as_` | `add_slice_2d` | visual |
 | `dw_` | `drawit` | visual |
-| `ga_` | `geom_add_slice_2d` | visual |
 | `ap_` | `autoplot.lm` (the geom_slice × autoplot interface, not full geom_slice coverage) | visual |
 | `le_` | `lm_equation` | console |
 
 **Error cases live under their function's prefix** with `err` in the slug
-(e.g. `s2_16_err_nonexistent_xaxis`, `gf_24_err_non_lm`), not in a shared
+(e.g. `s2_16_err_nonexistent_xaxis`, `gs_27_err_non_lm`), not in a shared
 "error" family. That keeps everything about one function — happy paths and
-misuse handling — under one prefix, so `run.R gf` shows an agent working on
-`geom_fit` only geom_fit behavior, with no other function's errors as noise.
+misuse handling — under one prefix, so `run.R s2` shows an agent working on
+`slice_2d` only slice_2d behavior, with no other function's errors as noise.
 Error cases are numbered after the happy-path cases of their function.
 
 ## Adding / removing a case

@@ -51,7 +51,9 @@ A ggplot2 layer that draws the slice.
 }
 \description{
 \code{geom_slice()} draws the prediction line of a fitted \code{\link[=lm]{lm()}} on a ggplot —
-a 2D \emph{slice} of a possibly high-dimensional model. The predictor mapped to
+a 2D \emph{slice} of a possibly high-dimensional model. It looks like
+\code{\link[ggplot2:geom_smooth]{ggplot2::geom_smooth()}}, but where \code{geom_smooth()} fits its own model to
+the plotted data, \code{geom_slice()} draws \emph{your} model. The predictor mapped to
 the plot's x-axis varies along the line; every other predictor is fixed,
 and \code{geom_slice()} reports how, so it is always clear which slice of the
 model you are looking at:

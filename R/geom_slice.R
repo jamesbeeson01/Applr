@@ -638,7 +638,9 @@ ggplot_add.SliceLayer <- function(object, plot, ...) {
 #' Display a 2D slice of a linear model
 #'
 #' `geom_slice()` draws the prediction line of a fitted [lm()] on a ggplot —
-#' a 2D *slice* of a possibly high-dimensional model. The predictor mapped to
+#' a 2D *slice* of a possibly high-dimensional model. It looks like
+#' [ggplot2::geom_smooth()], but where `geom_smooth()` fits its own model to
+#' the plotted data, `geom_slice()` draws *your* model. The predictor mapped to
 #' the plot's x-axis varies along the line; every other predictor is fixed,
 #' and `geom_slice()` reports how, so it is always clear which slice of the
 #' model you are looking at:

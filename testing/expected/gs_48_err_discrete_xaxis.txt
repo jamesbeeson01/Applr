@@ -1,0 +1,6 @@
+Message: Value for `hp` not specified - Used mean: 146.7
+    To choose a slice, use 'predict_vars = list(hp = 146.7)'. 
+Warning: Computation failed in `stat_slice()`.
+Caused by error:
+! geom_slice() needs a continuous x-axis, but the x scale is discrete.
+    Map a numeric variable or expression to this axis. 

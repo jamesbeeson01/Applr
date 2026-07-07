@@ -15,7 +15,7 @@ date: "2025-09-20"
   - [x] Follows ggplot conventions - proper `Layer` subclass via `layer(layer_class = ...)`
   - [x] Solid error handling
     - [x] Error messages consistent with style guide in decisions.Rmd
-    - [ ] Roll out the `slice_*()` condition helpers (`R/conditions.R`) across the package — DONE for `geom_slice.R`; still to do for `slice_2d.R`, `geom_fit.R`, `drawit.R`, etc. (their hand-rolled messages mostly follow the format but bypass the helpers).
+    - [ ] Roll out the `slice_*()` condition helpers (`R/conditions.R`) across the package — DONE for `geom_slice.R`; still to do for `slice_2d.R`, `drawit.R`, etc. (their hand-rolled messages mostly follow the format but bypass the helpers).
   - [ ] Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `xaxis`, `color`/`colors`), adding deprecation aliases for any public arguments that change. (`geom_slice`'s public args — `predict_vars`, `back_transform`, `n` — now conform; `slice_2d`/`drawit` still use `xaxis`, which `decisions.Rmd` currently permits.)
 - [x] Get geom_slice working under the most common conditions
   - [x] Any y transformation (incl. inline `aes(x, log(y))` and `scale_y_log10()` — gs_09–11, gs_25, gs_26)
@@ -26,9 +26,10 @@ date: "2025-09-20"
   - [x] A third invisible variable (y ~ x + x2) — imputed with a message (gs_02, gs_18)
 - [ ] Add ground truth reference for gs_39
 - [ ] Additional tests
-  - [ ] gf_12 for gs
-  - [ ] gf_21 for gs
-  - [ ] gf_23 for gs (but with grouping and natural colors)
+  - [x] explicit / string / disabled `back_transform`, transformed-axis, and exp/square y-transforms — gs_40–gs_45 (2026-07-07)
+  - [x] both intervals on one plot — gs_46 (2026-07-07)
+  - [x] real-data interaction with grouping and natural colors — gs_47 (2026-07-07)
+  - [x] error on a discrete x-axis — gs_48 (2026-07-07)
   - [ ] back transform complex function
   - [ ] x axis transform that is a curved line with gaps between points (shows an potential issue with current implementation)
 
@@ -36,7 +37,7 @@ date: "2025-09-20"
 - [ ] Test `scatter_3d`
 - [ ] Fix remaining errors in `known_issues.Rmd`
 - [ ] Update code examples in README (particularly geom_slice)
-- [ ] deprecate geom_fit 
+- [x] deprecate geom_fit — removed 2026-07-07 (courtesy error stub in `R/deprecated.R`); `geom_add_slice_2d` deleted outright
 - [ ] deprecate drawit
 - [ ] investigate usefulness of back_transform = "log"
 
@@ -56,8 +57,8 @@ date: "2025-09-20"
 ## New Features
 
 - [x] `autoplot(lm)` (takes minimal arguments, feasts/ggtime is a good example) — DONE 2026-07-07 (`autoplot.lm(object, ..., xaxis =)`: scatter + geom_slice + theme_lc from the model's own data, first numeric predictor on x, `...` forwarded to geom_slice, `autoplot` generic re-exported; cases ap_01–ap_11)
-- [x] Add confidence and prediction interval to `geom_slice` (similar to `geom_fit`) — DONE 2026-07-07 (`interval = "confidence"/"prediction"`, GeomSlice now inherits GeomSmooth; cases gs_33/gs_34)
-- [ ] Add an interval to `slice_2d` (like `geom_fit`)
+- [x] Add confidence and prediction interval to `geom_slice` — DONE 2026-07-07 (`interval = "confidence"/"prediction"`, GeomSlice now inherits GeomSmooth; cases gs_33/gs_34)
+- [ ] Add an interval to `slice_2d` (like `geom_slice`)
 - [x] Allow passing a range of values for a slice, plotting multiple lines in one function (ie x2=c(1,2,3),x3=c(1,4) plots 6 lines) — DONE 2026-07-07 (multi-value `predict_vars`, values crossed with `expand.grid`; cases gs_35/gs_36). All lines currently use the default color; per-value styling/labeling still undesigned.
 - [ ] Consider a `full_range` boolean argument to `geom_slice` which plots lines to the end of the plot, not the end of the group
 - [ ] geom_slice have both the interval band and the line change with color, have fill be optional

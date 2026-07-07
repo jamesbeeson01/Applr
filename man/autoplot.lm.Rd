@@ -26,7 +26,7 @@ through it.
 \description{
 \code{autoplot()} turns a fitted \code{\link[=lm]{lm()}} into a complete ggplot in one call: the
 data the model was fitted to as a scatter, a \code{\link[=geom_slice]{geom_slice()}} prediction line
-through it, and \code{\link[=theme_lc]{theme_lc()}} styling. The result is a regular ggplot, so it
+through it. The result is a regular ggplot, so it
 can be extended with \code{+} as usual (labels, scales, more layers).
 }
 \details{
