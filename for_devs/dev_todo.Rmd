@@ -37,6 +37,7 @@ date: "2025-09-20"
 - [ ] Add error check to `geom_slice` and `slice_2d` checking if the data being plotted in the ggplot is the same as the data the lm was fit to
 - [ ] Consider if the names `slice_2d` and `geom_slice` convey their function best
 - [ ] Migrate fully to snake_case (e.g. `xaxis` → `x_axis`, `color`/`colors`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.
+- [ ] Remove %>% in favor of |>
 - [ ] Tidy repo in general...
 
 ## New Features
