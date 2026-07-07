@@ -1,4 +1,2 @@
-Error: Problem while computing aesthetics.
-ℹ Error occurred in the 1st layer.
-Caused by error:
-! object 'height_cm' not found 
+Error: The model was fitted without a `data` argument, so autoplot() cannot recover its data.
+    Refit with a data argument, such as 'lm(y ~ x, data = your_data)'. 

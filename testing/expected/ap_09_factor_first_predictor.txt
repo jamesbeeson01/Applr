@@ -1,0 +1,4 @@
+Message: The first predictor `Species` is not numeric - used `Petal.Length` for the x-axis.
+    To choose the x-axis, use 'xaxis = "Petal.Length"'. 
+Message: Value for `Species` not specified - Used most common: "setosa"
+    To choose a slice, use 'predict_vars = list(Species = "setosa")'. 

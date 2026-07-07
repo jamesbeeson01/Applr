@@ -1,6 +1,0 @@
-Message: Value for `Petal.Length` not specified - Used mean: 3.758
-    To choose a slice, use 'predict_vars = list(Petal.Length = 3.758)'. 
-Warning: Computation failed in `stat_slice()`.
-Caused by error:
-! geom_slice() needs a continuous x-axis, but the x scale is discrete.
-    Map a numeric variable or expression to this axis. 

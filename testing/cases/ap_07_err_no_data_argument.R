@@ -3,15 +3,15 @@
 # FUNC: autoplot
 # EXPECT: A friendly error telling the user to refit with a data argument,
 #         such as 'lm(y ~ x, data = your_data)'. The model has no $call$data,
-#         so autoplot builds ggplot(NULL) and the aes() lookups can find the
-#         vectors only by luck of scoping. Currently surfaces as an internal
-#         "object not found" / aesthetics error at print time.
+#         and recovering the vectors from the fitting scope only works by
+#         luck (here they are gone by plot time), so autoplot refuses up
+#         front instead of building a broken plot.
 
 source("testing/_setup.R")
 set.seed(123)
 
 # local() so the vectors are gone by plot time, as they would be for a model
-# fitted inside any function — autoplot's aes() cannot see them.
+# fitted inside any function — autoplot must refuse rather than guess.
 model <- local({
   height_cm <- runif(30, 150, 190)
   weight_kg <- 0.9 * height_cm + rnorm(30, 0, 5)
