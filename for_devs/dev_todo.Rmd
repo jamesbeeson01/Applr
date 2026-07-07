@@ -8,7 +8,6 @@ date: "2025-09-20"
 
 
 - [x] Add standards to `decisions.Rmd` (like error format)
-- [ ] Simplify context in CLAUDE.md - move to either skill or testing/README.md
 - [x] Make sure existing ground truth tests are accurate
 - [ ] Check for comprehensiveness of testing suite and edge cases
 
@@ -25,6 +24,7 @@ date: "2025-09-20"
   - [x] Grouping (gs_07, gs_17)
   - [x] Faceting (gs_08, gs_14, gs_17)
   - [x] A third invisible variable (y ~ x + x2) — imputed with a message (gs_02, gs_18)
+- [ ] Add ground truth reference for gs_39
 
 - [x] Separate multi-plot test files
 - [ ] Test `scatter_3d`
@@ -33,9 +33,12 @@ date: "2025-09-20"
 
 ## Queue
 
+- [ ] Simplify context in CLAUDE.md - move to either skill or testing/README.md
 - [x] Test use case of ggplot(data, aes(x, log(y))) + geom_slice(lm) — gs_26
 - [x] Also test ggplot(...) + ... + scale_y_log() or something like that — gs_24 / gs_25
-- [ ] Add error check to `geom_slice` and `slice_2d` checking if the data being plotted in the ggplot is the same as the data the lm was fit to — geom_slice side DONE (2026-07-07, `ggplot_add.SliceLayer` + `check_slice_plot_data()`, case gs_37); slice_2d side still needs the check and a case
+- [ ] Add error to check if the data being plotted is the same as the data the lm was fit to
+  - [x] `geom_slice` 
+  - [ ] `slice_2d` (still needs check and case)
 - [ ] Consider if the names `slice_2d` and `geom_slice` convey their function best
 - [ ] Migrate fully to snake_case (e.g. `xaxis` → `x_axis`, `color`/`colors`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.
 - [ ] Remove %>% in favor of |>
