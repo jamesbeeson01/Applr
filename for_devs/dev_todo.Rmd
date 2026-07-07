@@ -35,7 +35,7 @@ date: "2025-09-20"
 
 - [x] Test use case of ggplot(data, aes(x, log(y))) + geom_slice(lm) — gs_26
 - [x] Also test ggplot(...) + ... + scale_y_log() or something like that — gs_24 / gs_25
-- [ ] Add error check to `geom_slice` and `slice_2d` checking if the data being plotted in the ggplot is the same as the data the lm was fit to
+- [ ] Add error check to `geom_slice` and `slice_2d` checking if the data being plotted in the ggplot is the same as the data the lm was fit to — geom_slice side has KNOWN ISSUE case gs_37 (re-snapshot with `--update` once implemented); slice_2d side still needs a case
 - [ ] Consider if the names `slice_2d` and `geom_slice` convey their function best
 - [ ] Migrate fully to snake_case (e.g. `xaxis` → `x_axis`, `color`/`colors`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.
 - [ ] Remove %>% in favor of |>
@@ -44,9 +44,9 @@ date: "2025-09-20"
 ## New Features
 
 - [ ] `autoplot(lm)` (takes minimal arguments, feasts/ggtime is a good example)
-- [ ] Add confidence and prediction interval to `geom_slice` (similar to `geom_fit`)
+- [ ] Add confidence and prediction interval to `geom_slice` (similar to `geom_fit`) — KNOWN ISSUE cases gs_33/gs_34 with reference images
 - [ ] Add an interval to `slice_2d` (like `geom_fit`)
-- [ ] Allow passing a range of values for a slice, plotting multiple lines in one function (ie x2=c(1,2,3),x3=c(1,4) plots 6 lines)
+- [ ] Allow passing a range of values for a slice, plotting multiple lines in one function (ie x2=c(1,2,3),x3=c(1,4) plots 6 lines) — KNOWN ISSUE cases gs_35/gs_36 with reference images
 <!-- Deferred - not well specified/explained
 - [ ] Add a 'band' function (or add to geom_slice). A good example (if I say so myself) is in `~/testing/student_models/beesonjames_LATE_664773_146922498_HouseSellingPrices-1.html`
 - [ ] New function for auto-labeling geom_slice lines (above is also one example)
