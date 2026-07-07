@@ -1,3 +1,0 @@
-Warning: 'newdata' had 500 rows but variables found have 50 rows 
-Message: Error creating inverse: Cannot invert: variable appears on both sides of operator. 
-Error: could not find function "inverse" 

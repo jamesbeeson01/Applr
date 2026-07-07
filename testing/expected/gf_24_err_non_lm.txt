@@ -1,3 +1,0 @@
-Warning: no non-missing arguments to min; returning Inf 
-Warning: no non-missing arguments to max; returning -Inf 
-Error: 'from' must be a finite number 

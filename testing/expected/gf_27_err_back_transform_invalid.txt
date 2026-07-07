@@ -1,2 +1,0 @@
-Warning: The back_transform argument `invalid` is not a valid function or boolean.
-    Inferring transformation from lm. 
