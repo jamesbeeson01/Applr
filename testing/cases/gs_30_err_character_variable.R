@@ -1,4 +1,4 @@
-# CASE: gs_22_err_character_variable
+# CASE: gs_30_err_character_variable
 # TYPE: console
 # FUNC: geom_slice
 # EXPECT: geom_slice SUPPORTS character predictors: it should impute char_var

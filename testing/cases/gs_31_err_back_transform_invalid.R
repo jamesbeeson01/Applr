@@ -1,4 +1,4 @@
-# CASE: gs_23_err_back_transform_invalid
+# CASE: gs_31_err_back_transform_invalid
 # TYPE: console
 # FUNC: geom_slice
 # EXPECT: back_transform must be a boolean or one-argument function. A list

@@ -8,8 +8,6 @@ date: "2025-09-20"
 
 
 - [x] Add standards to `decisions.Rmd` (like error format)
-- [ ] Add a "pretty title" to test cases
-  - [ ] implement in report
 - [ ] Simplify context in CLAUDE.md - move to either skill or testing/README.md
 - [x] Make sure existing ground truth tests are accurate
 - [ ] Check for comprehensiveness of testing suite and edge cases

@@ -1,4 +1,4 @@
-# CASE: gs_19_err_non_lm
+# CASE: gs_27_err_non_lm
 # TYPE: console
 # FUNC: geom_slice
 # EXPECT: A clear, student-readable error rejecting the non-lm object.

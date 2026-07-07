@@ -1,4 +1,4 @@
-# CASE: gs_24_err_back_transform_extra_args
+# CASE: gs_32_err_back_transform_extra_args
 # TYPE: console
 # FUNC: geom_slice
 # EXPECT: A back_transform function of 2+ arguments should produce a clear

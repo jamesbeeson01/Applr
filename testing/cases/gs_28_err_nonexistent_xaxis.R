@@ -1,4 +1,4 @@
-# CASE: gs_20_err_nonexistent_xaxis
+# CASE: gs_28_err_nonexistent_xaxis
 # TYPE: console
 # FUNC: geom_slice
 # EXPECT: A clear error or warning naming the unknown variable. Currently

@@ -1,4 +1,4 @@
-# CASE: gs_21_err_dollar_names
+# CASE: gs_29_err_dollar_names
 # TYPE: console
 # FUNC: geom_slice
 # EXPECT: A model fit as lm(df$y ~ df$x): either work or fail with a clear
