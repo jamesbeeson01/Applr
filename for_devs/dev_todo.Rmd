@@ -6,16 +6,20 @@ date: "2025-09-20"
 
 # Priority
 
-- [ ] Fix errors in `known_issues.Rmd`
-- [x] Add standards to `decisions.Rmd` (like error format)
-- [ ] Implement standards on `geom_slice`
-- [ ] Roll out the `slice_*()` condition helpers (`R/conditions.R`) across the package — replace direct `stop()`/`warning()`/`message()` calls so all user-facing conditions follow the format in `decisions.Rmd`. Start with the non-conforming `geom_slice.R` message ("Value for ... not specified").
-- [ ] Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `xaxis`, `color`/`colors`), adding deprecation aliases for any public arguments that change.
-- [ ] Add complex or "real" models to `Comparison.Rmd`
-- [ ] Finish comprehensive error cases in `Comparison.Rmd`
-- [ ] Add edge cases to `Comparison.Rmd`
-- [ ] Test `scatter_3d`
 
+- [x] Add standards to `decisions.Rmd` (like error format)
+- [ ] Add a "pretty title" to test cases
+  - [ ] implement in report
+- [ ] Simplify context in CLAUDE.md - move to either skill or testing/README.md
+- [x] Make sure existing ground truth tests are accurate
+- [ ] Check for comprehensiveness of testing suite and edge cases
+
+- [ ] Refactor geom_slice for cleanness, consistency, and readability - some notes in `known_issues.Rmd` and `decisions.Rmd`
+  - [ ] Follows ggplot conventions - note in `known_issues.Rmd`
+  - [ ] Solid error handling
+    - [ ] Error messages consistent with style guide in decisions.Rmd
+    - [ ] Roll out the `slice_*()` condition helpers (`R/conditions.R`) across the package — replace direct `stop()`/`warning()`/`message()` calls so all user-facing conditions follow the format in `decisions.Rmd`. Start with the non-conforming `geom_slice.R` message ("Value for ... not specified").
+  - [ ] Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `xaxis`, `color`/`colors`), adding deprecation aliases for any public arguments that change.
 - [ ] Get geom_slice working under the most common conditions
   - [ ] Any y transformation
   - [x] An x axis matching its first variable
@@ -23,6 +27,9 @@ date: "2025-09-20"
   - [ ] Faceting
   - [ ] A third invisible variable (y ~ x + x2)
 
+- [ ] Separate multi-plot test files
+- [ ] Test `scatter_3d`
+- [ ] Fix remaining errors in `known_issues.Rmd`
 - [ ] Update code examples in README (particularly geom_slice)
 
 ## Queue

@@ -4,9 +4,9 @@ mtcars2 <- mtcars
 mtcars2$cyl <- factor(mtcars2$cyl)
 model <- lm(mpg ~ cyl + disp, data = mtcars2)
 
-first_level <- levels(mtcars2$cyl)[1]
+most_common_level <- names(which.max(table(mtcars2$cyl)))
 ref <- ref_slice(model, mtcars2, "disp",
-                 held = list(cyl = factor(first_level, levels = levels(mtcars2$cyl))))
+                 held = list(cyl = factor(most_common_level, levels = levels(mtcars2$cyl))))
 
 p <- ggplot(mtcars2, aes(disp, mpg)) +
   geom_point(color = "steelblue") +

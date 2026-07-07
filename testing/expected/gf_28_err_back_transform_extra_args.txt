@@ -1,0 +1,1 @@
+Error: cannot coerce type 'closure' to vector of type 'character' 

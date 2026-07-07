@@ -1,0 +1,3 @@
+Warning: Computation failed in `stat_slice()`.
+Caused by error in `x$terms %||% attr(x, "terms") %||% stop("no terms component nor attribute")`:
+! no terms component nor attribute 

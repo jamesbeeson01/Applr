@@ -1,0 +1,3 @@
+Message: X-axis not specified - Used first x variable as x-axis
+    To specify, use 'xaxis = "var_name"' such as 'xaxis = "x"' 
+Error: Unsupported variable type for: `char_var` 

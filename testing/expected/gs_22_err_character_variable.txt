@@ -1,0 +1,1 @@
+Message: Value for char_var not specified. Using value  a 

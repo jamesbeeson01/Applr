@@ -1,5 +1,15 @@
-# gs_17_all_features.R
-# EXPECT: The full-feature integration test — every geom_slice capability in one plot.
+# CASE: gs_17_all_features
+# TYPE: visual
+# FUNC: geom_slice
+# SIZE: 10x4
+# EXPECT: 3 panels (F1, F2, F3), each with TWO dashed lines of width 1.2 colored
+#         by g: the G2 line steeper (slope ~3) than the G1 line (slope ~1).
+#         Panel intercepts step up F1 < F2 < F3 (~0, ~10, ~20). Held vars z/w/s
+#         are imputed (3 console messages) and do not appear on the plot.
+#         If every line within a panel has the SAME slope, the grouping variable
+#         g was wrongly imputed instead of taken from the color group.
+#
+# The full-feature integration test — every geom_slice capability in one plot.
 #   Model: y ~ x*g + f + z + w + s   (synthetic, fully balanced so every f x g cell is populated)
 #     - x : numeric x-axis
 #     - g : color grouping (2 levels, INTERACTS with x -> different slopes per group)
@@ -9,19 +19,10 @@
 #     - s : character held var, NOT shown -> imputed at mode   ("s1")
 #   Plot: facet_wrap(~f); color = g; dashed lines (linetype) of linewidth 1.2 (styling).
 #
-#   Expected result: 3 panels (F1, F2, F3). Each panel has TWO dashed lines, width 1.2,
-#   colored by g: the G2 line is steeper (slope ~3) than the G1 line (slope ~1). Panel
-#   intercepts step up F1 < F2 < F3 (~0, ~10, ~20). z/w/s are imputed (3 console
-#   messages) and do not appear on the plot.
-#
 #   This is the integration stress test: grouping + faceting together is the combination
 #   the SliceLayer structural issue (see for_devs/known_issues.Rmd) is expected to break.
-#   If every line within a panel has the SAME slope, the grouping variable g was wrongly
-#   imputed instead of taken from the color group. Compare against
-#   testing/reference/gs_17_all_features.png.
 
-devtools::load_all(".")
-suppressPackageStartupMessages(library(ggplot2))
+source("testing/_setup.R")
 set.seed(123)
 
 n <- 240
@@ -45,7 +46,4 @@ p <- ggplot(dat, aes(x, y, color = g)) +
   geom_slice(model, linetype = "dashed", linewidth = 1.2) +
   labs(title = "gs_17: All features — group (g) + facet (f) + imputed z/w/s + styling",
        subtitle = "EXPECT: per facet, two dashed lines by g (slopes ~1 & ~3); z/w/s imputed, not shown")
-
-dir.create("testing/output", showWarnings = FALSE, recursive = TRUE)
-ggsave("testing/output/gs_17_all_features.png", plot = p, width = 10, height = 4)
-message("OK: testing/output/gs_17_all_features.png")
+p

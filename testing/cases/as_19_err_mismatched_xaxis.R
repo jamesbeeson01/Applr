@@ -1,0 +1,19 @@
+# CASE: as_19_err_mismatched_xaxis
+# TYPE: console
+# FUNC: add_slice_2d
+# EXPECT: The slice is computed over the range of "x" while the plot shows
+#         x_pos — the line lands in the wrong region. Ideally a warning;
+#         currently silent (review the plot in the report).
+
+source("testing/_setup.R")
+set.seed(123)
+
+n <- 50
+x <- runif(n, -10, 10)
+x_pos <- runif(n, 0, 10)
+y <- x * x_pos
+model <- lm(y ~ I(x * x_pos))
+
+plot(x_pos, y, main = "Multiplicative data, xaxis = x",
+     xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
+try_show(add_slice_2d(model, xaxis = "x"))

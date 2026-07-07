@@ -1,0 +1,87 @@
+---
+title: "Applr Test Suite"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M')`"
+output:
+  html_document:
+    theme: simplex
+    code_folding: hide
+    toc: true
+    toc_float: true
+---
+
+This report is generated from the case files in `testing/cases/` — the same
+files `testing/run.R` executes. It auto-discovers every case, so adding or
+removing a `.R` file there is all it takes to change the suite.
+Knit from the package root with:
+
+```
+Rscript -e "rmarkdown::render('testing/report.Rmd')"
+```
+
+To keep a progress snapshot, rename the resulting `report.html` (e.g.
+`report 2026-07-06.html`) and move it into `testing/archive/`.
+
+```{r setup, include=FALSE}
+# rmarkdown knits with the working directory set to testing/; the case files
+# use paths relative to the package root, so point knitr there.
+if (!file.exists("DESCRIPTION") && file.exists("../DESCRIPTION")) {
+  knitr::opts_knit$set(root.dir = normalizePath(".."))
+}
+knitr::opts_chunk$set(error = TRUE, message = TRUE, warning = TRUE)
+```
+
+```{r load, include=FALSE}
+source("testing/_setup.R")
+```
+
+# Overview {.tabset .tabset-pills}
+
+## Hide
+
+## Show
+
+```{r overview}
+case_files <- sort(list.files("testing/cases", pattern = "\\.R$", full.names = TRUE))
+meta <- lapply(case_files, parse_case_header)
+overview <- data.frame(
+  Case     = vapply(meta, `[[`, "", "id"),
+  Type     = vapply(meta, `[[`, "", "type"),
+  Function = vapply(meta, `[[`, "", "func"),
+  Expect   = vapply(meta, function(m) {
+    e <- ifelse(is.na(m$expect), "", m$expect)
+    if (nchar(e) > 110) paste0(substr(e, 1, 110), "...") else e
+  }, "")
+)
+knitr::kable(overview, row.names = FALSE)
+```
+
+# Cases
+
+```{r generate-cases, results='asis'}
+preferred <- c("geom_slice", "geom_fit", "slice_2d", "add_slice_2d",
+               "drawit", "geom_add_slice_2d", "lm_equation", "error handling")
+funcs <- vapply(meta, `[[`, "", "func")
+func_order <- c(intersect(preferred, funcs), setdiff(unique(funcs), preferred))
+
+blocks <- character()
+for (fn in func_order) {
+  blocks <- c(blocks, sprintf("## %s {.tabset .tabset-pills}\n", fn))
+  for (i in which(funcs == fn)) {
+    m <- meta[[i]]
+    expect <- ifelse(is.na(m$expect), "(no EXPECT header)", m$expect)
+    ref_png <- file.path("testing/reference", paste0(m$id, ".png"))
+    ref_tag <- if (file.exists(ref_png)) {
+      # src is resolved by pandoc relative to this Rmd (testing/), width in px
+      # matches the rendered chunk figure so the two compare at the same scale
+      sprintf('**Reference (ground truth):**\n\n<img src="reference/%s.png" width="%d">\n',
+              m$id, round(m$width * 72))
+    } else ""
+    blocks <- c(blocks, sprintf(
+      paste0('### %s\n\n> **Expect:** %s\n\n',
+             '```{r %s, code = xfun::read_utf8("testing/cases/%s.R"), ',
+             'fig.width = %s, fig.height = %s}\n```\n\n%s\n'),
+      m$id, expect, m$id, m$id, m$width, m$height, ref_tag))
+  }
+}
+cat(knitr::knit_child(text = paste(blocks, collapse = "\n"), quiet = TRUE), sep = "\n")
+```

@@ -1,0 +1,2 @@
+Warning: Y-axis variable 'y' does not match model response variable '1/y'. The model predictions may not display correctly. 
+Message: Value for 1/y not specified. Using value  0.401819453202188 

@@ -1,12 +1,13 @@
-# gs_04_additive_two_slices.R
+# CASE: gs_04_additive_two_slices
+# TYPE: visual
+# FUNC: geom_slice
 # EXPECT: Two parallel straight lines on the same scatter plot (y ~ x + x_pos).
 #         Blue line = x_pos held at 1 (lower line).
 #         Red line  = x_pos held at 9 (upper line).
 #         The two lines should be clearly separated (intercept difference ~8),
 #         same slope, no crossing.
 
-devtools::load_all(".")
-suppressPackageStartupMessages(library(ggplot2))
+source("testing/_setup.R")
 set.seed(123)
 
 n <- 50
@@ -21,7 +22,4 @@ p <- ggplot(data.frame(x, y), aes(x, y)) +
   geom_slice(model, predict_vars = list(x_pos = 9), color = "firebrick", linewidth = 1) +
   labs(title = "gs_04: Two slices at x_pos=1 (blue) and x_pos=9 (red)",
        subtitle = "EXPECT: Two parallel lines, red higher than blue, same slope")
-
-dir.create("testing/output", showWarnings = FALSE, recursive = TRUE)
-ggsave("testing/output/gs_04_additive_two_slices.png", plot = p, width = 7, height = 5)
-message("OK: testing/output/gs_04_additive_two_slices.png")
+p

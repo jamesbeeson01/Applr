@@ -1,20 +1,20 @@
-# gs_18_impute_types.R
-# EXPECT: Impute-type coverage, isolated from grouping/faceting. Model:
+# CASE: gs_18_impute_types
+# TYPE: visual
+# FUNC: geom_slice
+# EXPECT: ONE straight line, plus THREE console messages naming each imputed value:
+#         z_num (numeric) -> mean (~50), w_fac (factor) -> mode ("a"),
+#         s_chr (character) -> mode ("p").
+#
+# Impute-type coverage, isolated from grouping/faceting. Model:
 #   y ~ x + z_num + w_fac + s_chr   — a single additive slice.
-#   x is the axis; the other three predictors are NOT shown and must be imputed:
-#     z_num (numeric)   -> mean  (~50)
-#     w_fac (factor)    -> mode  ("a")
-#     s_chr (character) -> mode  ("p")
-#   Result: ONE straight line, plus THREE console messages naming each imputed value.
+#   x is the axis; the other three predictors are NOT shown and must be imputed.
 #
 #   COVERAGE NOTE: geom_slice currently implements only mean (numeric) and mode
 #   (factor/character). min / max / median imputation are NOT implemented (see the
 #   impute item in for_devs/dev_todo.Rmd) and therefore cannot be tested yet — when
 #   that feature lands, add gs_ cases exercising each new impute method.
-#   Compare against testing/reference/gs_18_impute_types.png.
 
-devtools::load_all(".")
-suppressPackageStartupMessages(library(ggplot2))
+source("testing/_setup.R")
 set.seed(123)
 
 n <- 120
@@ -32,7 +32,4 @@ p <- ggplot(dat, aes(x, y)) +
   geom_slice(model) +
   labs(title = "gs_18: Impute types — numeric (mean), factor (mode), character (mode)",
        subtitle = "EXPECT: one line; 3 console messages for imputed z_num / w_fac / s_chr")
-
-dir.create("testing/output", showWarnings = FALSE, recursive = TRUE)
-ggsave("testing/output/gs_18_impute_types.png", plot = p, width = 7, height = 5)
-message("OK: testing/output/gs_18_impute_types.png")
+p
