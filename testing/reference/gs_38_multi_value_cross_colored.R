@@ -1,6 +1,5 @@
-# gs_36 REFERENCE — six parallel slices, one per (x2, x3) combination:
-# x2 in {1, 2, 3} crossed with x3 in {1, 4}.
-# Ground truth for crossed multi-value predict_vars (one line per combination).
+# gs_38 REFERENCE — six parallel slices, one per (x2, x3) combination:
+# x2 in {1, 2, 3} (color) crossed with x3 in {1, 4} (linetype).
 source("testing/reference/_ref_helpers.R")
 set.seed(123)
 n <- 60
@@ -17,14 +16,14 @@ lines <- do.call(rbind, lapply(seq_len(nrow(combos)), function(i) {
 }))
 
 p <- ggplot(dat, aes(x, y)) +
-  geom_point() +
+  geom_point(color = "gray60") +
   geom_line(data = lines,
-            aes(x, .pred, group = interaction(x2, x3)),
-            color = "skyblue",
+            aes(x, .pred, color = factor(x2), linetype = factor(x3),
+                group = interaction(x2, x3)),
             linewidth = 1) +
-  labs(title = "gs_36 REFERENCE — six slices: x2 in {1,2,3} x x3 in {1,4}",
+  labs(title = "gs_38 REFERENCE — six slices: x2 in {1,2,3} (color) x x3 in {1,4} (linetype)",
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)",
        color = "x2", linetype = "x3")
 
-ggsave("testing/reference/gs_36_multi_value_crossed.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_36_multi_value_crossed.png")
+ggsave("testing/reference/gs_38_multi_value_cross_colored.png", plot = p, width = 7, height = 5)
+message("OK: testing/reference/gs_38_multi_value_cross_colored.png")

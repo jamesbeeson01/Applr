@@ -2,9 +2,7 @@
 # TYPE: visual
 # FUNC: geom_slice
 # EXPECT: Three parallel lines of slope ~1, one per x_pos value (1, 5, 9),
-#         evenly offset in y. The reference colors them blue / green / red
-#         only to tell them apart — geom_slice draws all three in its default
-#         color; only line positions must match.
+#         evenly offset in y. geom_slice draws all three in its default color.
 
 source("testing/_setup.R")
 set.seed(123)
