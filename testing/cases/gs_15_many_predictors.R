@@ -3,7 +3,8 @@
 # FUNC: geom_slice
 # EXPECT: mtcars scatter (disp vs mpg). Model has 4 predictors: disp + hp + wt + drat.
 #         predict_vars holds hp, wt, and drat at specific values.
-#         One downward-sloping line representing the slice.
+#         One nearly-flat (slightly rising) line: with hp/wt/drat held, disp's
+#         partial coefficient is slightly positive (wt absorbs the downward trend).
 #         Tests that geom_slice can handle many held variables simultaneously.
 #         No errors.
 

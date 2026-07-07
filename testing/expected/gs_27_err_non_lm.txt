@@ -1,3 +1,2 @@
-Warning: Computation failed in `stat_slice()`.
-Caused by error in `x$terms %||% attr(x, "terms") %||% stop("no terms component nor attribute")`:
-! no terms component nor attribute 
+Error: `model` must be a model fitted by `lm()`; received a "data.frame".
+    Fit the model first, such as 'model <- lm(y ~ x, data = your_data)'. 

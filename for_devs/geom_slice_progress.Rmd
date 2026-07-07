@@ -1,0 +1,95 @@
+---
+title: "geom_slice overhaul — progress report"
+output: html_document
+date: "2026-07-07"
+---
+
+Status report for the geom_slice overhaul requested in `dev_todo.Rmd`
+("as robust, clean, and ggplot-native as geom_smooth, but far more transparent").
+Updated as work progresses; latest entry first.
+
+# 2026-07-07 — Full rewrite landed
+
+`R/geom_slice.R` was rewritten from scratch (the old file's logic was not
+salvageable in place; the SliceLayer instance-inheritance hack made every fix
+fight ggplot2's plumbing). **All 32 `gs_` cases pass** — 26 visual cases were
+checked one-by-one against their `testing/reference/` ground-truth images, and
+the 6 console cases were re-snapshotted after review. A full 153-case run of
+the whole suite shows no regressions (the 7 remaining FAILs are pre-existing
+`KNOWN ISSUE` cases in `drawit`/`geom_fit`/`slice_2d`, which fail by design).
+
+## Architecture (what replaced what)
+
+| Old | New |
+|---|---|
+| `SliceLayer` built *inside* `geom_slice()`, inheriting from a layer *instance*, with a hand-copied `compute_statistic` | One package-level `SliceLayer <- ggproto("SliceLayer", ggplot2:::Layer, ...)` passed via `layer(layer_class = )` (ggplot2 ≥ 3.5.0, already pinned in DESCRIPTION). Its only job: hand `computed_mapping` to the stat, then call the parent method. All group/panel/NA plumbing is inherited, which is what fixed grouping + faceting. |
+| Variable names from `names(model$model)` (breaks on `I(x^2)`, `log(y)`) | Raw variables from the formula via `get_all_vars()` (`slice_model_frame()`), so transformed terms resolve to real columns for `predict()`. |
+| `detect_response_transform` (string-ish, limited) | `get_inverse_function()` (already in the package, handles composed/binary transforms), wrapped by `resolve_y_fn()`. |
+| Bare `stop()/warning()/message()`, inconsistent wording | `slice_abort()/slice_warn()/slice_inform()` everywhere, following the two-part what/hint format in `decisions.Rmd`. |
+| Per-group imputation messages (would repeat per panel × group) | Slice plan resolved once per layer in `StatSlice$compute_layer` (`build_slice_spec()`); each imputation messages exactly once. |
+| `dplyr::select/right_join/rename` dependency | Base R + rlang only (NAMESPACE trimmed; `%>%` kept for `geom_fit`). |
+
+## How a slice is decided (the "transparency" contract)
+
+For each model predictor, in priority order:
+
+1. **`predict_vars`** value (validated at call time; wins over everything),
+2. **group aesthetic** — an aes like `color = g` mapped to a single model
+   predictor pins it to each group's own value (one line per group),
+3. **facet variable** — pinned to each panel's value,
+4. **imputed** — mean (numeric) / most common (factor, character), announced
+   with a `slice_inform()` naming the value and a copy-pasteable
+   `predict_vars = list(...)` hint.
+
+The y side: `resolve_y_fn()` compares the model's response expression with the
+plot's y-aes expression. Identical → predictions used as-is (`aes(x, log(y))`
+with `lm(log(y) ~ x)` stays straight, gs_26). Same base variable, different
+expression → invert the response transform (and apply the y-expression), with
+an informative message. Different variable → `slice_warn()`. `back_transform`
+overrides: `FALSE` (off), a 1-arg function, or a name ("log", "sqrt", ...).
+
+Positional scales: the stat inverse-transforms panel x back to data units
+before `predict()`, and forward-transforms predicted y — so `scale_x_log10()` /
+`scale_y_log10()` (gs_24/25) now line up with the points.
+
+Composite x-axis expressions (`aes(x * x_pos, y)`, `aes(log(x), y)`,
+gs_19–23): predictions are evaluated at the model's own data rows (filtered to
+the group), placed at each row's axis-expression value, sorted. `n` is ignored
+in that mode.
+
+## Errors now raised at *construction* time (clean, not stat-wrapped)
+
+- non-`lm` model; `$` in variable names; unknown/response names in
+  `predict_vars`; non-scalar `predict_vars` values; invalid `back_transform`
+  (wrong type, unknown name, wrong arity); `n < 2`; an explicit `xaxis =`
+  argument (slice_2d habit) gets a pointer to `aes()`.
+
+All six `gs_2x` error-case snapshots were reviewed and updated accordingly.
+
+## Test-suite touches
+
+- `testing/expected/gs_27..32` re-snapshotted (old snapshots captured the
+  broken behavior; `EXPECT:` headers described the desired behavior, which is
+  what the new output matches).
+- gs_16 header/labels said "first level (4)" but the reference *code* (and
+  PNG) hold cyl at the mode ("8") — text fixed in the case and reference
+  script, reference PNG regenerated (same line, corrected title).
+- gs_15 `EXPECT` wrongly promised a "downward-sloping" line; the reference
+  shows the true nearly-flat/slightly-rising partial slope — text fixed.
+
+## Known caveats / follow-ups (also in `known_issues.Rmd`)
+
+- `ggplot2:::Layer` is unexported → `R CMD check` note. Drop the `:::` if
+  ggplot2 exports `Layer`.
+- `group = var` (bare group aes) cannot pin `var` per group (ggplot2 turns
+  group values into opaque ids before the stat) — geom_slice warns and
+  imputes; use `color`/`linetype` instead.
+- Roxygen was rewritten in-file, but `devtools::document()` has NOT been run
+  (roxygen2 version mismatch churn — see the note at the bottom of
+  `decisions.Rmd`). NAMESPACE was surgically trimmed (3 dplyr importFrom lines
+  removed); exports unchanged. Next intentional `document()` run should
+  reproduce it.
+- Not done (queue items, unchanged): impute-method choice (min/max/median),
+  confidence/prediction intervals, multiple-value `predict_vars` fan-out,
+  data-vs-model mismatch check, `slice_*()` helpers rollout to `slice_2d`/
+  `geom_fit`/`drawit`.

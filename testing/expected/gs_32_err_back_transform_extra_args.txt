@@ -1,1 +1,2 @@
-Message: Value for 1/y not specified. Using value  0.401819453202188 
+Error: The `back_transform` function must take exactly one argument.
+    Use a one-argument function, such as 'back_transform = function(x) 1/x'. 

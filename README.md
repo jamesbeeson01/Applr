@@ -96,7 +96,12 @@ drawit(model = model, xaxis = "wt", am = 1, qsec = 17,
 ### 4) `geom_slice()`
 
 A convenient **ggplot2** layer that draws a model slice across your plot (and its facets).\
-Use `predict_vars` to set values for predictors not on the x-axis or in facets.
+Use `predict_vars` to set values for predictors not on the x-axis or in facets; anything
+left unset is imputed (mean, or most common level) and reported in a console message, so
+it is always clear *which* slice of the model you are looking at.\
+Grouping aesthetics (`aes(color = g)`) draw one line per group, facet variables are pinned
+per panel, and transformed responses (`lm(log(y) ~ ...)` on a raw `y` axis) are
+back-transformed automatically.
 
 ``` r
 library(ggplot2)

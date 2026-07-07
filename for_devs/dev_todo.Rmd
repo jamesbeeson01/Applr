@@ -12,18 +12,19 @@ date: "2025-09-20"
 - [x] Make sure existing ground truth tests are accurate
 - [ ] Check for comprehensiveness of testing suite and edge cases
 
-- [ ] Refactor geom_slice for cleanness, consistency, and readability - some notes in `known_issues.Rmd` and `decisions.Rmd`
-  - [ ] Follows ggplot conventions - note in `known_issues.Rmd`
-  - [ ] Solid error handling
-    - [ ] Error messages consistent with style guide in decisions.Rmd
-    - [ ] Roll out the `slice_*()` condition helpers (`R/conditions.R`) across the package — replace direct `stop()`/`warning()`/`message()` calls so all user-facing conditions follow the format in `decisions.Rmd`. Start with the non-conforming `geom_slice.R` message ("Value for ... not specified").
-  - [ ] Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `xaxis`, `color`/`colors`), adding deprecation aliases for any public arguments that change.
-- [ ] Get geom_slice working under the most common conditions
-  - [ ] Any y transformation
+- [x] Refactor geom_slice for cleanness, consistency, and readability - full rewrite 2026-07-07, see `for_devs/geom_slice_progress.Rmd`
+  - [x] Follows ggplot conventions - proper `Layer` subclass via `layer(layer_class = ...)`
+  - [x] Solid error handling
+    - [x] Error messages consistent with style guide in decisions.Rmd
+    - [ ] Roll out the `slice_*()` condition helpers (`R/conditions.R`) across the package — DONE for `geom_slice.R`; still to do for `slice_2d.R`, `geom_fit.R`, `drawit.R`, etc. (their hand-rolled messages mostly follow the format but bypass the helpers).
+  - [ ] Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `xaxis`, `color`/`colors`), adding deprecation aliases for any public arguments that change. (`geom_slice`'s public args — `predict_vars`, `back_transform`, `n` — now conform; `slice_2d`/`drawit` still use `xaxis`, which `decisions.Rmd` currently permits.)
+- [x] Get geom_slice working under the most common conditions
+  - [x] Any y transformation (incl. inline `aes(x, log(y))` and `scale_y_log10()` — gs_09–11, gs_25, gs_26)
   - [x] An x axis matching its first variable
-  - [ ] Grouping
-  - [ ] Faceting
-  - [ ] A third invisible variable (y ~ x + x2)
+  - [x] An x axis expression (`aes(x * x_pos, y)`, `aes(log(x), y)` — gs_19–23) and `scale_x_log10()` (gs_24)
+  - [x] Grouping (gs_07, gs_17)
+  - [x] Faceting (gs_08, gs_14, gs_17)
+  - [x] A third invisible variable (y ~ x + x2) — imputed with a message (gs_02, gs_18)
 
 - [x] Separate multi-plot test files
 - [ ] Test `scatter_3d`
@@ -32,8 +33,8 @@ date: "2025-09-20"
 
 ## Queue
 
-- [ ] Test use case of ggplot(data, aes(x, log(y))) + geom_slice(lm)
-- [ ] Also test ggplot(...) + ... + scale_y_log() or something like that
+- [x] Test use case of ggplot(data, aes(x, log(y))) + geom_slice(lm) — gs_26
+- [x] Also test ggplot(...) + ... + scale_y_log() or something like that — gs_24 / gs_25
 - [ ] Add error check to `geom_slice` and `slice_2d` checking if the data being plotted in the ggplot is the same as the data the lm was fit to
 - [ ] Consider if the names `slice_2d` and `geom_slice` convey their function best
 - [ ] Migrate fully to snake_case (e.g. `xaxis` → `x_axis`, `color`/`colors`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.

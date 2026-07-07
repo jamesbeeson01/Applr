@@ -1,1 +1,2 @@
-Message: Value for char_var not specified. Using value  a 
+Message: Value for `char_var` not specified - Used most common: "a"
+    To choose a slice, use 'predict_vars = list(char_var = "a")'. 

@@ -1,4 +1,4 @@
-# gs_16 REFERENCE — mtcars, mpg ~ factor(cyl) + disp, cyl held at its first level ("4").
+# gs_16 REFERENCE — mtcars, mpg ~ factor(cyl) + disp, cyl held at its most common level ("8").
 source("testing/reference/_ref_helpers.R")
 mtcars2 <- mtcars
 mtcars2$cyl <- factor(mtcars2$cyl)
@@ -11,7 +11,8 @@ ref <- ref_slice(model, mtcars2, "disp",
 p <- ggplot(mtcars2, aes(disp, mpg)) +
   geom_point(color = "steelblue") +
   geom_line(data = ref, aes(disp, .pred), color = "skyblue", linewidth = 1) +
-  labs(title = "gs_16 REFERENCE — mpg ~ factor(cyl) + disp, cyl = 4 (first level)",
+  labs(title = paste0("gs_16 REFERENCE — mpg ~ factor(cyl) + disp, cyl = ",
+                      most_common_level, " (most common)"),
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)")
 
 ggsave("testing/reference/gs_16_factor_predictor.png", plot = p, width = 7, height = 5)

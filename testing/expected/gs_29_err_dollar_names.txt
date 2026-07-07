@@ -1,4 +1,2 @@
-Message: Value for df_with_dollar$y not specified. Using value  0.401819453202188 
-Message: Value for df_with_dollar$x not specified. Using value  0.401819453202188 
-Warning: 'newdata' had 100 rows but variables found have 50 rows 
-Warning: row names were found from a short variable and have been discarded 
+Error: Models with `$` in their variable names (`df_with_dollar$y`) are not supported.
+    Refit using the data argument, such as 'lm(y ~ x, data = your_data)'. 

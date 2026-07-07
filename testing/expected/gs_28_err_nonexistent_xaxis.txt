@@ -1,2 +1,2 @@
-Warning: Ignoring unknown parameters: `xaxis` 
-Message: Value for x_pos not specified. Using value  4.7702701581642 
+Error: `xaxis` is not an argument of `geom_slice()`.
+    Set the x-axis in the plot's aes() instead, such as 'ggplot(your_data, aes(x = disp, y = mpg))'. 
