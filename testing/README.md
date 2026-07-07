@@ -102,6 +102,7 @@ data-generation lines of a `gs_` case without regenerating its reference).
 | `as_` | `add_slice_2d` | visual |
 | `dw_` | `drawit` | visual |
 | `ga_` | `geom_add_slice_2d` | visual |
+| `ap_` | `autoplot.lm` (the geom_slice × autoplot interface, not full geom_slice coverage) | visual |
 | `le_` | `lm_equation` | console |
 
 **Error cases live under their function's prefix** with `err` in the slug

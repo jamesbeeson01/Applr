@@ -1,8 +1,10 @@
 
 # This is a very quick rough sketch to convey a concept
-# Not sure how overriding goes in R (autoplot is an existing function)
-# The feasts/ggtime package does this, where it is overridden
-#   when a certain type is passed, so that might be a good example
+# The method must be registered (S3method(autoplot, lm) in NAMESPACE, via the
+#   roxygen @export below) or autoplot(model) falls through to ggplot2's
+#   autoplot.default — the feasts/ggtime packages register theirs the same way
+#' @export
+#' @noRd
 autoplot.lm <- function(model) {
   v <- all.vars(formula(model))
 

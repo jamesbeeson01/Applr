@@ -1,0 +1,4 @@
+Error: Problem while computing aesthetics.
+ℹ Error occurred in the 1st layer.
+Caused by error:
+! object 'height_cm' not found 
