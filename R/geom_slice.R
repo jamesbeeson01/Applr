@@ -12,7 +12,8 @@
 #                  groups/facets, which are held constant, how predictions map
 #                  onto the y-axis); compute_group() then builds one prediction
 #                  line per group from that plan.
-#   GeomSlice      GeomLine with slice-flavored default aesthetics.
+#   GeomSlice      GeomSmooth with slice-flavored default aesthetics (line,
+#                  plus a ribbon when an interval is requested).
 #
 # The stat needs the aesthetic mapping because the slice is defined in terms of
 # the *model's* variables: the x-axis expression decides which predictor varies,
@@ -58,14 +59,15 @@ slice_model_frame <- function(model) {
   )
 }
 
-# Coerce a value recovered from the plot (facet layout, aesthetic column, or
-# predict_vars) back to the type of the model variable it pins.
+# Coerce one or more values recovered from the plot (facet layout, aesthetic
+# column, or predict_vars) back to the type of the model variable they pin.
 coerce_like <- function(value, template, var) {
   if (is.factor(template)) {
     value <- as.character(value)
-    if (!value %in% levels(template)) {
+    bad <- setdiff(value, levels(template))
+    if (length(bad) > 0) {
       slice_abort(
-        what = paste0("\"", value, "\" is not a level of the model's factor `", var, "`."),
+        what = paste0("\"", bad[1], "\" is not a level of the model's factor `", var, "`."),
         hint = paste0("Use one of: ", paste0('"', levels(template), '"', collapse = ", "), ".")
       )
     }
@@ -73,9 +75,10 @@ coerce_like <- function(value, template, var) {
   }
   if (is.numeric(template)) {
     coerced <- suppressWarnings(as.numeric(as.character(value)))
-    if (is.na(coerced) && !is.na(value)) {
+    bad <- is.na(coerced) & !is.na(value)
+    if (any(bad)) {
       slice_abort(
-        what = paste0("Value \"", value, "\" for the numeric variable `", var, "` is not a number."),
+        what = paste0("Value \"", value[bad][1], "\" for the numeric variable `", var, "` is not a number."),
         hint = paste0("Use a number, such as '", var, " = ", format_value(mean(template, na.rm = TRUE)), "'.")
       )
     }
@@ -234,14 +237,70 @@ check_predict_vars <- function(predict_vars, model) {
                       ".")
       )
     }
-    if (length(predict_vars[[var]]) != 1) {
+    if (!is.atomic(predict_vars[[var]]) || length(predict_vars[[var]]) < 1) {
       slice_abort(
-        what = paste0("`predict_vars` value for `", var, "` must be a single value."),
-        hint = paste0("For example, 'predict_vars = list(", var, " = 1)'.")
+        what = paste0("`predict_vars` value for `", var, "` must be one or more values."),
+        hint = paste0("For example, 'predict_vars = list(", var, " = 1)' or ",
+                      "'predict_vars = list(", var, " = c(1, 2, 3))' for one line per value.")
       )
     }
   }
   invisible(predict_vars)
+}
+
+# Validate `interval` at construction time; returns the normalized string.
+check_slice_interval <- function(interval) {
+  choices <- c("none", "confidence", "prediction")
+  if (!is.character(interval) || length(interval) != 1 || is.na(interval) ||
+      !interval %in% choices) {
+    slice_abort(
+      what = paste0("`interval` must be one of ",
+                    paste0('"', choices, '"', collapse = ", "), "."),
+      hint = "For example, 'interval = \"confidence\"'."
+    )
+  }
+  interval
+}
+
+# Error if the data on the plot is visibly different from the data the model
+# was fitted to (a slice through one model drawn over another dataset is
+# meaningless, but looks plausible). Only *positive* mismatches abort: when the
+# plot data shares none of the model's columns, or the model's data cannot be
+# recovered, later stages give more specific errors.
+check_slice_plot_data <- function(model, plot_data, model_name = "model") {
+  if (!is.data.frame(plot_data) || nrow(plot_data) == 0) return(invisible())
+  model_data <- tryCatch(slice_model_frame(model), error = function(e) NULL)
+  if (is.null(model_data)) return(invisible())
+  shared <- intersect(names(model_data), names(plot_data))
+  if (length(shared) == 0) return(invisible())
+
+  column_equal <- function(a, b) {
+    if (is.numeric(a) && is.numeric(b)) {
+      isTRUE(all.equal(as.vector(a), as.vector(b), check.attributes = FALSE))
+    } else {
+      identical(as.character(a), as.character(b))
+    }
+  }
+  frames_equal <- function(a, b) {
+    all(vapply(shared, function(v) column_equal(a[[v]], b[[v]]), logical(1)))
+  }
+  sort_rows <- function(d) d[do.call(order, unname(as.list(d))), , drop = FALSE]
+
+  model_cols <- as.data.frame(model_data)[shared]
+  plot_cols  <- as.data.frame(plot_data)[shared]
+  same <- nrow(model_cols) == nrow(plot_cols) &&
+    (frames_equal(model_cols, plot_cols) ||
+       # the same rows in a different order are still the same data
+       frames_equal(sort_rows(model_cols), sort_rows(plot_cols)))
+  if (!same) {
+    slice_abort(
+      what = paste0("The data on the plot is not the data `", model_name, "` was fitted to."),
+      hint = paste0("Fit the model to the plotted data, such as ",
+                    "'model <- lm(y ~ x, data = your_data)', ",
+                    "or plot the data the model was fitted to.")
+    )
+  }
+  invisible()
 }
 
 # Build the function that maps raw predict() output onto the plot's y-axis
@@ -397,8 +456,10 @@ build_slice_spec <- function(params, layout) {
   )
 }
 
-# Build one prediction line for one group, following the layer's slice spec.
-compute_slice_group <- function(data, scales, spec, n) {
+# Build the prediction line(s) for one group, following the layer's slice
+# spec. Held variables with several values (predict_vars = list(x2 = c(1, 2)))
+# yield one line per combination of values, each with its own group id.
+compute_slice_group <- function(data, scales, spec, n, interval = "none") {
   if (nrow(data) == 0) return(data)
 
   x_trans <- scale_transformation(scales$x, "x")
@@ -425,35 +486,58 @@ compute_slice_group <- function(data, scales, spec, n) {
     x_var <- as.character(rlang::quo_get_expr(spec$x_quo))
     newdata <- setNames(data.frame(x_trans$inverse(x_panel)), x_var)
     for (var in names(pinned)) newdata[[var]] <- pinned[[var]]
-    for (var in names(spec$held)) newdata[[var]] <- spec$held[[var]]
   } else {
     # The x-axis is an expression of several predictors: predict at the
     # model's own data points (filtered to this group), and place each
-    # prediction at the row's x-axis expression value.
+    # prediction at the row's x-axis expression value. Held variables are
+    # never part of the x expression, so overwriting them per combination
+    # below does not move the points along x.
     rows <- spec$raw_data
     for (var in names(pinned)) {
       keep <- !is.na(rows[[var]]) & rows[[var]] == pinned[[var]]
       if (any(keep)) rows <- rows[keep, , drop = FALSE]
     }
-    for (var in names(spec$held)) rows[[var]] <- spec$held[[var]]
     newdata <- rows
     x_panel <- x_trans$transform(rlang::eval_tidy(spec$x_quo, data = rows))
   }
 
-  predictions <- tryCatch(
-    predict(spec$model, newdata = newdata),
-    error = function(e) {
-      slice_abort(
-        what = paste0("predict() failed for this slice: ", conditionMessage(e)),
-        hint = "Check that `predict_vars` values match the model's variable types."
-      )
-    }
-  )
-  y_panel <- y_trans$transform(spec$y_fn(predictions))
-
   ord <- order(x_panel)
   extra <- data[1, setdiff(names(data), c("x", "y")), drop = FALSE]
-  data.frame(x = x_panel[ord], y = y_panel[ord], extra, row.names = NULL)
+
+  # One slice per combination of held values (usually a single combination).
+  combos <- expand.grid(spec$held, KEEP.OUT.ATTRS = FALSE, stringsAsFactors = FALSE)
+  if (nrow(combos) == 0) combos <- data.frame(row.names = 1)
+
+  lines <- lapply(seq_len(nrow(combos)), function(i) {
+    for (var in names(combos)) newdata[[var]] <- combos[[var]][i]
+    predictions <- tryCatch(
+      predict(spec$model, newdata = newdata, interval = interval),
+      error = function(e) {
+        slice_abort(
+          what = paste0("predict() failed for this slice: ", conditionMessage(e)),
+          hint = "Check that `predict_vars` values match the model's variable types."
+        )
+      }
+    )
+    if (is.matrix(predictions)) {
+      # interval = "confidence"/"prediction": fit, lwr, upr columns. pmin/pmax
+      # keep the ribbon upright when y_fn is decreasing (e.g. inverse).
+      fit <- y_trans$transform(spec$y_fn(predictions[, "fit"]))
+      lo  <- y_trans$transform(spec$y_fn(predictions[, "lwr"]))
+      hi  <- y_trans$transform(spec$y_fn(predictions[, "upr"]))
+      out <- data.frame(x = x_panel[ord], y = fit[ord],
+                        ymin = pmin(lo, hi)[ord], ymax = pmax(lo, hi)[ord],
+                        extra, row.names = NULL)
+    } else {
+      y_panel <- y_trans$transform(spec$y_fn(predictions))
+      out <- data.frame(x = x_panel[ord], y = y_panel[ord], extra, row.names = NULL)
+    }
+    # Separate group ids keep the combos as distinct lines; scaling by the
+    # number of combos keeps ids unique across the layer's original groups.
+    if (nrow(combos) > 1) out$group <- data$group[1] * nrow(combos) + (i - 1)
+    out
+  })
+  do.call(rbind, lines)
 }
 
 
@@ -479,7 +563,7 @@ StatSlice <- ggproto(
   "StatSlice",
   Stat,
   required_aes = c("x", "y"),
-  extra_params = c("na.rm", "mapping"),
+  extra_params = c("na.rm", "mapping", "model_name"),
 
   # Resolve the slice plan once per layer (imputation messages fire once here,
   # not once per group), then let ggplot2's standard machinery split the data
@@ -490,28 +574,32 @@ StatSlice <- ggproto(
   },
 
   compute_group = function(data, scales, model, predict_vars = list(),
-                           back_transform = NULL, n = 100, mapping = NULL,
-                           slice_spec = NULL, na.rm = FALSE) {
-    compute_slice_group(data, scales, slice_spec, n)
+                           back_transform = NULL, n = 100, interval = "none",
+                           mapping = NULL, slice_spec = NULL, na.rm = FALSE) {
+    compute_slice_group(data, scales, slice_spec, n, interval)
   }
 )
 
 #' GeomSlice
 #'
-#' The geom behind [geom_slice()]: [ggplot2::GeomLine] with slice-flavored
-#' default aesthetics.
+#' The geom behind [geom_slice()]: [ggplot2::GeomSmooth] with slice-flavored
+#' default aesthetics. Like `geom_smooth()`, it draws a line plus — when the
+#' stat supplies `ymin`/`ymax` (i.e. `interval = "confidence"` or
+#' `"prediction"`) — a ribbon; `alpha` styles the ribbon, not the line.
 #'
-#' @format An object of class \code{ggproto}, inheriting from \code{GeomLine}.
+#' @format An object of class \code{ggproto}, inheriting from \code{GeomSmooth}.
 #'
 #' @export
 GeomSlice <- ggproto(
   "GeomSlice",
-  GeomLine,
+  GeomSmooth,
   default_aes = aes(
     color = "skyblue",
+    fill = "skyblue",
     linewidth = 1,
     linetype = "solid",
-    alpha = 1
+    weight = 1,
+    alpha = 0.4
   )
 )
 
@@ -530,6 +618,17 @@ SliceLayer <- ggproto(
     ggproto_parent(ggplot2:::Layer, self)$compute_statistic(data, layout)
   }
 )
+
+# Adding the layer to a plot is the first moment both the model and the plot's
+# data are in hand, and — unlike the build steps, which ggplot2 wraps in
+# "Problem while ..." chains — an error here reaches the user directly.
+#' @export
+#' @noRd
+ggplot_add.SliceLayer <- function(object, plot, ...) {
+  check_slice_plot_data(object$stat_params$model, plot$data,
+                        object$stat_params$model_name %||% "model")
+  NextMethod()
+}
 
 
 # ---------------------------------------------------------------------------
@@ -562,7 +661,12 @@ SliceLayer <- ggproto(
 #'   `ggplot()` call.
 #' @param predict_vars A named list of values at which to hold predictors not
 #'   shown on the plot, such as `predict_vars = list(hp = 110)`. Unlisted
-#'   predictors are imputed (with a message).
+#'   predictors are imputed (with a message). Giving a variable several values
+#'   draws one line per value, and several multi-value variables are crossed:
+#'   `predict_vars = list(x2 = c(1, 2, 3), x3 = c(1, 4))` draws 6 lines.
+#' @param interval Draw a ribbon around the line: `"none"` (default), or
+#'   `"confidence"` / `"prediction"` for the corresponding [predict.lm()]
+#'   interval.
 #' @param back_transform How to map predictions onto the y-axis when the
 #'   model's response is transformed. Default `NULL` (and `TRUE`) auto-detects
 #'   from the model formula; `FALSE` turns back-transformation off; a
@@ -608,6 +712,7 @@ geom_slice <- function(model,
                        inherit.aes = TRUE,
                        predict_vars = list(),
                        back_transform = NULL,
+                       interval = "none",
                        ...,
                        xaxis = NULL) {
   if (!is.null(xaxis)) {
@@ -619,12 +724,17 @@ geom_slice <- function(model,
   check_slice_model(model)
   check_predict_vars(predict_vars, model)
   back_transform <- check_back_transform(back_transform)
+  interval <- check_slice_interval(interval)
   if (!is.numeric(n) || length(n) != 1 || is.na(n) || n < 2) {
     slice_abort(
       what = "`n` must be a single number of at least 2.",
       hint = "For example, 'n = 100'."
     )
   }
+  # How the user referred to the model, for messages about it ("model" if the
+  # call was too complex to name it).
+  model_expr <- substitute(model)
+  model_name <- if (is.symbol(model_expr)) as.character(model_expr) else "model"
 
   layer(
     stat = StatSlice,
@@ -634,9 +744,13 @@ geom_slice <- function(model,
     show.legend = NA,
     params = list(
       model = model,
+      model_name = model_name,
       predict_vars = predict_vars,
       n = n,
       back_transform = back_transform,
+      interval = interval,
+      # GeomSmooth only draws the ribbon when its `se` param says so
+      se = !identical(interval, "none"),
       ...
     ),
     layer_class = SliceLayer

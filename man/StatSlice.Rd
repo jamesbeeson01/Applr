@@ -5,31 +5,16 @@
 \alias{StatSlice}
 \title{StatSlice}
 \format{
-An object of class \code{ggproto}, inheriting from \code{Stat}
+An object of class \code{ggproto}, inheriting from \code{Stat}.
 }
 \usage{
 StatSlice
 }
 \description{
-A custom 'ggproto' object designed to take a high dimensional model,
-pull the aesthetics from the global environment, and then create predictions
-to display a slice of the high dimensional model.
+The stat behind \code{\link[=geom_slice]{geom_slice()}}. Once per layer it resolves a "slice plan"
+from the model and the plot's aesthetic mapping (which predictor varies
+along x, which are pinned by groups/facets, which are held constant, and
+how predictions map onto the y-axis); then, for each group, it generates
+an \code{n}-point prediction line from the model.
 }
-\section{Parameters}{
-
-\describe{
-\item{model}{A fitted linear model object from 'lm()'}
-\item{predict_vars}{A list of specified variables and values that specify the displayed slice}
-\item{n}{The number of predicted points generated}
-}
-}
-
-\section{Internal Methods}{
-
-\describe{
-\item{get_default_value}{An internal function that determines the mean of numeric columns or most common factor in fator/character columns and holds that value constant}
-\item{compute_group}{Generates prediction data for each group within each facet of a 'ggplot' graph}
-}
-}
-
 \keyword{datasets}

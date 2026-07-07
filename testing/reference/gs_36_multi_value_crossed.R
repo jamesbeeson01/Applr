@@ -1,8 +1,8 @@
 # gs_36 REFERENCE — six parallel slices, one per (x2, x3) combination:
 # x2 in {1, 2, 3} (color) crossed with x3 in {1, 4} (linetype).
-# The multi-value predict_vars feature is not implemented in geom_slice yet
-# (dev_todo.Rmd); this is the ground truth it should reproduce once it is.
-# Color/linetype only identify the lines — the feature's own styling is undesigned.
+# Ground truth for crossed multi-value predict_vars (one line per combination).
+# Color/linetype only identify the lines — geom_slice draws all six in its
+# default color.
 source("testing/reference/_ref_helpers.R")
 set.seed(123)
 n <- 60

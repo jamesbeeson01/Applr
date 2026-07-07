@@ -1,6 +1,5 @@
 # gs_33 REFERENCE — slice at hp = 110 with its CONFIDENCE ribbon.
-# The interval feature is not implemented in geom_slice yet (dev_todo.Rmd);
-# this is the ground truth it should reproduce once it is.
+# Ground truth for geom_slice(interval = "confidence").
 source("testing/reference/_ref_helpers.R")
 
 model <- lm(mpg ~ disp + hp, data = mtcars)

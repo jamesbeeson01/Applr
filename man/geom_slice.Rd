@@ -2,7 +2,7 @@
 % Please edit documentation in R/geom_slice.R
 \name{geom_slice}
 \alias{geom_slice}
-\title{geom_slice}
+\title{Display a 2D slice of a linear model}
 \usage{
 geom_slice(
   model,
@@ -10,60 +10,91 @@ geom_slice(
   inherit.aes = TRUE,
   predict_vars = list(),
   back_transform = NULL,
-  ...
+  interval = "none",
+  ...,
+  xaxis = NULL
 )
 }
 \arguments{
-\item{model}{A linear model provided by 'lm()'}
+\item{model}{A linear model fitted by \code{\link[=lm]{lm()}}.}
 
-\item{n}{The number of predicted points across the graph - default 100}
+\item{n}{Number of prediction points along the line (default 100).}
 
-\item{inherit.aes}{Inherits the aes provided by 'ggplot' object}
+\item{inherit.aes}{If \code{TRUE} (default), inherit aesthetics from the
+\code{ggplot()} call.}
 
-\item{predict_vars}{A list of specified variables and values that specify the slice - not required}
+\item{predict_vars}{A named list of values at which to hold predictors not
+shown on the plot, such as \code{predict_vars = list(hp = 110)}. Unlisted
+predictors are imputed (with a message). Giving a variable several values
+draws one line per value, and several multi-value variables are crossed:
+\code{predict_vars = list(x2 = c(1, 2, 3), x3 = c(1, 4))} draws 6 lines.}
 
-\item{back_transform}{Optional. Either NULL (auto-detect), a function for back-transforming predictions,
-or a character string ("log", "log10", "log2", "sqrt", "exp", "inverse") specifying the transformation
-to reverse. Use this when the model has a transformed response variable (e.g., log(y)) but the plot
-displays the original scale.}
+\item{back_transform}{How to map predictions onto the y-axis when the
+model's response is transformed. Default \code{NULL} (and \code{TRUE}) auto-detects
+from the model formula; \code{FALSE} turns back-transformation off; a
+one-argument function (e.g. \code{exp}) or a name (\code{"log"}, \code{"log10"},
+\code{"log2"}, \code{"sqrt"}, \code{"exp"}, \code{"inverse"}) applies that transformation.}
 
-\item{...}{Other variables (color, alpha, etc.)}
+\item{interval}{Draw a ribbon around the line: \code{"none"} (default), or
+\code{"confidence"} / \code{"prediction"} for the corresponding \code{\link[=predict.lm]{predict.lm()}}
+interval.}
+
+\item{...}{Other arguments passed to the layer, such as fixed aesthetics
+(\code{color = "red"}, \code{linewidth = 1.2}).}
+
+\item{xaxis}{Not an argument of \code{geom_slice()} — the x-axis comes from the
+plot's \code{aes()}. Included only to give a helpful error to \code{slice_2d()}
+users who try it here.}
 }
 \value{
-A ggplot layer that displays the slice of the high dimensional model
+A ggplot2 layer that draws the slice.
 }
 \description{
-A 'ggplot' layer that takes a high dimensional model and displays the predicted
-model across each facet of a graph. This is the main user-facing function for
-adding model slices to ggplot2 graphs.
+\code{geom_slice()} draws the prediction line of a fitted \code{\link[=lm]{lm()}} on a ggplot —
+a 2D \emph{slice} of a possibly high-dimensional model. The predictor mapped to
+the plot's x-axis varies along the line; every other predictor is fixed,
+and \code{geom_slice()} reports how, so it is always clear which slice of the
+model you are looking at:
+}
+\details{
+\itemize{
+\item Variables named in \code{predict_vars} are held at your chosen values.
+\item Variables mapped to a grouping aesthetic (e.g. \code{aes(color = g)}) are
+pinned to each group's own value — one line per group.
+\item Facet variables are pinned to each panel's value.
+\item Anything left over is \emph{imputed} (mean for numeric, most common value for
+factor/character), with a console message naming the value used.
+}
+
+If the model's response is transformed (e.g. \code{lm(log(y) ~ x)}) but the plot
+shows raw \code{y}, predictions are automatically back-transformed to match the
+y-axis (a message says so). Axis expressions (\code{aes(log(y))}, \code{aes(x * x2)})
+and transformed scales (\code{scale_x_log10()}) are also handled.
 }
 \examples{
 \dontrun{
-# Example: Using geom_slice without specifying 'predict_vars'
+# Hold hp at its mean (reported by a message)
 model <- lm(mpg ~ disp + hp, data = mtcars)
-ggplot(mtcars, aes(x=disp,y=mpg))+
-geom_point()+
-facet_wrap(~hp)+
-geom_slice(model=model)
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_slice(model)
 
-# Example: Using geom_slice with 'predict_vars'
-model <- lm(mpg ~ disp + hp + gear, data = mtcars)
-ggplot(mtcars, aes(x=disp, y=mpg))+
-geom_point()+
-facet_wrap(~hp)+
-geom_slice(model=model, predict_vars=list(gear=4))
+# Choose the slice yourself
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_slice(model, predict_vars = list(hp = 110))
 
-# Example: Model with log transformation (auto-detected)
-model <- lm(log(mpg) ~ disp + hp, data = mtcars)
-ggplot(mtcars, aes(x=disp, y=mpg))+
-geom_point()+
-geom_slice(model=model, predict_vars=list(hp=110))
+# One line per group, pinned to each group's value
+model2 <- lm(mpg ~ disp * factor(cyl), data = mtcars)
+ggplot(mtcars, aes(disp, mpg, color = factor(cyl))) +
+  geom_point() +
+  geom_slice(lm(mpg ~ disp + cyl, data = mtcars))
 
-# Example: Manual back-transformation specification
-model <- lm(log(mpg) ~ disp + hp, data = mtcars)
-ggplot(mtcars, aes(x=disp, y=mpg))+
-geom_point()+
-geom_slice(model=model, back_transform="log")
+# Transformed response, auto back-transformed to the raw y-axis
+model3 <- lm(log(mpg) ~ disp + hp, data = mtcars)
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_slice(model3)
 }
 
 }

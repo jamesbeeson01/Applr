@@ -1,15 +1,9 @@
 # CASE: gs_37_err_data_mismatch
 # TYPE: console
 # FUNC: geom_slice
-# EXPECT: KNOWN ISSUE (missing check, dev_todo.Rmd: "Add error check to
-#         geom_slice and slice_2d checking if the data being plotted in the
-#         ggplot is the same as the data the lm was fit to"). A clear,
-#         student-readable error saying the plotted data is not the data
-#         `model` was fitted to. Currently geom_slice draws the (meaningless)
-#         line over the unrelated data with no complaint at all, so this case
-#         FAILs against a hand-written expected snapshot of the desired
-#         behavior. When the check lands, accept its real wording with
-#         'Rscript testing/run.R --update gs_37'.
+# EXPECT: A clear, student-readable error saying the plotted data is not the
+#         data `model` was fitted to (raised when the layer is added to the
+#         plot, before anything is drawn).
 
 source("testing/_setup.R")
 set.seed(123)

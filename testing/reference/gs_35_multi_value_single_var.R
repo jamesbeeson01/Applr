@@ -1,7 +1,6 @@
 # gs_35 REFERENCE — three parallel slices at x_pos = 1 (blue), 5 (green), 9 (red).
-# The multi-value predict_vars feature is not implemented in geom_slice yet
-# (dev_todo.Rmd); this is the ground truth it should reproduce once it is.
-# The colors only identify the lines — the feature's own styling is undesigned.
+# Ground truth for multi-value predict_vars (one line per value). The colors
+# only identify the lines — geom_slice draws all three in its default color.
 source("testing/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
