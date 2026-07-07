@@ -18,7 +18,6 @@
 #' @return A list containing two ggplot2 layer objects: a `geom_ribbon` for the interval and a `geom_line` for the fitted values.
 #'
 #' @importFrom ggplot2 aes geom_ribbon geom_line ggplot geom_point
-#' @importFrom dplyr %>%
 #'
 #' @export
 #'
@@ -64,7 +63,7 @@ geom_fit <- function(model, new_data = NA, resolution = 500, color = "blue", int
   x_seq <- seq(min(x), max(x), length.out = resolution)
 
   # Create a new data frame for prediction with correct column name
-  pred_data <- setNames(data.frame(x_seq), predictor_name) %>% cbind(new_data)
+  pred_data <- setNames(data.frame(x_seq), predictor_name) |> cbind(new_data)
 
   # Obtain predictions with confidence intervals
   preds <- predict(model, pred_data, interval = interval)

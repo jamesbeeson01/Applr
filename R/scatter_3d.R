@@ -105,7 +105,7 @@ scatter_3d <- function(model, n=100, colors = c('blue', 'yellow')){
 
   # Create the 3D plot using plotly
   # This uses dynamic code generation to handle variable names properly
-  eval(parse(text=paste0("plot_ly() %>%",
+  eval(parse(text=paste0("plot_ly() |>",
     # Add the original data points as 3D scatter points
     "add_markers(data=df,",
          "x=~",x1_name,",",              # x-axis: first predictor
@@ -113,7 +113,7 @@ scatter_3d <- function(model, n=100, colors = c('blue', 'yellow')){
          "z=~",y_name,",",               # z-axis: response variable
          "type='scatter3d',",
          "mode='markers',",
-         "colors = colors) %>%",
+         "colors = colors) |>",
     # Add the regression surface
     "add_trace(z=surface,",             # z-values: predicted responses
               "x=axisx,",               # x-values: first predictor range

@@ -27,7 +27,7 @@ the whole suite shows no regressions (the 7 remaining FAILs are pre-existing
 | `detect_response_transform` (string-ish, limited) | `get_inverse_function()` (already in the package, handles composed/binary transforms), wrapped by `resolve_y_fn()`. |
 | Bare `stop()/warning()/message()`, inconsistent wording | `slice_abort()/slice_warn()/slice_inform()` everywhere, following the two-part what/hint format in `decisions.Rmd`. |
 | Per-group imputation messages (would repeat per panel × group) | Slice plan resolved once per layer in `StatSlice$compute_layer` (`build_slice_spec()`); each imputation messages exactly once. |
-| `dplyr::select/right_join/rename` dependency | Base R + rlang only (NAMESPACE trimmed; `%>%` kept for `geom_fit`). |
+| `dplyr::select/right_join/rename` dependency | Base R + rlang only (NAMESPACE trimmed). |
 
 ## How a slice is decided (the "transparency" contract)
 
