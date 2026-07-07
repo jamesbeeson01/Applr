@@ -18,6 +18,4 @@ model <- lm(y ~ x + x2 + x3, data = dat)
 
 ggplot(dat, aes(x, y, color = x2, linetype = x3)) +
   geom_point() +
-  geom_slice(model, 
-             aes(color = x2, linetype = x3),
-             predict_vars = list(x2 = c(1, 2, 3), x3 = c(1, 4)))
+  geom_slice(model, predict_vars = list(x2 = c(1, 2, 3), x3 = c(1, 4)))
