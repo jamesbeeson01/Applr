@@ -5,15 +5,41 @@
 # Coefficient names are the design-matrix column names and always align.
 # NA coefficients (rank-deficient fits) are dropped: they contribute nothing
 # to predictions and "NA*x" is not an equation.
-lm_equation_parts <- function(model) {
+lm_equation_parts <- function(model, clearer = FALSE) {
   co <- coef(model)
   co <- co[!is.na(co)]
   has_intercept <- names(co)[1] == "(Intercept)"
+  slopes <- signif(if (has_intercept) co[-1] else co, 3)
+  if (clearer) names(slopes) <- clearer_coef_names(names(slopes), model)
   list(
     response = deparse(formula(model)[[2]]),
     intercept = if (has_intercept) signif(co[[1]], 3),
-    slopes = signif(if (has_intercept) co[-1] else co, 3)
+    slopes = slopes
   )
+}
+
+# Rewrite dummy-coefficient names using the factor levels the model was fit
+# with: gB -> (g="B"). Interaction terms are handled per ":"-separated piece,
+# so x:gB -> x:(g="B"). Pieces that don't match a factor level (numeric
+# predictors, I(...) terms) are left untouched.
+clearer_coef_names <- function(coef_names, model) {
+  xlevels <- model$xlevels
+  if (is.null(xlevels) || length(xlevels) == 0) return(coef_names)
+  rewrite_piece <- function(piece) {
+    for (var in names(xlevels)) {
+      for (lev in xlevels[[var]]) {
+        if (piece == paste0(var, lev)) {
+          return(paste0("(", var, "=\"", lev, "\")"))
+        }
+      }
+    }
+    piece
+  }
+  vapply(coef_names, function(nm) {
+    paste(vapply(strsplit(nm, ":", fixed = TRUE)[[1]],
+                 rewrite_piece, character(1)),
+          collapse = ":")
+  }, character(1), USE.NAMES = FALSE)
 }
 
 #' Write out the equation of a linear model
@@ -26,6 +52,8 @@ lm_equation_parts <- function(model) {
 #' intercept.
 #'
 #' @param model A linear model
+#' @param clearer If `TRUE`, factor terms are displayed with the factor name
+#'   and level spelled out (e.g. `4.09*(g="B")` instead of `4.09*gB`).
 #'
 #' @returns
 #' The equation of an indicated linear model with coefficients and variable names
@@ -40,8 +68,8 @@ lm_equation_parts <- function(model) {
 #' @importFrom stats terms coef formula
 #'
 #' @export
-lm_equation <- function(model){
-  parts <- lm_equation_parts(model)
+lm_equation <- function(model, clearer = FALSE){
+  parts <- lm_equation_parts(model, clearer = clearer)
   rhs <- paste0(parts$slopes, "*", names(parts$slopes), collapse = " + ")
   if (!is.null(parts$intercept)) rhs <- paste0(parts$intercept, " + ", rhs)
   # "+ -3*x" reads better as "- 3*x"
@@ -58,6 +86,8 @@ lm_equation <- function(model){
 #' figures.
 #'
 #' @param model A linear model
+#' @param clearer If `TRUE`, factor terms are displayed with the factor name
+#'   and level spelled out (e.g. `(g="B")` instead of `gB`).
 #'
 #' @returns
 #' The equation of an indicated linear model with coefficients and variable
@@ -73,8 +103,8 @@ lm_equation <- function(model){
 #' @importFrom stats coef predict terms setNames formula predict.lm
 #'
 #' @export
-lm_latex <- function(model){
-  parts <- lm_equation_parts(model)
+lm_latex <- function(model, clearer = FALSE){
+  parts <- lm_equation_parts(model, clearer = clearer)
 
   # Each coefficient becomes coef*\underbrace{X_{ki}}_{\text{name}}: math
   # notation on top, the design-matrix column name labeled underneath.
