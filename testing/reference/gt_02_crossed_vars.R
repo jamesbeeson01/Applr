@@ -1,0 +1,38 @@
+# gt_02 REFERENCE — six parallel slices (x2 in {0,2,4} x x3 in {0,1}), each
+# labeled "x2: v; x3: v" at its right end, skyblue.
+source("testing/reference/_ref_helpers.R")
+set.seed(123)
+n <- 60
+x <- runif(n, -10, 10)
+x2 <- runif(n, 0, 4)
+x3 <- runif(n, 0, 2)
+y <- x + 4 * x2 + 3 * x3 + rnorm(n)
+dat <- data.frame(x, x2, x3, y)
+model <- lm(y ~ x + x2 + x3, data = dat)
+
+combos <- expand.grid(x2 = c(0, 2, 4), x3 = c(0, 1))
+lines <- do.call(rbind, lapply(seq_len(nrow(combos)), function(i) {
+  s <- ref_slice(model, dat, "x",
+                 held = list(x2 = combos$x2[i], x3 = combos$x3[i]))
+  s$label <- paste0("x2: ", combos$x2[i], "; x3: ", combos$x3[i])
+  s
+}))
+ends <- do.call(rbind, lapply(split(lines, lines$label),
+                              function(d) d[which.max(d$x), ]))
+
+# Constant gap past the line end; x-expansion sized by the longest label.
+nx <- 0.012 * diff(range(dat$x))
+ex <- 0.025 + 0.013 * max(nchar(ends$label))
+
+p <- ggplot(dat, aes(x, y)) +
+  geom_point(color = "gray60") +
+  geom_line(data = lines, aes(x, .pred, group = label),
+            color = "skyblue", linewidth = 1) +
+  geom_text(data = ends, aes(x, .pred, label = label),
+            color = "skyblue", hjust = 0, vjust = 0.5, nudge_x = nx) +
+  scale_x_continuous(expand = expansion(mult = c(0.05, ex))) +
+  labs(title = "gt_02 REFERENCE — six lines labeled 'x2: v; x3: v'",
+       subtitle = "Ground truth via predict() + geom_text (no Applr)")
+
+ggsave("testing/reference/gt_02_crossed_vars.png", plot = p, width = 7, height = 5)
+message("OK: testing/reference/gt_02_crossed_vars.png")
