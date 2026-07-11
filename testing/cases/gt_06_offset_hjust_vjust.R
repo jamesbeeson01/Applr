@@ -21,8 +21,7 @@ model <- lm(y ~ x + x2, data = dat)
 p <- ggplot(dat, aes(x, y)) +
   geom_point(color = "gray60") +
   geom_slice(model, predict_vars = list(x2 = c(0, 4))) +
-  geom_slice_text(model, predict_vars = list(x2 = c(0, 4)),
-                  hjust = 1, vjust = -0.8, expand = FALSE) +
+  geom_slice_text(hjust = 1, vjust = -0.8, expand = FALSE) +
   labs(title = "gt_06: manual hjust/vjust offsets",
        subtitle = "EXPECT: labels above and inside the right line ends")
 p

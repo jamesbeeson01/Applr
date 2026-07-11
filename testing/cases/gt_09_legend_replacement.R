@@ -19,7 +19,7 @@ model <- lm(y ~ x * g, data = dat)
 p <- ggplot(dat, aes(x, y, color = g)) +
   geom_point(alpha = 0.5) +
   geom_slice(model) +
-  geom_slice_text(model) +
+  geom_slice_text() +
   guides(color = "none") +
   labs(title = "gt_09: end-of-line labels as a legend replacement",
        subtitle = "EXPECT: no legend; 'g: A' and 'g: B' at line ends in group colors")

@@ -21,7 +21,7 @@ model <- lm(y ~ x * g + x2, data = dat)
 p <- ggplot(dat, aes(x, y, color = g)) +
   geom_point(alpha = 0.5) +
   geom_slice(model, predict_vars = list(x2 = c(0, 3))) +
-  geom_slice_text(model, predict_vars = list(x2 = c(0, 3))) +
+  geom_slice_text() +
   labs(title = "gt_07: labels inherit line color under aes(color = g)",
        subtitle = "EXPECT: four lines, 'x2: 0'/'x2: 3' labels in each group's color")
 p

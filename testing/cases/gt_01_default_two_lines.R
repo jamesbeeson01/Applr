@@ -22,7 +22,7 @@ model <- lm(y ~ x + x2, data = dat)
 p <- ggplot(dat, aes(x, y)) +
   geom_point(color = "gray60") +
   geom_slice(model, predict_vars = list(x2 = c(0, 4))) +
-  geom_slice_text(model, predict_vars = list(x2 = c(0, 4))) +
+  geom_slice_text() +
   labs(title = "gt_01: Default end-of-line labels, style = \"variable: value\"",
        subtitle = "EXPECT: 'x2: 0' and 'x2: 4' at the right ends, skyblue")
 p

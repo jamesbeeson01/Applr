@@ -23,7 +23,7 @@ model <- lm(y ~ x + x2 + x3, data = dat)
 p <- ggplot(dat, aes(x, y)) +
   geom_point(color = "gray60") +
   geom_slice(model, predict_vars = list(x2 = c(0, 2, 4), x3 = c(0, 1))) +
-  geom_slice_text(model, predict_vars = list(x2 = c(0, 2, 4), x3 = c(0, 1))) +
+  geom_slice_text() +
   labs(title = "gt_02: Crossed predict_vars, default labels",
        subtitle = "EXPECT: six lines each labeled 'x2: v; x3: v' at the right end")
 p

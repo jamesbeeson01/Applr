@@ -18,7 +18,7 @@ model <- lm(y ~ x + x2, data = dat)
 p <- ggplot(dat, aes(x, y)) +
   geom_point(color = "gray60") +
   geom_slice(model, predict_vars = list(x2 = c(0, 4))) +
-  geom_slice_text(model, predict_vars = list(x2 = c(0, 4)), style = "value") +
+  geom_slice_text(style = "value") +
   labs(title = "gt_03: style = \"value\" — bare values, no variable names",
        subtitle = "EXPECT: '0' and '4' at the right ends of the two lines")
 p

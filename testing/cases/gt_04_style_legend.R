@@ -22,8 +22,7 @@ model <- lm(y ~ x + x2 + x3, data = dat)
 p <- ggplot(dat, aes(x, y)) +
   geom_point(color = "gray60") +
   geom_slice(model, predict_vars = list(x2 = c(0, 2, 4), x3 = c(0, 1))) +
-  geom_slice_text(model, predict_vars = list(x2 = c(0, 2, 4), x3 = c(0, 1)),
-                  style = "legend") +
+  geom_slice_text(style = "legend") +
   labs(title = "gt_04: style = \"legend\" — bare values + corner key",
        subtitle = "EXPECT: values at line ends, 'labels: x2; x3' top-right")
 p

@@ -19,7 +19,7 @@ model <- lm(y ~ x + x2, data = dat)
 p <- ggplot(dat, aes(x, y)) +
   geom_point(color = "gray60") +
   geom_slice(model, predict_vars = list(x2 = c(0, 4))) +
-  geom_slice_text(model, predict_vars = list(x2 = c(0, 4)), location = "left") +
+  geom_slice_text(location = "left") +
   labs(title = "gt_05: location = \"left\"",
        subtitle = "EXPECT: 'x2: 0' and 'x2: 4' at the LEFT ends of the lines")
 p

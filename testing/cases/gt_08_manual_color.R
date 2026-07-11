@@ -18,7 +18,7 @@ model <- lm(y ~ x + x2, data = dat)
 p <- ggplot(dat, aes(x, y)) +
   geom_point(color = "gray60") +
   geom_slice(model, predict_vars = list(x2 = c(0, 4))) +
-  geom_slice_text(model, predict_vars = list(x2 = c(0, 4)), color = "black") +
+  geom_slice_text(color = "black") +
   labs(title = "gt_08: manual label color overrides line color",
        subtitle = "EXPECT: skyblue lines, BLACK 'x2: 0'/'x2: 4' labels")
 p
