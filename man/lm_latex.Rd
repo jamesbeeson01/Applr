@@ -4,20 +4,25 @@
 \alias{lm_latex}
 \title{Write out the equation of a linear model in LaTeX format}
 \usage{
-lm_latex(model)
+lm_latex(model, clearer = FALSE)
 }
 \arguments{
 \item{model}{A linear model}
+
+\item{clearer}{If \code{TRUE}, factor terms are displayed with the factor name
+and level spelled out (e.g. \code{(g="B")} instead of \code{gB}).}
 }
 \value{
-The equation of an indicated linear model with coefficients and variable names in LaTeX form
+The equation of an indicated linear model with coefficients and variable
+names in LaTeX form, printed to the console and returned invisibly.
 }
 \description{
-Takes a fitted linear model and generates a properly formatted LaTeX equation
-suitable for inclusion in R Markdown documents, academic papers, or presentations.
-The output includes underbrace notation to clearly label predicted values and
-predictor variables, making it ideal for educational or presentation purposes.
-Coefficients are rounded to 3 significant figures.
+Takes a fitted linear model and generates a properly formatted LaTeX
+equation suitable for inclusion in R Markdown documents, academic papers,
+or presentations. The output includes underbrace notation to clearly label
+predicted values and predictor variables, making it ideal for educational
+or presentation purposes. Coefficients are rounded to 3 significant
+figures.
 }
 \examples{
 \dontrun{

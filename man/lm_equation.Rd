@@ -4,19 +4,24 @@
 \alias{lm_equation}
 \title{Write out the equation of a linear model}
 \usage{
-lm_equation(model)
+lm_equation(model, clearer = FALSE)
 }
 \arguments{
 \item{model}{A linear model}
+
+\item{clearer}{If \code{TRUE}, factor terms are displayed with the factor name
+and level spelled out (e.g. \code{4.09*(g="B")} instead of \code{4.09*gB}).}
 }
 \value{
 The equation of an indicated linear model with coefficients and variable names
 }
 \description{
-Takes a fitted linear model and returns a human-readable equation string showing
-the relationship between the response variable and predictors. This is useful for
-presenting model results in reports or understanding the mathematical form of the model.
-Coefficients are rounded to 3 significant figures for readability.
+Takes a fitted linear model and returns a human-readable equation string
+showing the relationship between the response variable and predictors.
+Coefficients are rounded to 3 significant figures for readability. Terms
+are named as in the fitted coefficients, so factor predictors show one term
+per dummy level (e.g. \code{2.1*gB}) and models without an intercept print no
+intercept.
 }
 \examples{
 \dontrun{

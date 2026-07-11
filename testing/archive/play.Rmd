@@ -110,6 +110,12 @@ ggplot(dat, aes(x, y)) +
   geom_point() +
   geom_slice(model, interval = "prediction", predict_vars = list(x2 = c(0, 2, 4)))
 
+ggplot(dat, aes(x, y, color = factor(x2))) +
+  geom_point() +
+  geom_slice(model) +
+  facet_wrap(~x3) +
+  theme_minimal()
+
 library(gganimate)
 
 ggplot(dat, aes(x, y)) +
@@ -144,9 +150,6 @@ autoplot(model) +
 
 ## Features
 
-1. When using list() it correctly populates multiple lines, but doesn't show what is what. It would be nice to have a labeling layer like "geom_slice_text" that puts labels at the end of the lines (right side). Then "geom_slice_subtitle" that generates a subtitle stating the imputed values, maybe preceded by the model string.
-
-2. An alternative (or companion) to the above issue is easier coloring by specified values.
 
 3. While this is great for visualizing, and gives much quicker iteration that before, it would be cool to have a more exploratory chart. What if it built off plotly to put sliders on all unmapped variables? It still hits defaults similar to geom_slice - and in every way behaves like geom_slice (we don't want inconsistencies in the package), but adds sliders. Maybe even buttons for things like color by, but I'd need to feel that.
   - autoplot(model, sliders=TRUE)
@@ -159,9 +162,6 @@ autoplot(model) +
 
 5. There are essentially two ways to create groups or multiple lines: either 1) use a ggplot grouping variable like `color` or `linetype`, or 2) specify multiple values in `predict_vars`. Both are viable, but the funny thing is that they behave differently. `predict_vars` doesn't use any differentiation (which is probably appropriate), but it also treats line ends differently. One goes to the end of the group and the other goes to the ends of all the data. I think that is also correct because specifying values isn't actually tied to some data grouping. I guess the solution would be to add values to the data itself to group by. That said, I think the following would be nice for more continuity
   - argument to toggle end of plot line lengths for ggplot groupings (the current default is best)
-  - We should consider being able to color (or use some other geom_line aesthetic) by the values specified. What that looks like as far as arguments passed, I'm not sure.
-  
-6. Toggle legend in geom_slice?
 
 7. Being able to do some animation where it slides or jumps through hidden values in the model would be super cool. gganimate seems to do something like this - but it also animates other things erroneously. It would be cool to render a gif that has just the linear model moving through slices in multidimensional space. That is one we'd have to consider what the interface would look like (what functions and arguments are available to the user) in connection with the backend feasibility and integration with other packages.
   

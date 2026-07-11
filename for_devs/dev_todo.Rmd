@@ -6,7 +6,7 @@ date: "2025-09-20"
 
 # Priority
 
-- [ ] Plotly overwrite issue in `known_issues.md`
+- [ ] plotly overwrite issue in `known_issues.md`
 - [x] Add standards to `decisions.Rmd` (like error format)
 - [x] Make sure existing ground truth tests are accurate
 - [ ] Check for comprehensiveness of testing suite and edge cases
@@ -59,13 +59,11 @@ date: "2025-09-20"
 
 - [x] `autoplot(lm)` (takes minimal arguments, feasts/ggtime is a good example) — DONE 2026-07-07 (`autoplot.lm(object, ..., xaxis =)`: scatter + geom_slice + theme_lc from the model's own data, first numeric predictor on x, `...` forwarded to geom_slice, `autoplot` generic re-exported; cases ap_01–ap_11)
 - [x] Add confidence and prediction interval to `geom_slice` — DONE 2026-07-07 (`interval = "confidence"/"prediction"`, GeomSlice now inherits GeomSmooth; cases gs_33/gs_34)
-- [ ] Add `data` and aesthetic argumentsu to `geom_slice`
+- [ ] Add `data` and aesthetic arguments to `geom_slice`
 - [ ] Add an interval to `slice_2d` (like `geom_slice`)
 - [x] Allow passing a range of values for a slice, plotting multiple lines in one function (ie x2=c(1,2,3),x3=c(1,4) plots 6 lines) — DONE 2026-07-07 (multi-value `predict_vars`, values crossed with `expand.grid`; cases gs_35/gs_36). All lines currently use the default color; per-value styling/labeling still undesigned.
 - [ ] Consider a `full_range` boolean argument to `geom_slice` which plots lines to the edge of the panel, not the end of the group
-- [ ] geom_slice have both the interval band and the line change with color, have fill be optional
-- [ ] Consider fancy formatter for lm_equation and geom_slice_subtitle that communicates factors clearer such as `4.09*(g="B")` instead of `gB`
-<!-- Deferred - not well specified/explained
-- [ ] Add a 'band' function (or add to geom_slice). A good example (if I say so myself) is in `~/testing/student_models/beesonjames_LATE_664773_146922498_HouseSellingPrices-1.html`
-- [ ] New function for auto-labeling geom_slice lines (above is also one example)
--->
+- [ ] band function - is it separate or does it live within geom_slice?
+- [x] Consider fancy formatter for lm_equation and geom_slice_subtitle that communicates factors clearer such as `4.09*(g="B")` instead of `gB`
+- [x] geom_slice_text labels end of lines
+- [x] geom_slice_subtitle creates a subtitle showing the model and held values
