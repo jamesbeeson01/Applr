@@ -1,0 +1,167 @@
+```{r}
+pacman::p_load(tidyverse)
+devtools::load_all()
+
+grades <- read_csv("testing/archive/Math425PastGrades.csv")
+
+glimpse(grades)
+
+plot(grades)
+
+autoplot(lm(FinalExam ~ Midterm + Midterm:MagicTwoGroups, data = grades), color = "green")
+
+model <- lm(FinalExam ~ Midterm + Midterm:MagicTwoGroups, data = grades)
+
+ggplot(grades, aes(Midterm, FinalExam, color = factor(MagicTwoGroups))) +
+  geom_point() +
+  geom_slice(model)
+```
+
+```{r}
+plot(grades, col = factor(grades$MagicTwoGroups))
+```
+
+```{r}
+model <- lm(FinalExam ~ Midterm + Midterm:MagicTwoGroups, data = grades)
+
+autoplot(model) +
+  facet_wrap(~MagicTwoGroups)
+```
+
+```{r}
+
+grades <- grades |> 
+  mutate(
+    MidtermGreaterThan70 = if_else(Midterm > 70, TRUE, FALSE)
+  )
+
+model <- lm(FinalExam ~ AssessmentQuizzes*MagicTwoGroups, data = grades)
+
+summary(model)
+
+ggplot(grades, aes(AssessmentQuizzes, FinalExam, )) +
+  geom_point() +
+  geom_slice(model) +
+  facet_wrap(~MagicTwoGroups)
+```
+
+
+```{r}
+set.seed(123)
+
+n <- 60
+x <- runif(n, -10, 10)
+x2 <- sample(c(0,1,2), n, replace = TRUE)
+x3 <- sample(c(0,1), n, replace = TRUE)
+y <- x + 3 * x * x2 * x3 + rnorm(n)
+dat <- data.frame(x, x2, x3, y)
+model <- lm(y ~ x + x:x2:x3, data = dat)
+
+ggplot(dat, aes(x, y, color = factor(x2), linetype = factor(x3))) +
+  geom_point() +
+  geom_slice(model)
+```
+
+```{r}
+set.seed(123)
+
+n <- 60
+x <- runif(n, -10, 10)
+x2 <- sample(c(0,1,2), n, replace = TRUE)
+x3 <- sample(c(3,4,5), n, replace = TRUE)
+y <- x + x2 + x3 + rnorm(n)
+dat <- data.frame(x, x2, x3, y)
+model <- lm(y ~ x + x2 + x3, data = dat)
+
+ggplot(dat, aes(x, y, color = factor(x2), linetype = factor(x3))) +
+  geom_point() +
+  geom_slice(model)
+```
+
+```{r}
+set.seed(123)
+n <- 60
+x <- runif(n, -10, 10)
+x2 <- sample(c(0,2,4), n, 4)
+x3 <- sample(c(0,1), n, 5)
+y <- x + 3 * x2 + 2 * x3 + rnorm(n)
+dat <- data.frame(x, x2, x3, y)
+model <- lm(y ~ x + x2 + x3, data = dat)
+
+autoplot(model, linetype = "dashed")
+
+ggplot(dat, aes(x, y, color = factor(x2))) +
+  geom_point() +
+  geom_slice(model)
+
+ggplot(dat, aes(x, y, color = factor(x2), linetype = factor(x3))) +
+  geom_point() +
+  geom_slice(model)
+
+ggplot(dat, aes(x, y, color = factor(x2))) +
+  geom_point() +
+  geom_slice(model, interval="confidence")
+
+ggplot(dat, aes(x, y)) +
+  geom_point() +
+  geom_slice(model, interval = "prediction")
+
+ggplot(dat, aes(x, y)) +
+  geom_point() +
+  geom_slice(model, interval = "prediction", predict_vars = list(x2 = c(0, 2, 4)))
+
+library(gganimate)
+
+ggplot(dat, aes(x, y)) +
+  geom_point() +
+  geom_smooth() +
+  geom_slice(model) +
+  transition_time(x3) +
+  ease_aes('linear')
+# that didn't turn out so well. The geom_slice line isn't moving (and the points are? I didn't expect that.) I guess it's assuming each point is the same but at a different time, when in reality they are distinct. I was hoping to just move the prediction line.
+
+```
+
+
+## Add
+
+```{r}
+# Expect: error - aes not implemented
+autoplot(model, aes(color = MagicTwoGroups))
+```
+
+```{r}
+# Expect: error - aes not implemented
+ggplot(grades, aes(Midterm, FinalExam)) +
+  geom_point() +
+  geom_slice(model, aes(color = MagicTwoGroups))
+```
+
+```{r}
+autoplot(model) +
+  facet_wrap(~MagicTwoGroups)
+```
+
+## Features
+
+1. When using list() it correctly populates multiple lines, but doesn't show what is what. It would be nice to have a labeling layer like "geom_slice_text" that puts labels at the end of the lines (right side). Then "geom_slice_subtitle" that generates a subtitle stating the imputed values, maybe preceded by the model string.
+
+2. An alternative (or companion) to the above issue is easier coloring by specified values.
+
+3. While this is great for visualizing, and gives much quicker iteration that before, it would be cool to have a more exploratory chart. What if it built off plotly to put sliders on all unmapped variables? It still hits defaults similar to geom_slice - and in every way behaves like geom_slice (we don't want inconsistencies in the package), but adds sliders. Maybe even buttons for things like color by, but I'd need to feel that.
+  - autoplot(model, sliders=TRUE)
+  - autoplot(model, sliders=c(disp, cyl))
+  - Those are built off of an implementation that can be used standalone
+  - ggvis is cool. It's smooth, but slow and looks inferior stylistically. It doesn't feel like a real time slider, like you slide it THEN it rerenders
+  - plotly seems like the way to go
+
+4. Add confidence/prediction interval fill to legend optionally?
+
+5. There are essentially two ways to create groups or multiple lines: either 1) use a ggplot grouping variable like `color` or `linetype`, or 2) specify multiple values in `predict_vars`. Both are viable, but the funny thing is that they behave differently. `predict_vars` doesn't use any differentiation (which is probably appropriate), but it also treats line ends differently. One goes to the end of the group and the other goes to the ends of all the data. I think that is also correct because specifying values isn't actually tied to some data grouping. I guess the solution would be to add values to the data itself to group by. That said, I think the following would be nice for more continuity
+  - argument to toggle end of plot line lengths for ggplot groupings (the current default is best)
+  - We should consider being able to color (or use some other geom_line aesthetic) by the values specified. What that looks like as far as arguments passed, I'm not sure.
+  
+6. Toggle legend in geom_slice?
+
+7. Being able to do some animation where it slides or jumps through hidden values in the model would be super cool. gganimate seems to do something like this - but it also animates other things erroneously. It would be cool to render a gif that has just the linear model moving through slices in multidimensional space. That is one we'd have to consider what the interface would look like (what functions and arguments are available to the user) in connection with the backend feasibility and integration with other packages.
+  

@@ -9,6 +9,9 @@ The original intent of this package is to make life easier for a student in a li
 
 ## Error Messages
 
+Use the helpers in `R/conditions.R` instead of bare `stop()` / `warning()` /
+`message()`, so the format lives in one place.
+
 User-facing conditions use a **two-part format**: a first line stating *what
 happened* (naming the offending value), and — when the user can act on it — an
 indented second line stating *how to fix it* with a concrete, copy-pasteable
@@ -20,9 +23,6 @@ Rules:
 - **Give a copy-pasteable hint.** Show real syntax the user can paste (`hp = 146.7`), not an abstract description.
 - **Typography:** backticks `` `x` `` for names (variables, arguments, columns); single quotes `'...'` for syntax examples; double quotes `"..."` for literal values and class names.
 - **Severity:** `slice_abort()` cannot proceed; `slice_warn()` proceeds but the result is likely wrong; `slice_inform()` reports a normal-but-hidden choice (e.g. an imputed value).
-
-Use the helpers in `R/conditions.R` instead of bare `stop()` / `warning()` /
-`message()`, so the format lives in one place.
 
 ```r
 # Cannot proceed
@@ -65,10 +65,7 @@ Defer to base R / ggplot2 spelling when extending them (`inherit.aes`,
 
 **The range of a model's line should be the range of a group, not the whole plot.** Consider grouped data where group A is modeled by `y = x^2` and only has data from 0 to 2. If the line is plotted from 0 to 10, it changes the y axis to a range of 100 instead of 4. 
 
-So, in `geom_slice` (where grouping is permitted), the x range should be computed by the min and max of the group (in `compute_group`), not by panel (in `compute_panel`). 
-
-If the plot weren't adjusted on the y axis from this line, it may be nice to have it fill the x rage where it is seen on the plot, especially working with high-dimensional models.
-
+So, in `geom_slice` (where grouping is permitted), the x range should be computed by the min and max of the group (in `compute_group`), not by panel (in `compute_panel`).
 
 ## Communicating Imputed Values
 
@@ -78,7 +75,7 @@ If the plot weren't adjusted on the y axis from this line, it may be nice to hav
 
 **`slice_2d` additionally adds a caption to communicate hidden values.**
 
-There was thought to add captions for all functions, but this was largely abandoned due to several large issues:
+There was thought to add captions for all functions, but this was largely abandoned due to the following large issues.
 
 #### Base R
 

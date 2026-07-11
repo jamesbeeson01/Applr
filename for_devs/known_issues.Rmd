@@ -3,6 +3,15 @@ title: "known_issues"
 output: html_document
 ---
 
+- `devtools::load_all()` brings up this issue - that's a big plotly problem that could cause issues
+
+```
+Warning messages:
+1: replacing previous import ‘graphics::layout’ by ‘plotly::layout’ when loading ‘Applr’ 
+2: replacing previous import ‘ggplot2::last_plot’ by ‘plotly::last_plot’ when loading ‘Applr’ 
+3: replacing previous import ‘plotly::filter’ by ‘stats::filter’ when loading ‘Applr’ 
+```
+
 - `scatter_3d` has not been rigorously tested
 
 - `lm`'s with data accessed by `$` (ie `lm(mtcars$mpg ~ mtcars$disp)`) are currently not allowed (`geom_slice` and `slice_2d` both reject them with a clear error). This should be extended to all accessed variables (ie `mtcars['mpg']`) because of how they are handled in the `predict` function. When this is fixed, `decisions.Rmd` should be updated.

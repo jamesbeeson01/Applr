@@ -18,5 +18,5 @@ model <- lm(y ~ x + x2 + x3, data = dat)
 
 ggplot(dat, aes(x, y, color = factor(x2))) +
   geom_point() +
-  facet_wrap(~x3) +
+  facet_wrap(~factor(x3)) +
   geom_slice(model)

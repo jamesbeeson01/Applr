@@ -11,6 +11,7 @@ This package was started with painstaking love by Cameron McClellan, and continu
 - `decisions.Rmd` contains things that should not be forgotten. Read it.
 - `knowledge_base.Rmd` is a list of hard lessons learned that will help you navigate the complexities of low level R.
 - `Applr Presentation.pptx` is Cameron's powerpoint, giving a little extra context to the package's intent and history.
+- The `testing/README.md` explains the testing suite, allowing both humans and coding agents insight into the package's current state.
 
 I (James) have tried to provide future developers with anything they need to troubleshoot and continue the project. Please continue the tradition and keep files updated. Pass on your knowledge like those previous have given to you. 
 
