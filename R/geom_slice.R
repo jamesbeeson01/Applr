@@ -456,6 +456,35 @@ build_slice_spec <- function(params, layout) {
   )
 }
 
+# Reconcile the spec's per-group pins against how ggplot actually grouped the
+# data. A grouping aesthetic can only pin its predictor if the predictor is
+# constant within each group; a continuous scale (numeric mapped to colour,
+# size, ...) puts many values in one group, making data[[aes]][1] arbitrary.
+# Only the built data can tell: `colour = g` and `colour = factor(g)` name the
+# same predictor but group differently. Broken pins fall back to being held
+# constant, like any predictor the plot does not show.
+resolve_group_pins <- function(spec, data) {
+  for (aes_name in names(spec$group_aes)) {
+    col <- data[[aes_name]]
+    if (is.null(col)) next
+    grouped_cleanly <- all(vapply(split(col, data$group),
+                                  function(x) length(unique(x)) == 1L, logical(1)))
+    if (grouped_cleanly) next
+
+    var <- spec$group_aes[[aes_name]]
+    spec$group_aes[[aes_name]] <- NULL
+    # ggplot standardizes aes names to British spelling; messages use American
+    shown <- if (aes_name == "colour") "color" else aes_name
+    slice_warn(
+      what = paste0("`", shown, " = ", var, "` is on a continuous scale, so it cannot ",
+                    "pin `", var, "` per group; it will be held constant instead."),
+      hint = paste0("For one line per value, use 'aes(", shown, " = factor(", var, "))'.")
+    )
+    spec$held[[var]] <- impute_value(spec$raw_data[[var]], var)
+  }
+  spec
+}
+
 # Build the prediction line(s) for one group, following the layer's slice
 # spec. Held variables with several values (predict_vars = list(x2 = c(1, 2)))
 # yield one line per combination of values, each with its own group id.
@@ -569,7 +598,9 @@ StatSlice <- ggproto(
   # not once per group), then let ggplot2's standard machinery split the data
   # by panel and group.
   compute_layer = function(self, data, params, layout) {
-    params$slice_spec <- build_slice_spec(params, layout)
+    # resolve_group_pins() needs the grouped data to tell a real per-group pin
+    # from a numeric aesthetic ggplot left as a continuous scale.
+    params$slice_spec <- resolve_group_pins(build_slice_spec(params, layout), data)
     ggproto_parent(Stat, self)$compute_layer(data, params, layout)
   },
 
@@ -724,6 +755,14 @@ geom_slice <- function(model,
     )
   }
   check_slice_model(model)
+  # A stray aes() is a common mistake, rarely assigned to a specific parameter
+  if (inherits(n, "uneval") || inherits(inherit.aes, "uneval") ||
+      inherits(back_transform, "uneval") || inherits(interval, "uneval")) {
+    slice_abort(
+      what = "geom_slice() does not take an aesthetic mapping as an argument.",
+      hint = "Put the mapping in the plot instead: 'ggplot(data, aes(...)) + geom_slice(model)'."
+    )
+  }
   check_predict_vars(predict_vars, model)
   back_transform <- check_back_transform(back_transform)
   interval <- check_slice_interval(interval)
