@@ -26,4 +26,29 @@ ref_slice <- function(model, data, xvar, held = list(),
   nd
 }
 
+# Human-readable equation of a fitted lm, built directly from coef(model)
+# (independent re-derivation of what a subtitle's model line should say).
+# Format: "y = 0.0288 + 0.996*x + 2.02*x2", coefficients at 3 sig figs.
+ref_equation <- function(model) {
+  co <- signif(coef(model), 3)
+  rhs <- paste0(co[-1], "*", attr(terms(model), "term.labels"), collapse = " + ")
+  gsub("\\+ -", "- ", paste0(names(model$model)[1], " = ", co[1], " + ", rhs))
+}
+
+# One held value formatted for a subtitle: 4 sig figs for numbers, quoted
+# strings for factors/characters (matches geom_slice's console messages).
+ref_value <- function(v) {
+  if (is.numeric(v)) format(signif(v, 4)) else paste0('"', v, '"')
+}
+
+# The "held at: x2 = 2.507; g = \"A\"" line from a named list of held values.
+# Multi-value variables join with ", " (e.g. "x2 = 0, 4").
+ref_held_line <- function(held) {
+  parts <- vapply(names(held), function(v) {
+    paste0(v, " = ", paste(vapply(held[[v]], ref_value, character(1)),
+                           collapse = ", "))
+  }, character(1))
+  paste0("held at: ", paste(parts, collapse = "; "))
+}
+
 dir.create("testing/reference", showWarnings = FALSE, recursive = TRUE)

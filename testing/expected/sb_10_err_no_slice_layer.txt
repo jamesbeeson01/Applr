@@ -1,0 +1,2 @@
+Warning: geom_slice_subtitle() found no geom_slice() layer to describe, so no subtitle was added.
+    Add the slice first, such as 'geom_slice(model) + geom_slice_subtitle()'. 
