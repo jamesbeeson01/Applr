@@ -34,6 +34,34 @@ knitr::opts_chunk$set(error = TRUE, message = TRUE, warning = TRUE)
 source("testing/_setup.R")
 ```
 
+# Snapshot
+
+```{r snapshot, include=FALSE}
+# Run the real terminal runner so pass/fail here matches `Rscript testing/run.R`
+# exactly (visual error detection + console diffs); it writes a per-case
+# results file that we read back.
+invisible(suppressWarnings(
+  system2("Rscript", "testing/run.R", stdout = TRUE, stderr = TRUE)
+))
+status <- read.csv("testing/output/_results.csv")
+names(status) <- c("Case", "Status")
+n_ok <- sum(status$Status == "OK")
+```
+
+```{r snapshot-summary, results='asis', echo=FALSE}
+cat(sprintf("**%d / %d cases OK.**\n\n", n_ok, nrow(status)))
+not_ok <- status[status$Status != "OK", ]
+if (nrow(not_ok) > 0) {
+  cat("Cases not passing:\n\n")
+  cat(sprintf("- `%s` — %s\n", not_ok$Case, not_ok$Status), sep = "")
+} else {
+  cat("All cases passing.\n")
+}
+```
+
+Note: an `OK` on a visual case means it ran and produced a plot — visual
+correctness is still judged by eye against the reference images below.
+
 # Overview {.tabset .tabset-pills}
 
 ## Hide
@@ -45,6 +73,7 @@ case_files <- sort(list.files("testing/cases", pattern = "\\.R$", full.names = T
 meta <- lapply(case_files, parse_case_header)
 overview <- data.frame(
   Case     = vapply(meta, `[[`, "", "id"),
+  Status   = status$Status[match(vapply(meta, `[[`, "", "id"), status$Case)],
   Type     = vapply(meta, `[[`, "", "type"),
   Function = vapply(meta, `[[`, "", "func"),
   Expect   = vapply(meta, function(m) {

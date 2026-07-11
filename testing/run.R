@@ -100,6 +100,9 @@ results <- lapply(all_files, function(f) {
 })
 
 statuses <- vapply(results, `[[`, "", "status")
+# machine-readable results for report.Rmd's snapshot section
+write.csv(data.frame(id = vapply(results, `[[`, "", "id"), status = statuses),
+          "testing/output/_results.csv", row.names = FALSE)
 cat(sprintf("\n%d/%d OK", sum(statuses == "OK"), length(statuses)))
 if (any(statuses == "UPDATED")) cat(sprintf(", %d snapshot(s) updated", sum(statuses == "UPDATED")))
 if (any(statuses == "NEW")) cat(sprintf(", %d NEW (no expected snapshot yet)", sum(statuses == "NEW")))

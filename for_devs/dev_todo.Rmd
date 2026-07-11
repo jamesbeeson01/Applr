@@ -43,6 +43,7 @@ date: "2025-09-20"
 
 ## Queue
 
+- [ ] Refactor report.Rmd and related renderers to single render everything (currently renders everything twice to accomodate the snapshot)
 - [ ] Simplify context in CLAUDE.md - move to either skill or testing/README.md
 - [x] Test use case of ggplot(data, aes(x, log(y))) + geom_slice(lm) — gs_26
 - [x] Also test ggplot(...) + ... + scale_y_log() or something like that — gs_24 / gs_25
