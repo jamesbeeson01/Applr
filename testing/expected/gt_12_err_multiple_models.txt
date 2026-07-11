@@ -1,0 +1,2 @@
+Warning: geom_slice_text() found geom_slice() layers with different models (`model_a`, `model_b`), so no labels were drawn.
+    Use the same model in every geom_slice() layer, or remove the layers whose model differs. 
