@@ -2,6 +2,8 @@
 
 This test suite gives both humans and coding agents access to information about the package's current state. 
 
+Note to agents: When finished running tests, render report.Rmd for human review.
+
 One test case = one `.R` file in `cases/`. The same files are consumed by two
 renderers, so the terminal suite and the human report can never drift apart:
 

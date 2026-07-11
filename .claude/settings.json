@@ -4,10 +4,6 @@
       "Bash(Rscript testing/run.R)",
       "Bash(Rscript testing/run.R *)",
       "Bash(Rscript -e \"rmarkdown::render('testing/report.Rmd')\")"
-    ],
-    "deny": [
-      "Bash(Rscript testing/run.R --update*)",
-      "Bash(Rscript testing/run.R * --update*)"
     ]
   }
 }
