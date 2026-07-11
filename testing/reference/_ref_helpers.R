@@ -29,10 +29,13 @@ ref_slice <- function(model, data, xvar, held = list(),
 # Human-readable equation of a fitted lm, built directly from coef(model)
 # (independent re-derivation of what a subtitle's model line should say).
 # Format: "y = 0.0288 + 0.996*x + 2.02*x2", coefficients at 3 sig figs.
+# Terms are named by their coefficient (design-matrix) names, so factor
+# predictors show one term per dummy level (e.g. "2.1*gB").
 ref_equation <- function(model) {
-  co <- signif(coef(model), 3)
-  rhs <- paste0(co[-1], "*", attr(terms(model), "term.labels"), collapse = " + ")
-  gsub("\\+ -", "- ", paste0(names(model$model)[1], " = ", co[1], " + ", rhs))
+  co <- signif(coef(model)[!is.na(coef(model))], 3)
+  rhs <- paste0(co[-1], "*", names(co)[-1], collapse = " + ")
+  gsub("\\+ -", "- ",
+       paste0(deparse(formula(model)[[2]]), " = ", co[[1]], " + ", rhs))
 }
 
 # One held value formatted for a subtitle: 4 sig figs for numbers, quoted
