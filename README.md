@@ -200,6 +200,9 @@ autoplot(lm(mpg ~ disp + hp, data = mtcars),
 
 # Choose the x-axis
 autoplot(lm(mpg ~ disp + hp, data = mtcars), x_axis = "hp")
+
+# Two numeric predictors? Get the interactive 3-D surface instead
+autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
 ```
 
 Note: the model must be fitted with a `data` argument
@@ -255,11 +258,17 @@ add_slice_2d(model) # will not plot
 ### `scatter_3d()`
 
 Create an interactive 3-D scatter plot with a fitted regression surface
-(models must have exactly two predictors).
+(models must have exactly two numeric predictors). Points are colored by the
+response along the `colors` gradient, and transformed terms such as `I(x^2)`
+graph over their raw predictors. It is also reachable as
+`autoplot(model, type = "3d")`.
 
 ``` r
 model <- lm(mpg ~ disp + hp, data = mtcars)
 scatter_3d(model, colors = c("blue", "yellow"))
+
+# Transformed terms graph over their raw predictors
+scatter_3d(lm(mpg ~ wt + I(wt^2) + hp, data = mtcars))
 ```
 
 ### `lm_equation()` and `lm_latex()`

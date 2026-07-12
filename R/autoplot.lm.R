@@ -17,9 +17,13 @@ ggplot2::autoplot
 #' Automatically plot a linear model
 #'
 #' `autoplot()` turns a fitted [lm()] into a complete ggplot in one call: the
-#' data the model was fitted to as a scatter, a [geom_slice()] prediction line
-#' through it. The result is a regular ggplot, so it
-#' can be extended with `+` as usual (labels, scales, more layers).
+#' data the model was fitted to as a scatter, with a [geom_slice()] prediction
+#' line through it. The result is a regular ggplot, so it can be extended with
+#' `+` as usual (labels, scales, more layers).
+#'
+#' Pass `type = "3d"` for a model with exactly two numeric predictors to get an
+#' interactive [scatter_3d()] surface instead of the 2-D slice; `...` is then
+#' forwarded to [scatter_3d()] (e.g. `n`, `colors`).
 #'
 #' The model's *first numeric* predictor goes on the x-axis (override with
 #' `x_axis`) and the raw response variable goes on the y-axis. Everything else
@@ -31,20 +35,23 @@ ggplot2::autoplot
 #' @param object A linear model fitted by [lm()] **with a `data` argument** —
 #'   the data is recovered from the model, so `lm(y ~ x, data = your_data)`
 #'   works but `lm(your_data$y ~ your_data$x)` does not.
-#' @param ... Passed on to [geom_slice()]: for example
+#' @param ... Passed on to [geom_slice()] — for example
 #'   `predict_vars = list(hp = 110)` to choose the slice,
 #'   `interval = "confidence"` for a ribbon, or fixed aesthetics such as
-#'   `color = "red"`.
+#'   `color = "red"` — or to [scatter_3d()] when `type = "3d"`.
+#' @param type `"2d"` (default) for a [geom_slice()] ggplot, or `"3d"` for an
+#'   interactive [scatter_3d()] surface (needs exactly two numeric predictors).
 #' @param x_axis The name of the predictor to place on the x-axis, such as
 #'   `x_axis = "disp"`. Defaults to the model's first numeric predictor.
+#'   Ignored when `type = "3d"`.
 #' @param xaxis Deprecated; use `x_axis` instead.
 #'
 #' @returns A ggplot of the model's data with a slice of the model drawn
-#'   through it.
+#'   through it, or — when `type = "3d"` — a plotly surface from [scatter_3d()].
 #'
 #' @seealso [geom_slice()], which draws the line and handles everything
-#'   slice-shaped; [geom_slice_subtitle()] and [geom_slice_text()] to
-#'   annotate the result.
+#'   slice-shaped; [scatter_3d()] for the interactive surface; and
+#'   [geom_slice_subtitle()] / [geom_slice_text()] to annotate the result.
 #'
 #' @examples
 #' library(ggplot2)
@@ -66,10 +73,23 @@ ggplot2::autoplot
 #'          predict_vars = list(hp = 110), interval = "confidence") +
 #'   labs(title = "Slice at hp = 110")
 #'
+#' # An interactive 3-D surface for a two-predictor model
+#' if (interactive()) {
+#'   autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
+#' }
+#'
 #' @export
-autoplot.lm <- function(object, ..., x_axis = NULL, xaxis = NULL) {
-  x_axis <- resolve_deprecated_xaxis(x_axis, xaxis, "autoplot")
+autoplot.lm <- function(object, ..., type = c("2d", "3d"), x_axis = NULL, xaxis = NULL) {
+  type <- match.arg(type)
   check_slice_model(object)
+
+  # The 3-D surface is a wholly different view (a plotly object); hand the model
+  # and any surface options straight to scatter_3d() and skip the 2-D plumbing.
+  if (type == "3d") {
+    return(scatter_3d(object, ...))
+  }
+
+  x_axis <- resolve_deprecated_xaxis(x_axis, xaxis, "autoplot")
 
   # slice_model_frame() can sometimes recover data-argument-less models from
   # the formula environment, but not reliably (e.g. models fitted inside a

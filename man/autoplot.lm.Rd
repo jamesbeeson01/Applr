@@ -4,34 +4,42 @@
 \alias{autoplot.lm}
 \title{Automatically plot a linear model}
 \usage{
-\method{autoplot}{lm}(object, ..., x_axis = NULL, xaxis = NULL)
+\method{autoplot}{lm}(object, ..., type = c("2d", "3d"), x_axis = NULL, xaxis = NULL)
 }
 \arguments{
 \item{object}{A linear model fitted by \code{\link[=lm]{lm()}} \strong{with a \code{data} argument} —
 the data is recovered from the model, so \code{lm(y ~ x, data = your_data)}
 works but \code{lm(your_data$y ~ your_data$x)} does not.}
 
-\item{...}{Passed on to \code{\link[=geom_slice]{geom_slice()}}: for example
+\item{...}{Passed on to \code{\link[=geom_slice]{geom_slice()}} — for example
 \code{predict_vars = list(hp = 110)} to choose the slice,
 \code{interval = "confidence"} for a ribbon, or fixed aesthetics such as
-\code{color = "red"}.}
+\code{color = "red"} — or to \code{\link[=scatter_3d]{scatter_3d()}} when \code{type = "3d"}.}
+
+\item{type}{\code{"2d"} (default) for a \code{\link[=geom_slice]{geom_slice()}} ggplot, or \code{"3d"} for an
+interactive \code{\link[=scatter_3d]{scatter_3d()}} surface (needs exactly two numeric predictors).}
 
 \item{x_axis}{The name of the predictor to place on the x-axis, such as
-\code{x_axis = "disp"}. Defaults to the model's first numeric predictor.}
+\code{x_axis = "disp"}. Defaults to the model's first numeric predictor.
+Ignored when \code{type = "3d"}.}
 
 \item{xaxis}{Deprecated; use \code{x_axis} instead.}
 }
 \value{
 A ggplot of the model's data with a slice of the model drawn
-through it.
+through it, or — when \code{type = "3d"} — a plotly surface from \code{\link[=scatter_3d]{scatter_3d()}}.
 }
 \description{
 \code{autoplot()} turns a fitted \code{\link[=lm]{lm()}} into a complete ggplot in one call: the
-data the model was fitted to as a scatter, a \code{\link[=geom_slice]{geom_slice()}} prediction line
-through it. The result is a regular ggplot, so it
-can be extended with \code{+} as usual (labels, scales, more layers).
+data the model was fitted to as a scatter, with a \code{\link[=geom_slice]{geom_slice()}} prediction
+line through it. The result is a regular ggplot, so it can be extended with
+\code{+} as usual (labels, scales, more layers).
 }
 \details{
+Pass \code{type = "3d"} for a model with exactly two numeric predictors to get an
+interactive \code{\link[=scatter_3d]{scatter_3d()}} surface instead of the 2-D slice; \code{...} is then
+forwarded to \code{\link[=scatter_3d]{scatter_3d()}} (e.g. \code{n}, \code{colors}).
+
 The model's \emph{first numeric} predictor goes on the x-axis (override with
 \code{x_axis}) and the raw response variable goes on the y-axis. Everything else
 is handled by \code{\link[=geom_slice]{geom_slice()}} and reported on the console: predictors not
@@ -40,11 +48,16 @@ factor/character), and a transformed response such as \code{lm(log(y) ~ x)} is
 automatically back-transformed to match the raw y-axis.
 }
 \examples{
-\dontrun{
+library(ggplot2)
+
+# A complete plot from a model in one call
 autoplot(lm(mpg ~ disp, data = mtcars))
 
-# Invisible predictors are imputed (a message says how)
+# Predictors not on the plot are imputed (a message says how)
 autoplot(lm(mpg ~ disp + hp, data = mtcars))
+
+# Choose which predictor goes on the x-axis
+autoplot(lm(mpg ~ disp + hp, data = mtcars), x_axis = "hp")
 
 # Transformed response, back-transformed onto the raw mpg axis
 autoplot(lm(log(mpg) ~ disp, data = mtcars))
@@ -53,6 +66,15 @@ autoplot(lm(log(mpg) ~ disp, data = mtcars))
 autoplot(lm(mpg ~ disp + hp, data = mtcars),
          predict_vars = list(hp = 110), interval = "confidence") +
   labs(title = "Slice at hp = 110")
+
+# An interactive 3-D surface for a two-predictor model
+if (interactive()) {
+  autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
 }
 
+}
+\seealso{
+\code{\link[=geom_slice]{geom_slice()}}, which draws the line and handles everything
+slice-shaped; \code{\link[=scatter_3d]{scatter_3d()}} for the interactive surface; and
+\code{\link[=geom_slice_subtitle]{geom_slice_subtitle()}} / \code{\link[=geom_slice_text]{geom_slice_text()}} to annotate the result.
 }

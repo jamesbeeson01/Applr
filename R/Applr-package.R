@@ -41,8 +41,6 @@
 #'   \item The package README for a brief tour
 #' }
 #'
-#' @docType package
-#' @name Applr
 #' @aliases Applr-package Applr
 #'
 #' @import ggplot2
@@ -51,4 +49,4 @@
 #' @import rlang
 #' @import graphics
 #' @import stats
-NULL
+"_PACKAGE"

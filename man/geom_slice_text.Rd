@@ -55,12 +55,18 @@ labels describe the grouping aesthetic instead (\code{"g: A"}). Each label
 inherits its line's color.
 }
 \examples{
-\dontrun{
-model <- lm(y ~ x + x2, data = dat)
-ggplot(dat, aes(x, y)) +
-  geom_point() +
-  geom_slice(model, predict_vars = list(x2 = c(0, 4))) +
-  geom_slice_text()
-}
+library(ggplot2)
 
+# Two visually identical lines, told apart by their labels
+model <- lm(mpg ~ disp + hp, data = mtcars)
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_slice(model, predict_vars = list(hp = c(66, 335))) +
+  geom_slice_text()
+
+}
+\seealso{
+\code{\link[=geom_slice]{geom_slice()}} for the layers being labeled;
+\code{\link[=geom_slice_subtitle]{geom_slice_subtitle()}} / \code{\link[=geom_slice_caption]{geom_slice_caption()}} to describe the slice
+in the plot's text instead.
 }

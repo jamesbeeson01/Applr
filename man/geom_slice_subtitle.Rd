@@ -39,12 +39,18 @@ treated the same — both are unlabeled held values. When nothing is held,
 the line is dropped entirely.
 }
 \examples{
-\dontrun{
-model <- lm(y ~ x + x2, data = dat)
-ggplot(dat, aes(x, y)) +
+library(ggplot2)
+
+# Subtitle reports the model equation and that hp is held at its mean
+model <- lm(mpg ~ disp + hp, data = mtcars)
+ggplot(mtcars, aes(disp, mpg)) +
   geom_point() +
   geom_slice(model) +
   geom_slice_subtitle()
-}
 
+}
+\seealso{
+\code{\link[=geom_slice]{geom_slice()}} for the layers being described;
+\code{\link[=geom_slice_caption]{geom_slice_caption()}} for the same text in the caption;
+\code{\link[=geom_slice_text]{geom_slice_text()}} to label the lines themselves.
 }

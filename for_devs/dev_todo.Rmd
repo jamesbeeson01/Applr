@@ -15,6 +15,7 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 ## General
 
 - [ ] plotly overwrite issue in `known_issues.md`
+- [ ] pictures in README
 - [ ] Check for comprehensiveness of testing suite and edge cases
 - [ ] Fix remaining errors in `known_issues.Rmd`
 - [x] **priority: high** — Update code examples in README (particularly geom_slice) — DONE 2026-07-12 (full rewrite: current API, drawit removed, covers autoplot / intervals / bands / slice-text helpers, issues link)
@@ -28,6 +29,7 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 
 ## autoplot
 
+- [ ] Add labels to autoplot
 - [x] **priority: high** — Document well — DONE 2026-07-12 (runnable examples incl. `x_axis`, forwarded `predict_vars`/`interval`; `@seealso` cross-links)
 - [ ] Note functionality that really should be there but isn't - take it beyond autoplot(model)
 
@@ -52,9 +54,9 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 ## scatter_3d
 
 - [ ] Find a way to test it (if only just in report.Rmd)
-- [ ] scatter_3d breaks on models with I() terms — e.g. lm(mpg ~ wt + I(wt^2) + hp, mtcars) passes the all.vars check (3 variables) but model$model has 4 columns, so it grabs wt and I(wt^2) as the two predictors and predict() fails with object 'hp' not found.
-- [ ] scatter_3d's colors argument appears ineffective in practice — it's passed to add_markers(colors = ...) but no color = aesthetic is mapped, so the gradient never shows.
-- [ ] scatter_3d builds its plotly call via eval(parse(text = ...))) — fragile with unusual variable names (e.g. containing quotes or backticks); could be rewritten with as.formula/~ construction.
+- [x] scatter_3d breaks on models with I() terms — DONE 2026-07-12 (axes now read from `all.vars(formula)` + `slice_model_frame()` for the raw predictors, not `model$model`'s columns, so transformed terms like `I(wt^2)` graph over their raw variables; predict() failures are caught with a `slice_abort`).
+- [x] scatter_3d's colors argument appears ineffective in practice — DONE 2026-07-12 (`add_markers(color = ~z, colors = colors)` now maps the response to the gradient so it shows).
+- [x] scatter_3d builds its plotly call via eval(parse(text = ...))) — DONE 2026-07-12 (rewritten with a safe-named `~x/~y/~z` frame and direct plotly calls; no `eval(parse())`, no unusual-name fragility).
 
 ## drawit
 
@@ -103,3 +105,4 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 - [x] Consider fancy formatter for lm_equation and geom_slice_subtitle that communicates factors clearer such as `4.09*(g="B")` instead of `gB`
 - [x] Edit naming conditions in `decisions.Rmd`
 - [x] Fix gs_53-56 to render a plot (most if not all)
+- [x] `autoplot(model, type = "3d")` delegates to `scatter_3d()` (2-D slice remains the default); non-numeric predictors get a clean error rather than a broken plot.

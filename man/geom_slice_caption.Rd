@@ -30,12 +30,18 @@ or \code{\link[=geom_slice_text]{geom_slice_text()}} already label it, and every
 \code{\link[=geom_slice_subtitle]{geom_slice_subtitle()}}; see its documentation for the details.
 }
 \examples{
-\dontrun{
-model <- lm(y ~ x + x2, data = dat)
-ggplot(dat, aes(x, y)) +
+library(ggplot2)
+
+# Caption reports the model equation and that hp is held at its mean
+model <- lm(mpg ~ disp + hp, data = mtcars)
+ggplot(mtcars, aes(disp, mpg)) +
   geom_point() +
   geom_slice(model) +
   geom_slice_caption()
-}
 
+}
+\seealso{
+\code{\link[=geom_slice_subtitle]{geom_slice_subtitle()}} for the full documentation of what is
+reported; \code{\link[=geom_slice]{geom_slice()}} for the layers being described;
+\code{\link[=geom_slice_text]{geom_slice_text()}} to label the lines themselves.
 }
