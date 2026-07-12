@@ -119,7 +119,6 @@ data-generation lines of a `gs_` case without regenerating its reference).
 | `gs_` | `geom_slice` (granular; each has a reference image) | visual |
 | `s2_` | `slice_2d` | visual |
 | `as_` | `add_slice_2d` | visual |
-| `dw_` | `drawit` | visual |
 | `ap_` | `autoplot.lm` (the geom_slice × autoplot interface, not full geom_slice coverage) | visual |
 | `le_` | `lm_equation` | console |
 

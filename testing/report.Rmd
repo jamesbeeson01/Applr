@@ -143,7 +143,7 @@ case_block <- function(m) {
 }
 
 preferred <- c("geom_slice", "geom_fit", "slice_2d", "add_slice_2d",
-               "drawit", "geom_add_slice_2d", "lm_equation", "error handling")
+               "geom_add_slice_2d", "lm_equation", "error handling")
 funcs <- vapply(meta, `[[`, "", "func")
 func_order <- c(intersect(preferred, funcs), setdiff(unique(funcs), preferred))
 
