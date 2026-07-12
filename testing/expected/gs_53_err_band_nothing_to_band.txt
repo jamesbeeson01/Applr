@@ -1,0 +1,2 @@
+Warning: band = TRUE, but the model has no variable to span - every predictor is already shown on the plot. No band is drawn.
+    A band spans a second predictor besides the x-axis variable; add one to the model. 

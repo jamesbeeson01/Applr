@@ -148,15 +148,37 @@ autoplot(model) +
   facet_wrap(~MagicTwoGroups)
 ```
 
+```{r}
+set.seed(123)
+
+n <- 60
+x <- runif(n, -10, 10)
+x2 <- sample(c(0, 2, 4), n, replace = TRUE)
+x3 <- sample(c(0, 1), n, replace = TRUE)
+y <- x + 3 * x2 + 0.7 * x3 + rnorm(n)
+dat <- data.frame(x, x2, x3, y)
+model <- lm(y ~ x + x2 + x3, data = dat)
+
+ggplot(dat, aes(x, y, color = factor(x2))) +
+  geom_point() +
+  facet_wrap(~x3) +
+  geom_slice(model)
+```
+
+
 ## Features
 
 
-3. While this is great for visualizing, and gives much quicker iteration that before, it would be cool to have a more exploratory chart. What if it built off plotly to put sliders on all unmapped variables? It still hits defaults similar to geom_slice - and in every way behaves like geom_slice (we don't want inconsistencies in the package), but adds sliders. Maybe even buttons for things like color by, but I'd need to feel that.
+3. geom_slice is great for visualizing, and gives much quicker iteration that other methods, but it would be cool to have a more exploratory chart. What if we put sliders on all unmapped variables? It still hits defaults similar to geom_slice - and in every way behaves like geom_slice (we don't want inconsistencies in the package), but adds sliders for the hidden variables that aren't shown by color or facet or axis or linetype. Maybe even buttons for things like color by, but I'd need to feel that.
   - autoplot(model, sliders=TRUE)
   - autoplot(model, sliders=c(disp, cyl))
   - Those are built off of an implementation that can be used standalone
-  - ggvis is cool. It's smooth, but slow and looks inferior stylistically. It doesn't feel like a real time slider, like you slide it THEN it rerenders
-  - plotly seems like the way to go
+  - plotly seems like the way to go for this.
+A few concerns: 
+- how well can it integrate with this package as it stands (geom_slice, geom_slice_subtitle, geom_slice_text, geom_slice_band)
+- how intuitive can it be to match the style of the ggplot functions?
+- Will we have to make edits in two places every time geom_slice is modified (the ggplot and plotly implementations)
+- What will the interface look like for these plotting functions? Both autoplot implementation and base plotly
 
 4. Add confidence/prediction interval fill to legend optionally?
 

@@ -1,0 +1,4 @@
+Warning: `band` variable "x3" is not a predictor in the model. No band is drawn.
+    Use 'band = "x_pos"', or 'band = TRUE' to choose automatically. 
+Message: Value for `x_pos` not specified - Used mean: 4.77
+    To choose a slice, use 'predict_vars = list(x_pos = 4.77)'. 

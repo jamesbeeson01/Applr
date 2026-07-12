@@ -68,8 +68,25 @@ slice_subtitle_held <- function(plot, slice_layers, model) {
     slice_text_label_vars, plot = plot
   )))
 
+  # A banded variable spans a range instead of being held; report it with its
+  # own wording. Resolution mirrors build_slice_spec(); errors are its job to
+  # raise (they fire when the plot builds), so failures here just drop the line.
+  band <- NULL
+  for (sl in slice_layers) {
+    b <- sl$stat_params$band
+    if (is.null(b) || isFALSE(b)) next
+    band <- tryCatch(
+      resolve_slice_band(b, sl$stat_params$predict_vars %||% list(),
+                         predictor_vars, x_vars, c(group_vars, facet_vars),
+                         raw_data, quiet = TRUE),
+      error = function(e) NULL
+    )
+    if (!is.null(band)) break
+  }
+
   held_vars <- setdiff(predictor_vars,
-                       c(x_vars, group_vars, facet_vars, labeled_vars))
+                       c(x_vars, group_vars, facet_vars, labeled_vars,
+                         if (!is.null(band)) band$var))
   held <- list()
   for (var in held_vars) {
     held[[var]] <- if (!is.null(predict_vars[[var]])) {
@@ -79,7 +96,7 @@ slice_subtitle_held <- function(plot, slice_layers, model) {
       suppressMessages(impute_value(raw_data[[var]], var))
     }
   }
-  held
+  list(held = held, band = band)
 }
 
 # The "held at: x2 = 2.507; g = \"A\"" line from a named list of held values.
@@ -91,6 +108,13 @@ slice_subtitle_held_line <- function(held) {
                            collapse = ", "))
   }, character(1))
   paste0("held at: ", paste(parts, collapse = "; "))
+}
+
+# The "projection: x2 spanning 1-4" line for a banded variable, from the
+# list(var =, values = c(lo, hi)) that resolve_slice_band() returns.
+slice_subtitle_band_line <- function(band) {
+  paste0("projection: ", band$var, " spanning ",
+         format_value(band$values[1]), "-", format_value(band$values[2]))
 }
 
 
@@ -125,7 +149,9 @@ ggplot_add.slice_subtitle_spec <- function(object, plot, ...) {
   }
 
   model <- models[[1]]
-  held <- slice_subtitle_held(plot, slice_layers, model)
+  info <- slice_subtitle_held(plot, slice_layers, model)
+  held <- info$held
+  band <- info$band
   equation <- lm_equation(model)
 
   if (is.function(object$format)) {
@@ -134,6 +160,7 @@ ggplot_add.slice_subtitle_spec <- function(object, plot, ...) {
     lines <- character(0)
     if (isTRUE(object$model)) lines <- equation
     if (length(held) > 0) lines <- c(lines, slice_subtitle_held_line(held))
+    if (!is.null(band)) lines <- c(lines, slice_subtitle_band_line(band))
     if (length(lines) == 0) return(plot)
     subtitle <- paste0(object$prepend,
                        paste(lines, collapse = "\n"),

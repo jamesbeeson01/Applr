@@ -262,6 +262,142 @@ check_slice_interval <- function(interval) {
   interval
 }
 
+# Validate `band` at construction time; returns FALSE, TRUE, or the variable
+# name. Whether a named variable can actually band (it must be a model
+# predictor the plot doesn't already show) is only knowable once the plot's
+# mapping is resolved, so those checks live in resolve_slice_band().
+check_slice_band <- function(band, interval) {
+  if (isFALSE(band) || is.null(band)) return(FALSE)
+  is_name <- is.character(band) && length(band) == 1 && !is.na(band)
+  if (!isTRUE(band) && !is_name) {
+    slice_abort(
+      what = "`band` must be TRUE, FALSE, or the name of one model predictor.",
+      hint = "For example, 'band = TRUE' or 'band = \"x2\"'."
+    )
+  }
+  if (!identical(interval, "none")) {
+    slice_abort(
+      what = "`band` and `interval` cannot be combined in one geom_slice() layer.",
+      hint = "Drop 'interval =' to draw the band, or 'band =' to draw the interval ribbon."
+    )
+  }
+  band
+}
+
+# Resolve which variable a projection band spans, and between which two
+# values. Returns NULL (no band) or list(var =, values = c(lo, hi)).
+# A band that cannot be resolved warns and returns NULL — the band is
+# skipped but the slice lines still draw.
+# With band = TRUE the variable is inferred: the one multi-value predict_vars
+# entry if there is one, otherwise the single predictor the plot does not
+# already show. The range comes from predict_vars when given, otherwise the
+# variable's observed range in the model's data.
+resolve_slice_band <- function(band, predict_vars, predictor_vars, x_vars,
+                               pinned_vars, raw_data, quiet = FALSE) {
+  if (isFALSE(band) || is.null(band)) return(NULL)
+  backticked <- function(vars) paste0("`", vars, "`", collapse = ", ")
+
+  # Predictors a band could actually span on this plot, and a hint that names
+  # them (or, when there are none, says what to do about it).
+  bandable <- setdiff(predictor_vars, c(x_vars, pinned_vars))
+  bandable_hint <- if (length(bandable) == 1) {
+    paste0("Use 'band = \"", bandable, "\"', or 'band = TRUE' to choose automatically.")
+  } else if (length(bandable) > 1) {
+    paste0("Use one of ", backticked(bandable), ", such as 'band = \"", bandable[1],
+           "\"', or 'band = TRUE' to choose automatically.")
+  } else {
+    "A band spans a second predictor besides the x-axis variable; add one to the model."
+  }
+
+  if (isTRUE(band)) {
+    multi <- setdiff(names(predict_vars)[lengths(predict_vars) > 1], x_vars)
+    if (length(multi) > 1) {
+      slice_warn(
+        what = paste0("band = TRUE is ambiguous: several `predict_vars` variables ",
+                      "have multiple values (", backticked(multi), "). No band is drawn."),
+        hint = paste0("Name the one to span, such as 'band = \"", multi[1], "\"'.")
+      )
+      return(NULL)
+    }
+    if (length(multi) == 1) {
+      var <- multi
+    } else {
+      candidates <- setdiff(predictor_vars,
+                            c(x_vars, pinned_vars, names(predict_vars)))
+      if (length(candidates) == 0) {
+        slice_warn(
+          what = paste0("band = TRUE, but the model has no variable to span - ",
+                        "every predictor is already shown on the plot. No band is drawn."),
+          hint = "A band spans a second predictor besides the x-axis variable; add one to the model."
+        )
+        return(NULL)
+      }
+      if (length(candidates) > 1) {
+        slice_warn(
+          what = paste0("band = TRUE is ambiguous: any of ", backticked(candidates),
+                        " could be spanned. No band is drawn."),
+          hint = paste0("Name the one to span, such as 'band = \"", candidates[1], "\"'.")
+        )
+        return(NULL)
+      }
+      var <- candidates
+    }
+  } else {
+    var <- band
+    if (!var %in% predictor_vars) {
+      slice_warn(
+        what = paste0("`band` variable \"", var,
+                      "\" is not a predictor in the model. No band is drawn."),
+        hint = bandable_hint
+      )
+      return(NULL)
+    }
+    if (var %in% x_vars) {
+      slice_warn(
+        what = paste0("`band` variable `", var,
+                      "` is on the x-axis, so it already varies along the line. ",
+                      "No band is drawn."),
+        hint = bandable_hint
+      )
+      return(NULL)
+    }
+    if (var %in% pinned_vars) {
+      slice_warn(
+        what = paste0("`band` variable `", var, "` is used by the plot's ",
+                      "grouping or faceting, so each line already uses its own value. ",
+                      "No band is drawn."),
+        hint = bandable_hint
+      )
+      return(NULL)
+    }
+  }
+
+  if (!is.numeric(raw_data[[var]])) {
+    slice_warn(
+      what = paste0("`band` variable `", var,
+                    "` is not numeric, so it has no range to span. No band is drawn."),
+      hint = paste0("Bands span a numeric predictor; for a factor, map it to a ",
+                    "grouping aesthetic for one line per level instead.")
+    )
+    return(NULL)
+  }
+
+  if (!is.null(predict_vars[[var]])) {
+    values <- range(coerce_like(predict_vars[[var]], raw_data[[var]], var))
+  } else {
+    values <- range(raw_data[[var]], na.rm = TRUE)
+    if (!quiet) {
+      slice_inform(
+        what = paste0("Band range for `", var, "` not specified - used the min/max data range: ",
+                      format_value(values[1]), " to ", format_value(values[2]), "."),
+        hint = paste0("To choose the range, use 'predict_vars = list(", var, " = c(",
+                      format_value(values[1]), ", ", format_value(values[2]), "))'.")
+      )
+    }
+  }
+  list(var = var, values = values)
+}
+
 # Error if the data on the plot is visibly different from the data the model
 # was fitted to (a slice through one model drawn over another dataset is
 # meaningless, but looks plausible). Only *positive* mismatches abort: when the
@@ -432,8 +568,13 @@ build_slice_spec <- function(params, layout) {
     )
   }
 
+  # --- projection band: one variable spans a range instead of being held ---
+  band <- resolve_slice_band(params$band, predict_vars, predictor_vars, x_vars,
+                             c(unlist(group_aes), facet_vars), raw_data)
+
   # --- held variables: everything the plot does not show ---
-  held_vars <- setdiff(predictor_vars, c(x_vars, unlist(group_aes), facet_vars))
+  held_vars <- setdiff(predictor_vars, c(x_vars, unlist(group_aes), facet_vars,
+                                         if (!is.null(band)) band$var))
   held <- list()
   for (var in held_vars) {
     held[[var]] <- if (!is.null(predict_vars[[var]])) {
@@ -452,6 +593,7 @@ build_slice_spec <- function(params, layout) {
     facet_vars = facet_vars,
     facet_layout = facet_layout,
     held = held,
+    band = band,
     y_fn = resolve_y_fn(model, mapping$y, params$back_transform)
   )
 }
@@ -537,9 +679,8 @@ compute_slice_group <- function(data, scales, spec, n, interval = "none") {
   combos <- expand.grid(spec$held, KEEP.OUT.ATTRS = FALSE, stringsAsFactors = FALSE)
   if (nrow(combos) == 0) combos <- data.frame(row.names = 1)
 
-  lines <- lapply(seq_len(nrow(combos)), function(i) {
-    for (var in names(combos)) newdata[[var]] <- combos[[var]][i]
-    predictions <- tryCatch(
+  safe_predict <- function(newdata) {
+    tryCatch(
       predict(spec$model, newdata = newdata, interval = interval),
       error = function(e) {
         slice_abort(
@@ -548,6 +689,25 @@ compute_slice_group <- function(data, scales, spec, n, interval = "none") {
         )
       }
     )
+  }
+
+  lines <- lapply(seq_len(nrow(combos)), function(i) {
+    for (var in names(combos)) newdata[[var]] <- combos[[var]][i]
+    if (!is.null(spec$band)) {
+      # A projection band: predict at both ends of the banded variable's
+      # range. pmin/pmax keep the ribbon upright when the band's effect (or
+      # y_fn) is decreasing.
+      newdata[[spec$band$var]] <- spec$band$values[1]
+      lo <- y_trans$transform(spec$y_fn(safe_predict(newdata)))
+      newdata[[spec$band$var]] <- spec$band$values[2]
+      hi <- y_trans$transform(spec$y_fn(safe_predict(newdata)))
+      out <- data.frame(x = x_panel[ord], y = ((lo + hi) / 2)[ord],
+                        ymin = pmin(lo, hi)[ord], ymax = pmax(lo, hi)[ord],
+                        extra, row.names = NULL)
+      if (nrow(combos) > 1) out$group <- data$group[1] * nrow(combos) + (i - 1)
+      return(out)
+    }
+    predictions <- safe_predict(newdata)
     if (is.matrix(predictions)) {
       # interval = "confidence"/"prediction": fit, lwr, upr columns. pmin/pmax
       # keep the ribbon upright when y_fn is decreasing (e.g. inverse).
@@ -606,7 +766,8 @@ StatSlice <- ggproto(
 
   compute_group = function(data, scales, model, predict_vars = list(),
                            back_transform = NULL, n = 100, interval = "none",
-                           mapping = NULL, slice_spec = NULL, na.rm = FALSE) {
+                           band = FALSE, mapping = NULL, slice_spec = NULL,
+                           na.rm = FALSE) {
     compute_slice_group(data, scales, slice_spec, n, interval)
   }
 )
@@ -632,6 +793,49 @@ GeomSlice <- ggproto(
     weight = 1,
     alpha = 0.4
   )
+)
+
+#' GeomSliceBand
+#'
+#' The geom behind [geom_slice()] when `band` is requested: a translucent
+#' ribbon between the two edge slices, with each edge drawn as an ordinary
+#' slice line. Like [GeomSlice], `alpha` styles the ribbon, not the lines.
+#'
+#' @format An object of class \code{ggproto}, inheriting from \code{GeomSlice}.
+#'
+#' @export
+GeomSliceBand <- ggproto(
+  "GeomSliceBand",
+  GeomSlice,
+  draw_group = function(self, data, panel_params, coord, lineend = "butt",
+                        linejoin = "round", linemitre = 10, se = TRUE,
+                        flipped_aes = FALSE, na.rm = FALSE) {
+    # No ymin/ymax means the band could not be resolved (the stat already
+    # warned); draw the slice line alone.
+    if (is.null(data$ymin) || all(is.na(data$ymin))) {
+      return(ggproto_parent(GeomSlice, self)$draw_group(
+        data, panel_params, coord, lineend = lineend, linejoin = linejoin,
+        linemitre = linemitre, se = FALSE, flipped_aes = flipped_aes
+      ))
+    }
+    ribbon <- transform(data, colour = NA)
+    # A band is one object in one color: when fill was not set (still the
+    # default), the ribbon takes the edge lines' colour, so a grouping
+    # aesthetic mapped to colour colors the whole band.
+    default_fill <- self$default_aes$fill
+    ribbon$fill <- ifelse(ribbon$fill == default_fill, data$colour, ribbon$fill)
+    edges <- lapply(c("ymin", "ymax"), function(edge) {
+      line <- data
+      line$y <- data[[edge]]
+      line$alpha <- NA
+      GeomLine$draw_panel(line, panel_params, coord, lineend = lineend)
+    })
+    grid::grobTree(
+      GeomRibbon$draw_group(ribbon, panel_params, coord,
+                            flipped_aes = flipped_aes, na.rm = na.rm),
+      edges[[1]], edges[[2]]
+    )
+  }
 )
 
 # A Layer subclass that hands the layer's fully-resolved aesthetic mapping to
@@ -699,7 +903,14 @@ ggplot_add.SliceLayer <- function(object, plot, ...) {
 #'   `predict_vars = list(x2 = c(1, 2, 3), x3 = c(1, 4))` draws 6 lines.
 #' @param interval Draw a ribbon around the line: `"none"` (default), or
 #'   `"confidence"` / `"prediction"` for the corresponding [predict.lm()]
-#'   interval.
+#'   interval. Cannot be combined with `band`.
+#' @param band Draw a *projection band* — two edge slices with a translucent
+#'   ribbon between them — instead of a single line. `band = "variable"` spans
+#'   that predictor: between the values you gave in `predict_vars` (e.g.
+#'   `predict_vars = list(x2 = c(1, 4))`), or its observed data range when
+#'   `predict_vars` leaves it out. `band = TRUE` infers the variable: the one
+#'   multi-value `predict_vars` entry, or the single predictor the plot does
+#'   not otherwise show. Default `FALSE`.
 #' @param back_transform How to map predictions onto the y-axis when the
 #'   model's response is transformed. Default `NULL` (and `TRUE`) auto-detects
 #'   from the model formula; `FALSE` turns back-transformation off; a
@@ -746,6 +957,7 @@ geom_slice <- function(model,
                        predict_vars = list(),
                        back_transform = NULL,
                        interval = "none",
+                       band = FALSE,
                        ...,
                        xaxis = NULL) {
   if (!is.null(xaxis)) {
@@ -766,6 +978,7 @@ geom_slice <- function(model,
   check_predict_vars(predict_vars, model)
   back_transform <- check_back_transform(back_transform)
   interval <- check_slice_interval(interval)
+  band <- check_slice_band(band, interval)
   if (!is.numeric(n) || length(n) != 1 || is.na(n) || n < 2) {
     slice_abort(
       what = "`n` must be a single number of at least 2.",
@@ -779,7 +992,7 @@ geom_slice <- function(model,
 
   layer(
     stat = StatSlice,
-    geom = GeomSlice,
+    geom = if (isFALSE(band)) GeomSlice else GeomSliceBand,
     position = "identity",
     inherit.aes = inherit.aes,
     show.legend = NA,
@@ -790,8 +1003,9 @@ geom_slice <- function(model,
       n = n,
       back_transform = back_transform,
       interval = interval,
+      band = band,
       # GeomSmooth only draws the ribbon when its `se` param says so
-      se = !identical(interval, "none"),
+      se = !identical(interval, "none") || !isFALSE(band),
       ...
     ),
     layer_class = SliceLayer

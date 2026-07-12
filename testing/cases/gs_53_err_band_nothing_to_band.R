@@ -1,11 +1,12 @@
 # CASE: gs_53_err_band_nothing_to_band
 # TYPE: console
 # FUNC: geom_slice
-# EXPECT: A clear, student-readable error: band = TRUE but the model has no
+# EXPECT: A clear, student-readable warning: band = TRUE but the model has no
 #         variable to band — y ~ x uses the x-axis variable as its only
-#         predictor, so there is nothing to span. The error should name the
-#         problem and hint that a band needs a second predictor (or a
-#         band = "variable" choice).
+#         predictor, so there is nothing to span. The warning should name the
+#         problem, say no band is drawn, and hint that a band needs a second
+#         predictor (or a band = "variable" choice). The slice line still
+#         draws — no further errors.
 
 source("testing/_setup.R")
 set.seed(123)

@@ -1,11 +1,13 @@
 # CASE: gs_54_err_band_var_not_in_model
 # TYPE: console
 # FUNC: geom_slice
-# EXPECT: A clear, student-readable error: band = "x3" names a variable that
-#         exists in the data set but is NOT a predictor in the model, so the
-#         model's predictions cannot vary with it and no band is possible.
-#         The error should say the variable is not in the model and hint at
-#         the model's actual predictors.
+# EXPECT: A clear, student-readable warning: band = "x3" names a variable that
+#         exists in the data set but is NOT a predictor in the model, so no
+#         band is possible. The warning should say the variable is not in the
+#         model, say no band is drawn, and hint at predictors a band could
+#         actually use (here x_pos, not the x-axis variable), plus band = TRUE
+#         to choose automatically. The slice line still draws — no further
+#         errors.
 
 source("testing/_setup.R")
 set.seed(123)
