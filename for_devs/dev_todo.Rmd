@@ -14,24 +14,30 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 
 ## General
 
-- [ ] plotly overwrite issue in `known_issues.md`
+- [/] Link to autoplot.lm in the main docs page
+- [ ] plotly overwrite issue in `known_issues.md` (should resolve with `@importFrom`)
 - [ ] pictures in README
-- [ ] Check for comprehensiveness of testing suite and edge cases
-- [ ] Fix remaining errors in `known_issues.Rmd`
 - [x] **priority: high** — Update code examples in README (particularly geom_slice) — DONE 2026-07-12 (full rewrite: current API, drawit removed, covers autoplot / intervals / bands / slice-text helpers, issues link)
-- [ ] Simplify context in CLAUDE.md - move to either skill or testing/README.md
 - [x] **priority: high** (folded into ULTRA naming decision above) — Consider if the names `slice_2d` and `geom_slice` convey their function best — RESOLVED 2026-07-12: names kept
-- [ ] Tidy repo functions that haven't been visited since geom_slice refactor
 - [x] **priority: high** — `@return` + rich `@examples` on every exported function — DONE 2026-07-12 (utility + geom_slice family + autoplot; `get_inverse_function` now `@noRd`; examples smoke-tested. `slice_2d`/`add_slice_2d` kept their existing briefer examples — enrich if desired)
 - [ ] **priority: high** — "Getting started" vignette (after naming decision lands, so examples use final names)
 - [ ] **priority: high** — Narrow blanket `@import` roxygen tags to `@importFrom` across `R/` (after docs prompts land — same files)
 - [ ] **priority: high** — `devtools::check()` clean, then bump Version to 1.0.0 and tag (see `release_plan_1.0.md` Phase 4)
+- [ ] Check for comprehensiveness of testing suite and edge cases
+- [ ] Fix remaining errors in `known_issues.Rmd`
+- [ ] Simplify context in CLAUDE.md - move to either skill or testing/README.md
+
+## README 
+
+- [ ] Improve models - the models used are super unimpressive because they don't fit the data very well 
+- [ ] Readability for band 
+- [ ] Show off the labeling functions
 
 ## autoplot
 
-- [ ] Add labels to autoplot
+- [ ] Add labels to autoplot by default (`geom_slice_subtitle`, maybe `geom_slice_text`)
 - [x] **priority: high** — Document well — DONE 2026-07-12 (runnable examples incl. `x_axis`, forwarded `predict_vars`/`interval`; `@seealso` cross-links)
-- [ ] Note functionality that really should be there but isn't - take it beyond autoplot(model)
+- [ ] Add aes() and data mapping
 
 ## geom_slice
 
@@ -44,6 +50,7 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 
 ## slice_2d
 
+- [ ] Either add functionality for fancy x-axes, or deprecate fancy x axis test cases
 - [ ] Roll out the `slice_*()` condition helpers to `slice_2d.R` and related (their hand-rolled messages mostly follow the format but bypass the helpers).
 - [x] **priority: high** (blocked on ULTRA naming decision above) — Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `x_axis`), adding deprecation aliases for any public arguments that change. (`geom_slice`'s public args — `predict_vars`, `back_transform`, `n` — now conform; `slice_2d`/`drawit` still use `x_axis`, which `decisions.Rmd` currently permits.)
 - [x] **priority: high** (blocked on ULTRA naming decision above) — Migrate fully to snake_case (e.g. `x_axis` → `x_axis`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.
@@ -106,3 +113,5 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 - [x] Edit naming conditions in `decisions.Rmd`
 - [x] Fix gs_53-56 to render a plot (most if not all)
 - [x] `autoplot(model, type = "3d")` delegates to `scatter_3d()` (2-D slice remains the default); non-numeric predictors get a clean error rather than a broken plot.
+- [x] Tidy repo functions that haven't been visited since geom_slice refactor
+- [x] delete `global.R`

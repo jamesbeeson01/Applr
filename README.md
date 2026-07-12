@@ -31,6 +31,8 @@ ggplot(mtcars, aes(disp, mpg)) +
   geom_slice(model)
 ```
 
+![autoplot() of an lm: scatter plot with the fitted slice line](man/figures/README-quickstart-autoplot.png)
+
 Both report on the console how the predictor you *don't* see (`hp`) was
 handled — it is held at its mean — so it is always clear which slice of the
 model you are looking at.
@@ -63,6 +65,8 @@ ggplot(mtcars, aes(disp, mpg)) +
              color = "steelblue", linewidth = 1)
 ```
 
+![geom_slice() drawing the model's line in every facet](man/figures/README-facets.png)
+
 ### Choosing slices with `predict_vars`
 
 Give a variable several values to draw one line per value; several
@@ -77,6 +81,8 @@ ggplot(mtcars, aes(disp, mpg)) +
   geom_slice(model, predict_vars = list(hp = c(66, 123, 335)))
 ```
 
+![Three slice lines of the same model, one per hp value](man/figures/README-predict-vars.png)
+
 ### Confidence and prediction intervals
 
 `interval = "confidence"` or `"prediction"` adds the corresponding
@@ -89,6 +95,8 @@ ggplot(mtcars, aes(disp, mpg)) +
   geom_point() +
   geom_slice(model, interval = "prediction")
 ```
+
+![Slice line with a prediction-interval ribbon](man/figures/README-interval.png)
 
 ### Projection bands
 
@@ -105,6 +113,8 @@ ggplot(mtcars, aes(disp, mpg)) +
   geom_point() +
   geom_slice(model, band = "hp", predict_vars = list(hp = c(66, 335)))
 ```
+
+![Projection band spanning hp from 66 to 335](man/figures/README-band.png)
 
 `band = TRUE` infers the variable when there is only one sensible choice
 (the one multi-value `predict_vars` entry, or the single predictor the plot
@@ -125,6 +135,8 @@ ggplot(mtcars, aes(disp, mpg)) +
   geom_slice(model)   # back-transformed onto the raw mpg axis
 ```
 
+![Back-transformed slice of a log-response model on the raw mpg axis](man/figures/README-back-transform.png)
+
 ### Grouping: one line per group
 
 ``` r
@@ -134,6 +146,8 @@ ggplot(mtcars, aes(disp, mpg, color = factor(cyl))) +
   geom_point() +
   geom_slice(model)   # cyl pinned per group; the legend labels the lines
 ```
+
+![One slice line per cyl group, colored to match the points](man/figures/README-grouping.png)
 
 ## Labeling the slices
 
@@ -157,6 +171,8 @@ ggplot(mtcars, aes(disp, mpg)) +
   geom_slice_text()
 ```
 
+![Slice lines labeled at their right ends with hp: 66, hp: 123, hp: 335](man/figures/README-slice-text.png)
+
 Options: `style` (`"variable"` writes `"hp: 66"`, `"value"` writes bare
 values, `"legend"` adds a corner key), `location = "left"`/`"right"`,
 `offset`, and `color`.
@@ -176,6 +192,8 @@ ggplot(mtcars, aes(disp, mpg)) +
   geom_slice(model, predict_vars = list(hp = 110)) +
   geom_slice_subtitle()   # or geom_slice_caption()
 ```
+
+![Plot whose subtitle shows the model equation and the held hp value](man/figures/README-slice-subtitle.png)
 
 Both take `model = FALSE` (drop the equation line), `prepend`/`append`
 strings, and a `format` function for full control.
@@ -197,13 +215,21 @@ autoplot(lm(mpg ~ disp, data = mtcars))
 autoplot(lm(mpg ~ disp + hp, data = mtcars),
          predict_vars = list(hp = 110), interval = "confidence") +
   labs(title = "Slice at hp = 110")
+```
 
+![autoplot() with a confidence interval and a custom title](man/figures/README-autoplot.png)
+
+``` r
 # Choose the x-axis
 autoplot(lm(mpg ~ disp + hp, data = mtcars), x_axis = "hp")
 
 # Two numeric predictors? Get the interactive 3-D surface instead
 autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
 ```
+
+![Interactive 3-D scatter with the fitted regression surface (static snapshot)](man/figures/README-autoplot-3d.png)
+
+*(static snapshot — the real plot is interactive: drag to rotate, hover for values)*
 
 Note: the model must be fitted with a `data` argument
 (`lm(y ~ x, data = your_data)`) so `autoplot()` can recover the data.
@@ -226,6 +252,8 @@ slice_2d(model)
 slice_2d(model, x_axis = "hp", disp = 250, n = 150, col = "blue", lwd = 2)
 ```
 
+![Base-R slice plot with held values reported in the caption](man/figures/README-slice-2d.png)
+
 ### `add_slice_2d()`
 
 Add a 2-D slice line to an *existing* base-R plot. X and Y axis variables
@@ -242,6 +270,8 @@ plot(mpg ~ disp, data = mtcars)
 add_slice_2d(model, hp = min(mtcars$hp), col = "blue")
 add_slice_2d(model, hp = max(mtcars$hp), col = "red", lty = 2)
 ```
+
+![Two slice lines added to an existing base-R plot](man/figures/README-add-slice-2d.png)
 
 This example does not work because the Y axes do not match (y and 1/y):
 
@@ -271,6 +301,10 @@ scatter_3d(model, colors = c("blue", "yellow"))
 scatter_3d(lm(mpg ~ wt + I(wt^2) + hp, data = mtcars))
 ```
 
+![3-D scatter with fitted surface, points colored blue to yellow by mpg (static snapshot)](man/figures/README-scatter-3d.png)
+
+*(static snapshot — the real plot is interactive: drag to rotate, hover for values)*
+
 ### `lm_equation()` and `lm_latex()`
 
 Return the fitted model's equation as plain text, or print it
@@ -293,6 +327,8 @@ model <- lm(mpg ~ wt, data = mtcars)
 diagnose(model)
 ```
 
+![Three diagnostic plots: Residuals vs Fitted, Normal Q-Q, residuals in order](man/figures/README-diagnose.png)
+
 ### `theme_lc()`
 
 A custom **ggplot2** theme plus default aesthetic tweaks.
@@ -303,6 +339,8 @@ ggplot(mtcars, aes(wt, mpg)) +
   geom_point() +
   theme_lc()
 ```
+
+![Scatter plot drawn with theme_lc()](man/figures/README-theme-lc.png)
 
 ### Advanced: `StatSlice` and `GeomSlice`
 
