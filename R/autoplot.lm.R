@@ -42,12 +42,21 @@ ggplot2::autoplot
 #' @returns A ggplot of the model's data with a slice of the model drawn
 #'   through it.
 #'
+#' @seealso [geom_slice()], which draws the line and handles everything
+#'   slice-shaped; [geom_slice_subtitle()] and [geom_slice_text()] to
+#'   annotate the result.
+#'
 #' @examples
-#' \dontrun{
+#' library(ggplot2)
+#'
+#' # A complete plot from a model in one call
 #' autoplot(lm(mpg ~ disp, data = mtcars))
 #'
-#' # Invisible predictors are imputed (a message says how)
+#' # Predictors not on the plot are imputed (a message says how)
 #' autoplot(lm(mpg ~ disp + hp, data = mtcars))
+#'
+#' # Choose which predictor goes on the x-axis
+#' autoplot(lm(mpg ~ disp + hp, data = mtcars), x_axis = "hp")
 #'
 #' # Transformed response, back-transformed onto the raw mpg axis
 #' autoplot(lm(log(mpg) ~ disp, data = mtcars))
@@ -56,7 +65,6 @@ ggplot2::autoplot
 #' autoplot(lm(mpg ~ disp + hp, data = mtcars),
 #'          predict_vars = list(hp = 110), interval = "confidence") +
 #'   labs(title = "Slice at hp = 110")
-#' }
 #'
 #' @export
 autoplot.lm <- function(object, ..., x_axis = NULL, xaxis = NULL) {

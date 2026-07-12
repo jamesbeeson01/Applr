@@ -52,6 +52,9 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 ## scatter_3d
 
 - [ ] Find a way to test it (if only just in report.Rmd)
+- [ ] scatter_3d breaks on models with I() terms — e.g. lm(mpg ~ wt + I(wt^2) + hp, mtcars) passes the all.vars check (3 variables) but model$model has 4 columns, so it grabs wt and I(wt^2) as the two predictors and predict() fails with object 'hp' not found.
+- [ ] scatter_3d's colors argument appears ineffective in practice — it's passed to add_markers(colors = ...) but no color = aesthetic is mapped, so the gradient never shows.
+- [ ] scatter_3d builds its plotly call via eval(parse(text = ...))) — fragile with unusual variable names (e.g. containing quotes or backticks); could be rewritten with as.formula/~ construction.
 
 ## drawit
 

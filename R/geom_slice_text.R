@@ -356,14 +356,19 @@ ggplot_add.slice_text_spec <- function(object, plot, ...) {
 #'
 #' @returns An object that adds the label layers when added to a ggplot.
 #'
+#' @seealso [geom_slice()] for the layers being labeled;
+#'   [geom_slice_subtitle()] / [geom_slice_caption()] to describe the slice
+#'   in the plot's text instead.
+#'
 #' @examples
-#' \dontrun{
-#' model <- lm(y ~ x + x2, data = dat)
-#' ggplot(dat, aes(x, y)) +
+#' library(ggplot2)
+#'
+#' # Two visually identical lines, told apart by their labels
+#' model <- lm(mpg ~ disp + hp, data = mtcars)
+#' ggplot(mtcars, aes(disp, mpg)) +
 #'   geom_point() +
-#'   geom_slice(model, predict_vars = list(x2 = c(0, 4))) +
+#'   geom_slice(model, predict_vars = list(hp = c(66, 335))) +
 #'   geom_slice_text()
-#' }
 #'
 #' @export
 geom_slice_text <- function(style = "variable",

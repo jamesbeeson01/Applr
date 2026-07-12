@@ -1,10 +1,11 @@
-#' Generate an Inverse Function from a Formula LHS
-#'
-#' This function analyzes the Left-Hand Side (LHS) of a formula and constructs
-#' a function that performs the mathematical inverse.
-#'
-#' @param f A formula (e.g., log(y) ~ x) or an expression/call.
-#' @return A function accepting one argument (x) that returns the back-transformed value.
+# Generate an Inverse Function from a Formula LHS
+#
+# Analyzes the Left-Hand Side (LHS) of a formula and constructs a function
+# that performs the mathematical inverse, e.g. log(y) ~ x yields exp(x).
+# Internal helper: takes a formula (e.g., log(y) ~ x) or an expression/call,
+# returns a one-argument function giving the back-transformed value, or NULL
+# (with a message) if no inverse can be built.
+#' @noRd
 get_inverse_function <- function(f) {
 
   # 1. Extract the LHS expression from the formula

@@ -207,14 +207,19 @@ ggplot_add.slice_subtitle_spec <- function(object, plot, ...) {
 #'
 #' @returns An object that sets the plot subtitle when added to a ggplot.
 #'
+#' @seealso [geom_slice()] for the layers being described;
+#'   [geom_slice_caption()] for the same text in the caption;
+#'   [geom_slice_text()] to label the lines themselves.
+#'
 #' @examples
-#' \dontrun{
-#' model <- lm(y ~ x + x2, data = dat)
-#' ggplot(dat, aes(x, y)) +
+#' library(ggplot2)
+#'
+#' # Subtitle reports the model equation and that hp is held at its mean
+#' model <- lm(mpg ~ disp + hp, data = mtcars)
+#' ggplot(mtcars, aes(disp, mpg)) +
 #'   geom_point() +
 #'   geom_slice(model) +
 #'   geom_slice_subtitle()
-#' }
 #'
 #' @export
 geom_slice_subtitle <- function(model = TRUE,

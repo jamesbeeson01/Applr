@@ -924,9 +924,19 @@ ggplot_add.SliceLayer <- function(object, plot, ...) {
 #'
 #' @returns A ggplot2 layer that draws the slice.
 #'
+#' @seealso
+#' - [geom_slice_text()] to label each line with the values that produced it.
+#' - [geom_slice_subtitle()] / [geom_slice_caption()] to describe the slice
+#'   (model equation, held values) in the plot's subtitle or caption.
+#' - [autoplot.lm()] for a complete data-plus-slice plot in one call.
+#' - [ggplot2::geom_smooth()], which this layer resembles, except that it
+#'   draws a model you fitted rather than fitting its own.
+#'
 #' @examples
-#' \dontrun{
-#' # Hold hp at its mean (reported by a message)
+#' library(ggplot2)
+#'
+#' # Basic use, like geom_smooth() but drawing *your* model. hp is not on
+#' # the plot, so it is held at its mean (a console message says so).
 #' model <- lm(mpg ~ disp + hp, data = mtcars)
 #' ggplot(mtcars, aes(disp, mpg)) +
 #'   geom_point() +
@@ -937,18 +947,51 @@ ggplot_add.SliceLayer <- function(object, plot, ...) {
 #'   geom_point() +
 #'   geom_slice(model, predict_vars = list(hp = 110))
 #'
-#' # One line per group, pinned to each group's value
-#' model2 <- lm(mpg ~ disp * factor(cyl), data = mtcars)
+#' # Several values draw one line per value (label them with
+#' # geom_slice_text()); several multi-value variables are crossed
+#' ggplot(mtcars, aes(disp, mpg)) +
+#'   geom_point() +
+#'   geom_slice(model, predict_vars = list(hp = c(66, 150, 335)))
+#'
+#' # Confidence or prediction ribbon around the line
+#' ggplot(mtcars, aes(disp, mpg)) +
+#'   geom_point() +
+#'   geom_slice(model, predict_vars = list(hp = 110), interval = "confidence")
+#'
+#' # A grouping aesthetic pins its predictor to each group's own value:
+#' # one line per cylinder count, each with its own slope
+#' model2 <- lm(mpg ~ disp * cyl, data = mtcars)
 #' ggplot(mtcars, aes(disp, mpg, color = factor(cyl))) +
 #'   geom_point() +
-#'   geom_slice(lm(mpg ~ disp + cyl, data = mtcars))
+#'   geom_slice(model2)
 #'
-#' # Transformed response, auto back-transformed to the raw y-axis
+#' # Facet variables pin per panel the same way
+#' ggplot(mtcars, aes(disp, mpg)) +
+#'   geom_point() +
+#'   geom_slice(model2) +
+#'   facet_wrap(~ cyl)
+#'
+#' # A transformed response is back-transformed automatically: the model
+#' # predicts log(mpg), the line appears in raw mpg units (a message says so)
 #' model3 <- lm(log(mpg) ~ disp + hp, data = mtcars)
 #' ggplot(mtcars, aes(disp, mpg)) +
 #'   geom_point() +
 #'   geom_slice(model3)
-#' }
+#'
+#' # ... or control the mapping yourself with back_transform
+#' ggplot(mtcars, aes(disp, mpg)) +
+#'   geom_point() +
+#'   geom_slice(model3, back_transform = exp)
+#'
+#' # A projection band spanning hp between two values, instead of a line
+#' ggplot(mtcars, aes(disp, mpg)) +
+#'   geom_point() +
+#'   geom_slice(model, predict_vars = list(hp = c(66, 335)), band = "hp")
+#'
+#' # n controls how many prediction points make up the line
+#' ggplot(mtcars, aes(disp, mpg)) +
+#'   geom_point() +
+#'   geom_slice(model, predict_vars = list(hp = 110), n = 10)
 #'
 #' @export
 geom_slice <- function(model,

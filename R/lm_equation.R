@@ -55,14 +55,33 @@ clearer_coef_names <- function(coef_names, model) {
 #' @param clearer If `TRUE`, factor terms are displayed with the factor name
 #'   and level spelled out (e.g. `4.09*(g="B")` instead of `4.09*gB`).
 #'
-#' @returns
-#' The equation of an indicated linear model with coefficients and variable names
+#' Use it when you want to report or sanity-check a fitted model as an
+#' equation rather than a coefficient table — for example when writing up
+#' homework or checking which dummy terms a factor produced.
+#'
+#' @return A character string of length 1 containing the fitted equation,
+#'   e.g. `"mpg = 30.7 - 0.0248*disp - 0.0245*hp"`.
 #'
 #' @examples
-#'\dontrun{
-#' model <- lm(mpg ~ disp + hp, data = mtcars)
+#' # Simple regression
+#' lm_equation(lm(mpg ~ wt, data = mtcars))
+#'
+#' # Multiple predictors
+#' lm_equation(lm(mpg ~ disp + hp, data = mtcars))
+#'
+#' # Factor predictor: one term per non-reference level
+#' model <- lm(Sepal.Length ~ Sepal.Width + Species, data = iris)
 #' lm_equation(model)
-#'}
+#'
+#' # `clearer = TRUE` spells out factor levels
+#' lm_equation(model, clearer = TRUE)
+#'
+#' # Transformed terms and interactions
+#' lm_equation(lm(mpg ~ wt + I(wt^2), data = mtcars))
+#' lm_equation(lm(Sepal.Length ~ Sepal.Width * Species, data = iris))
+#'
+#' # No-intercept models print no intercept
+#' lm_equation(lm(mpg ~ 0 + wt, data = mtcars))
 #'
 #' @importFrom graphics lines
 #' @importFrom stats terms coef formula
@@ -89,15 +108,27 @@ lm_equation <- function(model, clearer = FALSE){
 #' @param clearer If `TRUE`, factor terms are displayed with the factor name
 #'   and level spelled out (e.g. `(g="B")` instead of `gB`).
 #'
-#' @returns
-#' The equation of an indicated linear model with coefficients and variable
-#' names in LaTeX form, printed to the console and returned invisibly.
+#' Use it when a model needs to appear as typeset math — in an R Markdown
+#' chunk with `results = "asis"`, the LaTeX string prints ready to render.
+#'
+#' @return A character string of length 1 containing the display-math LaTeX
+#'   equation (wrapped in `$$...$$`), printed to the console with `cat()` and
+#'   returned invisibly.
 #'
 #' @examples
-#' \dontrun{
-#' model <- lm(width ~ length + I(length^2) + sex + sex:length + sex:I(length^2), KidsFeet)
-#' lm_latex(model)
-#' }
+#' # Simple regression
+#' lm_latex(lm(mpg ~ wt, data = mtcars))
+#'
+#' # Multiple predictors and a transformed term
+#' lm_latex(lm(mpg ~ disp + hp + I(hp^2), data = mtcars))
+#'
+#' # Factor predictor with interactions; `clearer = TRUE` spells out levels
+#' model <- lm(Sepal.Length ~ Sepal.Width * Species, data = iris)
+#' lm_latex(model, clearer = TRUE)
+#'
+#' # Capture the string instead of just printing it
+#' eq <- lm_latex(lm(mpg ~ wt, data = mtcars))
+#' nchar(eq)
 #'
 #' @importFrom graphics lines
 #' @importFrom stats coef predict terms setNames formula predict.lm
