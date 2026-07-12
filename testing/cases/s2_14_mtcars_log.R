@@ -3,7 +3,7 @@
 # FUNC: slice_2d
 # EXPECT: Model log(mpg) ~ disp on mtcars. Scatter of disp vs mpg with a
 #         downward-curving back-transformed slice line.
-#         Console message: xaxis not specified, first x variable (disp) used.
+#         Console message: x_axis not specified, first x variable (disp) used.
 
 source("testing/_setup.R")
 

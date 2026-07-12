@@ -1,4 +1,4 @@
-# CASE: gs_22_xaxis_inverse
+# CASE: gs_22_x_axis_inverse
 # TYPE: visual
 # FUNC: geom_slice
 # EXPECT: Model y ~ I(1/x), plotted with 1/x on the x-axis. Data is noise-free

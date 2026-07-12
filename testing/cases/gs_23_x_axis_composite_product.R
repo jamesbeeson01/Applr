@@ -1,4 +1,4 @@
-# CASE: gs_23_xaxis_composite_product
+# CASE: gs_23_x_axis_composite_product
 # TYPE: visual
 # FUNC: geom_slice
 # EXPECT: Model y ~ x2:x3:x6 + x1:x2:x3, plotted with the composite expression

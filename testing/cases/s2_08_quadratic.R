@@ -3,7 +3,7 @@
 # FUNC: slice_2d
 # EXPECT: Model y ~ x + I(x^2). Scatter of x vs y with an upward-opening
 #         parabola through the points (not a straight line).
-#         Console message: xaxis not specified, first x variable (x) used.
+#         Console message: x_axis not specified, first x variable (x) used.
 
 source("testing/_setup.R")
 set.seed(123)

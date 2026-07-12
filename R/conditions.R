@@ -42,3 +42,17 @@ slice_warn <- function(what, hint = NULL) {
 slice_inform <- function(what, hint = NULL) {
   message(slice_message(what, hint))
 }
+
+# Deprecation shim for the pre-1.0 `xaxis` argument name. Returns the value to
+# use for `x_axis`, warning when the caller used the old name.
+resolve_deprecated_xaxis <- function(x_axis, xaxis, fn) {
+  if (missing(xaxis) || is.null(xaxis)) {
+    return(x_axis)
+  }
+  slice_warn(
+    what = paste0("The `xaxis` argument of `", fn, "()` is deprecated."),
+    hint = "Use `x_axis` instead."
+  )
+  # The new name wins if both were somehow supplied
+  if (is.null(x_axis) || (length(x_axis) == 1 && is.na(x_axis))) xaxis else x_axis
+}

@@ -3,16 +3,17 @@
 #' Take a linear model and display a 2D slice in base R. This function creates
 #' a new plot comparing the response y variable with one predictor x variable
 #' and displaying a linear model line with all other predictor variables
-#' held at constant values. For unspecified variables, the xaxis is assumed
+#' held at constant values. For unspecified variables, the x_axis is assumed
 #' to be the first predictor in the model and all other variable are imputed
 #' (mean for numeric, most common for factors).
 #'
 #' @param model A linear model
-#' @param xaxis A non-required specification of the xaxis variable; default is first x var in lm
+#' @param x_axis A non-required specification of the x-axis variable; default is first x var in lm
 #' @param n Number of displayed points; default is 100
 #' @param caption Boolean to include caption with values of predictor variables not shown in the chart, TRUE by default
 #' @param back_transform Either 1) A function to back transform the predicted y values and interval bounds (e.g., `exp` or `\(x) exp(x)` for log-transformed models), or 2) a boolean stating whether it should apply a transformation or not (`FALSE` turns off back_transform). In most cases, this does not need to be specified as the function infers the transformation needed reliably.
 #' @param ... Remaining vars (color, linetype, etc.)
+#' @param xaxis Deprecated; use `x_axis` instead.
 #'
 #' @returns A 2D graph of a sliced model
 #'
@@ -22,18 +23,19 @@
 #' @examples
 #' \dontrun{
 #' model <- lm(mpg ~ disp, data = mtcars)
-#' slice_2d(model, xaxis = 'disp')
+#' slice_2d(model, x_axis = 'disp')
 #' }
 #'
 #' @export
-slice_2d <- function(model,xaxis=NULL,n=100,caption=TRUE, back_transform=TRUE, ...){
+slice_2d <- function(model,x_axis=NULL,n=100,caption=TRUE, back_transform=TRUE, ..., xaxis=NULL){
+  x_axis <- resolve_deprecated_xaxis(x_axis, xaxis, "slice_2d")
 
   # Prepare data
-  prep <- prepare_slice_data(model, xaxis, n, caption, back_transform, ...)
+  prep <- prepare_slice_data(model, x_axis, n, caption, back_transform, ...)
 
   orig_data <- prep$orig_data
   new_data <- prep$new_data
-  xaxis <- prep$xaxis
+  x_axis <- prep$x_axis
   y_name <- prep$y_name
   plot_args <- prep$plot_args
   caption_text <- prep$caption_text
@@ -41,8 +43,8 @@ slice_2d <- function(model,xaxis=NULL,n=100,caption=TRUE, back_transform=TRUE, .
   # PLOT
 
   # Create the base plot with original data points
-  plot(orig_data[[y_name]] ~ orig_data[[xaxis]],
-       xlab = xaxis,
+  plot(orig_data[[y_name]] ~ orig_data[[x_axis]],
+       xlab = x_axis,
        ylab = y_name,
        main = deparse(formula(model)),
        pch = 19,
@@ -50,7 +52,7 @@ slice_2d <- function(model,xaxis=NULL,n=100,caption=TRUE, back_transform=TRUE, .
 
   # Add the prediction line to show the model slice
   # do.call used for lines function to allow a list "plot_args" in place of ...
-  do.call(lines, c(list(x = new_data[[xaxis]], y = new_data$preds), plot_args))
+  do.call(lines, c(list(x = new_data[[x_axis]], y = new_data$preds), plot_args))
 
   # Add a caption with predictor values that aren't visible in the plot
   # While this is functional to some extent, it has a clear complex problem,
@@ -75,11 +77,12 @@ slice_2d <- function(model,xaxis=NULL,n=100,caption=TRUE, back_transform=TRUE, .
 #' model predictions to scatter plots.
 #'
 #' @param model A linear model
-#' @param xaxis A non-required specification of the xaxis variable; default is first x var in lm
+#' @param x_axis A non-required specification of the x-axis variable; default is first x var in lm
 #' @param n Number of displayed points; default is 100
 #' @param caption Boolean to include caption with values of predictor variables not shown in the chart, FALSE by default
 #' @param back_transform Either 1) A function to back transform the predicted y values and interval bounds (e.g., `exp` or `\(x) exp(x)` for log-transformed models), or 2) a boolean stating whether it should apply a transformation or not (`FALSE` turns off back_transform). In most cases, this does not need to be specified as the function infers the transformation needed reliably.
 #' @param ... Remaining vars (color, linetype, etc.)
+#' @param xaxis Deprecated; use `x_axis` instead.
 #'
 #' @returns A line added to a preexisting R plot displaying a 2D graphable slice of an HD model
 #'
@@ -90,17 +93,18 @@ slice_2d <- function(model,xaxis=NULL,n=100,caption=TRUE, back_transform=TRUE, .
 #' \dontrun{
 #' model <- lm(mpg ~ disp + hp, data = mtcars)
 #' plot(mpg ~ disp, data = mtcars)
-#' add_slice_2d(model,xaxis='disp', hp=100)
+#' add_slice_2d(model,x_axis='disp', hp=100)
 #' }
 #'
 #' @export
-add_slice_2d <- function(model,xaxis=NA,n=100,caption=FALSE, back_transform=TRUE, ...){
+add_slice_2d <- function(model,x_axis=NA,n=100,caption=FALSE, back_transform=TRUE, ..., xaxis=NULL){
+  x_axis <- resolve_deprecated_xaxis(x_axis, xaxis, "add_slice_2d")
 
   # Prepare data
-  prep <- prepare_slice_data(model, xaxis, n, caption, back_transform, ...)
+  prep <- prepare_slice_data(model, x_axis, n, caption, back_transform, ...)
 
   new_data <- prep$new_data
-  xaxis <- prep$xaxis
+  x_axis <- prep$x_axis
   plot_args <- prep$plot_args
   caption_text <- prep$caption_text
 
@@ -108,7 +112,7 @@ add_slice_2d <- function(model,xaxis=NA,n=100,caption=FALSE, back_transform=TRUE
   usr <- try(par("usr"), silent = TRUE)
   if (!inherits(usr, "try-error") && is.numeric(usr)) {
     xlim <- usr[1:2]; ylim <- usr[3:4]
-    xr <- range(new_data[[xaxis]], na.rm = TRUE)
+    xr <- range(new_data[[x_axis]], na.rm = TRUE)
     yr <- range(new_data$preds, na.rm = TRUE)
     if (xr[2] < xlim[1] || xr[1] > xlim[2] || yr[2] < ylim[1] || yr[1] > ylim[2]) {
       warning("Slice is outside the current plot range; the line may not be visible or aligned.")
@@ -118,7 +122,7 @@ add_slice_2d <- function(model,xaxis=NA,n=100,caption=FALSE, back_transform=TRUE
   # Add the prediction line to the existing plot
   # Note: This assumes a plot already exists - it will error if no plot is active
   # do.call used for lines function to allow a list "plot_args" in place of ...
-  do.call(lines, c(list(x = new_data[[xaxis]], y = new_data$preds), plot_args))
+  do.call(lines, c(list(x = new_data[[x_axis]], y = new_data$preds), plot_args))
 
   # Add a caption with predictor values that aren't visible in the plot
   if (caption) {
@@ -134,7 +138,7 @@ add_slice_2d <- function(model,xaxis=NA,n=100,caption=FALSE, back_transform=TRUE
 
 
 # This data preparation is shared by both slice_2d and add_slice_2d
-prepare_slice_data <- function(model, xaxis, n, caption, back_transform=TRUE, ...) {
+prepare_slice_data <- function(model, x_axis, n, caption, back_transform=TRUE, ...) {
   # Validate that the input is a linear model
   if (!inherits(model, 'lm')) {
     stop("Model must be in lm() format")
@@ -149,17 +153,17 @@ prepare_slice_data <- function(model, xaxis, n, caption, back_transform=TRUE, ..
   var_names <- all.vars(formula(model))
   y_name <- var_names[1]
 
-  # Determine xaxis if not specified
-  if (is.null(xaxis) || is.na(xaxis)) {
-    xaxis <- var_names[2]  # Position 1 is the response variable
+  # Determine x_axis if not specified
+  if (is.null(x_axis) || is.na(x_axis)) {
+    x_axis <- var_names[2]  # Position 1 is the response variable
     message(paste0("X-axis not specified - Used first x variable as x-axis",
-                   "\n    To specify, use 'xaxis = \"var_name\"' such as 'xaxis = \"",
-                   xaxis, "\"'"))
+                   "\n    To specify, use 'x_axis = \"var_name\"' such as 'x_axis = \"",
+                   x_axis, "\"'"))
   }
 
   # Validate that the specified x-axis variable exists in the model
-  if (!(xaxis %in% var_names)) {
-    stop(paste0("xaxis variable '", xaxis, "' not found in the model."))
+  if (!(x_axis %in% var_names)) {
+    stop(paste0("x_axis variable '", x_axis, "' not found in the model."))
   }
 
   # Extract original data
@@ -172,12 +176,12 @@ prepare_slice_data <- function(model, xaxis, n, caption, back_transform=TRUE, ..
   }
 
   # Validate x-axis variable is numeric
-  if (!is.numeric(orig_data[[xaxis]])) {
-    stop(paste0("`xaxis` must be numeric; the class \"", class(orig_data[[xaxis]]), "\" is not supported."))
+  if (!is.numeric(orig_data[[x_axis]])) {
+    stop(paste0("`x_axis` must be numeric; the class \"", class(orig_data[[x_axis]]), "\" is not supported."))
   }
 
   # Find all other variables in the model
-  other_vars <- setdiff(var_names, c(y_name, xaxis))
+  other_vars <- setdiff(var_names, c(y_name, x_axis))
 
   # Get any arguments passed via ...
   dots <- list(...)
@@ -212,10 +216,10 @@ prepare_slice_data <- function(model, xaxis, n, caption, back_transform=TRUE, ..
   x_names <- as.data.frame(as.list(setNames(other_vals, other_vars)))
 
   # Create an evenly spaced sequence of values across the range of the x axis
-  x_vals <- seq(min(orig_data[[xaxis]], na.rm = TRUE), max(orig_data[[xaxis]], na.rm = TRUE), length.out = n)
+  x_vals <- seq(min(orig_data[[x_axis]], na.rm = TRUE), max(orig_data[[x_axis]], na.rm = TRUE), length.out = n)
 
   # Prepare x values for the predict() function
-  new_data <- setNames(data.frame(x_vals), xaxis)
+  new_data <- setNames(data.frame(x_vals), x_axis)
 
   # Add the constant values for all other variables
   if (length(other_vars) > 0) {
@@ -270,7 +274,7 @@ prepare_slice_data <- function(model, xaxis, n, caption, back_transform=TRUE, ..
   list(
     orig_data = orig_data,
     new_data = new_data,
-    xaxis = xaxis,
+    x_axis = x_axis,
     y_name = y_name,
     plot_args = plot_args,
     caption_text = caption_text,

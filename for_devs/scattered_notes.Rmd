@@ -94,7 +94,7 @@ all.vars(formula(model))           # will include 'mtcars' and the component nam
 
 ```
 Error in slice_2d(lm(x1 ~ x1)) : 
-  xaxis variable NA not found in the model.
+  x_axis variable NA not found in the model.
 ```
 
 ```
@@ -207,12 +207,12 @@ I'm worried about the blindness of these functions. Students may not realize wha
 
 ## slice_2d()
 
-Should xaxis be x instead?
+Should x_axis be x instead?
 
 ```{r}
 model <- lm(mpg ~ disp + hp, data = mtcars)
-slice_2d(model, xaxis = "hp")
-slice_2d(model, xaxis = "hp", disp = 250, n = 150, col = "blue", lwd = 2)
+slice_2d(model, x_axis = "hp")
+slice_2d(model, x_axis = "hp", disp = 250, n = 150, col = "blue", lwd = 2)
 model <- lm(mtcars$mpg ~ mtcars$disp + mtcars$hp)
 slice_2d(model)
 ```
@@ -229,7 +229,7 @@ slice_2d(model)
 ```{r}
 model <- lm(mpg ~ wt + am + qsec, data = mtcars)
 plot(mpg ~ wt, data = mtcars)
-add_slice_2d(model = model, xaxis = "wt", am = 1, qsec = 17)
+add_slice_2d(model = model, x_axis = "wt", am = 1, qsec = 17)
 ```
 
 ## geom_slice

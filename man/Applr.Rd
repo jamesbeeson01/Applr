@@ -37,7 +37,7 @@ Fit a model and plot a slice:
 \preformatted{
 library(Applr)
 model <- lm(mpg ~ disp + hp, data = mtcars)
-slice_2d(model, xaxis = "disp")
+slice_2d(model, x_axis = "disp")
 }
 
 ggplot2 layer with facets:

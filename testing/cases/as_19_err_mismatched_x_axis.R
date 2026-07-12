@@ -1,4 +1,4 @@
-# CASE: as_19_err_mismatched_xaxis
+# CASE: as_19_err_mismatched_x_axis
 # TYPE: console
 # FUNC: add_slice_2d
 # EXPECT: The slice is computed over the range of "x" while the plot shows
@@ -14,6 +14,6 @@ x_pos <- runif(n, 0, 10)
 y <- x * x_pos
 model <- lm(y ~ I(x * x_pos))
 
-plot(x_pos, y, main = "Multiplicative data, xaxis = x",
+plot(x_pos, y, main = "Multiplicative data, x_axis = x",
      xlab = "x_pos", ylab = "y", pch = 19, col = "steelblue")
-try_show(add_slice_2d(model, xaxis = "x"))
+try_show(add_slice_2d(model, x_axis = "x"))

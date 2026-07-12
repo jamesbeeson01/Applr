@@ -1,0 +1,1 @@
+Error: x_axis variable 'nonexistent_var' not found in the model. 

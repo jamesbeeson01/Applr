@@ -3,7 +3,7 @@
 # FUNC: slice_2d
 # EXPECT: Model log(y) ~ x_pos (y = exp(x_pos)). Plot on the ORIGINAL y scale
 #         with a back-transformed exponential curve. Straight line = FAIL.
-#         Console message: xaxis not specified, first x variable (x_pos) used.
+#         Console message: x_axis not specified, first x variable (x_pos) used.
 
 source("testing/_setup.R")
 set.seed(123)

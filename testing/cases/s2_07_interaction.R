@@ -3,7 +3,7 @@
 # FUNC: slice_2d
 # EXPECT: Model y ~ x:x_switch. Default slice_2d plot: scatter of x vs y with
 #         one slice line at the default held x_switch value (see caption).
-#         Console messages: xaxis defaulting to the first x variable (x),
+#         Console messages: x_axis defaulting to the first x variable (x),
 #         and x_switch held at its mean (~0.9).
 
 source("testing/_setup.R")

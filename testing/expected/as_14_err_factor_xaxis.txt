@@ -1,1 +1,0 @@
-Error: `xaxis` must be numeric; the class "factor" is not supported. 

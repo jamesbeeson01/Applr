@@ -1,8 +1,8 @@
-# CASE: as_13_err_nonexistent_xaxis
+# CASE: as_13_err_nonexistent_x_axis
 # TYPE: console
 # FUNC: add_slice_2d
 # EXPECT: A clear error naming the missing variable:
-#         "xaxis variable 'nonexistent_var' not found in the model."
+#         "x_axis variable 'nonexistent_var' not found in the model."
 
 source("testing/_setup.R")
 set.seed(123)
@@ -14,4 +14,4 @@ y <- x + x_pos
 model <- lm(y ~ x + x_pos)
 
 plot(x, y, main = "scaffold plot")
-try_show(add_slice_2d(model, xaxis = "nonexistent_var"))
+try_show(add_slice_2d(model, x_axis = "nonexistent_var"))

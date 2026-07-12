@@ -27,11 +27,11 @@ Rules:
 ```r
 # Cannot proceed
 slice_abort(
-  what = "`xaxis` variable \"wt\" not found in the model.",
-  hint = "Specify one of the model's predictors, such as 'xaxis = \"disp\"'."
+  what = "`x_axis` variable \"wt\" not found in the model.",
+  hint = "Specify one of the model's predictors, such as 'x_axis = \"disp\"'."
 )
-#> Error: `xaxis` variable "wt" not found in the model.
-#>     Specify one of the model's predictors, such as 'xaxis = "disp"'.
+#> Error: `x_axis` variable "wt" not found in the model.
+#>     Specify one of the model's predictors, such as 'x_axis = "disp"'.
 
 # Hidden-but-normal choice
 slice_inform(

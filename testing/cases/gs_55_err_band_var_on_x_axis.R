@@ -1,4 +1,4 @@
-# CASE: gs_55_err_band_var_on_xaxis
+# CASE: gs_55_err_band_var_on_x_axis
 # TYPE: console
 # FUNC: geom_slice
 # EXPECT: A clear, student-readable warning: band = "x" names the predictor on

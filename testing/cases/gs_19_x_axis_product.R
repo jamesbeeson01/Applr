@@ -1,4 +1,4 @@
-# CASE: gs_19_xaxis_product
+# CASE: gs_19_x_axis_product
 # TYPE: visual
 # FUNC: geom_slice
 # EXPECT: Model y ~ I(x * x_pos), plotted with the product x * x_pos on the

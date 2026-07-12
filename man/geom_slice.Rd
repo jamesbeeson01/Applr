@@ -13,6 +13,7 @@ geom_slice(
   interval = "none",
   band = FALSE,
   ...,
+  x_axis = NULL,
   xaxis = NULL
 )
 }
@@ -51,9 +52,9 @@ not otherwise show. Default \code{FALSE}.}
 \item{...}{Other arguments passed to the layer, such as fixed aesthetics
 (\code{color = "red"}, \code{linewidth = 1.2}).}
 
-\item{xaxis}{Not an argument of \code{geom_slice()} — the x-axis comes from the
-plot's \code{aes()}. Included only to give a helpful error to \code{slice_2d()}
-users who try it here.}
+\item{x_axis, xaxis}{Not arguments of \code{geom_slice()} — the x-axis comes from
+the plot's \code{aes()}. Included only to give a helpful error to \code{slice_2d()}
+users who try them here.}
 }
 \value{
 A ggplot2 layer that draws the slice.

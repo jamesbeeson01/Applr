@@ -123,7 +123,7 @@ data-generation lines of a `gs_` case without regenerating its reference).
 | `le_` | `lm_equation` | console |
 
 **Error cases live under their function's prefix** with `err` in the slug
-(e.g. `s2_16_err_nonexistent_xaxis`, `gs_27_err_non_lm`), not in a shared
+(e.g. `s2_16_err_nonexistent_x_axis`, `gs_27_err_non_lm`), not in a shared
 "error" family. That keeps everything about one function — happy paths and
 misuse handling — under one prefix, so `run.R s2` shows an agent working on
 `slice_2d` only slice_2d behavior, with no other function's errors as noise.

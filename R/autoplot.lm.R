@@ -22,7 +22,7 @@ ggplot2::autoplot
 #' can be extended with `+` as usual (labels, scales, more layers).
 #'
 #' The model's *first numeric* predictor goes on the x-axis (override with
-#' `xaxis`) and the raw response variable goes on the y-axis. Everything else
+#' `x_axis`) and the raw response variable goes on the y-axis. Everything else
 #' is handled by [geom_slice()] and reported on the console: predictors not
 #' visible on the plot are imputed (mean for numeric, most common value for
 #' factor/character), and a transformed response such as `lm(log(y) ~ x)` is
@@ -35,8 +35,9 @@ ggplot2::autoplot
 #'   `predict_vars = list(hp = 110)` to choose the slice,
 #'   `interval = "confidence"` for a ribbon, or fixed aesthetics such as
 #'   `color = "red"`.
-#' @param xaxis The name of the predictor to place on the x-axis, such as
-#'   `xaxis = "disp"`. Defaults to the model's first numeric predictor.
+#' @param x_axis The name of the predictor to place on the x-axis, such as
+#'   `x_axis = "disp"`. Defaults to the model's first numeric predictor.
+#' @param xaxis Deprecated; use `x_axis` instead.
 #'
 #' @returns A ggplot of the model's data with a slice of the model drawn
 #'   through it.
@@ -58,7 +59,8 @@ ggplot2::autoplot
 #' }
 #'
 #' @export
-autoplot.lm <- function(object, ..., xaxis = NULL) {
+autoplot.lm <- function(object, ..., x_axis = NULL, xaxis = NULL) {
+  x_axis <- resolve_deprecated_xaxis(x_axis, xaxis, "autoplot")
   check_slice_model(object)
 
   # slice_model_frame() can sometimes recover data-argument-less models from
@@ -98,22 +100,22 @@ autoplot.lm <- function(object, ..., xaxis = NULL) {
   numeric_vars <- predictor_vars[vapply(predictor_vars,
                                         function(v) is.numeric(data[[v]]),
                                         logical(1))]
-  if (!is.null(xaxis)) {
-    if (!is.character(xaxis) || length(xaxis) != 1 || is.na(xaxis)) {
+  if (!is.null(x_axis)) {
+    if (!is.character(x_axis) || length(x_axis) != 1 || is.na(x_axis)) {
       slice_abort(
-        what = "`xaxis` must be a single variable name.",
-        hint = paste0("For example, 'xaxis = \"", predictor_vars[1], "\"'.")
+        what = "`x_axis` must be a single variable name.",
+        hint = paste0("For example, 'x_axis = \"", predictor_vars[1], "\"'.")
       )
     }
-    if (!xaxis %in% predictor_vars) {
+    if (!x_axis %in% predictor_vars) {
       slice_abort(
-        what = paste0("`xaxis` variable \"", xaxis, "\" not found in the model."),
+        what = paste0("`x_axis` variable \"", x_axis, "\" not found in the model."),
         hint = paste0("The model's predictors are ", backticked(predictor_vars), ".")
       )
     }
-    if (!xaxis %in% numeric_vars) {
+    if (!x_axis %in% numeric_vars) {
       slice_abort(
-        what = paste0("`xaxis` variable `", xaxis,
+        what = paste0("`x_axis` variable `", x_axis,
                       "` is not numeric, but geom_slice() needs a continuous x-axis."),
         hint = if (length(numeric_vars) > 0) {
           paste0("Use a numeric predictor: ", backticked(numeric_vars), ".")
@@ -127,19 +129,19 @@ autoplot.lm <- function(object, ..., xaxis = NULL) {
         hint = "Fit a model with at least one numeric predictor."
       )
     }
-    xaxis <- numeric_vars[1]
-    if (!identical(xaxis, predictor_vars[1])) {
+    x_axis <- numeric_vars[1]
+    if (!identical(x_axis, predictor_vars[1])) {
       slice_inform(
         what = paste0("The first predictor `", predictor_vars[1],
-                      "` is not numeric - used `", xaxis, "` for the x-axis."),
-        hint = paste0("To choose the x-axis, use 'xaxis = \"", xaxis, "\"'.")
+                      "` is not numeric - used `", x_axis, "` for the x-axis."),
+        hint = paste0("To choose the x-axis, use 'x_axis = \"", x_axis, "\"'.")
       )
     }
   }
 
   # Bare symbols (not .data[[...]]) so geom_slice() can read which model
   # variables are on the axes from the plot's aesthetic mapping.
-  ggplot(data, aes(x = !!as.name(xaxis), y = !!as.name(response_vars))) +
+  ggplot(data, aes(x = !!as.name(x_axis), y = !!as.name(response_vars))) +
     geom_point() +
     geom_slice(object, ...)
 }

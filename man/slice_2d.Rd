@@ -6,17 +6,18 @@
 \usage{
 slice_2d(
   model,
-  xaxis = NULL,
+  x_axis = NULL,
   n = 100,
   caption = TRUE,
   back_transform = TRUE,
-  ...
+  ...,
+  xaxis = NULL
 )
 }
 \arguments{
 \item{model}{A linear model}
 
-\item{xaxis}{A non-required specification of the xaxis variable; default is first x var in lm}
+\item{x_axis}{A non-required specification of the x-axis variable; default is first x var in lm}
 
 \item{n}{Number of displayed points; default is 100}
 
@@ -25,6 +26,8 @@ slice_2d(
 \item{back_transform}{Either 1) A function to back transform the predicted y values and interval bounds (e.g., \code{exp} or \verb{\\(x) exp(x)} for log-transformed models), or 2) a boolean stating whether it should apply a transformation or not (\code{FALSE} turns off back_transform). In most cases, this does not need to be specified as the function infers the transformation needed reliably.}
 
 \item{...}{Remaining vars (color, linetype, etc.)}
+
+\item{xaxis}{Deprecated; use \code{x_axis} instead.}
 }
 \value{
 A 2D graph of a sliced model
@@ -33,14 +36,14 @@ A 2D graph of a sliced model
 Take a linear model and display a 2D slice in base R. This function creates
 a new plot comparing the response y variable with one predictor x variable
 and displaying a linear model line with all other predictor variables
-held at constant values. For unspecified variables, the xaxis is assumed
+held at constant values. For unspecified variables, the x_axis is assumed
 to be the first predictor in the model and all other variable are imputed
 (mean for numeric, most common for factors).
 }
 \examples{
 \dontrun{
 model <- lm(mpg ~ disp, data = mtcars)
-slice_2d(model, xaxis = 'disp')
+slice_2d(model, x_axis = 'disp')
 }
 
 }

@@ -12,7 +12,7 @@
 #' - Quick text/LaTeX equations from lm() objects
 #'
 #' @section Main functions:
-#' - Base graphics: \code{\link{slice_2d}}, \code{\link{add_slice_2d}}, \code{\link{drawit}}
+#' - Base graphics: \code{\link{slice_2d}}, \code{\link{add_slice_2d}}
 #' - ggplot2 layer: \code{\link{geom_slice}} (built on \code{\link{StatSlice}} and \code{\link{GeomSlice}})
 #' - 3D visualization: \code{\link{scatter_3d}}
 #' - Equations: \code{\link{lm_equation}}, \code{\link{lm_latex}}
@@ -23,7 +23,7 @@
 #' \preformatted{
 #' library(Applr)
 #' model <- lm(mpg ~ disp + hp, data = mtcars)
-#' slice_2d(model, xaxis = "disp")
+#' slice_2d(model, x_axis = "disp")
 #' }
 #'
 #' ggplot2 layer with facets:

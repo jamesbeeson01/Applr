@@ -1,4 +1,4 @@
-# CASE: gs_21_xaxis_square
+# CASE: gs_21_x_axis_square
 # TYPE: visual
 # FUNC: geom_slice
 # EXPECT: Model y ~ I(x^2), plotted with x^2 on the x-axis. Data is noise-free

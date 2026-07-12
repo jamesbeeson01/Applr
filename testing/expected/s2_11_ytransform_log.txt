@@ -1,2 +1,2 @@
 X-axis not specified - Used first x variable as x-axis
-    To specify, use 'xaxis = "var_name"' such as 'xaxis = "x_pos"'
+    To specify, use 'x_axis = "var_name"' such as 'x_axis = "x_pos"'

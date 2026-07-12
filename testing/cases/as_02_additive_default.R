@@ -3,7 +3,7 @@
 # FUNC: add_slice_2d
 # EXPECT: Base scatter of x vs y (y ~ x + x_pos) with one straight slice line,
 #         x_pos held at its default (mean ~4.8, with a console message).
-#         A second console message reports xaxis defaulting to the first
+#         A second console message reports x_axis defaulting to the first
 #         x variable (x). Line should sit near the center of the point cloud.
 
 source("testing/_setup.R")

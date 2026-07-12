@@ -4,7 +4,7 @@
 \alias{autoplot.lm}
 \title{Automatically plot a linear model}
 \usage{
-\method{autoplot}{lm}(object, ..., xaxis = NULL)
+\method{autoplot}{lm}(object, ..., x_axis = NULL, xaxis = NULL)
 }
 \arguments{
 \item{object}{A linear model fitted by \code{\link[=lm]{lm()}} \strong{with a \code{data} argument} —
@@ -16,8 +16,10 @@ works but \code{lm(your_data$y ~ your_data$x)} does not.}
 \code{interval = "confidence"} for a ribbon, or fixed aesthetics such as
 \code{color = "red"}.}
 
-\item{xaxis}{The name of the predictor to place on the x-axis, such as
-\code{xaxis = "disp"}. Defaults to the model's first numeric predictor.}
+\item{x_axis}{The name of the predictor to place on the x-axis, such as
+\code{x_axis = "disp"}. Defaults to the model's first numeric predictor.}
+
+\item{xaxis}{Deprecated; use \code{x_axis} instead.}
 }
 \value{
 A ggplot of the model's data with a slice of the model drawn
@@ -31,7 +33,7 @@ can be extended with \code{+} as usual (labels, scales, more layers).
 }
 \details{
 The model's \emph{first numeric} predictor goes on the x-axis (override with
-\code{xaxis}) and the raw response variable goes on the y-axis. Everything else
+\code{x_axis}) and the raw response variable goes on the y-axis. Everything else
 is handled by \code{\link[=geom_slice]{geom_slice()}} and reported on the console: predictors not
 visible on the plot are imputed (mean for numeric, most common value for
 factor/character), and a transformed response such as \code{lm(log(y) ~ x)} is

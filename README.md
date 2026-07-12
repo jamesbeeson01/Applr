@@ -51,13 +51,13 @@ All exported functions found in the `R/` folder are listed below with a short de
 ### 1) `slice_2d()`
 
 Create a new base-R plot that shows a 2-D slice of a high-dimensional linear model.\
-Unspecified xaxis defaults to first variable in model. Unspecified values are held at sensible defaults (numeric → mean, factor → first level).
+Unspecified x_axis defaults to first variable in model. Unspecified values are held at sensible defaults (numeric → mean, factor → first level).
 
 ``` r
 model <- lm(mpg ~ disp + hp, data = mtcars)
 slice_2d(model)
 #--or--
-slice_2d(model, xaxis = "hp", disp = 250, n = 150, col = "blue", lwd = 2)
+slice_2d(model, x_axis = "hp", disp = 250, n = 150, col = "blue", lwd = 2)
 ```
 
 ### 2) `add_slice_2d()`
@@ -70,7 +70,7 @@ plot(mpg ~ disp, data = mtcars)
 add_slice_2d(model)
 #--or--
 plot(mpg ~ hp, data = mtcars)
-add_slice_2d(model, xaxis = "hp", hp = 110, col = "red", lty = 2)
+add_slice_2d(model, x_axis = "hp", hp = 110, col = "red", lty = 2)
 ```
 
 This example does not work because the Y axes do not match (y and 1/y)

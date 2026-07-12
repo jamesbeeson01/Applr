@@ -6,17 +6,18 @@
 \usage{
 add_slice_2d(
   model,
-  xaxis = NA,
+  x_axis = NA,
   n = 100,
   caption = FALSE,
   back_transform = TRUE,
-  ...
+  ...,
+  xaxis = NULL
 )
 }
 \arguments{
 \item{model}{A linear model}
 
-\item{xaxis}{A non-required specification of the xaxis variable; default is first x var in lm}
+\item{x_axis}{A non-required specification of the x-axis variable; default is first x var in lm}
 
 \item{n}{Number of displayed points; default is 100}
 
@@ -25,6 +26,8 @@ add_slice_2d(
 \item{back_transform}{Either 1) A function to back transform the predicted y values and interval bounds (e.g., \code{exp} or \verb{\\(x) exp(x)} for log-transformed models), or 2) a boolean stating whether it should apply a transformation or not (\code{FALSE} turns off back_transform). In most cases, this does not need to be specified as the function infers the transformation needed reliably.}
 
 \item{...}{Remaining vars (color, linetype, etc.)}
+
+\item{xaxis}{Deprecated; use \code{x_axis} instead.}
 }
 \value{
 A line added to a preexisting R plot displaying a 2D graphable slice of an HD model
@@ -39,7 +42,7 @@ model predictions to scatter plots.
 \dontrun{
 model <- lm(mpg ~ disp + hp, data = mtcars)
 plot(mpg ~ disp, data = mtcars)
-add_slice_2d(model,xaxis='disp', hp=100)
+add_slice_2d(model,x_axis='disp', hp=100)
 }
 
 }

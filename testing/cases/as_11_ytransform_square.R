@@ -3,7 +3,7 @@
 # FUNC: add_slice_2d
 # EXPECT: Model y^2 ~ x_pos (y = sqrt(x_pos)), plotted on the ORIGINAL y
 #         scale. Back-transformed square-root curve. Straight line = FAIL.
-#         Console message: xaxis not specified, first x variable (x_pos) used.
+#         Console message: x_axis not specified, first x variable (x_pos) used.
 
 source("testing/_setup.R")
 set.seed(123)

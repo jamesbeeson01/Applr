@@ -1,4 +1,4 @@
-# CASE: gs_20_xaxis_log
+# CASE: gs_20_x_axis_log
 # TYPE: visual
 # FUNC: geom_slice
 # EXPECT: Model y ~ log(x), plotted with log(x) on the x-axis. Data is

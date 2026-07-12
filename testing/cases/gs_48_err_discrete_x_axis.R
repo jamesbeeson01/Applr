@@ -1,4 +1,4 @@
-# CASE: gs_48_err_discrete_xaxis
+# CASE: gs_48_err_discrete_x_axis
 # TYPE: console
 # FUNC: geom_slice
 # EXPECT: A factor predictor mapped to the x-axis makes the x scale discrete;
