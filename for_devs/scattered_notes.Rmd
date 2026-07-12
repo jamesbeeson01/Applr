@@ -2,13 +2,11 @@
 
 slice_2d comes under the pretense of plotting the model seamlessly. However, it does not work with y transformations or with much complexity. It plots one high dimensional line really well. It allows line customization, but not plot customization. add_slice_2d allows for more lines, but still functions the same way.
 
-drawit is meant to be explicit about what values the user puts in. It functions like add_slice_2d. I haven't investigated, but I am not sure it works with transformations either.
-
 I think slice_2d is too simplistic to be worth its weight at the moment. 
 
 So far the greatest promise is with geom_slice. It currently handles y transformations with various degrees of simplicity. I would honestly put all my cards in that box
 
-I tried to create captions for the slice_2d functions, but when you add additional lines, the captions write on top of each other. Also, how do you specify that this line is this value but that line is that value for the same variable? ggplot using a grouping to manage that and put it in the legend. Maybe I am just using base R wrong and there is a way, but a caption may not be ideal for add_slice_2d or drawit.
+I tried to create captions for the slice_2d functions, but when you add additional lines, the captions write on top of each other. Also, how do you specify that this line is this value but that line is that value for the same variable? ggplot using a grouping to manage that and put it in the legend. Maybe I am just using base R wrong and there is a way, but a caption may not be ideal for add_slice_2d.
 
 ## Warnings and Errors
 
@@ -231,23 +229,7 @@ slice_2d(model)
 ```{r}
 model <- lm(mpg ~ wt + am + qsec, data = mtcars)
 plot(mpg ~ wt, data = mtcars)
-# drawit(model = model, xaxis = "wt", am = 1, qsec = 17,
-#        col = "steelblue", lty = 1)
 add_slice_2d(model = model, xaxis = "wt", am = 1, qsec = 17)
-```
-
-## drawit()
-
-Likely a depricated version of slice_2d. Ask Cameron.
-
-- [ ] caption?
-
-```{r}
-model <- lm(mpg ~ wt + am + qsec, data = mtcars)
-plot(mpg ~ wt, data = mtcars)
-# drawit(model = model, xaxis = "wt", am = 1, qsec = 17,
-#        col = "steelblue", lty = 1)
-drawit(model = model, xaxis = "wt", am = 1, qsec = 17)
 ```
 
 ## geom_slice

@@ -57,8 +57,7 @@ Follow the [tidyverse style guide](https://style.tidyverse.org/) (snake_case,
 | Dimensionality | `_2d` / `_3d` suffix | `slice_2d`, `scatter_3d` |
 
 Defer to base R / ggplot2 spelling when extending them (`inherit.aes`,
-`linewidth`, `newdata`). Axes use `xaxis`/`yaxis` for public arguments and
-`x` / `y` for internal/ggproto data columns.
+`linewidth`, `newdata`).
 
 
 ## X Range
@@ -114,12 +113,6 @@ I tried to allow them. Those are hours wasted.
 ## Use of `predict()`
 
 This is the simplest way we know to get y values based on an `lm`, and it works well enough. It is a semi-arbitrary decision.
-
-
-## add_slice_2d vs drawit
-
-These two functions intend to create the same result by different means. `drawit` requires every column name to be passed and uses `curve` to plot, while `slice_2d` can impute and uses `predict` with `lines`. `drawit` has multiple issues and should probably be deprecated...
-
 
 ## Dependencies
 

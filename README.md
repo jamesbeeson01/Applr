@@ -81,18 +81,6 @@ plot(mpg ~ disp, data = mtcars)
 add_slice_2d(model) # will not plot
 ```
 
-### 3) `drawit()`
-
-Draw a slice curve for a model in base-R graphics.\
-For multi-variable models you should supply values for all other predictors.
-
-``` r
-model <- lm(mpg ~ wt + am + qsec, data = mtcars)
-plot(mpg ~ wt, data = mtcars)
-drawit(model = model, xaxis = "wt", am = 1, qsec = 17,
-       col = "steelblue", lty = 1)
-```
-
 ### 4) `geom_slice()`
 
 A convenient **ggplot2** layer that draws a model slice across your plot (and its facets) —
