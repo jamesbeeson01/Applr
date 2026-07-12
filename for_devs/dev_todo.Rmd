@@ -22,6 +22,7 @@ date: "2026-07-11"
 
 ## geom_slice
 
+- [ ] Fix gs_53-56 to render a plot (most if not all)
 - [ ] Additional tests
   - [ ] back transform complex function
   - [ ] x axis transform that is a curved line with gaps between points (shows an potential issue with current implementation)
@@ -48,9 +49,10 @@ date: "2026-07-11"
 
 ## New Functions 
 
+- [ ] `autoplot(model, sliders=TRUE)` changing the implementation to plotly for interactive visualization
+- [ ] gif animation
 
-
-## complete
+## Complete
 
 - [x] Get geom_slice working under the most common conditions
   - [x] Any y transformation (incl. inline `aes(x, log(y))` and `scale_y_log10()` — gs_09–11, gs_25, gs_26)
