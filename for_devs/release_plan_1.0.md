@@ -29,30 +29,34 @@ All Phase 0 decisions are settled; the outcomes are baked into the codebase.
 
 ## Phase 1 — API settlement (main session + James)
 
-- [ ] Apply whatever renames Phase 0 decides, with deprecation aliases
-      (consider the {lifecycle} package for consistent warnings).
+- [x] Apply renames — `xaxis` → `x_axis` landed 2026-07-12 (commit b78365f)
+      with aliases for the old spelling.
 - [x] `drawit` deprecation — shim in `R/deprecated.R` warns and forwards to `slice_2d()`.
-- [ ] Update `decisions.Rmd` naming standard to the settled convention.
+- [x] Update `decisions.Rmd` naming standard to the settled convention (2026-07-12).
 
-## Phase 2 — Documentation (parallelizable; prompts in `for_devs/parallel_prompts/`)
+## Phase 2 — Documentation (prompts A/B/C ran 2026-07-12 and are deleted; reviewed & verified same day)
 
 Rule for every exported function: `@return`, `@description` that says what it
 does and when to reach for it, and `@examples` that show the **range** of the
 function (not one minimal call). Examples must run unattended in seconds;
 wrap plotly/interactive ones in `if (interactive())`.
 
-- [ ] **Prompt A** — utility docs pass: `theme_lc`, `lm_equation`/`lm_latex`,
+- [x] **Prompt A** — utility docs pass: `theme_lc`, `lm_equation`/`lm_latex`,
       `scatter_3d`, `diagnose`, `get_inverse_function` (internal → `@noRd`).
-- [ ] **Prompt B** — README refresh: fix stale `geom_slice` examples, remove
-      `drawit` section, add repo links.
-- [ ] **Prompt C** — flagship docs: `geom_slice` + `geom_slice_caption` /
-      `_subtitle` / `_text` + `autoplot.lm`, mining `testing/cases/gs_*` for
-      example material (predict_vars, intervals, grouping, faceting,
-      back-transform).
+      Review note: two "Use it when…" paragraphs in `lm_equation.R` sat after
+      `@param clearer` (would merge into that param's doc) — fixed on review.
+      Session also surfaced three real `scatter_3d` bugs, now tracked in
+      `dev_todo.Rmd` (I() terms, ineffective `colors`, eval(parse) fragility).
+- [x] **Prompt B** — README refresh: full rewrite verified against current
+      API (autoplot, intervals, bands, slice-text helpers, issues link;
+      drawit removed).
+- [x] **Prompt C** — flagship docs: `geom_slice` + caption/subtitle/text +
+      `autoplot.lm`; examples cover predict_vars (single/multi), intervals,
+      band, grouping, faceting, back_transform, n; `@seealso` cross-links.
+      Representative examples smoke-tested successfully on review.
 - [ ] Vignette: "Getting started with Applr" — one dataset, `lm()` →
       `autoplot()` → `geom_slice()` with slices/intervals/captions.
-      (After Phase 1 so examples use final names.)
-- [ ] `NEWS.md` started at 1.0.0.
+- [x] `NEWS.md` started at 1.0.0.
 
 ## Phase 3 — Packaging mechanics (main session, mostly done 2026-07-12)
 

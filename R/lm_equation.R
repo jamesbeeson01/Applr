@@ -51,13 +51,13 @@ clearer_coef_names <- function(coef_names, model) {
 #' per dummy level (e.g. `2.1*gB`) and models without an intercept print no
 #' intercept.
 #'
-#' @param model A linear model
-#' @param clearer If `TRUE`, factor terms are displayed with the factor name
-#'   and level spelled out (e.g. `4.09*(g="B")` instead of `4.09*gB`).
-#'
 #' Use it when you want to report or sanity-check a fitted model as an
 #' equation rather than a coefficient table — for example when writing up
 #' homework or checking which dummy terms a factor produced.
+#'
+#' @param model A linear model
+#' @param clearer If `TRUE`, factor terms are displayed with the factor name
+#'   and level spelled out (e.g. `4.09*(g="B")` instead of `4.09*gB`).
 #'
 #' @return A character string of length 1 containing the fitted equation,
 #'   e.g. `"mpg = 30.7 - 0.0248*disp - 0.0245*hp"`.
@@ -104,12 +104,12 @@ lm_equation <- function(model, clearer = FALSE){
 #' or presentation purposes. Coefficients are rounded to 3 significant
 #' figures.
 #'
+#' Use it when a model needs to appear as typeset math — in an R Markdown
+#' chunk with `results = "asis"`, the LaTeX string prints ready to render.
+#'
 #' @param model A linear model
 #' @param clearer If `TRUE`, factor terms are displayed with the factor name
 #'   and level spelled out (e.g. `(g="B")` instead of `gB`).
-#'
-#' Use it when a model needs to appear as typeset math — in an R Markdown
-#' chunk with `results = "asis"`, the LaTeX string prints ready to render.
 #'
 #' @return A character string of length 1 containing the display-math LaTeX
 #'   equation (wrapped in `$$...$$`), printed to the console with `cat()` and

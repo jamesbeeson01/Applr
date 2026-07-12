@@ -1,6 +1,6 @@
 # Applr
 
-A small R package for visualizing linear models—especially high-dimensional ones—with ease.
+A small R package for visualizing linear models — especially high-dimensional ones — with ease.
 
 Fit a model with `lm()`, then let Applr draw it: a one-call `autoplot()`, a
 ggplot2 layer (`geom_slice()`) that draws *your* fitted model the way
@@ -43,7 +43,7 @@ model you are looking at.
 (and its facets). It looks like `geom_smooth()`, but where `geom_smooth()`
 fits its own model to the plotted data, `geom_slice()` draws the model *you*
 fitted. The predictor on the x-axis varies along the line; every other
-predictor is fixed:
+predictor is fixed, creating a 2d "slice" of a high-dimensional model.
 
 -   Variables named in `predict_vars` are held at your chosen values.
 -   Variables mapped to a grouping aesthetic (`aes(color = g)`) are pinned to
