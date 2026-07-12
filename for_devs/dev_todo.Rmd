@@ -1,22 +1,52 @@
 ---
 title: "Dev TODOs"
 output: html_document
-date: "2025-09-20"
+date: "2026-07-11"
 ---
 
-# Priority
+## General
 
 - [ ] plotly overwrite issue in `known_issues.md`
-- [x] Add standards to `decisions.Rmd` (like error format)
-- [x] Make sure existing ground truth tests are accurate
 - [ ] Check for comprehensiveness of testing suite and edge cases
+- [ ] Fix remaining errors in `known_issues.Rmd`
+- [ ] Update code examples in README (particularly geom_slice)
+- [ ] Simplify naming conditions in `decisions.Rmd`
+- [ ] Simplify context in CLAUDE.md - move to either skill or testing/README.md
+- [ ] Consider if the names `slice_2d` and `geom_slice` convey their function best
+- [ ] Tidy repo functions that haven't been visited since geom_slice refactor
 
-- [x] Refactor geom_slice for cleanness, consistency, and readability - full rewrite 2026-07-07, see `for_devs/geom_slice_progress.Rmd`
-  - [x] Follows ggplot conventions - proper `Layer` subclass via `layer(layer_class = ...)`
-  - [x] Solid error handling
-    - [x] Error messages consistent with style guide in decisions.Rmd
-    - [ ] Roll out the `slice_*()` condition helpers (`R/conditions.R`) across the package — DONE for `geom_slice.R`; still to do for `slice_2d.R`, `drawit.R`, etc. (their hand-rolled messages mostly follow the format but bypass the helpers).
-  - [ ] Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `xaxis`, `color`/`colors`), adding deprecation aliases for any public arguments that change. (`geom_slice`'s public args — `predict_vars`, `back_transform`, `n` — now conform; `slice_2d`/`drawit` still use `xaxis`, which `decisions.Rmd` currently permits.)
+## autoplot
+
+- [ ] Document well
+- [ ] Note functionality that really should be there but isn't - take it beyond autoplot(model)
+
+## geom_slice
+
+- [ ] Additional tests
+  - [ ] back transform complex function
+  - [ ] x axis transform that is a curved line with gaps between points (shows an potential issue with current implementation)
+- [ ] Add `data` and aesthetic arguments to `geom_slice`
+- [ ] Consider a `full_range` boolean argument to `geom_slice` which plots lines to the edge of the panel, not the end of the group
+
+## slice_2d
+
+- [ ] Roll out the `slice_*()` condition helpers to `slice_2d.R` and related (their hand-rolled messages mostly follow the format but bypass the helpers).
+- [ ] Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `xaxis`, `color`/`colors`), adding deprecation aliases for any public arguments that change. (`geom_slice`'s public args — `predict_vars`, `back_transform`, `n` — now conform; `slice_2d`/`drawit` still use `xaxis`, which `decisions.Rmd` currently permits.)
+- [ ] Migrate fully to snake_case (e.g. `xaxis` → `x_axis`, `color`/`colors`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.
+- [ ] Add error to check if the data being plotted is the same as the data the lm was fit to
+- [ ] Add an interval to `slice_2d` (like `geom_slice`)
+- [ ] priority low; investigate usefulness of back_transform = "log"
+
+## scatter_3d
+
+- [ ] Find a way to test it (if only just in report.Rmd)
+
+## drawit
+
+- [ ] Deprecate it
+
+## complete
+
 - [x] Get geom_slice working under the most common conditions
   - [x] Any y transformation (incl. inline `aes(x, log(y))` and `scale_y_log10()` — gs_09–11, gs_25, gs_26)
   - [x] An x axis matching its first variable
@@ -24,46 +54,30 @@ date: "2025-09-20"
   - [x] Grouping (gs_07, gs_17)
   - [x] Faceting (gs_08, gs_14, gs_17)
   - [x] A third invisible variable (y ~ x + x2) — imputed with a message (gs_02, gs_18)
-- [ ] Add ground truth reference for gs_39
-- [ ] Additional tests
+- [x] Add ground truth reference for gs_39
+- [x] geom_slice test cases 
   - [x] explicit / string / disabled `back_transform`, transformed-axis, and exp/square y-transforms — gs_40–gs_45 (2026-07-07)
   - [x] both intervals on one plot — gs_46 (2026-07-07)
   - [x] real-data interaction with grouping and natural colors — gs_47 (2026-07-07)
   - [x] error on a discrete x-axis — gs_48 (2026-07-07)
-  - [ ] back transform complex function
-  - [ ] x axis transform that is a curved line with gaps between points (shows an potential issue with current implementation)
-
 - [x] Separate multi-plot test files
-- [ ] Test `scatter_3d`
-- [ ] Fix remaining errors in `known_issues.Rmd`
-- [ ] Update code examples in README (particularly geom_slice)
 - [x] deprecate geom_fit — removed 2026-07-07 (courtesy error stub in `R/deprecated.R`); `geom_add_slice_2d` deleted outright
-- [ ] deprecate drawit
-- [ ] investigate usefulness of back_transform = "log"
-
-## Queue
-
-- [ ] Refactor report.Rmd and related renderers to single render everything (currently renders everything twice to accomodate the snapshot)
-- [ ] Simplify context in CLAUDE.md - move to either skill or testing/README.md
+- [x] Refactor report.Rmd and related renderers to single render everything (currently renders everything twice to accomodate the snapshot)
 - [x] Test use case of ggplot(data, aes(x, log(y))) + geom_slice(lm) — gs_26
 - [x] Also test ggplot(...) + ... + scale_y_log() or something like that — gs_24 / gs_25
-- [ ] Add error to check if the data being plotted is the same as the data the lm was fit to
+- [x] Add error to check if the data being plotted is the same as the data the lm was fit to
   - [x] `geom_slice` 
-  - [ ] `slice_2d` (still needs check and case)
-- [ ] Consider if the names `slice_2d` and `geom_slice` convey their function best
-- [ ] Migrate fully to snake_case (e.g. `xaxis` → `x_axis`, `color`/`colors`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.
 - [x] Remove %>% in favor of |>
-- [ ] Tidy repo in general...
-
-## New Features
-
 - [x] `autoplot(lm)` (takes minimal arguments, feasts/ggtime is a good example) — DONE 2026-07-07 (`autoplot.lm(object, ..., xaxis =)`: scatter + geom_slice + theme_lc from the model's own data, first numeric predictor on x, `...` forwarded to geom_slice, `autoplot` generic re-exported; cases ap_01–ap_11)
 - [x] Add confidence and prediction interval to `geom_slice` — DONE 2026-07-07 (`interval = "confidence"/"prediction"`, GeomSlice now inherits GeomSmooth; cases gs_33/gs_34)
-- [ ] Add `data` and aesthetic arguments to `geom_slice`
-- [ ] Add an interval to `slice_2d` (like `geom_slice`)
+- [x] Add standards to `decisions.Rmd` (like error format)
+- [x] Make sure existing ground truth tests are accurate
+- [x] Refactor geom_slice for cleanness, consistency, and readability - full rewrite 2026-07-07, see `for_devs/geom_slice_progress.Rmd`
+  - [x] Follows ggplot conventions - proper `Layer` subclass via `layer(layer_class = ...)`
+  - [x] Solid error handling
+    - [x] Error messages consistent with style guide in decisions.Rmd
 - [x] Allow passing a range of values for a slice, plotting multiple lines in one function (ie x2=c(1,2,3),x3=c(1,4) plots 6 lines) — DONE 2026-07-07 (multi-value `predict_vars`, values crossed with `expand.grid`; cases gs_35/gs_36). All lines currently use the default color; per-value styling/labeling still undesigned.
-- [ ] Consider a `full_range` boolean argument to `geom_slice` which plots lines to the edge of the panel, not the end of the group
-- [ ] band function - is it separate or does it live within geom_slice?
-- [x] Consider fancy formatter for lm_equation and geom_slice_subtitle that communicates factors clearer such as `4.09*(g="B")` instead of `gB`
+- [x] band function - is it separate or does it live within geom_slice?
 - [x] geom_slice_text labels end of lines
 - [x] geom_slice_subtitle creates a subtitle showing the model and held values
+- [x] Consider fancy formatter for lm_equation and geom_slice_subtitle that communicates factors clearer such as `4.09*(g="B")` instead of `gB`
