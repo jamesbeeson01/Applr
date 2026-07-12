@@ -19,8 +19,8 @@ examples of the current API). Do NOT run `devtools::document()` or edit any
 1. Update all code examples to the CURRENT API. The `geom_slice` examples are
    known-stale (`for_devs/dev_todo.Rmd`). Verify each snippet actually runs:
    `Rscript -e "devtools::load_all('.'); <snippet>"`.
-2. Remove the `drawit()` section — it is being deprecated right now in a
-   parallel session. Mention it only in a one-line "deprecated" note if at all.
+2. Remove the `drawit()` section — it is deprecated (a shim that forwards to
+   `slice_2d()`). Mention it only in a one-line "deprecated" note if at all.
 3. Remove or fix the `geom_fit` references if any exist (it is already a
    deprecated error stub).
 4. Add sections/examples for the newer functions the README doesn't cover:
@@ -31,9 +31,6 @@ examples of the current API). Do NOT run `devtools::document()` or edit any
 5. Make the "Getting help" section link to the actual GitHub repo
    (`https://github.com/saundersg/Applr`) for issues.
 6. Keep the friendly teaching tone; keep the Quick start near the top short.
-
-Do not describe features as stable that the dev todo marks as pending
-renames (`xaxis` args on `slice_2d`) — present them as-is without promising.
 
 When done, summarize what changed and flag any README claims you could not
 verify against the code.

@@ -16,13 +16,13 @@ parallel, so stay strictly inside your scope.
 - `R/get_inverse_function.R`
 
 **Do NOT:** run `devtools::document()`, edit `NAMESPACE`, anything in `man/`,
-`DESCRIPTION`, or any other `R/` file (especially `R/drawit.R`,
-`R/deprecated.R`, and the `geom_slice*` family — other sessions own those).
+`DESCRIPTION`, or any other `R/` file (especially `R/deprecated.R` and the
+`geom_slice*` family — other sessions own those).
 Do not change any function's behavior or signature — roxygen comments only.
 
 **Task, for each exported function in scope:**
 1. Ensure a clear `@title` and a `@description` that says what the function
-   does and when a Math425-style user would reach for it.
+   does and when a user would reach for it.
 2. Add `@return` describing the return value (CRAN requires this).
 3. Write `@examples` that show the RANGE of what the function can do — not
    one minimal call. Use built-in datasets (`mtcars`, `iris`, `palmerpenguins`

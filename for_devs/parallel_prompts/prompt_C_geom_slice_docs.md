@@ -16,8 +16,8 @@ editing other files in parallel, so stay strictly inside your scope.
 - `R/autoplot.lm.R`
 
 **Do NOT:** run `devtools::document()`, edit `NAMESPACE`, `man/`,
-`DESCRIPTION`, or any other `R/` file (`R/drawit.R`, `R/deprecated.R`,
-`R/slice_2d.R`, and the utility files are owned by other sessions). Do not
+`DESCRIPTION`, or any other `R/` file (`R/deprecated.R`, `R/slice_2d.R`, and
+the utility files are owned by other sessions). Do not
 change any function's behavior or signature — roxygen comments only.
 
 **Task:** these are the functions users meet first, so the docs must show the
