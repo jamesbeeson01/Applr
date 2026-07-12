@@ -12,8 +12,10 @@
 #' - Quick text/LaTeX equations from lm() objects
 #'
 #' @section Main functions:
+#' - autoplot: \code{\link{autoplot.lm}}
 #' - Base graphics: \code{\link{slice_2d}}, \code{\link{add_slice_2d}}
 #' - ggplot2 layer: \code{\link{geom_slice}} (built on \code{\link{StatSlice}} and \code{\link{GeomSlice}})
+#' - ggplot2 labelling: \code{\link{geom_slice_text}}, \code{\link{geom_slice_subtitle}}, \code{\link{geom_slice_caption}}
 #' - 3D visualization: \code{\link{scatter_3d}}
 #' - Equations: \code{\link{lm_equation}}, \code{\link{lm_latex}}
 #' - Theme: \code{\link{theme_lc}}
