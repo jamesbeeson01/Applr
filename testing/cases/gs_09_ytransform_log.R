@@ -6,6 +6,8 @@
 #         geom_slice should back-transform: the fitted line must be exponential-shaped
 #         (curves upward), NOT a straight line.
 #         If the line is straight, back-transformation failed.
+#         Console message: predictions of log(y) back-transformed to the
+#         y axis.
 
 source("testing/_setup.R")
 set.seed(123)

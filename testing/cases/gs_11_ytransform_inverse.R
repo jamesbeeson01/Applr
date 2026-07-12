@@ -6,6 +6,7 @@
 #         The fitted line should be hyperbola-shaped: large y near x=0, approaching 0
 #         as x grows large.
 #         A straight line on this plot means back-transformation failed.
+#         Console message: predictions of 1/y back-transformed to the y axis.
 
 source("testing/_setup.R")
 set.seed(123)

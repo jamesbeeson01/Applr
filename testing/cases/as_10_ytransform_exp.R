@@ -3,6 +3,7 @@
 # FUNC: add_slice_2d
 # EXPECT: Model exp(y) ~ x_pos (y = log(x_pos)), plotted on the ORIGINAL y
 #         scale. Back-transformed logarithmic curve. Straight line = FAIL.
+#         Console message: xaxis not specified, first x variable (x_pos) used.
 
 source("testing/_setup.R")
 set.seed(123)

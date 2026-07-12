@@ -6,6 +6,7 @@
 #         x2 imputed at its mean. The subtitle must exclude g (the legend
 #         covers it) and report only x2. model = FALSE here, so the subtitle
 #         is the single line "held at: x2 = <mean>".
+#         Console message: x2 not specified, held at its mean (~2.578).
 
 source("testing/_setup.R")
 set.seed(123)

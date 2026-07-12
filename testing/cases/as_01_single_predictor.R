@@ -2,7 +2,8 @@
 # TYPE: visual
 # FUNC: add_slice_2d
 # EXPECT: Base scatter of x vs y with a slice line of slope ~1 overlaid by
-#         add_slice_2d().
+#         add_slice_2d(). Console message: xaxis not specified, so the
+#         first x variable (x) is used as the x-axis.
 
 source("testing/_setup.R")
 set.seed(123)

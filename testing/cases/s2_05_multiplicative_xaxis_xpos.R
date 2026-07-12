@@ -3,6 +3,7 @@
 # FUNC: slice_2d
 # EXPECT: Model y ~ I(x*x_pos) with xaxis = "x_pos": scatter of x_pos vs y
 #         with a slice line (x held at some value shown in the caption).
+#         Console message: x not specified, held at its mean (~0.4).
 
 source("testing/_setup.R")
 set.seed(123)

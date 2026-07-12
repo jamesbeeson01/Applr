@@ -3,6 +3,11 @@
 # FUNC: add_slice_2d
 # EXPECT: Model y ~ I(x*x_pos), plotted with the product x*x_pos on the x-axis.
 #         One straight slice line of slope ~1 through the points.
+#         UNRESOLVED: the console currently reports xaxis defaulting to `x`
+#         (not the product) and x_pos held at its mean (~4.8), so the slice
+#         is computed against raw x — inconsistent with the slope-~1
+#         expectation above. Related to the product-term known issues
+#         (s2_06, dw_03). No snapshot until this is decided.
 
 source("testing/_setup.R")
 set.seed(123)

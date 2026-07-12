@@ -3,6 +3,7 @@
 # FUNC: add_slice_2d
 # EXPECT: Model y ~ I(x*x_pos), plotted with x alone on the x-axis and
 #         xaxis = "x". Review how the slice line handles the product term.
+#         Console message: x_pos not specified, held at its mean (~4.8).
 
 source("testing/_setup.R")
 set.seed(123)

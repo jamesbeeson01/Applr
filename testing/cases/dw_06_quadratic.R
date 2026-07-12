@@ -3,6 +3,10 @@
 # FUNC: drawit
 # EXPECT: Model y ~ x + I(x^2). Scatter of x vs y with an upward-opening
 #         parabola drawn through the points.
+#         UNRESOLVED: drawit currently emits a raw warning ("I(x^2) value
+#         not specified; enter value between:<min>-<max>") with
+#         full-precision numbers mashed together. Decide whether drawit
+#         should message like slice_2d before snapshotting this output.
 
 source("testing/_setup.R")
 set.seed(123)

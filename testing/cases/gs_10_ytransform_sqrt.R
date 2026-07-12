@@ -5,6 +5,8 @@
 #         Model is sqrt(y) ~ x_pos, so geom_slice must back-transform via squaring.
 #         The fitted line should be parabola-shaped (curves upward).
 #         A straight line on this plot means back-transformation failed.
+#         Console message: predictions of sqrt(y) back-transformed to the
+#         y axis.
 
 source("testing/_setup.R")
 set.seed(123)

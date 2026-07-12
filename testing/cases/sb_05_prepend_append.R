@@ -7,6 +7,7 @@
 #         "Model: <equation>\nheld at: x2 = <mean> (mean-imputed)" —
 #         prepend before the first line, append after the last, default two-
 #         line layout otherwise unchanged.
+#         Console message: x2 not specified, held at its mean (~2.385).
 
 source("testing/_setup.R")
 set.seed(123)

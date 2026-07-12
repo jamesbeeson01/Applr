@@ -7,6 +7,7 @@
 #         already labeled: x2 appears on the plot via geom_slice_text(), so
 #         only x3 goes in the subtitle — line 1 the equation, line 2
 #         "held at: x3 = <mean>". No mention of x2 in the subtitle.
+#         Console message: x3 not specified, held at its mean (~-0.083).
 
 source("testing/_setup.R")
 set.seed(123)

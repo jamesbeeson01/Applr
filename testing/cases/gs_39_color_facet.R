@@ -1,9 +1,15 @@
-# CASE: gs_38_multi_value_cross_colored
+# CASE: gs_39_color_facet
 # TYPE: visual
 # FUNC: geom_slice
-# EXPECT: Six parallel lines of slope ~1, one per (x2, x3) combination,
-#         offset by 3*x2 + 0.7*x3 (lowest: x2=1,x3=1; highest: x2=3,x3=4).
-#         Lines are distinguished by color (x2) and linetype (x3).
+# EXPECT: BROKEN CASE — needs a redesign before it can assert anything.
+#         The body was copied from gs_38 but x2/x3 are CONTINUOUS runif
+#         draws, so aes(color = factor(x2)) and facet_wrap(~factor(x3))
+#         produce one level per observation: ~60 facets and a 60-entry
+#         legend. There is also no reference image. Intended purpose
+#         (per the filename): color grouping + faceting combined. To make
+#         it meaningful, x2/x3 must be drawn from small discrete sets and
+#         a reference must be added; until then, do not snapshot its
+#         console output (currently: x3 imputed at its mean).
 
 source("testing/_setup.R")
 set.seed(123)

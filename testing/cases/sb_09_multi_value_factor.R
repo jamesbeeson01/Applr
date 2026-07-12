@@ -6,6 +6,7 @@
 #         lines plus g imputed at its most common level. The subtitle's values
 #         line lists BOTH, multi-value x2 joined with commas and the factor
 #         quoted: "held at: x2 = 0, 4; g = \"A\"" (after the equation line).
+#         Console message: g not specified, most common level "A" used.
 
 source("testing/_setup.R")
 set.seed(123)

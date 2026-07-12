@@ -6,7 +6,8 @@
 #         data — the observed min and max of x_pos. Two skyblue edge lines at
 #         those imputed extremes with a translucent skyblue ribbon between
 #         them. The band should be wider than gs_49's (full data range, not
-#         1-9).
+#         1-9). Console message: band range for x_pos not specified, imputed
+#         from the min/max data range.
 
 source("testing/_setup.R")
 set.seed(123)

@@ -5,7 +5,9 @@
 #         non-axis predictor (x_pos), so it is unambiguous which variable
 #         bands: x_pos, spanning its observed min/max from the data. Two
 #         skyblue edge lines at those extremes with a translucent skyblue
-#         ribbon between them — identical result to gs_50's band = "x_pos".
+#         ribbon between them — identical result to gs_50's band = "x_pos",
+#         including the same console message (band range for x_pos imputed
+#         from the min/max data range).
 
 source("testing/_setup.R")
 set.seed(123)

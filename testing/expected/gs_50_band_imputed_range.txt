@@ -1,0 +1,2 @@
+Band range for `x_pos` not specified - used the min/max data range: 0.006248 to 9.85.
+    To choose the range, use 'predict_vars = list(x_pos = c(0.006248, 9.85))'.

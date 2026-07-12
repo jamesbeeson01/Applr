@@ -3,7 +3,8 @@
 # FUNC: slice_2d
 # EXPECT: Scatter of x vs y (y ~ x + x_pos) with one straight slice line,
 #         x_pos held at its default (mean, with a console message) and shown
-#         in the caption above the plot.
+#         in the caption above the plot. A second console message reports
+#         xaxis defaulting to the first x variable (x).
 
 source("testing/_setup.R")
 set.seed(123)

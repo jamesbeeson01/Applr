@@ -5,6 +5,7 @@
 #         One fitted line with hp held at its mean (~146).
 #         Line should slope downward (more displacement -> less mpg) and pass
 #         through the middle of the point cloud.
+#         Console message: hp not specified, held at its mean (146.7).
 #         No errors.
 
 source("testing/_setup.R")

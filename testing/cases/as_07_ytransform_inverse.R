@@ -3,6 +3,7 @@
 # FUNC: add_slice_2d
 # EXPECT: Model 1/y ~ x, plotted on the ORIGINAL y scale. Back-transformed
 #         hyperbolic slice line. A straight line means back-transform failed.
+#         Console message: xaxis not specified, first x variable (x) used.
 
 source("testing/_setup.R")
 set.seed(123)

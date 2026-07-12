@@ -5,6 +5,8 @@
 #         exp(y) ~ x_pos (y = log(x_pos) + noise), so geom_slice must
 #         back-transform via log(fitted): a LOGARITHMIC curve (steep at
 #         small x_pos, flattening to the right). Straight line = FAIL.
+#         Console message: predictions of exp(y) back-transformed to the
+#         y axis.
 
 source("testing/_setup.R")
 set.seed(123)

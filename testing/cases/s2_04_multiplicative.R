@@ -1,8 +1,12 @@
 # CASE: s2_04_multiplicative
 # TYPE: visual
 # FUNC: slice_2d
-# EXPECT: Model y ~ I(x*x_pos). Default slice_2d plot: the product term on the
-#         x-axis with a straight slice line of slope ~1 through the points.
+# EXPECT: Model y ~ I(x*x_pos). Default slice_2d plot: raw x on the x-axis
+#         (the default is the first x VARIABLE, not the product term — see
+#         s2_06 for xaxis = the product) with x_pos held at its mean (~4.8,
+#         console message + caption). One straight slice line of slope ~4.8
+#         through the middle of the point cloud. A second console message
+#         reports xaxis defaulting to x.
 
 source("testing/_setup.R")
 set.seed(123)

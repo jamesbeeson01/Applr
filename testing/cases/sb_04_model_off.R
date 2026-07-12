@@ -4,6 +4,7 @@
 # EXPECT: Same slice as sb_01 (x2 imputed at its mean), but called with
 #         model = FALSE: the equation line is dropped, so the subtitle is the
 #         single line "held at: x2 = <mean>".
+#         Console message: x2 not specified, held at its mean (~2.385).
 
 source("testing/_setup.R")
 set.seed(123)

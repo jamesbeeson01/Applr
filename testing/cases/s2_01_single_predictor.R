@@ -3,6 +3,7 @@
 # FUNC: slice_2d
 # EXPECT: slice_2d creates its own base plot: scatter of x vs y (steelblue
 #         points) with a slice line of slope ~1 through the points.
+#         Console message: xaxis not specified, first x variable (x) used.
 
 source("testing/_setup.R")
 set.seed(123)

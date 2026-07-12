@@ -3,6 +3,7 @@
 # FUNC: slice_2d
 # EXPECT: Model sqrt(y) ~ x_pos (y = x_pos^2). Plot on the ORIGINAL y scale
 #         with a back-transformed upward parabola. Straight line = FAIL.
+#         Console message: xaxis not specified, first x variable (x_pos) used.
 
 source("testing/_setup.R")
 set.seed(123)

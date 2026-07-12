@@ -3,6 +3,11 @@
 # FUNC: drawit
 # EXPECT: Model y ~ I(x*x_pos), plotted with x alone on the x-axis and
 #         xaxis = "x". Review how the drawn curve handles the product term.
+#         UNRESOLVED: drawit currently emits a raw warning ("I(x * x_pos)
+#         value not specified; enter value between:<min>-<max>") with
+#         full-precision numbers mashed together (ambiguous with negative
+#         values). Decide whether drawit should message like slice_2d
+#         before snapshotting this output.
 
 source("testing/_setup.R")
 set.seed(123)

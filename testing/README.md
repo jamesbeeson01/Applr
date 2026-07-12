@@ -25,7 +25,8 @@ testing/
 ├── report.Rmd     <- human report; auto-discovers cases/, knit to report.html
 ├── cases/         <- THE test suite (single source of truth)
 ├── reference/     <- ground-truth images for gs_ cases + the scripts that build them
-├── expected/      <- expected console output (.txt) for console cases
+├── expected/      <- expected console output (.txt) for console cases and for
+│                     any visual case that intentionally prints/messages
 ├── output/        <- generated results (gitignored)
 ├── archive/       <- old Comparison.Rmd, dated report snapshots, misc review files
 └── student_models_house_selling_prices/  <- student HTMLs kept for reference (not tests)
@@ -37,7 +38,7 @@ testing/
 Rscript testing/run.R                  # run every case
 Rscript testing/run.R gs_01            # run one case (prefix is enough)
 Rscript testing/run.R gs err           # run all gs_* and err_* cases
-Rscript testing/run.R --update err_01  # accept current console output as the new snapshot
+Rscript testing/run.R --update gs_02   # accept current console output as the new snapshot
 ```
 
 - **Visual cases** save `output/<id>.png`. The runner only checks that the
@@ -45,6 +46,13 @@ Rscript testing/run.R --update err_01  # accept current console output as the ne
   against `reference/<id>.png` (where one exists) and the case's `EXPECT`
   header. (If a case accidentally draws more than one plot, numbered
   `<id>-01.png`, `<id>-02.png`, ... appear — treat that as a case to split.)
+- **Visual cases also capture console output** (messages, warnings, printed
+  values) to `output/<id>.txt`, diffed against `expected/<id>.txt` exactly
+  like a console case. A visual case with no `expected/` snapshot must be
+  *silent*: unexpected output reports `NEW` (review it, then `--update` to
+  accept or fix the source to silence it), a snapshot mismatch is a `FAIL`,
+  and a snapshot with no output is a `FAIL`. So every visual case tests its
+  plot AND its console behavior — no duplicate text-only case needed.
 - **Console cases** save `output/<id>.txt` and are diffed automatically against
   `expected/<id>.txt`. A case with no snapshot yet reports `NEW`; review its
   output, then run with `--update` to accept it as the baseline.

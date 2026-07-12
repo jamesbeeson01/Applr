@@ -3,6 +3,8 @@
 # FUNC: add_slice_2d
 # EXPECT: Model y ~ x:x_switch. ONE scatter plot with THREE slice lines added
 #         (x_switch = 0, 1, 2): slopes 0, ~1, ~2 radiating from the origin.
+#         Console: the xaxis-not-specified message prints THREE times, once
+#         per add_slice_2d() call.
 
 source("testing/_setup.R")
 set.seed(123)

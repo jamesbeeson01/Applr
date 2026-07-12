@@ -7,6 +7,7 @@
 #         "Fitted <equation> holding x2 at <mean>". When format is given, it
 #         fully replaces the default layout (and prepend/append/model are
 #         ignored/unused).
+#         Console message: x2 not specified, held at its mean (~2.385).
 
 source("testing/_setup.R")
 set.seed(123)
