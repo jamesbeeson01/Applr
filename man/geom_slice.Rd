@@ -12,7 +12,9 @@ geom_slice(
   back_transform = NULL,
   interval = "none",
   band = FALSE,
+  full_range = FALSE,
   ...,
+  fullrange = NULL,
   x_axis = NULL,
   xaxis = NULL
 )
@@ -48,6 +50,13 @@ that predictor: between the values you gave in \code{predict_vars} (e.g.
 \code{predict_vars} leaves it out. \code{band = TRUE} infers the variable: the one
 multi-value \code{predict_vars} entry, or the single predictor the plot does
 not otherwise show. Default \code{FALSE}.}
+
+\item{full_range, fullrange}{If \code{TRUE}, each line spans the full x range of the panel
+instead of stopping at its group's own data range (like \code{fullrange} in
+\code{\link[ggplot2:geom_smooth]{ggplot2::geom_smooth()}}; \code{fullrange} is accepted as an alias). Default
+\code{FALSE}. Only applies when the x-axis
+maps a single predictor; with a composite x-axis expression predictions
+are made at the data points, so the lines keep their data extent.}
 
 \item{...}{Other arguments passed to the layer, such as fixed aesthetics
 (\code{color = "red"}, \code{linewidth = 1.2}).}
@@ -115,6 +124,12 @@ model2 <- lm(mpg ~ disp * cyl, data = mtcars)
 ggplot(mtcars, aes(disp, mpg, color = factor(cyl))) +
   geom_point() +
   geom_slice(model2)
+
+# full_range = TRUE extends each group's line across the whole panel,
+# not just its own data range
+ggplot(mtcars, aes(disp, mpg, color = factor(cyl))) +
+  geom_point() +
+  geom_slice(model2, full_range = TRUE)
 
 # Facet variables pin per panel the same way
 ggplot(mtcars, aes(disp, mpg)) +

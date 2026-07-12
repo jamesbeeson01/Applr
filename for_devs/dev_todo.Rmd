@@ -37,7 +37,7 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 
 - [x] Add labels to autoplot by default (`geom_slice_subtitle`, maybe `geom_slice_text`)
 - [x] **priority: high** — Document well — DONE 2026-07-12 (runnable examples incl. `x_axis`, forwarded `predict_vars`/`interval`; `@seealso` cross-links)
-- [ ] Add aes() and data mapping
+- [x] Add aes() and data mapping
 
 ## geom_slice
 
@@ -45,7 +45,7 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
   - [ ] back transform complex function
   - [ ] x axis transform that is a curved line with gaps between points (shows an potential issue with current implementation)
 - [ ] Add `data` and aesthetic arguments to `geom_slice`
-- [ ] Add a `full_range` boolean argument to `geom_slice` which plots lines to the edge of the panel, not the end of the group
+- [x] Add a `full_range` boolean argument to `geom_slice` which plots lines to the edge of the panel, not the end of the group
 - [ ] Add projection band and 95% confidence/prediction interval to legend optionally
 
 ## slice_2d

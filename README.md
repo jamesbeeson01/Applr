@@ -158,6 +158,18 @@ ggplot(mtcars, aes(disp, mpg, color = factor(cyl))) +
 
 <img src="man/figures/README-grouping-1.png" alt="One slice line per cyl group, colored to match the points"  />
 
+Each group’s line normally stops at its own data range.
+`full_range = TRUE` extends every line to the edge of the panel instead
+(like `fullrange` in `geom_smooth()`):
+
+``` r
+ggplot(mtcars, aes(disp, mpg, color = factor(cyl))) +
+  geom_point() +
+  geom_slice(model, full_range = TRUE)
+```
+
+<img src="man/figures/README-full-range-1.png" alt="Slice lines extended across the full panel x range with full_range = TRUE"  />
+
 ## Labeling the slices
 
 Three companions describe `geom_slice()` lines on the plot itself. They

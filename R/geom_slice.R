@@ -631,7 +631,8 @@ resolve_group_pins <- function(spec, data) {
 # Build the prediction line(s) for one group, following the layer's slice
 # spec. Held variables with several values (predict_vars = list(x2 = c(1, 2)))
 # yield one line per combination of values, each with its own group id.
-compute_slice_group <- function(data, scales, spec, n, interval = "none") {
+compute_slice_group <- function(data, scales, spec, n, interval = "none",
+                                full_range = FALSE) {
   if (nrow(data) == 0) return(data)
 
   x_trans <- scale_transformation(scales$x, "x")
@@ -653,8 +654,14 @@ compute_slice_group <- function(data, scales, spec, n, interval = "none") {
   if (spec$x_simple) {
     # One predictor varies: an even grid across this group's x range
     # (per group, not per panel — see "X Range" in for_devs/decisions.Rmd),
-    # inverse-transformed to data units for predict().
-    x_panel <- seq(min(data$x, na.rm = TRUE), max(data$x, na.rm = TRUE), length.out = n)
+    # or the full panel range when full_range = TRUE, inverse-transformed to
+    # data units for predict().
+    x_range <- if (isTRUE(full_range) && !is.null(scales$x)) {
+      scales$x$dimension()
+    } else {
+      range(data$x, na.rm = TRUE)
+    }
+    x_panel <- seq(x_range[1], x_range[2], length.out = n)
     x_var <- as.character(rlang::quo_get_expr(spec$x_quo))
     newdata <- setNames(data.frame(x_trans$inverse(x_panel)), x_var)
     for (var in names(pinned)) newdata[[var]] <- pinned[[var]]
@@ -767,9 +774,9 @@ StatSlice <- ggproto(
 
   compute_group = function(data, scales, model, predict_vars = list(),
                            back_transform = NULL, n = 100, interval = "none",
-                           band = FALSE, mapping = NULL, slice_spec = NULL,
-                           na.rm = FALSE) {
-    compute_slice_group(data, scales, slice_spec, n, interval)
+                           band = FALSE, full_range = FALSE, mapping = NULL,
+                           slice_spec = NULL, na.rm = FALSE) {
+    compute_slice_group(data, scales, slice_spec, n, interval, full_range)
   }
 )
 
@@ -912,6 +919,12 @@ ggplot_add.SliceLayer <- function(object, plot, ...) {
 #'   `predict_vars` leaves it out. `band = TRUE` infers the variable: the one
 #'   multi-value `predict_vars` entry, or the single predictor the plot does
 #'   not otherwise show. Default `FALSE`.
+#' @param full_range,fullrange If `TRUE`, each line spans the full x range of the panel
+#'   instead of stopping at its group's own data range (like `fullrange` in
+#'   [ggplot2::geom_smooth()]; `fullrange` is accepted as an alias). Default
+#'   `FALSE`. Only applies when the x-axis
+#'   maps a single predictor; with a composite x-axis expression predictions
+#'   are made at the data points, so the lines keep their data extent.
 #' @param back_transform How to map predictions onto the y-axis when the
 #'   model's response is transformed. Default `NULL` (and `TRUE`) auto-detects
 #'   from the model formula; `FALSE` turns back-transformation off; a
@@ -966,6 +979,12 @@ ggplot_add.SliceLayer <- function(object, plot, ...) {
 #'   geom_point() +
 #'   geom_slice(model2)
 #'
+#' # full_range = TRUE extends each group's line across the whole panel,
+#' # not just its own data range
+#' ggplot(mtcars, aes(disp, mpg, color = factor(cyl))) +
+#'   geom_point() +
+#'   geom_slice(model2, full_range = TRUE)
+#'
 #' # Facet variables pin per panel the same way
 #' ggplot(mtcars, aes(disp, mpg)) +
 #'   geom_point() +
@@ -1002,7 +1021,9 @@ geom_slice <- function(model,
                        back_transform = NULL,
                        interval = "none",
                        band = FALSE,
+                       full_range = FALSE,
                        ...,
+                       fullrange = NULL,
                        x_axis = NULL,
                        xaxis = NULL) {
   if (!is.null(x_axis) || !is.null(xaxis)) {
@@ -1024,6 +1045,22 @@ geom_slice <- function(model,
   back_transform <- check_back_transform(back_transform)
   interval <- check_slice_interval(interval)
   band <- check_slice_band(band, interval)
+  # fullrange (ggplot2's geom_smooth spelling) is an alias for full_range
+  if (!is.null(fullrange)) {
+    if (!missing(full_range)) {
+      slice_abort(
+        what = "`full_range` and `fullrange` are the same argument; use only one.",
+        hint = "For example, 'full_range = TRUE'."
+      )
+    }
+    full_range <- fullrange
+  }
+  if (!is.logical(full_range) || length(full_range) != 1 || is.na(full_range)) {
+    slice_abort(
+      what = "`full_range` must be TRUE or FALSE.",
+      hint = "Use 'full_range = TRUE' to extend the lines to the edge of the panel."
+    )
+  }
   if (!is.numeric(n) || length(n) != 1 || is.na(n) || n < 2) {
     slice_abort(
       what = "`n` must be a single number of at least 2.",
@@ -1049,6 +1086,7 @@ geom_slice <- function(model,
       back_transform = back_transform,
       interval = interval,
       band = band,
+      full_range = full_range,
       # GeomSmooth only draws the ribbon when its `se` param says so
       se = !identical(interval, "none") || !isFALSE(band),
       ...
