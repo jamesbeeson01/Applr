@@ -4,7 +4,15 @@
 \alias{autoplot.lm}
 \title{Automatically plot a linear model}
 \usage{
-\method{autoplot}{lm}(object, ..., type = c("2d", "3d"), x_axis = NULL, xaxis = NULL)
+\method{autoplot}{lm}(
+  object,
+  ...,
+  data = NULL,
+  mapping = NULL,
+  type = c("2d", "3d"),
+  x_axis = NULL,
+  xaxis = NULL
+)
 }
 \arguments{
 \item{object}{A linear model fitted by \code{\link[=lm]{lm()}} \strong{with a \code{data} argument} —
@@ -15,6 +23,16 @@ works but \code{lm(your_data$y ~ your_data$x)} does not.}
 \code{predict_vars = list(hp = 110)} to choose the slice,
 \code{interval = "confidence"} for a ribbon, or fixed aesthetics such as
 \code{color = "red"} — or to \code{\link[=scatter_3d]{scatter_3d()}} when \code{type = "3d"}.}
+
+\item{data}{A data frame to draw the scatter from instead of the data
+recovered from the model — for example the model's data with extra
+columns added for \code{mapping} aesthetics. Passed to \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}.
+The rows must still match the data the model was fitted to
+(\code{\link[=geom_slice]{geom_slice()}} checks, and errors on a mismatch).}
+
+\item{mapping}{Extra aesthetics created with \code{\link[ggplot2:aes]{ggplot2::aes()}}, passed to
+\code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} — for example \code{mapping = aes(color = factor(cyl))}.
+Entries named \code{x} or \code{y} override the automatically chosen axes.}
 
 \item{type}{\code{"2d"} (default) for a \code{\link[=geom_slice]{geom_slice()}} ggplot, or \code{"3d"} for an
 interactive \code{\link[=scatter_3d]{scatter_3d()}} surface (needs exactly two numeric predictors).}
@@ -66,6 +84,10 @@ autoplot(lm(log(mpg) ~ disp, data = mtcars))
 autoplot(lm(mpg ~ disp + hp, data = mtcars),
          predict_vars = list(hp = 110), interval = "confidence") +
   labs(title = "Slice at hp = 110")
+
+# Custom data and extra aesthetics for the scatter
+autoplot(lm(mpg ~ disp, data = mtcars),
+         data = mtcars, mapping = aes(color = factor(cyl)))
 
 # An interactive 3-D surface for a two-predictor model
 if (interactive()) {

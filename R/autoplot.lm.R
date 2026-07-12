@@ -39,6 +39,14 @@ ggplot2::autoplot
 #'   `predict_vars = list(hp = 110)` to choose the slice,
 #'   `interval = "confidence"` for a ribbon, or fixed aesthetics such as
 #'   `color = "red"` — or to [scatter_3d()] when `type = "3d"`.
+#' @param data A data frame to draw the scatter from instead of the data
+#'   recovered from the model — for example the model's data with extra
+#'   columns added for `mapping` aesthetics. Passed to [ggplot2::ggplot()].
+#'   The rows must still match the data the model was fitted to
+#'   ([geom_slice()] checks, and errors on a mismatch).
+#' @param mapping Extra aesthetics created with [ggplot2::aes()], passed to
+#'   [ggplot2::ggplot()] — for example `mapping = aes(color = factor(cyl))`.
+#'   Entries named `x` or `y` override the automatically chosen axes.
 #' @param type `"2d"` (default) for a [geom_slice()] ggplot, or `"3d"` for an
 #'   interactive [scatter_3d()] surface (needs exactly two numeric predictors).
 #' @param x_axis The name of the predictor to place on the x-axis, such as
@@ -73,13 +81,18 @@ ggplot2::autoplot
 #'          predict_vars = list(hp = 110), interval = "confidence") +
 #'   labs(title = "Slice at hp = 110")
 #'
+#' # Custom data and extra aesthetics for the scatter
+#' autoplot(lm(mpg ~ disp, data = mtcars),
+#'          data = mtcars, mapping = aes(color = factor(cyl)))
+#'
 #' # An interactive 3-D surface for a two-predictor model
 #' if (interactive()) {
 #'   autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
 #' }
 #'
 #' @export
-autoplot.lm <- function(object, ..., type = c("2d", "3d"), x_axis = NULL, xaxis = NULL) {
+autoplot.lm <- function(object, ..., data = NULL, mapping = NULL,
+                        type = c("2d", "3d"), x_axis = NULL, xaxis = NULL) {
   type <- match.arg(type)
   check_slice_model(object)
 
@@ -101,7 +114,20 @@ autoplot.lm <- function(object, ..., type = c("2d", "3d"), x_axis = NULL, xaxis 
       hint = "Refit with a data argument, such as 'lm(y ~ x, data = your_data)'."
     )
   }
-  data <- slice_model_frame(object)
+  model_data <- slice_model_frame(object)
+
+  if (!is.null(data) && !is.data.frame(data)) {
+    slice_abort(
+      what = "`data` must be a data frame.",
+      hint = "Pass the data to plot the scatter from, such as 'data = your_data'."
+    )
+  }
+  if (!is.null(mapping) && !inherits(mapping, "uneval")) {
+    slice_abort(
+      what = "`mapping` must be created by aes().",
+      hint = "For example, 'mapping = aes(color = cyl)'."
+    )
+  }
 
   response_expr <- formula(object)[[2]]
   response_vars <- all.vars(response_expr)
@@ -126,7 +152,7 @@ autoplot.lm <- function(object, ..., type = c("2d", "3d"), x_axis = NULL, xaxis 
   # needs a continuous x-axis, so factor/character predictors are skipped
   # (they are imputed or grouped instead).
   numeric_vars <- predictor_vars[vapply(predictor_vars,
-                                        function(v) is.numeric(data[[v]]),
+                                        function(v) is.numeric(model_data[[v]]),
                                         logical(1))]
   if (!is.null(x_axis)) {
     if (!is.character(x_axis) || length(x_axis) != 1 || is.na(x_axis)) {
@@ -168,8 +194,16 @@ autoplot.lm <- function(object, ..., type = c("2d", "3d"), x_axis = NULL, xaxis 
   }
 
   # Bare symbols (not .data[[...]]) so geom_slice() can read which model
-  # variables are on the axes from the plot's aesthetic mapping.
-  ggplot(data, aes(x = !!as.name(x_axis), y = !!as.name(response_vars))) +
+  # variables are on the axes from the plot's aesthetic mapping. User-supplied
+  # aes() entries override the auto-chosen ones (e.g. mapping = aes(x = hp)
+  # replaces the default x); anything else (color, shape, ...) is added.
+  plot_mapping <- aes(x = !!as.name(x_axis), y = !!as.name(response_vars))
+  if (!is.null(mapping)) {
+    plot_mapping[names(mapping)] <- mapping
+  }
+
+  ggplot(if (is.null(data)) model_data else data, plot_mapping) +
     geom_point() +
-    geom_slice(object, ...)
+    geom_slice(object, ...) +
+    geom_slice_subtitle()
 }

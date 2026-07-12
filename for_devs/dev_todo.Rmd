@@ -14,7 +14,7 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 
 ## General
 
-- [/] Link to autoplot.lm in the main docs page
+- [x] Link to autoplot.lm in the main docs page
 - [ ] plotly overwrite issue in `known_issues.md` (should resolve with `@importFrom`)
 - [x] pictures in README
 - [x] **priority: high** — Update code examples in README (particularly geom_slice) — DONE 2026-07-12 (full rewrite: current API, drawit removed, covers autoplot / intervals / bands / slice-text helpers, issues link)

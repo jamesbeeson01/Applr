@@ -233,6 +233,18 @@ autoplot(lm(mpg ~ disp + hp, data = mtcars),
 autoplot(lm(mpg ~ disp + hp, data = mtcars), x_axis = "hp")
 ```
 
+`data` and `mapping` go to `ggplot()` itself: pass the model’s data with
+extra columns for aesthetics, and override or add to the automatic
+`aes()` (entries named `x` or `y` replace the chosen axes).
+
+``` r
+cars2 <- transform(mtcars, cyl_f = factor(cyl))
+autoplot(lm(mpg ~ disp, data = mtcars),
+         data = cars2, mapping = aes(color = cyl_f))
+```
+
+<img src="man/figures/README-autoplot-data-mapping-1.png" alt="autoplot() with a custom data frame and color mapping"  />
+
 ``` r
 # Two numeric predictors? Get the interactive 3-D surface instead
 autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
