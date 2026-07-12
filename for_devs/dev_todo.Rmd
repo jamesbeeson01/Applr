@@ -4,20 +4,32 @@ output: html_document
 date: "2026-07-11"
 ---
 
+## v1.0 release — decisions needed from James (priority: ULTRA-HIGH)
+
+See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settlement phase:
+
+- [ ] **DECISION:** Final public names before the 1.0 stability promise — keep or rename `slice_2d` / `geom_slice`; commit or reject the snake_case migration (`xaxis` → `x_axis`, `color`/`colors`). Renaming after 1.0 costs a full deprecation cycle; renaming now is free.
+- [ ] **DECISION:** Package identity in DESCRIPTION — keep "Math425 at BYUI" framing or rebrand as a general lm-visualization package? Add James Beeson to `Authors@R` (which role?); confirm canonical GitHub remote is `saundersg/Applr`.
+- [ ] **DECISION:** Confirm deprecated stubs (`geom_fit` error stub, `drawit` once deprecated) ship inside 1.0 and are removed at 2.0 (recommended).
+
 ## General
 
 - [ ] plotly overwrite issue in `known_issues.md`
 - [ ] Check for comprehensiveness of testing suite and edge cases
 - [ ] Fix remaining errors in `known_issues.Rmd`
-- [ ] Update code examples in README (particularly geom_slice)
+- [ ] **priority: high** — Update code examples in README (particularly geom_slice) *(delegated: `parallel_prompts/prompt_B_readme.md`)*
 - [ ] Simplify naming conditions in `decisions.Rmd`
 - [ ] Simplify context in CLAUDE.md - move to either skill or testing/README.md
-- [ ] Consider if the names `slice_2d` and `geom_slice` convey their function best
+- [ ] **priority: high** (folded into ULTRA naming decision above) — Consider if the names `slice_2d` and `geom_slice` convey their function best
 - [ ] Tidy repo functions that haven't been visited since geom_slice refactor
+- [ ] **priority: high** — `@return` + rich `@examples` on every exported function *(delegated: `parallel_prompts/prompt_A_utility_docs.md` and `prompt_C_geom_slice_docs.md`)*
+- [ ] **priority: high** — "Getting started" vignette (after naming decision lands, so examples use final names)
+- [ ] **priority: high** — Narrow blanket `@import` roxygen tags to `@importFrom` across `R/` (after docs prompts land — same files)
+- [ ] **priority: high** — `devtools::check()` clean, then bump Version to 1.0.0 and tag (see `release_plan_1.0.md` Phase 4)
 
 ## autoplot
 
-- [ ] Document well
+- [ ] **priority: high** — Document well *(delegated: `parallel_prompts/prompt_C_geom_slice_docs.md`)*
 - [ ] Note functionality that really should be there but isn't - take it beyond autoplot(model)
 
 ## geom_slice
@@ -33,8 +45,8 @@ date: "2026-07-11"
 ## slice_2d
 
 - [ ] Roll out the `slice_*()` condition helpers to `slice_2d.R` and related (their hand-rolled messages mostly follow the format but bypass the helpers).
-- [ ] Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `xaxis`, `color`/`colors`), adding deprecation aliases for any public arguments that change. (`geom_slice`'s public args — `predict_vars`, `back_transform`, `n` — now conform; `slice_2d`/`drawit` still use `xaxis`, which `decisions.Rmd` currently permits.)
-- [ ] Migrate fully to snake_case (e.g. `xaxis` → `x_axis`, `color`/`colors`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.
+- [ ] **priority: high** (blocked on ULTRA naming decision above) — Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `xaxis`, `color`/`colors`), adding deprecation aliases for any public arguments that change. (`geom_slice`'s public args — `predict_vars`, `back_transform`, `n` — now conform; `slice_2d`/`drawit` still use `xaxis`, which `decisions.Rmd` currently permits.)
+- [ ] **priority: high** (blocked on ULTRA naming decision above) — Migrate fully to snake_case (e.g. `xaxis` → `x_axis`, `color`/`colors`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.
 - [ ] Add error to check if the data being plotted is the same as the data the lm was fit to
 - [ ] Add an interval to `slice_2d` (like `geom_slice`)
 - [ ] priority low; investigate usefulness of back_transform = "log"
@@ -45,7 +57,7 @@ date: "2026-07-11"
 
 ## drawit
 
-- [ ] Deprecate it
+- [ ] **priority: high** — Deprecate it *(James, in progress 2026-07-12)*
 
 ## New Functions 
 

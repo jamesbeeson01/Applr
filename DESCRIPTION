@@ -5,6 +5,8 @@ Authors@R:
     person("Cameron", "McClellan", , "cameron.m.mcclellan@gmail.com", role = c("aut", "cre"))
 Description: A package to make life in Math425 a little easier. Combines various functions and provides functions that should make graphing and explaining HD regressions easier.
 License: MIT + file LICENSE
+URL: https://github.com/saundersg/Applr
+BugReports: https://github.com/saundersg/Applr/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3

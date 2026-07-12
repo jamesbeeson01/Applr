@@ -1,4 +1,13 @@
-^ALR\.Rproj$
+^.*\.Rproj$
 ^\.Rproj\.user$
+^\.Rprofile$
+^\.Rhistory$
 ^LICENSE\.md$
 ^\.claude$
+^\.gitignore$
+^CLAUDE\.md$
+^for_devs$
+^testing$
+^scripts$
+^chat_notes$
+^Rplots\.pdf$
