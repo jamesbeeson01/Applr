@@ -1,5 +1,5 @@
-# CASE: gs_53_err_band_nothing_to_band
-# TYPE: console
+# CASE: gs_53_warn_band_nothing_to_band
+# TYPE: visual
 # FUNC: geom_slice
 # EXPECT: A clear, student-readable warning: band = TRUE but the model has no
 #         variable to band — y ~ x uses the x-axis variable as its only

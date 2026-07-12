@@ -1,5 +1,5 @@
-# CASE: gs_55_err_band_var_on_x_axis
-# TYPE: console
+# CASE: gs_55_warn_band_var_on_x_axis
+# TYPE: visual
 # FUNC: geom_slice
 # EXPECT: A clear, student-readable warning: band = "x" names the predictor on
 #         the plot's x-axis, which already varies along the line, so it

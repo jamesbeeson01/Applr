@@ -18,7 +18,6 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 - [ ] Check for comprehensiveness of testing suite and edge cases
 - [ ] Fix remaining errors in `known_issues.Rmd`
 - [ ] **priority: high** — Update code examples in README (particularly geom_slice) *(delegated: `parallel_prompts/prompt_B_readme.md`)*
-- [ ] Simplify naming conditions in `decisions.Rmd`
 - [ ] Simplify context in CLAUDE.md - move to either skill or testing/README.md
 - [ ] **priority: high** (folded into ULTRA naming decision above) — Consider if the names `slice_2d` and `geom_slice` convey their function best
 - [ ] Tidy repo functions that haven't been visited since geom_slice refactor
@@ -34,7 +33,6 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 
 ## geom_slice
 
-- [ ] Fix gs_53-56 to render a plot (most if not all)
 - [ ] Additional tests
   - [ ] back transform complex function
   - [ ] x axis transform that is a curved line with gaps between points (shows an potential issue with current implementation)
@@ -100,3 +98,5 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 - [x] geom_slice_text labels end of lines
 - [x] geom_slice_subtitle creates a subtitle showing the model and held values
 - [x] Consider fancy formatter for lm_equation and geom_slice_subtitle that communicates factors clearer such as `4.09*(g="B")` instead of `gB`
+- [x] Edit naming conditions in `decisions.Rmd`
+- [x] Fix gs_53-56 to render a plot (most if not all)

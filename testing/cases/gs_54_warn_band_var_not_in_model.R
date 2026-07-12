@@ -1,5 +1,5 @@
-# CASE: gs_54_err_band_var_not_in_model
-# TYPE: console
+# CASE: gs_54_warn_band_var_not_in_model
+# TYPE: visual
 # FUNC: geom_slice
 # EXPECT: A clear, student-readable warning: band = "x3" names a variable that
 #         exists in the data set but is NOT a predictor in the model, so no

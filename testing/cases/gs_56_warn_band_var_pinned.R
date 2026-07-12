@@ -1,5 +1,5 @@
-# CASE: gs_56_err_band_var_pinned
-# TYPE: console
+# CASE: gs_56_warn_band_var_pinned
+# TYPE: visual
 # FUNC: geom_slice
 # EXPECT: A clear, student-readable warning: band = "drv" names a predictor
 #         pinned per group by aes(color = drv), so each line already uses its
