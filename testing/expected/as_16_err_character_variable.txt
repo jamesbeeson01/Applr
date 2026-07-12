@@ -1,3 +1,4 @@
 Message: X-axis not specified - Used first x variable as x-axis
     To specify, use 'x_axis = "var_name"' such as 'x_axis = "x"' 
-Error: Unsupported variable type for: `char_var` 
+Error: The model variable `char_var` has unsupported class "character".
+    add_slice_2d() supports numeric and factor predictors. 

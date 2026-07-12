@@ -10,6 +10,7 @@ add_slice_2d(
   n = 100,
   caption = FALSE,
   back_transform = TRUE,
+  interval = "none",
   ...,
   xaxis = NULL
 )
@@ -17,13 +18,24 @@ add_slice_2d(
 \arguments{
 \item{model}{A linear model}
 
-\item{x_axis}{A non-required specification of the x-axis variable; default is first x var in lm}
+\item{x_axis}{A non-required specification of the x-axis variable; default
+is the first x var in the lm. May also be an expression of the model's
+predictors, such as \code{x_axis = "x * x_pos"}, in which case predictions are
+made at the model's own data points and placed at the expression's value.}
 
 \item{n}{Number of displayed points; default is 100}
 
 \item{caption}{Boolean to include caption with values of predictor variables not shown in the chart, FALSE by default}
 
-\item{back_transform}{Either 1) A function to back transform the predicted y values and interval bounds (e.g., \code{exp} or \verb{\\(x) exp(x)} for log-transformed models), or 2) a boolean stating whether it should apply a transformation or not (\code{FALSE} turns off back_transform). In most cases, this does not need to be specified as the function infers the transformation needed reliably.}
+\item{back_transform}{How to map predictions onto the y-axis when the
+model's response is transformed. Default \code{TRUE} auto-detects from the
+model formula; \code{FALSE} turns back-transformation off; a one-argument
+function (e.g. \code{exp}) or a name (\code{"log"}, \code{"log10"}, \code{"log2"}, \code{"sqrt"},
+\code{"exp"}, \code{"inverse"}) applies that transformation.}
+
+\item{interval}{Draw a shaded band around the line: \code{"none"} (default), or
+\code{"confidence"} / \code{"prediction"} for the corresponding \code{\link[=predict.lm]{predict.lm()}}
+interval.}
 
 \item{...}{Remaining vars (color, linetype, etc.)}
 

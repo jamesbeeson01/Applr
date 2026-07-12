@@ -1,1 +1,2 @@
-Error: `x_axis` must be numeric; the class "factor" is not supported. 
+Error: `x_axis` must be numeric; the class "factor" is not supported.
+    Choose a numeric variable or expression for the x-axis. 

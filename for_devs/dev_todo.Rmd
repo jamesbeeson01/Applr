@@ -50,13 +50,13 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 
 ## slice_2d
 
-- [ ] Either add functionality for fancy x-axes, or deprecate fancy x axis test cases
-- [ ] Roll out the `slice_*()` condition helpers to `slice_2d.R` and related (their hand-rolled messages mostly follow the format but bypass the helpers).
+- [x] Either add functionality for fancy x-axes, or deprecate fancy x axis test cases — DONE 2026-07-12 (added: `x_axis` may be an expression of the model's predictors, e.g. `x_axis = "x * x_pos"`; composite mode predicts at the model's own data points like geom_slice. Also fixed the `...` partial-matching bug that broke `slice_2d(model, x_axis = "x_pos", x = 0)`. Cases s2_03/s2_06/as_03 now pass.)
+- [x] Roll out the `slice_*()` condition helpers to `slice_2d.R` and related — DONE 2026-07-12 (full rewrite of `prepare_slice_data`; validation now shares geom_slice's `check_slice_model`/`check_back_transform`/`check_slice_interval`; error wording harmonized to decisions.Rmd format, snapshots for s2_15–21/as_12–22 updated.)
 - [x] **priority: high** (blocked on ULTRA naming decision above) — Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `x_axis`), adding deprecation aliases for any public arguments that change. (`geom_slice`'s public args — `predict_vars`, `back_transform`, `n` — now conform; `slice_2d`/`drawit` still use `x_axis`, which `decisions.Rmd` currently permits.)
 - [x] **priority: high** (blocked on ULTRA naming decision above) — Migrate fully to snake_case (e.g. `x_axis` → `x_axis`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.
-- [ ] Add error to check if the data being plotted is the same as the data the lm was fit to
-- [ ] Add an interval to `slice_2d` (like `geom_slice`)
-- [ ] priority low; investigate usefulness of back_transform = "log"
+- [x] Add error to check if the data being plotted is the same as the data the lm was fit to — DONE 2026-07-12 (`check_slice_fit_data()` compares the model's stored fitted frame against the data its call currently points to, catching post-fit mutation; conservative — skips when `model = FALSE` or `subset` was used. Case s2_25. For `add_slice_2d` onto an arbitrary base plot the range warning remains the practical check, since base R plots keep no data.)
+- [x] Add an interval to `slice_2d` (like `geom_slice`) — DONE 2026-07-12 (`interval = "none"/"confidence"/"prediction"` on both `slice_2d` and `add_slice_2d`: translucent polygon band in the line's color, y-axis extended to fit; cases s2_23/s2_24/as_23.)
+- [x] priority low; investigate usefulness of back_transform = "log" — RESOLVED 2026-07-12: adopted. `slice_2d`/`add_slice_2d` now accept the same names as `geom_slice` ("log", "log10", "log2", "sqrt", "exp", "inverse") via the shared `check_back_transform()`; mostly redundant with auto-detect but useful for explicitness and API parity (case s2_26). Invalid values now error up front instead of warning-and-inferring.
 
 ## scatter_3d
 

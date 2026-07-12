@@ -188,11 +188,12 @@ check_back_transform <- function(back_transform) {
   )
 }
 
-check_slice_model <- function(model) {
+check_slice_model <- function(model, fn = "geom_slice") {
   if (missing(model) || is.null(model)) {
     slice_abort(
-      what = "geom_slice() needs a fitted model.",
-      hint = "Fit one first, such as 'model <- lm(y ~ x, data = your_data)', then call 'geom_slice(model)'."
+      what = paste0(fn, "() needs a fitted model."),
+      hint = paste0("Fit one first, such as 'model <- lm(y ~ x, data = your_data)', then call '",
+                    fn, "(model)'.")
     )
   }
   if (!inherits(model, "lm")) {

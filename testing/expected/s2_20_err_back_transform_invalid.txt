@@ -1,4 +1,2 @@
-Message: X-axis not specified - Used first x variable as x-axis
-    To specify, use 'x_axis = "var_name"' such as 'x_axis = "x"' 
-Warning: The back_transform argument`not_valid` is not a valid function or boolean.
-    Inferring transformation from lm. 
+Error: "not_valid" is not a known `back_transform` name.
+    Use one of "log", "log10", "log2", "sqrt", "exp", "inverse", "1/x", or pass a function such as 'back_transform = exp'. 

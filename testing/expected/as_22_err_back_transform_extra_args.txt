@@ -1,3 +1,2 @@
-Message: X-axis not specified - Used first x variable as x-axis
-    To specify, use 'x_axis = "var_name"' such as 'x_axis = "x"' 
-Error: cannot coerce type 'closure' to vector of type 'character' 
+Error: The `back_transform` function must take exactly one argument.
+    Use a one-argument function, such as 'back_transform = function(x) 1/x'. 

@@ -1,1 +1,2 @@
-Error: Model must be in lm() format 
+Error: `model` must be a model fitted by `lm()`; received a "data.frame".
+    Fit the model first, such as 'model <- lm(y ~ x, data = your_data)'. 

@@ -1,1 +1,2 @@
-Error: Cannot use lm with '$' in its variable names 
+Error: Models with `$` in their variable names (`df_with_dollar$y`) are not supported.
+    Refit using the data argument, such as 'lm(y ~ x, data = your_data)'. 
