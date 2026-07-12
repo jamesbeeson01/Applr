@@ -4,13 +4,19 @@ This test suite gives both humans and coding agents access to information about 
 
 Note to agents: When finished running tests, render report.Rmd for human review.
 
-One test case = one `.R` file in `cases/`. The same files are consumed by two
-renderers, so the terminal suite and the human report can never drift apart:
+One test case = one `.R` file in `cases/`. There is exactly **one** executor
+of cases — `run.R` — so the terminal suite and the human report can never
+drift apart:
 
 | Entry point | Audience | What it does |
 |---|---|---|
 | `Rscript testing/run.R` | AI / terminal | Runs cases, saves PNGs / captures console output, prints OK/FAIL |
-| `Rscript -e "rmarkdown::render('testing/report.Rmd')"` | Human | Knits every case into a tabbed HTML report with reference images inline |
+| `Rscript -e "rmarkdown::render('testing/report.Rmd')"` | Human | Invokes `run.R` once (fresh Rscript session), then lays out that run's artifacts — status, source, output PNG, captured console output, reference image — as a tabbed HTML report |
+
+The report never executes case code in the knitting session and never loads
+the package (it sources only `_helpers.R`), so it cannot show anything other
+than what `run.R` produced, regardless of what is loaded in the session that
+knits it.
 
 Run everything **from the package root**, not from `testing/`.
 
@@ -19,10 +25,12 @@ Run everything **from the package root**, not from `testing/`.
 ```
 testing/
 ├── README.md      <- this file
-├── _setup.R       <- shared setup: loads the package, defines try_show() and
-│                     parse_case_header(). Sourced as the first line of every case.
-├── run.R          <- terminal runner (see usage below)
-├── report.Rmd     <- human report; auto-discovers cases/, knit to report.html
+├── _setup.R       <- shared setup: loads the package, defines try_show().
+│                     Sourced as the first line of every case.
+├── _helpers.R     <- package-free helpers (parse_case_header); used by both
+│                     _setup.R and report.Rmd
+├── run.R          <- terminal runner, the ONLY executor of cases (see usage below)
+├── report.Rmd     <- human report; runs run.R once and displays its artifacts
 ├── cases/         <- THE test suite (single source of truth)
 ├── reference/     <- ground-truth images for gs_ cases + the scripts that build them
 ├── expected/      <- expected console output (.txt) for console cases and for

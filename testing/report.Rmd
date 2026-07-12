@@ -9,10 +9,12 @@ output:
     toc_float: true
 ---
 
-This report is generated from the case files in `testing/cases/` — the same
-files `testing/run.R` executes. It auto-discovers every case, so adding or
-removing a `.R` file there is all it takes to change the suite.
-Knit from the package root with:
+This report does **not** execute any case itself. It invokes
+`Rscript testing/run.R` once — the exact command the terminal / a coding
+agent runs — and then displays the artifacts of that run: the PNGs and
+captured console output in `testing/output/`, plus each case's status
+straight from the runner. What you see here is, by construction, what
+`run.R` produced. Knit from the package root with:
 
 ```
 Rscript -e "rmarkdown::render('testing/report.Rmd')"
@@ -22,45 +24,50 @@ To keep a progress snapshot, rename the resulting `report.html` (e.g.
 `report 2026-07-06.html`) and move it into `testing/archive/`.
 
 ```{r setup, include=FALSE}
-# rmarkdown knits with the working directory set to testing/; the case files
-# use paths relative to the package root, so point knitr there.
+# rmarkdown knits with the working directory set to testing/; the runner and
+# all artifact paths are relative to the package root, so point knitr there.
 if (!file.exists("DESCRIPTION") && file.exists("../DESCRIPTION")) {
   knitr::opts_knit$set(root.dir = normalizePath(".."))
 }
-knitr::opts_chunk$set(error = TRUE, message = TRUE, warning = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r load, include=FALSE}
-source("testing/_setup.R")
+# package-free helpers only — the report never loads Applr, so a stale
+# package in the knitting session can never leak into the results
+source("testing/_helpers.R")
 ```
 
 # Snapshot
 
 ```{r snapshot, include=FALSE}
-# Run the real terminal runner so pass/fail here matches `Rscript testing/run.R`
-# exactly (visual error detection + console diffs); it writes a per-case
-# results file that we read back.
-invisible(suppressWarnings(
+# THE single execution of the suite: same entry point, same fresh Rscript
+# session, same checks as running it from the terminal.
+runner_log <- suppressWarnings(
   system2("Rscript", "testing/run.R", stdout = TRUE, stderr = TRUE)
-))
-status <- read.csv("testing/output/_results.csv")
-names(status) <- c("Case", "Status")
-n_ok <- sum(status$Status == "OK")
+)
+status <- read.csv("testing/output/_results.csv", stringsAsFactors = FALSE)
+n_ok <- sum(status$status == "OK")
 ```
 
 ```{r snapshot-summary, results='asis', echo=FALSE}
 cat(sprintf("**%d / %d cases OK.**\n\n", n_ok, nrow(status)))
-not_ok <- status[status$Status != "OK", ]
+not_ok <- status[status$status != "OK", ]
 if (nrow(not_ok) > 0) {
   cat("Cases not passing:\n\n")
-  cat(sprintf("- `%s` — %s\n", not_ok$Case, not_ok$Status), sep = "")
+  cat(sprintf("- `%s` — %s\n", not_ok$id, not_ok$status), sep = "")
 } else {
   cat("All cases passing.\n")
 }
+cat("\n<details><summary>Full runner transcript (exactly what the terminal shows)</summary>\n\n")
+cat("````\n")
+cat(runner_log, sep = "\n")
+cat("\n````\n\n</details>\n")
 ```
 
-Note: an `OK` on a visual case means it ran and produced a plot — visual
-correctness is still judged by eye against the reference images below.
+Note: an `OK` on a visual case means it ran, produced a plot, and its
+console output matched its snapshot (or was silent) — visual correctness
+is still judged by eye against the reference images below.
 
 # Overview {.tabset .tabset-pills}
 
@@ -73,7 +80,7 @@ case_files <- sort(list.files("testing/cases", pattern = "\\.R$", full.names = T
 meta <- lapply(case_files, parse_case_header)
 overview <- data.frame(
   Case     = vapply(meta, `[[`, "", "id"),
-  Status   = status$Status[match(vapply(meta, `[[`, "", "id"), status$Case)],
+  Status   = status$status[match(vapply(meta, `[[`, "", "id"), status$id)],
   Type     = vapply(meta, `[[`, "", "type"),
   Function = vapply(meta, `[[`, "", "func"),
   Expect   = vapply(meta, function(m) {
@@ -87,6 +94,54 @@ knitr::kable(overview, row.names = FALSE)
 # Cases
 
 ```{r generate-cases, results='asis'}
+# Each case section is assembled from this run's artifacts. Image src paths
+# are resolved by pandoc relative to this Rmd (testing/); widths in px match
+# 72 px per inch of the case's SIZE so output and reference compare at the
+# same scale.
+case_block <- function(m) {
+  i <- match(m$id, status$id)
+  stat <- if (is.na(i)) "?" else status$status[i]
+  msg  <- if (is.na(i)) "" else status$msg[i]
+  px   <- round(m$width * 72)
+  expect <- ifelse(is.na(m$expect), "(no EXPECT header)", m$expect)
+
+  out <- c(sprintf("### %s%s\n", m$id, if (identical(stat, "OK")) "" else " ⚠️"),
+           sprintf("> **Expect:** %s\n", expect))
+
+  if (identical(stat, "OK")) {
+    out <- c(out, "**Status:** OK\n")
+  } else {
+    out <- c(out, sprintf("**Status: %s**\n", stat), "````", msg, "````\n")
+  }
+
+  # the case source, folded, never evaluated here
+  out <- c(out, sprintf('```{r %s, eval=FALSE, code=xfun::read_utf8("testing/cases/%s.R")}\n```\n',
+                        m$id, m$id))
+
+  pngs <- list.files("testing/output", sprintf("^%s(-\\d+)?\\.png$", m$id))
+  txt  <- file.path("testing/output", paste0(m$id, ".txt"))
+
+  if (m$type != "console") {
+    if (length(pngs) > 0) {
+      out <- c(out, "**Output (this run):**\n",
+               sprintf('<img src="output/%s" width="%d">\n', pngs, px))
+    } else {
+      out <- c(out, "_No plot produced by this run (see status above)._\n")
+    }
+  }
+
+  if (file.exists(txt)) {
+    out <- c(out, "**Console output (this run):**\n", "````",
+             readLines(txt, warn = FALSE), "````\n")
+  }
+
+  if (m$type != "console" && file.exists(file.path("testing/reference", paste0(m$id, ".png")))) {
+    out <- c(out, "**Reference (ground truth):**\n",
+             sprintf('<img src="reference/%s.png" width="%d">\n', m$id, px))
+  }
+  out
+}
+
 preferred <- c("geom_slice", "geom_fit", "slice_2d", "add_slice_2d",
                "drawit", "geom_add_slice_2d", "lm_equation", "error handling")
 funcs <- vapply(meta, `[[`, "", "func")
@@ -95,22 +150,7 @@ func_order <- c(intersect(preferred, funcs), setdiff(unique(funcs), preferred))
 blocks <- character()
 for (fn in func_order) {
   blocks <- c(blocks, sprintf("## %s {.tabset .tabset-pills}\n", fn))
-  for (i in which(funcs == fn)) {
-    m <- meta[[i]]
-    expect <- ifelse(is.na(m$expect), "(no EXPECT header)", m$expect)
-    ref_png <- file.path("testing/reference", paste0(m$id, ".png"))
-    ref_tag <- if (file.exists(ref_png)) {
-      # src is resolved by pandoc relative to this Rmd (testing/), width in px
-      # matches the rendered chunk figure so the two compare at the same scale
-      sprintf('**Reference (ground truth):**\n\n<img src="reference/%s.png" width="%d">\n',
-              m$id, round(m$width * 72))
-    } else ""
-    blocks <- c(blocks, sprintf(
-      paste0('### %s\n\n> **Expect:** %s\n\n',
-             '```{r %s, code = xfun::read_utf8("testing/cases/%s.R"), ',
-             'fig.width = %s, fig.height = %s}\n```\n\n%s\n'),
-      m$id, expect, m$id, m$id, m$width, m$height, ref_tag))
-  }
+  for (i in which(funcs == fn)) blocks <- c(blocks, case_block(meta[[i]]))
 }
 cat(knitr::knit_child(text = paste(blocks, collapse = "\n"), quiet = TRUE), sep = "\n")
 ```
