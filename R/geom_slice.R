@@ -752,9 +752,6 @@ compute_slice_group <- function(data, scales, spec, n, interval = "none",
 #'
 #' @format An object of class \code{ggproto}, inheriting from \code{Stat}.
 #'
-#' @import ggplot2
-#' @import rlang
-#'
 #' @export
 StatSlice <- ggproto(
   "StatSlice",

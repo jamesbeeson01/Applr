@@ -37,9 +37,7 @@
 #'
 #' @returns A 2D graph of a sliced model
 #'
-#' @importFrom graphics lines polygon mtext par
 #' @importFrom grDevices adjustcolor
-#' @importFrom stats coef predict terms setNames formula predict.lm model.frame
 #'
 #' @examples
 #' \dontrun{
@@ -125,9 +123,6 @@ slice_2d <- function(model, x_axis = NULL, n = 100, caption = TRUE,
 #' @param xaxis Deprecated; use `x_axis` instead.
 #'
 #' @returns A line added to a preexisting R plot displaying a 2D graphable slice of an HD model
-#'
-#' @importFrom graphics lines polygon
-#' @importFrom stats coef predict terms setNames formula predict.lm
 #'
 #' @examples
 #' \dontrun{

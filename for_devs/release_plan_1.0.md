@@ -54,8 +54,9 @@ wrap plotly/interactive ones in `if (interactive())`.
       `autoplot.lm`; examples cover predict_vars (single/multi), intervals,
       band, grouping, faceting, back_transform, n; `@seealso` cross-links.
       Representative examples smoke-tested successfully on review.
-- [ ] Vignette: "Getting started with Applr" — one dataset, `lm()` →
-      `autoplot()` → `geom_slice()` with slices/intervals/captions.
+- [x] Vignette: "Getting started with Applr" — `vignettes/Applr.Rmd`
+      (2026-07-12): mtcars only, `lm()` → `autoplot()` → `geom_slice()` with
+      predict_vars, intervals, text/caption/subtitle labels, grouping.
 - [x] `NEWS.md` started at 1.0.0.
 
 ## Phase 3 — Packaging mechanics (main session, mostly done 2026-07-12)
@@ -64,26 +65,40 @@ wrap plotly/interactive ones in `if (interactive())`.
       missing `testing/`, `for_devs/`, `scripts/`, `CLAUDE.md`, etc.)
 - [x] Delete stray `Rplots.pdf`; gitignore it.
 - [x] Add `URL:`/`BugReports:` to DESCRIPTION.
-- [ ] Narrow blanket `@import` tags to `@importFrom` across `R/` (avoids
-      namespace collisions and check NOTEs). Coordinate: touches many files,
-      do after the docs prompts land.
-- [ ] `devtools::document()` (James) — regenerate NAMESPACE/man after all of
-      the above; confirm `geom_fit`/`drawit`/`get_inverse_function` Rd pages
-      match their final status.
+- [x] Narrow blanket `@import` tags to `@importFrom` (2026-07-12): central
+      block in `Applr-package.R`; `@import ggplot2` kept (standard for
+      ggplot2 extensions); tidyr dropped from DESCRIPTION — it was unused.
+      Fixed the plotly "replacing previous import" load warnings from
+      `known_issues.Rmd`.
+- [x] `devtools::document()` run 2026-07-12 after the import narrowing;
+      NAMESPACE/man regenerated, package loads warning-free, smoke test OK.
+      `geom_fit`/`drawit` Rd pages exist as internal-keyword stubs;
+      `get_inverse_function` has no Rd (`@noRd`), as intended.
+- [x] Thin testthat shim (2026-07-12): `tests/testthat/test-suite.R` re-runs
+      `Rscript testing/run.R` and turns `_results.csv` into expectations —
+      `devtools::test()`/CI cover the real suite without duplicating logic;
+      skips inside R CMD check on the tarball (testing/ is buildignored).
+- [x] pkgdown + CI (2026-07-12, pulled forward from post-1.0): `_pkgdown.yml`
+      with grouped reference index (validated clean); GitHub Actions
+      `pkgdown.yaml` (deploys to gh-pages — enable Pages on the repo) and
+      `R-CMD-check.yaml` (mac/win/ubuntu-release/ubuntu-devel + a
+      testing-suite job on the source tree). Site URL added to DESCRIPTION.
 
 ## Phase 4 — Verification & release
 
-- [ ] `devtools::check()` clean (0 errors, 0 warnings, notes triaged).
-- [ ] Full test suite green: `Rscript testing/run.R` + visual pass via
-      `testing/report.Rmd`.
-- [ ] Spell check (`devtools::spell_check()`), URL check.
+- [x] `devtools::check()` clean 2026-07-12: **0 errors, 0 warnings, 0 notes**
+      (first run had one NOTE — missing `stats::get_all_vars` import — fixed).
+      Vignette builds and examples all run inside check.
+- [x] Full test suite green: every case OK via the testthat shim 2026-07-12.
+      Visual pass via `testing/report.Rmd` remains a human step.
+- [x] Spell check clean 2026-07-12 (`Language: en-US` added to DESCRIPTION,
+      jargon whitelisted in `inst/WORDLIST`, "labelling" → "labeling").
 - [ ] Bump Version to `1.0.0` in DESCRIPTION (deliberately left at 0.0.0.9000
       until check is clean), finalize NEWS.md, tag `v1.0.0` on GitHub.
 
 ## Post-1.0 (explicitly deferred)
 
-- `data`/aesthetic args and `full_range` for `geom_slice`; intervals in
-  legend; `slice_2d` interval; plotly `autoplot(sliders=TRUE)`; gif
-  animation; scatter_3d test story; pkgdown site + R CMD check GitHub Action
-  (both cheap and high-value — good first post-release tasks, or do them
-  pre-release if time allows).
+- Intervals in legend; plotly `autoplot(sliders=TRUE)`; gif animation;
+  scatter_3d test story. (Formerly listed here but since done pre-release:
+  `full_range`, `data`/mapping on autoplot, `slice_2d` interval, pkgdown
+  site + R CMD check GitHub Action.)

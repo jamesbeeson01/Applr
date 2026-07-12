@@ -1,0 +1,42 @@
+url: https://saundersg.github.io/Applr/
+template:
+  bootstrap: 5
+
+reference:
+- title: Package overview
+  contents:
+  - Applr-package
+- title: Plot model slices with ggplot2
+  desc: The geom_slice layer, its labeling companions, and the one-call autoplot.
+  contents:
+  - geom_slice
+  - geom_slice_text
+  - geom_slice_subtitle
+  - geom_slice_caption
+  - autoplot.lm
+- title: Base graphics
+  contents:
+  - slice_2d
+  - add_slice_2d
+- title: 3-D view
+  contents:
+  - scatter_3d
+- title: Equations and diagnostics
+  contents:
+  - lm_equation
+  - lm_latex
+  - diagnose
+- title: Theme
+  contents:
+  - theme_lc
+- title: ggproto objects
+  desc: Extension points underlying geom_slice.
+  contents:
+  - StatSlice
+  - GeomSlice
+  - GeomSliceBand
+  - StatSliceText
+  - GeomSliceText
+- title: Re-exports
+  contents:
+  - reexports

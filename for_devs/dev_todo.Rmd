@@ -15,13 +15,15 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 ## General
 
 - [x] Link to autoplot.lm in the main docs page
-- [ ] plotly overwrite issue in `known_issues.md` (should resolve with `@importFrom`)
+- [x] plotly overwrite issue in `known_issues.md` (should resolve with `@importFrom`) — RESOLVED 2026-07-12: blanket imports narrowed, load warnings gone (see known_issues.Rmd Resolved)
 - [x] pictures in README
 - [x] **priority: high** — Update code examples in README (particularly geom_slice) — DONE 2026-07-12 (full rewrite: current API, drawit removed, covers autoplot / intervals / bands / slice-text helpers, issues link)
 - [x] **priority: high** (folded into ULTRA naming decision above) — Consider if the names `slice_2d` and `geom_slice` convey their function best — RESOLVED 2026-07-12: names kept
 - [x] **priority: high** — `@return` + rich `@examples` on every exported function — DONE 2026-07-12 (utility + geom_slice family + autoplot; `get_inverse_function` now `@noRd`; examples smoke-tested. `slice_2d`/`add_slice_2d` kept their existing briefer examples — enrich if desired)
-- [ ] **priority: high** — "Getting started" vignette (after naming decision lands, so examples use final names)
-- [ ] **priority: high** — Narrow blanket `@import` roxygen tags to `@importFrom` across `R/` (after docs prompts land — same files)
+- [x] **priority: high** — "Getting started" vignette — DONE 2026-07-12 (`vignettes/Applr.Rmd`: lm → autoplot → geom_slice with slices/intervals/labels on mtcars; knitr/rmarkdown added to Suggests)
+- [x] **priority: high** — Narrow blanket `@import` roxygen tags to `@importFrom` across `R/` — DONE 2026-07-12 (central block in `Applr-package.R`; `@import ggplot2` kept — standard for ggplot2 extensions; tidyr dropped entirely, it was unused; stale per-file tags removed; `devtools::document()` run, package loads clean)
+- [x] Thin testthat shim over `testing/` — DONE 2026-07-12 (`tests/testthat/test-suite.R` re-runs `testing/run.R` and asserts every case is OK; skips inside R CMD check on the tarball, where testing/ is buildignored; `devtools::test()` green)
+- [x] pkgdown site + CI — DONE 2026-07-12 (`_pkgdown.yml` grouped reference index validated by `pkgdown::check_pkgdown()`; `.github/workflows/pkgdown.yaml` deploys to gh-pages; `R-CMD-check.yaml` checks 4 platforms plus a job running the real testing/ suite)
 - [ ] **priority: high** — `devtools::check()` clean, then bump Version to 1.0.0 and tag (see `release_plan_1.0.md` Phase 4)
 - [ ] Check for comprehensiveness of testing suite and edge cases
 - [ ] Fix remaining errors in `known_issues.Rmd`

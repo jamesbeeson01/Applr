@@ -3,15 +3,6 @@ title: "known_issues"
 output: html_document
 ---
 
-- `devtools::load_all()` brings up this issue - that's a big plotly problem that could cause issues
-
-```
-Warning messages:
-1: replacing previous import ‘graphics::layout’ by ‘plotly::layout’ when loading ‘Applr’ 
-2: replacing previous import ‘ggplot2::last_plot’ by ‘plotly::last_plot’ when loading ‘Applr’ 
-3: replacing previous import ‘plotly::filter’ by ‘stats::filter’ when loading ‘Applr’ 
-```
-
 - `scatter_3d` has not been rigorously tested
 
 - `lm`'s with data accessed by `$` (ie `lm(mtcars$mpg ~ mtcars$disp)`) are currently not allowed (`geom_slice` and `slice_2d` both reject them with a clear error). This should be extended to all accessed variables (ie `mtcars['mpg']`) because of how they are handled in the `predict` function. When this is fixed, `decisions.Rmd` should be updated.
@@ -23,6 +14,10 @@ Warning messages:
 - In composite-axis mode (an x-axis *expression* like `aes(x * x_pos, y)`), the line is evaluated at the model's own data points rather than an `n`-point grid, so `n` is ignored there. Also, the plotted "line" is only guaranteed to be a clean curve when the model's predictions are a function of the axis expression (true for the `gs_19`–`gs_23` family); otherwise points would not be collinear against that axis and the connected line can zigzag — arguably the honest picture, but worth knowing.
 
 - `geom_slice_text(expand = TRUE)` (the default) adds a `scale_x_continuous(expand = ...)` to the plot (`ggplot_add.slice_text_spec` in `R/geom_slice_text.R`). On a plot whose x-axis already has a non-default continuous scale — a Date/datetime axis, `scale_x_log10()`, or any user-supplied `scale_x_*` — this *replaces* that scale (with ggplot2's "Scale for x is already present" message), losing date labels, transformations, or user settings. Not yet observed in practice: a model fitted on a numeric date index but plotted against the Date column takes the "x-axis uses none of the model's predictors" flat-line path, which produces no labels and so no expansion. But a Date axis with real labels would hit it. Workaround: `expand = FALSE` and set the expansion on your own scale. A proper fix would mutate the existing scale's expand instead of adding a new scale.
+
+## Resolved
+
+- ~~`devtools::load_all()` warned "replacing previous import" three times (plotly vs graphics/ggplot2/stats)~~ — resolved 2026-07-12 by narrowing the blanket `@import` tags to `@importFrom` (only `plot_ly`/`add_markers`/`add_trace`/`layout` are imported from plotly now, and `graphics::layout`, `ggplot2::last_plot`, `stats::filter` are not imported at all).
 
 ## Resolved (2026-07-07 geom_slice overhaul — see for_devs/geom_slice_progress.Rmd)
 

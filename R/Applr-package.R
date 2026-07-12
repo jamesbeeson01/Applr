@@ -15,7 +15,7 @@
 #' - autoplot: \code{\link{autoplot.lm}}
 #' - Base graphics: \code{\link{slice_2d}}, \code{\link{add_slice_2d}}
 #' - ggplot2 layer: \code{\link{geom_slice}} (built on \code{\link{StatSlice}} and \code{\link{GeomSlice}})
-#' - ggplot2 labelling: \code{\link{geom_slice_text}}, \code{\link{geom_slice_subtitle}}, \code{\link{geom_slice_caption}}
+#' - ggplot2 labeling: \code{\link{geom_slice_text}}, \code{\link{geom_slice_subtitle}}, \code{\link{geom_slice_caption}}
 #' - 3D visualization: \code{\link{scatter_3d}}
 #' - Equations: \code{\link{lm_equation}}, \code{\link{lm_latex}}
 #' - Theme: \code{\link{theme_lc}}
@@ -46,9 +46,7 @@
 #' @aliases Applr-package Applr
 #'
 #' @import ggplot2
-#' @import tidyr
-#' @import plotly
-#' @import rlang
-#' @import graphics
-#' @import stats
+#' @importFrom rlang %||%
+#' @importFrom graphics plot lines mtext par polygon
+#' @importFrom stats coef delete.response formula get_all_vars model.frame predict setNames terms
 "_PACKAGE"

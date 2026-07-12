@@ -12,3 +12,7 @@
 ^scripts$
 ^chat_notes$
 ^Rplots\.pdf$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$

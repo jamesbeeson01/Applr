@@ -39,7 +39,6 @@
 #' }
 #'
 #' @importFrom plotly plot_ly add_markers add_trace layout
-#' @importFrom stats predict formula terms delete.response setNames
 #'
 #' @export
 scatter_3d <- function(model, n = 100, colors = c("blue", "yellow")) {

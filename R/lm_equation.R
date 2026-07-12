@@ -83,9 +83,6 @@ clearer_coef_names <- function(coef_names, model) {
 #' # No-intercept models print no intercept
 #' lm_equation(lm(mpg ~ 0 + wt, data = mtcars))
 #'
-#' @importFrom graphics lines
-#' @importFrom stats terms coef formula
-#'
 #' @export
 lm_equation <- function(model, clearer = FALSE){
   parts <- lm_equation_parts(model, clearer = clearer)
@@ -129,9 +126,6 @@ lm_equation <- function(model, clearer = FALSE){
 #' # Capture the string instead of just printing it
 #' eq <- lm_latex(lm(mpg ~ wt, data = mtcars))
 #' nchar(eq)
-#'
-#' @importFrom graphics lines
-#' @importFrom stats coef predict terms setNames formula predict.lm
 #'
 #' @export
 lm_latex <- function(model, clearer = FALSE){
