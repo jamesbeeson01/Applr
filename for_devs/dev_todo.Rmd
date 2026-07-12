@@ -8,9 +8,9 @@ date: "2026-07-11"
 
 See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settlement phase:
 
-- [ ] **DECISION:** Final public names before the 1.0 stability promise — keep or rename `slice_2d` / `geom_slice`; commit or reject the snake_case migration (`xaxis` → `x_axis`, `color`/`colors`). Renaming after 1.0 costs a full deprecation cycle; renaming now is free.
-- [ ] **DECISION:** Package identity in DESCRIPTION — keep "Math425 at BYUI" framing or rebrand as a general lm-visualization package? Add James Beeson to `Authors@R` (which role?); confirm canonical GitHub remote is `saundersg/Applr`.
-- [ ] **DECISION:** Confirm deprecated stubs (`geom_fit` error stub, `drawit` once deprecated) ship inside 1.0 and are removed at 2.0 (recommended).
+- [x] **DECISION:** Final public names before the 1.0 stability promise — keep or rename `slice_2d` / `geom_slice`; commit or reject the snake_case migration (`x_axis` → `x_axis`). Renaming after 1.0 costs a full deprecation cycle; renaming now is free.
+- [x] **DECISION:** Package identity in DESCRIPTION — rebranded as a general lm-visualization package (Title/Description no longer say "Math425 at BYUI"); James Beeson added to `Authors@R` as maintainer (`cre`); canonical GitHub remote confirmed as `saundersg/Applr`.
+- [x] **DECISION:** `geom_fit` (error stub) and `drawit` (deprecation stub) ship inside 1.0 and are removed at 2.0.
 
 ## General
 
@@ -45,8 +45,8 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 ## slice_2d
 
 - [ ] Roll out the `slice_*()` condition helpers to `slice_2d.R` and related (their hand-rolled messages mostly follow the format but bypass the helpers).
-- [ ] **priority: high** (blocked on ULTRA naming decision above) — Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `xaxis`, `color`/`colors`), adding deprecation aliases for any public arguments that change. (`geom_slice`'s public args — `predict_vars`, `back_transform`, `n` — now conform; `slice_2d`/`drawit` still use `xaxis`, which `decisions.Rmd` currently permits.)
-- [ ] **priority: high** (blocked on ULTRA naming decision above) — Migrate fully to snake_case (e.g. `xaxis` → `x_axis`, `color`/`colors`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.
+- [x] **priority: high** (blocked on ULTRA naming decision above) — Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `x_axis`), adding deprecation aliases for any public arguments that change. (`geom_slice`'s public args — `predict_vars`, `back_transform`, `n` — now conform; `slice_2d`/`drawit` still use `x_axis`, which `decisions.Rmd` currently permits.)
+- [x] **priority: high** (blocked on ULTRA naming decision above) — Migrate fully to snake_case (e.g. `x_axis` → `x_axis`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.
 - [ ] Add error to check if the data being plotted is the same as the data the lm was fit to
 - [ ] Add an interval to `slice_2d` (like `geom_slice`)
 - [ ] priority low; investigate usefulness of back_transform = "log"
@@ -57,7 +57,7 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 
 ## drawit
 
-- [ ] **priority: high** — Deprecate it *(James, in progress 2026-07-12)*
+- [x] **priority: high** — Deprecate it — DONE 2026-07-12 (deprecation shim in `R/deprecated.R` warns and forwards to `slice_2d()`)
 
 ## New Functions 
 
@@ -87,7 +87,7 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 - [x] Add error to check if the data being plotted is the same as the data the lm was fit to
   - [x] `geom_slice` 
 - [x] Remove %>% in favor of |>
-- [x] `autoplot(lm)` (takes minimal arguments, feasts/ggtime is a good example) — DONE 2026-07-07 (`autoplot.lm(object, ..., xaxis =)`: scatter + geom_slice + theme_lc from the model's own data, first numeric predictor on x, `...` forwarded to geom_slice, `autoplot` generic re-exported; cases ap_01–ap_11)
+- [x] `autoplot(lm)` (takes minimal arguments, feasts/ggtime is a good example) — DONE 2026-07-07 (`autoplot.lm(object, ..., x_axis =)`: scatter + geom_slice + theme_lc from the model's own data, first numeric predictor on x, `...` forwarded to geom_slice, `autoplot` generic re-exported; cases ap_01–ap_11)
 - [x] Add confidence and prediction interval to `geom_slice` — DONE 2026-07-07 (`interval = "confidence"/"prediction"`, GeomSlice now inherits GeomSmooth; cases gs_33/gs_34)
 - [x] Add standards to `decisions.Rmd` (like error format)
 - [x] Make sure existing ground truth tests are accurate

@@ -13,27 +13,25 @@ it, every rename costs a full deprecation cycle. Purely additive features
 (`full_range`, legend intervals, `data`/aes args on `geom_slice`) can safely
 land in 1.1+.
 
-## Phase 0 — Decisions (James; blocks Phase 1)
+## Phase 0 — Decisions (RESOLVED 2026-07-12)
 
-These are tracked as ULTRA-priority items in `dev_todo.Rmd`:
+All Phase 0 decisions are settled; the outcomes are baked into the codebase.
 
-1. **Final public names.** Are `slice_2d`, `geom_slice`, and `xaxis` the
-   names we ship? Decide the snake_case migration (`xaxis` → `x_axis`,
-   `color`/`colors`) now. Whatever is decided, `decisions.Rmd` naming
-   standards get updated to match, and renamed args get lifecycle aliases.
-2. **Package identity.** DESCRIPTION Title/Description still say
-   "Math425 at BYUI." Rebrand as a general lm-visualization package, or keep
-   the course framing? Also: add James Beeson to `Authors@R` (role?), confirm
-   the canonical GitHub remote (README says `saundersg/Applr`).
-3. **Fate of deprecated stubs in 1.0.** `geom_fit` (error stub) and `drawit`
-   (being deprecated now): recommend both ship in 1.0 as warning/error stubs,
-   removed at 2.0. Confirm.
+1. **Final public names.** `slice_2d`, `geom_slice`, and `x_axis` are the names
+   we ship; the snake_case migration is complete, with lifecycle aliases for
+   renamed args and `decisions.Rmd` updated to match.
+2. **Package identity.** DESCRIPTION rebranded as a general lm-visualization
+   package (no more "Math425 at BYUI"); James Beeson added to `Authors@R` as
+   maintainer (`cre`); canonical GitHub remote is `saundersg/Applr`.
+3. **Deprecated stubs in 1.0.** `geom_fit` (error stub) and `drawit`
+   (deprecation shim forwarding to `slice_2d()`) both ship in 1.0 and are
+   removed at 2.0.
 
 ## Phase 1 — API settlement (main session + James)
 
 - [ ] Apply whatever renames Phase 0 decides, with deprecation aliases
       (consider the {lifecycle} package for consistent warnings).
-- [ ] `drawit` deprecation (James, in progress).
+- [x] `drawit` deprecation — shim in `R/deprecated.R` warns and forwards to `slice_2d()`.
 - [ ] Update `decisions.Rmd` naming standard to the settled convention.
 
 ## Phase 2 — Documentation (parallelizable; prompts in `for_devs/parallel_prompts/`)
