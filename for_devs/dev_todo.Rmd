@@ -16,7 +16,7 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 
 - [/] Link to autoplot.lm in the main docs page
 - [ ] plotly overwrite issue in `known_issues.md` (should resolve with `@importFrom`)
-- [ ] pictures in README
+- [x] pictures in README
 - [x] **priority: high** — Update code examples in README (particularly geom_slice) — DONE 2026-07-12 (full rewrite: current API, drawit removed, covers autoplot / intervals / bands / slice-text helpers, issues link)
 - [x] **priority: high** (folded into ULTRA naming decision above) — Consider if the names `slice_2d` and `geom_slice` convey their function best — RESOLVED 2026-07-12: names kept
 - [x] **priority: high** — `@return` + rich `@examples` on every exported function — DONE 2026-07-12 (utility + geom_slice family + autoplot; `get_inverse_function` now `@noRd`; examples smoke-tested. `slice_2d`/`add_slice_2d` kept their existing briefer examples — enrich if desired)
@@ -30,12 +30,12 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 ## README 
 
 - [ ] Improve models - the models used are super unimpressive because they don't fit the data very well 
-- [ ] Readability for band 
+- [ ] Readability for band (using geom_slice_text)
 - [ ] Show off the labeling functions
 
 ## autoplot
 
-- [ ] Add labels to autoplot by default (`geom_slice_subtitle`, maybe `geom_slice_text`)
+- [x] Add labels to autoplot by default (`geom_slice_subtitle`, maybe `geom_slice_text`)
 - [x] **priority: high** — Document well — DONE 2026-07-12 (runnable examples incl. `x_axis`, forwarded `predict_vars`/`interval`; `@seealso` cross-links)
 - [ ] Add aes() and data mapping
 

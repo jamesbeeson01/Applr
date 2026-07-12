@@ -2,7 +2,8 @@
 # TYPE: console
 # FUNC: slice_2d
 # EXPECT: A clear, student-readable error rejecting the non-lm object
-#         ("Model must be in lm() format"), not an obscure internal one.
+#         ('`model` must be a model fitted by `lm()`; received a "..."',
+#         with a refit hint), not an obscure internal one.
 
 source("testing/_setup.R")
 

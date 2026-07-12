@@ -2,7 +2,8 @@
 # TYPE: console
 # FUNC: add_slice_2d
 # EXPECT: A clear error naming the missing variable:
-#         "x_axis variable 'nonexistent_var' not found in the model."
+#         '`x_axis` variable "nonexistent_var" not found in the model.'
+#         with a hint listing the model's predictors.
 
 source("testing/_setup.R")
 set.seed(123)

@@ -1,9 +1,9 @@
 # CASE: as_21_err_back_transform_invalid
 # TYPE: console
 # FUNC: add_slice_2d
-# EXPECT: back_transform must be a boolean or one-argument function. A number
-#         should produce a clear warning and fall back to inferring the
-#         transformation from the model.
+# EXPECT: back_transform must be TRUE/FALSE, a one-argument function, or a
+#         known transformation name. A number errors up front with a clear
+#         message — consistent with geom_slice.
 
 source("testing/_setup.R")
 set.seed(123)

@@ -2,8 +2,8 @@
 # TYPE: console
 # FUNC: slice_2d
 # EXPECT: A model fit as lm(df$y ~ df$x) has "$" in its variable names. A
-#         clear error ("Cannot use lm with '$' in its variable names"), not a
-#         cryptic parse failure.
+#         clear error naming the offending variable, with a refit hint — not
+#         a cryptic parse failure.
 
 source("testing/_setup.R")
 set.seed(123)

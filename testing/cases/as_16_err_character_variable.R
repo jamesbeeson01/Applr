@@ -2,8 +2,8 @@
 # TYPE: console
 # FUNC: add_slice_2d
 # EXPECT: Model contains a character predictor. Either handle it (impute by
-#         mode) or fail with a clear message naming the variable — currently:
-#         "Unsupported variable type for: `char_var`".
+#         mode) or fail with a clear message naming the variable and its
+#         class, with a hint about supported types.
 
 source("testing/_setup.R")
 set.seed(123)

@@ -1,9 +1,8 @@
 # CASE: s2_03_additive_x_axis_xpos
 # TYPE: visual
 # FUNC: slice_2d
-# EXPECT: Scatter of x_pos vs y (y ~ x + x_pos) with a slice line, x held at 0.
-#         KNOWN ISSUE: currently errors "x_axis variable '0' not found in the
-#         model." — the x = 0 argument passed via ... is mishandled.
+# EXPECT: Scatter of x_pos vs y (y ~ x + x_pos) with a slice line, x held at 0
+#         (shown in the caption). Silent: both x_axis and x are specified.
 
 source("testing/_setup.R")
 set.seed(123)

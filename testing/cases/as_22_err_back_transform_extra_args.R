@@ -1,9 +1,8 @@
 # CASE: as_22_err_back_transform_extra_args
 # TYPE: console
 # FUNC: add_slice_2d
-# EXPECT: A back_transform function of 2+ arguments should produce a CLEAR
-#         error or warning. Currently dies with "cannot coerce type 'closure'
-#         to vector of type 'character'" — unhelpful for students.
+# EXPECT: A back_transform function of 2+ required arguments errors up front
+#         with a clear message ("must take exactly one argument").
 
 source("testing/_setup.R")
 set.seed(123)

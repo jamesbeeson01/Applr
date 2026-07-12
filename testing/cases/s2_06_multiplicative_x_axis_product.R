@@ -2,9 +2,9 @@
 # TYPE: visual
 # FUNC: slice_2d
 # EXPECT: Model y ~ I(x*x_pos) with x_axis = "x*x_pos" (the product itself):
-#         same as the default plot in s2_04.
-#         KNOWN ISSUE: currently errors "x_axis variable 'x*x_pos' not found in
-#         the model." — the I() term is stored under a different name.
+#         same shape as the default plot in s2_04 — a composite x-axis, so
+#         predictions are made at the data points and placed at x*x_pos.
+#         Silent: every predictor is on the x-axis, nothing is held.
 
 source("testing/_setup.R")
 set.seed(123)

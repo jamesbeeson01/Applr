@@ -1,8 +1,8 @@
 # CASE: as_15_err_dollar_names
 # TYPE: console
 # FUNC: add_slice_2d
-# EXPECT: A model fit as lm(df$y ~ df$x): a clear error
-#         ("Cannot use lm with '$' in its variable names").
+# EXPECT: A model fit as lm(df$y ~ df$x): a clear error naming the offending
+#         variable, with a refit hint.
 
 source("testing/_setup.R")
 set.seed(123)
