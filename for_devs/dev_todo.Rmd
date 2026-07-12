@@ -26,7 +26,8 @@ date: "2026-07-11"
   - [ ] back transform complex function
   - [ ] x axis transform that is a curved line with gaps between points (shows an potential issue with current implementation)
 - [ ] Add `data` and aesthetic arguments to `geom_slice`
-- [ ] Consider a `full_range` boolean argument to `geom_slice` which plots lines to the edge of the panel, not the end of the group
+- [ ] Add a `full_range` boolean argument to `geom_slice` which plots lines to the edge of the panel, not the end of the group
+- [ ] Add projection band and 95% confidence/prediction interval to legend optionally
 
 ## slice_2d
 
@@ -44,6 +45,10 @@ date: "2026-07-11"
 ## drawit
 
 - [ ] Deprecate it
+
+## New Functions 
+
+
 
 ## complete
 

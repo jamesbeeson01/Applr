@@ -155,13 +155,17 @@ n <- 60
 x <- runif(n, -10, 10)
 x2 <- sample(c(0, 2, 4), n, replace = TRUE)
 x3 <- sample(c(0, 1), n, replace = TRUE)
-y <- x + 3 * x2 + 0.7 * x3 + rnorm(n)
+y <- x + 3 * x2 + 3 * x3 + rnorm(n)
 dat <- data.frame(x, x2, x3, y)
 model <- lm(y ~ x + x2 + x3, data = dat)
 
 ggplot(dat, aes(x, y, color = factor(x2))) +
   geom_point() +
-  facet_wrap(~x3) +
+  geom_slice(model) +
+  facet_wrap(~x3)
+
+ggplot(dat, aes(x, y, color = factor(x2), linetype = factor(x3))) +
+  geom_point() +
   geom_slice(model)
 ```
 
@@ -179,11 +183,6 @@ A few concerns:
 - how intuitive can it be to match the style of the ggplot functions?
 - Will we have to make edits in two places every time geom_slice is modified (the ggplot and plotly implementations)
 - What will the interface look like for these plotting functions? Both autoplot implementation and base plotly
-
-4. Add confidence/prediction interval fill to legend optionally?
-
-5. There are essentially two ways to create groups or multiple lines: either 1) use a ggplot grouping variable like `color` or `linetype`, or 2) specify multiple values in `predict_vars`. Both are viable, but the funny thing is that they behave differently. `predict_vars` doesn't use any differentiation (which is probably appropriate), but it also treats line ends differently. One goes to the end of the group and the other goes to the ends of all the data. I think that is also correct because specifying values isn't actually tied to some data grouping. I guess the solution would be to add values to the data itself to group by. That said, I think the following would be nice for more continuity
-  - argument to toggle end of plot line lengths for ggplot groupings (the current default is best)
 
 7. Being able to do some animation where it slides or jumps through hidden values in the model would be super cool. gganimate seems to do something like this - but it also animates other things erroneously. It would be cool to render a gif that has just the linear model moving through slices in multidimensional space. That is one we'd have to consider what the interface would look like (what functions and arguments are available to the user) in connection with the backend feasibility and integration with other packages.
   
