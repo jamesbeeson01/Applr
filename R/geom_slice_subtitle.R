@@ -118,20 +118,21 @@ slice_subtitle_band_line <- function(band) {
 }
 
 
-# Adding to a plot is the only moment geom_slice_subtitle() can see the
-# geom_slice() layers it describes — and the subtitle belongs to the plot,
-# not to any layer.
-#' @export
-#' @noRd
-ggplot_add.slice_subtitle_spec <- function(object, plot, ...) {
+# The full annotation text for a spec, or NULL when there is nothing to say
+# (no slice layers, conflicting models, or every line dropped). Shared by
+# geom_slice_subtitle() and geom_slice_caption(); `fn_name` and `where` only
+# feed the warning wording.
+slice_annotation_text <- function(object, plot, fn_name, where) {
   slice_layers <- Filter(is_slice_layer, plot$layers)
 
   if (length(slice_layers) == 0) {
     slice_warn(
-      what = "geom_slice_subtitle() found no geom_slice() layer to describe, so no subtitle was added.",
-      hint = "Add the slice first, such as 'geom_slice(model) + geom_slice_subtitle()'."
+      what = paste0(fn_name, "() found no geom_slice() layer to describe, so no ",
+                    where, " was added."),
+      hint = paste0("Add the slice first, such as 'geom_slice(model) + ",
+                    fn_name, "()'.")
     )
-    return(plot)
+    return(NULL)
   }
 
   models <- lapply(slice_layers, function(l) l$stat_params$model)
@@ -140,12 +141,12 @@ ggplot_add.slice_subtitle_spec <- function(object, plot, ...) {
                            function(l) l$stat_params$model_name %||% "model",
                            character(1)))
     slice_warn(
-      what = paste0("geom_slice_subtitle() found geom_slice() layers with different models (",
+      what = paste0(fn_name, "() found geom_slice() layers with different models (",
                     paste0("`", names, "`", collapse = ", "),
-                    "), so no subtitle was added."),
+                    "), so no ", where, " was added."),
       hint = "Use the same model in every geom_slice() layer, or remove the layers whose model differs."
     )
-    return(plot)
+    return(NULL)
   }
 
   model <- models[[1]]
@@ -155,18 +156,25 @@ ggplot_add.slice_subtitle_spec <- function(object, plot, ...) {
   equation <- lm_equation(model)
 
   if (is.function(object$format)) {
-    subtitle <- object$format(equation, held)
-  } else {
-    lines <- character(0)
-    if (isTRUE(object$model)) lines <- equation
-    if (length(held) > 0) lines <- c(lines, slice_subtitle_held_line(held))
-    if (!is.null(band)) lines <- c(lines, slice_subtitle_band_line(band))
-    if (length(lines) == 0) return(plot)
-    subtitle <- paste0(object$prepend,
-                       paste(lines, collapse = "\n"),
-                       object$append)
+    return(object$format(equation, held))
   }
+  lines <- character(0)
+  if (isTRUE(object$model)) lines <- equation
+  if (length(held) > 0) lines <- c(lines, slice_subtitle_held_line(held))
+  if (!is.null(band)) lines <- c(lines, slice_subtitle_band_line(band))
+  if (length(lines) == 0) return(NULL)
+  paste0(object$prepend, paste(lines, collapse = "\n"), object$append)
+}
 
+# Adding to a plot is the only moment geom_slice_subtitle() can see the
+# geom_slice() layers it describes — and the subtitle belongs to the plot,
+# not to any layer.
+#' @export
+#' @noRd
+ggplot_add.slice_subtitle_spec <- function(object, plot, ...) {
+  subtitle <- slice_annotation_text(object, plot, "geom_slice_subtitle",
+                                    "subtitle")
+  if (is.null(subtitle)) return(plot)
   plot + labs(subtitle = subtitle)
 }
 
@@ -213,6 +221,13 @@ geom_slice_subtitle <- function(model = TRUE,
                                 prepend = "",
                                 append = "",
                                 format = NULL) {
+  new_slice_annotation_spec(model, prepend, append, format,
+                            class = "slice_subtitle_spec")
+}
+
+# Shared validation + construction for geom_slice_subtitle() and
+# geom_slice_caption(); `class` picks which ggplot_add method fires.
+new_slice_annotation_spec <- function(model, prepend, append, format, class) {
   if (!is.logical(model) || length(model) != 1 || is.na(model)) {
     slice_abort(
       what = "`model` must be TRUE or FALSE.",
@@ -239,6 +254,6 @@ geom_slice_subtitle <- function(model = TRUE,
   }
   structure(
     list(model = model, prepend = prepend, append = append, format = format),
-    class = "slice_subtitle_spec"
+    class = class
   )
 }

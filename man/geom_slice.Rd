@@ -11,6 +11,7 @@ geom_slice(
   predict_vars = list(),
   back_transform = NULL,
   interval = "none",
+  band = FALSE,
   ...,
   xaxis = NULL
 )
@@ -37,7 +38,15 @@ one-argument function (e.g. \code{exp}) or a name (\code{"log"}, \code{"log10"},
 
 \item{interval}{Draw a ribbon around the line: \code{"none"} (default), or
 \code{"confidence"} / \code{"prediction"} for the corresponding \code{\link[=predict.lm]{predict.lm()}}
-interval.}
+interval. Cannot be combined with \code{band}.}
+
+\item{band}{Draw a \emph{projection band} — two edge slices with a translucent
+ribbon between them — instead of a single line. \code{band = "variable"} spans
+that predictor: between the values you gave in \code{predict_vars} (e.g.
+\code{predict_vars = list(x2 = c(1, 4))}), or its observed data range when
+\code{predict_vars} leaves it out. \code{band = TRUE} infers the variable: the one
+multi-value \code{predict_vars} entry, or the single predictor the plot does
+not otherwise show. Default \code{FALSE}.}
 
 \item{...}{Other arguments passed to the layer, such as fixed aesthetics
 (\code{color = "red"}, \code{linewidth = 1.2}).}
