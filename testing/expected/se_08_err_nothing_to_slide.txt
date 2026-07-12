@@ -1,0 +1,2 @@
+Error: sliders = TRUE, but every predictor is already shown on the plot - there is nothing to slide.
+    Sliders drive the predictors the plot does not show; add one to the model, or free one up. 

@@ -1,0 +1,4 @@
+Sliders: `cyl` starting at 6.
+    To choose the slider values, use 'slider_breaks = list(cyl = c(...))'.
+Value for `hp` not specified - Used mean: 146.7
+    To choose a slice, use 'predict_vars = list(hp = 146.7)'.

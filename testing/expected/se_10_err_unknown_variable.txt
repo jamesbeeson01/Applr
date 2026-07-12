@@ -1,0 +1,2 @@
+Error: `sliders` variable "qsec" not found in the model.
+    The model's predictors are `disp`, `hp`. 

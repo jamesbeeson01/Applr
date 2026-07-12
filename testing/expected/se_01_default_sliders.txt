@@ -1,0 +1,2 @@
+Sliders: `hp` starting at 146.7; `wt` starting at 3.217.
+    To choose the slider values, use 'slider_breaks = list(hp = c(...))'.

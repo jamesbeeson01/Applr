@@ -11,7 +11,10 @@
   mapping = NULL,
   type = c("2d", "3d"),
   x_axis = NULL,
-  xaxis = NULL
+  xaxis = NULL,
+  sliders = NULL,
+  slider_breaks = NULL,
+  slider_steps = NULL
 )
 }
 \arguments{
@@ -42,10 +45,22 @@ interactive \code{\link[=scatter_3d]{scatter_3d()}} surface (needs exactly two n
 Ignored when \code{type = "3d"}.}
 
 \item{xaxis}{Deprecated; use \code{x_axis} instead.}
+
+\item{sliders}{If given (and not \code{FALSE}), return an interactive
+\code{\link[=slice_explore]{slice_explore()}} widget instead of a static ggplot. \code{TRUE} puts a slider
+on every predictor the plot does not show; or name them — bare names
+(\code{sliders = c(disp, cyl)}), strings, or \code{factor(cyl)} for steps at the
+observed values. Cannot be combined with \code{type = "3d"}.}
+
+\item{slider_breaks, slider_steps}{Slider grids for \code{sliders}, passed to
+\code{\link[=slice_explore]{slice_explore()}}: \code{slider_breaks} gives exact (intentionally jumpy)
+step values, \code{slider_steps} the number of steps in a continuous grid.}
 }
 \value{
 A ggplot of the model's data with a slice of the model drawn
-through it, or — when \code{type = "3d"} — a plotly surface from \code{\link[=scatter_3d]{scatter_3d()}}.
+through it; a plotly surface from \code{\link[=scatter_3d]{scatter_3d()}} when \code{type = "3d"}; or
+an interactive slider widget from \code{\link[=slice_explore]{slice_explore()}} when \code{sliders} is
+given.
 }
 \description{
 \code{autoplot()} turns a fitted \code{\link[=lm]{lm()}} into a complete ggplot in one call: the
@@ -57,6 +72,12 @@ line through it. The result is a regular ggplot, so it can be extended with
 Pass \code{type = "3d"} for a model with exactly two numeric predictors to get an
 interactive \code{\link[=scatter_3d]{scatter_3d()}} surface instead of the 2-D slice; \code{...} is then
 forwarded to \code{\link[=scatter_3d]{scatter_3d()}} (e.g. \code{n}, \code{colors}).
+
+Pass \code{sliders = TRUE} (or name predictors, e.g. \code{sliders = c(disp, cyl)})
+for an interactive \code{\link[=slice_explore]{slice_explore()}} widget instead: the same plot, with
+one slider for each predictor the plot does not show, moving the slice in
+real time. \code{slider_breaks} and \code{slider_steps} control the slider grids;
+see \code{\link[=slice_explore]{slice_explore()}} for details.
 
 The model's \emph{first numeric} predictor goes on the x-axis (override with
 \code{x_axis}) and the raw response variable goes on the y-axis. Everything else
@@ -94,9 +115,15 @@ if (interactive()) {
   autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
 }
 
+# Interactive sliders for the predictors the plot does not show
+if (interactive()) {
+  autoplot(lm(mpg ~ disp + hp + wt, data = mtcars), sliders = TRUE)
+}
+
 }
 \seealso{
 \code{\link[=geom_slice]{geom_slice()}}, which draws the line and handles everything
-slice-shaped; \code{\link[=scatter_3d]{scatter_3d()}} for the interactive surface; and
-\code{\link[=geom_slice_subtitle]{geom_slice_subtitle()}} / \code{\link[=geom_slice_text]{geom_slice_text()}} to annotate the result.
+slice-shaped; \code{\link[=slice_explore]{slice_explore()}} for the slider view; \code{\link[=scatter_3d]{scatter_3d()}} for
+the interactive surface; and \code{\link[=geom_slice_subtitle]{geom_slice_subtitle()}} /
+\code{\link[=geom_slice_text]{geom_slice_text()}} to annotate the result.
 }

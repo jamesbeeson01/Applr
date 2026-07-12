@@ -21,7 +21,11 @@ Rscript -e "rmarkdown::render('testing/report.Rmd')"
 ```
 
 To keep a progress snapshot, rename the resulting `report.html` (e.g.
-`report 2026-07-06.html`) and move it into `testing/archive/`.
+`report 2026-07-06.html`) and move it into `testing/archive/`. Note that
+widget cases (`TYPE: widget`, e.g. `slice_explore()`) load live from
+`testing/output/<id>.html`, so their sliders only work while the report sits
+in `testing/` with that folder present — an archived copy keeps everything
+else.
 
 ```{r setup, include=FALSE}
 # rmarkdown knits with the working directory set to testing/; the runner and
@@ -121,7 +125,20 @@ case_block <- function(m) {
   pngs <- list.files("testing/output", sprintf("^%s(-\\d+)?\\.png$", m$id))
   txt  <- file.path("testing/output", paste0(m$id, ".txt"))
 
-  if (m$type != "console") {
+  if (m$type == "widget") {
+    if (file.exists(file.path("testing/output", paste0(m$id, ".html")))) {
+      # data-widget-src (set to src by the loader script at the bottom of this
+      # file) keeps pandoc's self-contained pass from inlining the widget page
+      # as a data: URI, which would orphan its _widget_libs script references.
+      # Consequence: widget cases are live only while report.html sits next to
+      # output/ — an archived copy keeps everything else but loses them.
+      out <- c(out, "**Output (this run) — interactive; drag the sliders:**\n",
+               sprintf('<iframe data-widget-src="output/%s.html" width="100%%" height="680" style="border:1px solid #ddd; background:#fff;"></iframe>\n',
+                       m$id))
+    } else {
+      out <- c(out, "_No widget produced by this run (see status above)._\n")
+    }
+  } else if (m$type != "console") {
     if (length(pngs) > 0) {
       out <- c(out, "**Output (this run):**\n",
                sprintf('<img src="output/%s" width="%d">\n', pngs, px))
@@ -143,7 +160,8 @@ case_block <- function(m) {
 }
 
 preferred <- c("geom_slice", "geom_fit", "slice_2d", "add_slice_2d",
-               "geom_add_slice_2d", "lm_equation", "error handling")
+               "geom_add_slice_2d", "autoplot", "slice_explore",
+               "lm_equation", "error handling")
 funcs <- vapply(meta, `[[`, "", "func")
 func_order <- c(intersect(preferred, funcs), setdiff(unique(funcs), preferred))
 
@@ -154,3 +172,15 @@ for (fn in func_order) {
 }
 cat(knitr::knit_child(text = paste(blocks, collapse = "\n"), quiet = TRUE), sep = "\n")
 ```
+
+<!-- Loader for widget-case iframes: assigns each iframe's real src at view
+     time so pandoc's self-contained pass cannot inline (and break) the
+     widget pages. See the widget branch of case_block above. -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var frames = document.querySelectorAll('iframe[data-widget-src]');
+  for (var i = 0; i < frames.length; i++) {
+    frames[i].src = frames[i].getAttribute('data-widget-src');
+  }
+});
+</script>

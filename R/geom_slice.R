@@ -699,6 +699,14 @@ compute_slice_group <- function(data, scales, spec, n, interval = "none",
     )
   }
 
+  # Each line records the held values that produced it in `.held_<var>`
+  # columns. Geoms ignore the extra columns; slice_explore() reads them to
+  # identify which combination each precomputed curve belongs to.
+  held_cols <- function(out, i) {
+    for (var in names(combos)) out[[paste0(".held_", var)]] <- combos[[var]][i]
+    out
+  }
+
   lines <- lapply(seq_len(nrow(combos)), function(i) {
     for (var in names(combos)) newdata[[var]] <- combos[[var]][i]
     if (!is.null(spec$band)) {
@@ -712,6 +720,7 @@ compute_slice_group <- function(data, scales, spec, n, interval = "none",
       out <- data.frame(x = x_panel[ord], y = ((lo + hi) / 2)[ord],
                         ymin = pmin(lo, hi)[ord], ymax = pmax(lo, hi)[ord],
                         extra, row.names = NULL)
+      out <- held_cols(out, i)
       if (nrow(combos) > 1) out$group <- data$group[1] * nrow(combos) + (i - 1)
       return(out)
     }
@@ -729,6 +738,7 @@ compute_slice_group <- function(data, scales, spec, n, interval = "none",
       y_panel <- y_trans$transform(spec$y_fn(predictions))
       out <- data.frame(x = x_panel[ord], y = y_panel[ord], extra, row.names = NULL)
     }
+    out <- held_cols(out, i)
     # Separate group ids keep the combos as distinct lines; scaling by the
     # number of combos keeps ids unique across the layer's original groups.
     if (nrow(combos) > 1) out$group <- data$group[1] * nrow(combos) + (i - 1)

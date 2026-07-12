@@ -27,6 +27,7 @@ Core capabilities:
 \item Base graphics: \code{\link{slice_2d}}, \code{\link{add_slice_2d}}
 \item ggplot2 layer: \code{\link{geom_slice}} (built on \code{\link{StatSlice}} and \code{\link{GeomSlice}})
 \item ggplot2 labeling: \code{\link{geom_slice_text}}, \code{\link{geom_slice_subtitle}}, \code{\link{geom_slice_caption}}
+\item Interactive sliders: \code{\link{slice_explore}}
 \item 3D visualization: \code{\link{scatter_3d}}
 \item Equations: \code{\link{lm_equation}}, \code{\link{lm_latex}}
 \item Theme: \code{\link{theme_lc}}

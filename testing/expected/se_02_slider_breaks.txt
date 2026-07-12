@@ -1,0 +1,2 @@
+Sliders: `x2` starting at 5.
+    To choose the slider values, use 'slider_breaks = list(x2 = c(...))'.

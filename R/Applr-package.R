@@ -16,6 +16,7 @@
 #' - Base graphics: \code{\link{slice_2d}}, \code{\link{add_slice_2d}}
 #' - ggplot2 layer: \code{\link{geom_slice}} (built on \code{\link{StatSlice}} and \code{\link{GeomSlice}})
 #' - ggplot2 labeling: \code{\link{geom_slice_text}}, \code{\link{geom_slice_subtitle}}, \code{\link{geom_slice_caption}}
+#' - Interactive sliders: \code{\link{slice_explore}}
 #' - 3D visualization: \code{\link{scatter_3d}}
 #' - Equations: \code{\link{lm_equation}}, \code{\link{lm_latex}}
 #' - Theme: \code{\link{theme_lc}}
@@ -48,5 +49,7 @@
 #' @import ggplot2
 #' @importFrom rlang %||%
 #' @importFrom graphics plot lines mtext par polygon
+#' @importFrom grDevices col2rgb
+#' @importFrom htmlwidgets onRender
 #' @importFrom stats coef delete.response formula get_all_vars model.frame predict setNames terms
 "_PACKAGE"

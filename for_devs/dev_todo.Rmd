@@ -14,6 +14,7 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 
 ## General
 
+- [ ] **priority: high** - final human review over documentation and testing/report.html
 - [x] Link to autoplot.lm in the main docs page
 - [x] plotly overwrite issue in `known_issues.md` (should resolve with `@importFrom`) — RESOLVED 2026-07-12: blanket imports narrowed, load warnings gone (see known_issues.Rmd Resolved)
 - [x] pictures in README
@@ -73,7 +74,7 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 
 ## New Functions 
 
-- [ ] `autoplot(model, sliders=TRUE)` changing the implementation to plotly for interactive visualization
+- [x] `autoplot(model, sliders=TRUE)` changing the implementation to plotly for interactive visualization — DONE 2026-07-12 (`slice_explore()`: plotly widget with one slider per unshown predictor; every curve precomputed by geom_slice() itself via multi-value predict_vars, so behavior/imputation/back-transform can never diverge and geom_slice changes flow through automatically. `sliders =` bare names / `factor(x)` for discrete steps, `slider_breaks` for jumpy steps, `slider_steps` for grid density; supports `mapping = aes(color=)`, `predict_vars`, `interval`. Sliders start at the imputed defaults, so the initial view IS the static autoplot. Cases se_01–se_12 + ap_13, new `TYPE: widget` runner support embeds live widgets in report.Rmd; agent-facing coverage via se_06 storyboard (predict()-built reference) and se_07 spec probe.)
 - [ ] gif animation
 
 ## Complete

@@ -64,6 +64,16 @@ Rscript testing/run.R --update gs_02   # accept current console output as the ne
 - **Console cases** save `output/<id>.txt` and are diffed automatically against
   `expected/<id>.txt`. A case with no snapshot yet reports `NEW`; review its
   output, then run with `--update` to accept it as the baseline.
+- **Widget cases** (`TYPE: widget`) are for htmlwidgets (`slice_explore()`,
+  plotly). The case's **last expression must be the widget** (don't `print()`
+  it — that would try to open a browser); the runner saves it to
+  `output/<id>.html` and the report embeds it live, sliders and all. Console
+  output is captured and snapshotted exactly like a visual case. Since an
+  agent cannot drag sliders, widget correctness is covered from three sides:
+  the report for humans (click around), deterministic console probes of the
+  precomputed slider data (`se_07_spec_probe` asserts curves == `predict()`),
+  and a static "storyboard" visual case (`se_06`) rendering slider positions
+  as ordinary lines against a predict()-built reference image.
 - **Known-broken cases:** a case whose `EXPECT` header says `KNOWN ISSUE`
   documents a real, currently-unfixed bug. It FAILs on purpose — the runner's
   FAIL list doubles as the open-bug list — and turns OK once the bug is fixed.
@@ -77,7 +87,7 @@ several layers, like three slices on one scatter, is still one case.)
 
 ```r
 # CASE: gs_01_single_predictor              <- must match the filename
-# TYPE: visual                              <- visual | console
+# TYPE: visual                              <- visual | console | widget
 # FUNC: geom_slice                          <- groups cases in the report
 # SIZE: 10x4                                <- optional plot size in inches (default 7x5)
 # EXPECT: One straight line, slope ~1.      <- what a CORRECT result looks like;
@@ -120,6 +130,7 @@ data-generation lines of a `gs_` case without regenerating its reference).
 | `s2_` | `slice_2d` | visual |
 | `as_` | `add_slice_2d` | visual |
 | `ap_` | `autoplot.lm` (the geom_slice × autoplot interface, not full geom_slice coverage) | visual |
+| `se_` | `slice_explore` (interactive sliders; spec probes + storyboard for agents) | widget / console / visual |
 | `le_` | `lm_equation` | console |
 
 **Error cases live under their function's prefix** with `err` in the slug

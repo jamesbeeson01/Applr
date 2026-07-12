@@ -1,0 +1,2 @@
+Error: `sliders` variable `hp` is already held by `predict_vars`.
+    Drop it from 'predict_vars' to slide it, or from 'sliders' to hold it. 

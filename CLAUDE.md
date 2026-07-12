@@ -20,6 +20,12 @@ Rscript testing/run.R gs         # all geom_slice cases
   silent.
 - **Console cases** (`err_*`, `le_*`) save `testing/output/<id>.txt` and are
   diffed automatically against `testing/expected/<id>.txt`.
+- **Widget cases** (`se_*`, `ap_13`; `TYPE: widget`) end with an htmlwidget
+  as the case's last expression; the runner saves `testing/output/<id>.html`
+  (embedded live in the report for humans) and snapshots console output like
+  a visual case. Agents can't drag sliders — slice_explore correctness is
+  checked through the deterministic spec probe (`se_07`, curves == predict())
+  and the storyboard visual case (`se_06`) with its reference image.
 
 Each `gs_` case has a matching **reference image** in `testing/reference/` —
 the ground-truth plot built independently of `geom_slice` (plain ggplot2 +

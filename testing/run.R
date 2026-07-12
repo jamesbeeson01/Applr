@@ -9,6 +9,10 @@
 #                  diffed against testing/expected/<id>.txt. A visual case with no
 #                  expected/ snapshot must be silent — unexpected output reports NEW.
 # Console cases -> testing/output/<id>.txt   (diffed automatically against testing/expected/<id>.txt)
+# Widget cases  -> testing/output/<id>.html  (an htmlwidget, e.g. slice_explore();
+#                  the case's LAST expression must be the widget. report.Rmd embeds
+#                  it live for human review). Console output is captured and diffed
+#                  exactly like a visual case.
 #
 # See testing/README.md for the case file format.
 
@@ -42,6 +46,51 @@ diff_lines <- function(got, want) {
 }
 
 read_snapshot <- function(path) trimws(readLines(path, warn = FALSE), "right")
+
+# Console-snapshot check shared by visual and widget cases: the captured
+# output must match its expected/ snapshot; a case with no snapshot must be
+# silent. Removes an empty out_file. Returns list(done =, silent =): `done`
+# is a ready result (FAIL/NEW/UPDATED) or NULL when the console side passes.
+check_console_snapshot <- function(out_file, exp_file, id) {
+  got <- read_snapshot(out_file)
+  while (length(got) > 0 && got[length(got)] == "") got <- got[-length(got)]
+  silent <- length(got) == 0
+  if (silent) file.remove(out_file)
+  has_expected <- file.exists(exp_file)
+  if (update_expected) {
+    if (silent && has_expected) {
+      file.remove(exp_file)
+      return(list(done = list(status = "UPDATED",
+                              msg = paste("case is now silent; removed", basename(exp_file))),
+                  silent = silent))
+    }
+    if (!silent) {
+      file.copy(out_file, exp_file, overwrite = TRUE)
+      return(list(done = list(status = "UPDATED", msg = basename(exp_file)),
+                  silent = silent))
+    }
+  }
+  if (silent && has_expected) {
+    return(list(done = list(status = "FAIL",
+                            msg = sprintf("expected console output (%s) but the case printed nothing",
+                                          basename(exp_file))),
+                silent = silent))
+  }
+  if (!silent && !has_expected) {
+    return(list(done = list(status = "NEW",
+                            msg = sprintf("case printed console output — review %s, then snapshot: Rscript testing/run.R --update %s",
+                                          out_file, id)),
+                silent = silent))
+  }
+  if (!silent) {
+    bad <- diff_lines(got, read_snapshot(exp_file))
+    if (!is.null(bad)) {
+      return(list(done = list(status = "FAIL", msg = paste0("console ", bad)),
+                  silent = silent))
+    }
+  }
+  list(done = NULL, silent = silent)
+}
 
 run_visual <- function(file, meta) {
   # clear stale outputs for this case, then draw every plot the case makes
@@ -82,37 +131,65 @@ run_visual <- function(file, meta) {
 
   # console side: whatever the case printed must match its snapshot; a case
   # with no snapshot in expected/ must be silent
-  got <- read_snapshot(out_file)
-  while (length(got) > 0 && got[length(got)] == "") got <- got[-length(got)]
-  silent <- length(got) == 0
-  if (silent) file.remove(out_file)
-  has_expected <- file.exists(exp_file)
-  if (update_expected) {
-    if (silent && has_expected) {
-      file.remove(exp_file)
-      return(list(status = "UPDATED", msg = paste("case is now silent; removed", basename(exp_file))))
-    }
-    if (!silent) {
-      file.copy(out_file, exp_file, overwrite = TRUE)
-      return(list(status = "UPDATED", msg = basename(exp_file)))
-    }
-  }
-  if (silent && has_expected) {
-    return(list(status = "FAIL",
-                msg = sprintf("expected console output (%s) but the case printed nothing",
-                              basename(exp_file))))
-  }
-  if (!silent && !has_expected) {
-    return(list(status = "NEW",
-                msg = sprintf("case printed console output — review %s, then snapshot: Rscript testing/run.R --update %s",
-                              out_file, meta$id)))
-  }
-  if (!silent) {
-    bad <- diff_lines(got, read_snapshot(exp_file))
-    if (!is.null(bad)) return(list(status = "FAIL", msg = paste0("console ", bad)))
-  }
+  console <- check_console_snapshot(out_file, exp_file, meta$id)
+  if (!is.null(console$done)) return(console$done)
   list(status = "OK",
-       msg = paste(c(basename(made), if (!silent) basename(out_file)), collapse = ", "))
+       msg = paste(c(basename(made), if (!console$silent) basename(out_file)), collapse = ", "))
+}
+
+# Widget cases (TYPE: widget): the case's LAST expression must be an
+# htmlwidget (e.g. a slice_explore() / plotly object). It is saved to
+# testing/output/<id>.html for report.Rmd to embed live — printing it here
+# would try to open a browser, so the runner takes source()'s result value
+# instead. Console output is captured and snapshotted like a visual case.
+run_widget <- function(file, meta) {
+  stale <- list.files("testing/output", sprintf("^%s\\.(html|txt)$", meta$id), full.names = TRUE)
+  file.remove(stale)
+  out_file <- file.path("testing/output",   paste0(meta$id, ".txt"))
+  exp_file <- file.path("testing/expected", paste0(meta$id, ".txt"))
+  con <- file(out_file, "w")
+  sink(con)
+  sink(con, type = "message")
+  old_warn <- options(warn = 1)
+  err <- NULL
+  res <- NULL
+  tryCatch(res <- source(file, local = new.env(), echo = FALSE, print.eval = FALSE)$value,
+           error = function(e) err <<- conditionMessage(e))
+  options(old_warn)
+  sink(type = "message")
+  sink()
+  close(con)
+  if (!is.null(err)) {
+    file.remove(out_file)
+    return(list(status = "FAIL", msg = err))
+  }
+  if (!inherits(res, "htmlwidget")) {
+    file.remove(out_file)
+    return(list(status = "FAIL",
+                msg = "a widget case must end with the htmlwidget as its last expression"))
+  }
+  html <- file.path(normalizePath("testing/output"), paste0(meta$id, ".html"))
+  saved <- tryCatch(
+    {
+      # selfcontained = FALSE needs no pandoc; _widget_libs is shared across cases
+      suppressMessages(htmlwidgets::saveWidget(res, html, selfcontained = FALSE,
+                                               libdir = "_widget_libs", title = meta$id))
+      TRUE
+    },
+    error = function(e) {
+      err <<- conditionMessage(e)
+      FALSE
+    }
+  )
+  if (!saved) {
+    file.remove(out_file)
+    return(list(status = "FAIL", msg = paste("saveWidget failed:", err)))
+  }
+  console <- check_console_snapshot(out_file, exp_file, meta$id)
+  if (!is.null(console$done)) return(console$done)
+  list(status = "OK",
+       msg = paste(c(paste0(meta$id, ".html"), if (!console$silent) basename(out_file)),
+                   collapse = ", "))
 }
 
 run_console <- function(file, meta) {
@@ -149,7 +226,10 @@ cat(sprintf("Running %d case(s)...\n\n", length(all_files)))
 results <- lapply(all_files, function(f) {
   meta <- parse_case_header(f)
   cat(sprintf("  %-38s [%s] ", meta$id, meta$type))
-  res <- if (meta$type == "console") run_console(f, meta) else run_visual(f, meta)
+  res <- switch(meta$type,
+                console = run_console(f, meta),
+                widget  = run_widget(f, meta),
+                run_visual(f, meta))
   cat(res$status, "\n")
   if (res$status %in% c("FAIL", "NEW")) cat("      ", res$msg, "\n", sep = "")
   if (res$status == "FAIL" && !is.na(meta$expect)) cat("      EXPECT: ", meta$expect, "\n", sep = "")

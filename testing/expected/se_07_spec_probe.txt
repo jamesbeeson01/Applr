@@ -1,0 +1,7 @@
+sliders: hp wt 
+sizes: 37 x 37 
+curves: 1  points per curve: 100 
+hp start: 146.6875  (mean: 146.6875 )
+wt start: 3.21725  (mean: 3.21725 )
+max |curve - predict| at corners and middle: 0 
+max |start curve - static autoplot slice|: 0 

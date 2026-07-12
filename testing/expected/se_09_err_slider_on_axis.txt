@@ -1,0 +1,2 @@
+Error: `sliders` variable `disp` is on the x-axis, so it already varies along the line.
+    Slide a predictor the plot does not show: `hp`, `wt`. 

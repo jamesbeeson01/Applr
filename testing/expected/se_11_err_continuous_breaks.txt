@@ -1,0 +1,2 @@
+Error: slider_breaks = "continuous" is not needed: the `hp` slider is continuous by default.
+    Omit the breaks for a smooth slider, or give values such as 'slider_breaks = list(hp = c(1, 2, 3))' for fixed steps. 

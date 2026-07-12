@@ -25,8 +25,9 @@ A small R package for visualizing linear models — especially high-dimensional 
 
 Fit a model with `lm()`, then let Applr draw it: a one-call `autoplot()`, a
 ggplot2 layer (`geom_slice()`) that draws *your* fitted model the way
-`geom_smooth()` draws its own, base-R helpers (`slice_2d()`), interactive 3-D
-surfaces (`scatter_3d()`), and friends.
+`geom_smooth()` draws its own, base-R helpers (`slice_2d()`), interactive
+slider exploration (`slice_explore()`), 3-D surfaces (`scatter_3d()`), and
+friends.
 
 ## Installation
 
@@ -251,6 +252,19 @@ autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
 ```
 
 *(static snapshot — the real plot is interactive: drag to rotate, hover for values)*
+
+```{r autoplot-sliders, screenshot.opts = list(vwidth = 800, vheight = 700, delay = 2), fig.alt = "Interactive slider view: scatter with a slice line and one slider per hidden predictor (static snapshot)"}
+# Or explore: one slider per predictor the plot doesn't show, moving
+# the slice in real time (also reachable as slice_explore(model))
+autoplot(lm(mpg ~ disp + hp + wt, data = mtcars), sliders = TRUE)
+```
+
+*(static snapshot — in the real widget the `hp` and `wt` sliders drag
+smoothly, moving the line to that slice of the model as you go. Each slider
+starts at the value the static plot would impute, so the starting view is
+the plot above. `slider_breaks = list(hp = c(66, 150, 335))` gives
+deliberate steps instead; `sliders = factor(cyl)` steps a numeric predictor
+through its observed values; see `?slice_explore`.)*
 
 Note: the model must be fitted with a `data` argument
 (`lm(y ~ x, data = your_data)`) so `autoplot()` can recover the data.

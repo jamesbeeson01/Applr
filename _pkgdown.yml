@@ -18,8 +18,10 @@ reference:
   contents:
   - slice_2d
   - add_slice_2d
-- title: 3-D view
+- title: Interactive views
+  desc: Slider-driven exploration and the 3-D surface (plotly widgets).
   contents:
+  - slice_explore
   - scatter_3d
 - title: Equations and diagnostics
   contents:

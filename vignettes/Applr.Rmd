@@ -124,12 +124,35 @@ ggplot(mtcars, aes(x = disp, y = mpg, color = factor(cyl))) +
   geom_slice(model_cyl)
 ```
 
+## Exploring with sliders
+
+A slice holds the hidden predictors at one value — `slice_explore()` (or
+`autoplot(model, sliders = TRUE)`) puts a slider on each of them instead, so
+you can sweep the hidden values and watch the line move in real time. The
+widget below is fully interactive: drag the sliders. Each one starts at the
+value the static plot would impute, so the starting view *is* the autoplot.
+
+```{r}
+model_3 <- lm(mpg ~ disp + hp + wt, data = mtcars)
+
+slice_explore(model_3, slider_steps = 15)
+```
+
+Numeric sliders feel continuous by default; give `slider_breaks` for
+deliberate steps (`slider_breaks = list(hp = c(66, 150, 335))`), or wrap a
+numeric predictor in `factor()` (`sliders = factor(cyl)`) to step through its
+observed values. Everything geom_slice-shaped — `predict_vars`,
+`interval = "confidence"`, back-transformed responses, color grouping via
+`mapping =` — works here too, because every curve the sliders can show is
+computed by `geom_slice()` itself.
+
 ## Where to go next
 
 - `?geom_slice` covers the remaining options: projection bands (`band`),
   extending lines across the panel (`full_range`), transformed responses and
   `back_transform`, and the `n` resolution of the line.
 - `?slice_2d` is the base-graphics equivalent of this whole workflow.
+- `?slice_explore` covers the slider view's options in full.
 - `?scatter_3d` (or `autoplot(model, type = "3d")`) shows a two-predictor
   model as an interactive 3-D surface instead of a slice.
 - `?lm_equation` and `?lm_latex` turn the fitted model into text or LaTeX for
