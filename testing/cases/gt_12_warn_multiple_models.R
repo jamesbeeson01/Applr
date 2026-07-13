@@ -1,4 +1,4 @@
-# CASE: gt_12_err_multiple_models
+# CASE: gt_12_warn_multiple_models
 # TYPE: console
 # FUNC: geom_slice_text
 # EXPECT: A clear warning that the plot's geom_slice() layers use two

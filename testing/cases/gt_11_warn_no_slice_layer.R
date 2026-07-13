@@ -1,4 +1,4 @@
-# CASE: gt_11_err_no_slice_layer
+# CASE: gt_11_warn_no_slice_layer
 # TYPE: console
 # FUNC: geom_slice_text
 # EXPECT: A clear warning that the plot has no geom_slice() layer to label

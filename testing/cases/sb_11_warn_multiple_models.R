@@ -1,10 +1,10 @@
-# CASE: sb_11_err_multiple_models
+# CASE: sb_11_warn_multiple_models
 # TYPE: console
 # FUNC: geom_slice_subtitle
 # EXPECT: A clear warning that the plot's geom_slice() layers use two
 #         different models — a subtitle can describe ONE model, so none is
 #         added. The warning names the models and hints to use one model per
-#         plot. Mirrors gt_12_err_multiple_models.
+#         plot. Mirrors gt_12_warn_multiple_models.
 
 source("testing/_setup.R")
 set.seed(123)

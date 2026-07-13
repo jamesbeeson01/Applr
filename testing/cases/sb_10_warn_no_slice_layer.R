@@ -1,10 +1,10 @@
-# CASE: sb_10_err_no_slice_layer
+# CASE: sb_10_warn_no_slice_layer
 # TYPE: console
 # FUNC: geom_slice_subtitle
 # EXPECT: A clear warning that the plot has no geom_slice() layer to describe
 #         (there is no model or held values to report), with a hint to add
 #         geom_slice() before geom_slice_subtitle(). Mirrors
-#         gt_11_err_no_slice_layer.
+#         gt_11_warn_no_slice_layer.
 
 source("testing/_setup.R")
 set.seed(123)
