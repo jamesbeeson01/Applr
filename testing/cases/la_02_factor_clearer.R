@@ -1,7 +1,8 @@
-# CASE: le_13_factor_clearer
+# CASE: la_02_factor_clearer
 # TYPE: console
-# FUNC: lm_equation
-# EXPECT: with clearer = TRUE, factor terms spell out variable and level —
+# FUNC: lm_latex
+# EXPECT: display-math LaTeX ($$...$$) with underbrace labels; with
+#         clearer = TRUE, factor terms spell out variable and level —
 #         (g="B"), (g="C"), and interactions as x:(g="B"), x:(g="C").
 
 source("testing/_setup.R")
@@ -13,4 +14,4 @@ g <- factor(sample(c("A", "B", "C"), n, replace = TRUE))
 y <- 2 + 0.5 * x + 4 * (g == "B") - 3 * (g == "C") + 0.8 * x * (g == "B") + rnorm(n)
 model <- lm(y ~ x * g)
 
-try_show(lm_equation(model, clearer = TRUE))
+try_show(lm_latex(model, clearer = TRUE))

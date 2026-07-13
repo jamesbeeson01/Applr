@@ -121,6 +121,7 @@ data-generation lines of a `gs_` case without regenerating its reference).
 | `as_` | `add_slice_2d` | visual |
 | `ap_` | `autoplot.lm` (the geom_slice × autoplot interface, not full geom_slice coverage) | visual |
 | `le_` | `lm_equation` | console |
+| `la_` | `lm_latex` | console |
 
 **Error cases live under their function's prefix** with `err` in the slug
 (e.g. `s2_16_err_nonexistent_x_axis`, `gs_27_err_non_lm`), not in a shared
@@ -128,6 +129,10 @@ data-generation lines of a `gs_` case without regenerating its reference).
 misuse handling — under one prefix, so `run.R s2` shows an agent working on
 `slice_2d` only slice_2d behavior, with no other function's errors as noise.
 Error cases are numbered after the happy-path cases of their function.
+Use `err` in the slug only when the case actually raises an error; when the
+misuse is handled by warning and skipping (e.g. `geom_slice_subtitle()` with
+no slice layer), name the slug `warn` instead so the name matches the
+behavior.
 
 ## Adding / removing a case
 

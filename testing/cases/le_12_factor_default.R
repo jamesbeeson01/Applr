@@ -1,6 +1,6 @@
 # CASE: le_12_factor_default
 # TYPE: console
-# FUNC: lm_equation, lm_latex
+# FUNC: lm_equation
 # EXPECT: factor terms shown as dummy coefficient names (gB, gC, x:gB, x:gC)
 #         — the default (clearer unspecified) keeps design-matrix names.
 
@@ -14,4 +14,3 @@ y <- 2 + 0.5 * x + 4 * (g == "B") - 3 * (g == "C") + 0.8 * x * (g == "B") + rnor
 model <- lm(y ~ x * g)
 
 try_show(lm_equation(model))
-try_show(lm_latex(model))

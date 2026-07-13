@@ -131,8 +131,14 @@ case_block <- function(m) {
   }
 
   if (file.exists(txt)) {
+    txt_lines <- readLines(txt, warn = FALSE)
     out <- c(out, "**Console output (this run):**\n", "````",
-             readLines(txt, warn = FALSE), "````\n")
+             txt_lines, "````\n")
+    # lm_latex cases emit display-math LaTeX ($$...$$); also show it rendered
+    # via MathJax so the typeset equation can be eyeballed next to the string.
+    if (identical(m$func, "lm_latex")) {
+      out <- c(out, "**Rendered:**\n", txt_lines, "\n")
+    }
   }
 
   if (m$type != "console" && file.exists(file.path("testing/reference", paste0(m$id, ".png")))) {
@@ -143,7 +149,7 @@ case_block <- function(m) {
 }
 
 preferred <- c("geom_slice", "geom_fit", "slice_2d", "add_slice_2d",
-               "geom_add_slice_2d", "lm_equation", "error handling")
+               "geom_add_slice_2d", "lm_equation", "lm_latex", "error handling")
 funcs <- vapply(meta, `[[`, "", "func")
 func_order <- c(intersect(preferred, funcs), setdiff(unique(funcs), preferred))
 
