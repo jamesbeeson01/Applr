@@ -1,6 +1,6 @@
 # gs_49 REFERENCE — projection band between the x_pos = 1 and x_pos = 9 slices.
 # Ground truth for geom_slice(predict_vars = list(x_pos = c(1, 9)), band = TRUE).
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -22,5 +22,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gs_49 REFERENCE — band between x_pos = 1 and x_pos = 9 slices",
        subtitle = "Ground truth via predict() at both extremes + ribbon between (no geom_slice)")
 
-ggsave("testing/reference/gs_49_band_two_values.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_49_band_two_values.png")
+ggsave("tests/reference/gs_49_band_two_values.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_49_band_two_values.png")

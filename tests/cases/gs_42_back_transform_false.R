@@ -7,7 +7,7 @@
 #         line of slope ~1 through the points. A hyperbolic curve means the
 #         opt-out was ignored and it back-transformed anyway.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

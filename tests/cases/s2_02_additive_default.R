@@ -6,7 +6,7 @@
 #         in the caption above the plot. A second console message reports
 #         x_axis defaulting to the first x variable (x).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

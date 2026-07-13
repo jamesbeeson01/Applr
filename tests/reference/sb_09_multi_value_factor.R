@@ -1,7 +1,7 @@
 # sb_09 REFERENCE — two unlabeled slices (x2 = 0, 4) with factor g held at its
 # most common level; subtitle values line lists both: multi-value x2 joined
 # with commas, factor quoted ("held at: x2 = 0, 4; g = \"A\"").
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 60
 x <- runif(n, -10, 10)
@@ -27,5 +27,5 @@ p <- ggplot(dat, aes(x, y)) +
        subtitle = paste0(ref_equation(model), "\n",
                          ref_held_line(list(x2 = c(0, 4), g = g_mode))))
 
-ggsave("testing/reference/sb_09_multi_value_factor.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/sb_09_multi_value_factor.png")
+ggsave("tests/reference/sb_09_multi_value_factor.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/sb_09_multi_value_factor.png")

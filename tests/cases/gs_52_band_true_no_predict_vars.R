@@ -9,7 +9,7 @@
 #         including the same console message (band range for x_pos imputed
 #         from the min/max data range).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

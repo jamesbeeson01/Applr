@@ -8,7 +8,7 @@
 #         Both lines slope downward. Red line sits below blue line.
 #         No errors.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(mpg ~ disp + hp, data = mtcars)
 

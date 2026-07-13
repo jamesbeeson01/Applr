@@ -5,7 +5,7 @@
 #         straight downward line with a NARROW confidence ribbon around it
 #         (see reference).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(mpg ~ disp + hp, data = mtcars)
 

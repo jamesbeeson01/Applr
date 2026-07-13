@@ -22,7 +22,7 @@
 #   This is the integration stress test: grouping + faceting together is the combination
 #   the SliceLayer structural issue (see for_devs/known_issues.Rmd) is expected to break.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 240

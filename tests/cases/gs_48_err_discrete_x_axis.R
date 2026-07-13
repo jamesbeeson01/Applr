@@ -7,7 +7,7 @@
 #         discrete." (imputation messages for the held variable may print
 #         first).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 mtcars2 <- mtcars
 mtcars2$cyl <- factor(mtcars2$cyl)

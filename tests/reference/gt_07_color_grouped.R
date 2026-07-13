@@ -1,7 +1,7 @@
 # gt_07 REFERENCE — y ~ x * g + x2 with color = g: four lines (two per group),
 # each labeled "x2: 0"/"x2: 3" in its own line's color. Lines span each
 # group's x range (per the decisions.Rmd group-range rule).
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 80
 x <- runif(n, -10, 10)
@@ -37,5 +37,5 @@ p <- ggplot(dat, aes(x, y, color = g)) +
   labs(title = "gt_07 REFERENCE — labels inherit each line's group color",
        subtitle = "Ground truth via predict() + geom_text (no Applr)")
 
-ggsave("testing/reference/gt_07_color_grouped.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gt_07_color_grouped.png")
+ggsave("tests/reference/gt_07_color_grouped.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gt_07_color_grouped.png")

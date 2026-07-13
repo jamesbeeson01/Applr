@@ -1,7 +1,7 @@
 # gs_52 REFERENCE — band = TRUE with no predict_vars: the only non-axis
 # predictor (x_pos) bands over its observed data range. Same ground truth
 # construction as gs_50.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -24,5 +24,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gs_52 REFERENCE — band = TRUE, banding variable inferred (x_pos)",
        subtitle = "Ground truth: slices at range(x_pos) + ribbon between (no geom_slice)")
 
-ggsave("testing/reference/gs_52_band_true_no_predict_vars.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_52_band_true_no_predict_vars.png")
+ggsave("tests/reference/gs_52_band_true_no_predict_vars.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_52_band_true_no_predict_vars.png")

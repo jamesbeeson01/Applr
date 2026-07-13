@@ -1,7 +1,7 @@
 # gs_17 REFERENCE — full-feature integration ground truth (no geom_slice, no geom_smooth).
 # Per facet (f) and group (g): a line over that cell's own x range, with z/w/s held at the
 # same defaults geom_slice uses (numeric -> mean, factor/character -> mode).
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 
 n <- 240
@@ -46,5 +46,5 @@ p <- ggplot(dat, aes(x, y, color = g)) +
   labs(title = "gs_17 REFERENCE — all features (group + facet + imputed z/w/s + styling)",
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_17_all_features.png", plot = p, width = 10, height = 4)
-message("OK: testing/reference/gs_17_all_features.png")
+ggsave("tests/reference/gs_17_all_features.png", plot = p, width = 10, height = 4)
+message("OK: tests/reference/gs_17_all_features.png")

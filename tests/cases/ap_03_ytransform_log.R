@@ -6,7 +6,7 @@
 #         must auto back-transform (console message): one smooth decreasing
 #         exp() curve through the raw-scale point cloud, not a straight line.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(log(mpg) ~ disp, data = mtcars)
 

@@ -8,7 +8,7 @@
 #         is the single line "held at: x2 = <mean>".
 #         Console message: x2 not specified, held at its mean (~2.578).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 80

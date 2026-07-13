@@ -6,7 +6,7 @@
 #         "confidence") just work — the plot renders with a ribbon and no
 #         errors, warnings, or messages.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(mpg ~ disp, data = mtcars)
 

@@ -2,7 +2,7 @@
 #
 # References are built WITHOUT the Applr package: an explicit newdata grid fed to
 # predict() (== model.matrix %*% coef(model)) — the exact lm() coefficients, with
-# no geom_smooth(). Each reference mirrors the styling of its testing/cases/ plot
+# no geom_smooth(). Each reference mirrors the styling of its tests/cases/ plot
 # so the two PNGs can be compared side by side.
 
 suppressPackageStartupMessages(library(ggplot2))
@@ -54,4 +54,4 @@ ref_held_line <- function(held) {
   paste0("held at: ", paste(parts, collapse = "; "))
 }
 
-dir.create("testing/reference", showWarnings = FALSE, recursive = TRUE)
+dir.create("tests/reference", showWarnings = FALSE, recursive = TRUE)

@@ -5,7 +5,7 @@
 #         ('`model` must be a model fitted by `lm()`; received a "..."',
 #         with a refit hint), not an obscure internal one.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 not_a_model <- data.frame(y = c(1, 2, 3), x = c(4, 5, 6))
 

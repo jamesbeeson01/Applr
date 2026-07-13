@@ -1,7 +1,7 @@
 # gs_50 REFERENCE — projection band spanning the OBSERVED range of x_pos.
 # Ground truth for geom_slice(band = "x_pos") with no predict_vars: the band
 # runs between slices at min(x_pos) and max(x_pos) from the data.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -24,5 +24,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gs_50 REFERENCE — band spanning observed min/max of x_pos",
        subtitle = "Ground truth: slices at range(x_pos) + ribbon between (no geom_slice)")
 
-ggsave("testing/reference/gs_50_band_imputed_range.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_50_band_imputed_range.png")
+ggsave("tests/reference/gs_50_band_imputed_range.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_50_band_imputed_range.png")

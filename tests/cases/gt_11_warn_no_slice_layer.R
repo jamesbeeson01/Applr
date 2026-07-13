@@ -5,7 +5,7 @@
 #         (labels would describe lines that do not exist), with a hint to add
 #         geom_slice() before geom_slice_text().
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 30

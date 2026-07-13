@@ -6,7 +6,7 @@
 #         with its GROUPING variable instead: "g: A" and "g: B" at the right
 #         ends, each in its line's color — the labels replace the legend.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 80

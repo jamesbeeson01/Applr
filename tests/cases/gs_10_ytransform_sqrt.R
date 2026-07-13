@@ -8,7 +8,7 @@
 #         Console message: predictions of sqrt(y) back-transformed to the
 #         y axis.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

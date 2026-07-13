@@ -7,7 +7,7 @@
 #         curve should follow its own group's points and span only its own
 #         group's displ range.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(hwy ~ displ + I(displ^2) + displ:drv, data = mpg)
 

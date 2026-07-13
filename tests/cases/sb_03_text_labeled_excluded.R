@@ -9,7 +9,7 @@
 #         "held at: x3 = <mean>". No mention of x2 in the subtitle.
 #         Console message: x3 not specified, held at its mean (~-0.083).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 60

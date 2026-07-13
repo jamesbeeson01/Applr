@@ -1,6 +1,6 @@
 # gt_04 REFERENCE — six slices with bare-value labels ("0; 0", ...) at line
 # ends plus a corner key "labels: x2; x3" top-right, all skyblue.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 60
 x <- runif(n, -10, 10)
@@ -38,5 +38,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gt_04 REFERENCE — value labels + corner key 'labels: x2; x3'",
        subtitle = "Ground truth via predict() + geom_text (no Applr)")
 
-ggsave("testing/reference/gt_04_style_legend.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gt_04_style_legend.png")
+ggsave("tests/reference/gt_04_style_legend.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gt_04_style_legend.png")

@@ -6,7 +6,7 @@
 #         error saying the plotted data is not the data `model` was fitted to,
 #         with a refit hint.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

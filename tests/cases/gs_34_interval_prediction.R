@@ -5,7 +5,7 @@
 #         straight downward line with a WIDE prediction ribbon containing
 #         most of the points (see reference).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(mpg ~ disp + hp, data = mtcars)
 

@@ -7,7 +7,7 @@
 #         of auto-detection. The fitted line must be the same upward
 #         exponential curve as gs_09. A straight line = FAIL.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

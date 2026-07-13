@@ -7,7 +7,7 @@
 #         range (0 to ~10), extending well past their own group's points.
 #         No errors or warnings.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(57)
 
 n <- 40

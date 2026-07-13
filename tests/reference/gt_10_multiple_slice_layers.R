@@ -1,6 +1,6 @@
 # gt_10 REFERENCE — one model as two manually-colored slices (x2 = 0 blue,
 # x2 = 1 red), each labeled at its right end in its own line's color.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -32,5 +32,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gt_10 REFERENCE — blue 'x2: 0' and red 'x2: 1' labels",
        subtitle = "Ground truth via predict() + geom_text (no Applr)")
 
-ggsave("testing/reference/gt_10_multiple_slice_layers.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gt_10_multiple_slice_layers.png")
+ggsave("tests/reference/gt_10_multiple_slice_layers.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gt_10_multiple_slice_layers.png")

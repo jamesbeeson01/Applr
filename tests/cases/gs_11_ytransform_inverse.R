@@ -8,7 +8,7 @@
 #         A straight line on this plot means back-transformation failed.
 #         Console message: predictions of 1/y back-transformed to the y axis.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

@@ -8,7 +8,7 @@
 #         Tests that geom_slice can handle many held variables simultaneously.
 #         No errors.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(mpg ~ disp + hp + wt + drat, data = mtcars)
 

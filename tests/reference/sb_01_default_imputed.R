@@ -1,6 +1,6 @@
 # sb_01 REFERENCE — one slice with x2 held at its mean; subtitle line 1 is the
 # model equation, line 2 "held at: x2 = <mean>".
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -18,5 +18,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "sb_01 REFERENCE — equation line + held-values line",
        subtitle = paste0(ref_equation(model), "\n", ref_held_line(held)))
 
-ggsave("testing/reference/sb_01_default_imputed.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/sb_01_default_imputed.png")
+ggsave("tests/reference/sb_01_default_imputed.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/sb_01_default_imputed.png")

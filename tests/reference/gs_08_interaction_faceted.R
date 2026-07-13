@@ -1,6 +1,6 @@
 # gs_08 REFERENCE — interaction (y ~ x:x_switch), facet_wrap(~x_switch). One line
 # per panel: x_switch held at the panel value, x over that panel's data range.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -22,5 +22,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gs_08 REFERENCE — interaction, facet_wrap(~x_switch)",
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_08_interaction_faceted.png", plot = p, width = 10, height = 4)
-message("OK: testing/reference/gs_08_interaction_faceted.png")
+ggsave("tests/reference/gs_08_interaction_faceted.png", plot = p, width = 10, height = 4)
+message("OK: tests/reference/gs_08_interaction_faceted.png")

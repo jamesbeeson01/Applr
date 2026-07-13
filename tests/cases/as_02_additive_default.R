@@ -6,7 +6,7 @@
 #         A second console message reports x_axis defaulting to the first
 #         x variable (x). Line should sit near the center of the point cloud.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

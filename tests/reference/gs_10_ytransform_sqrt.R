@@ -1,6 +1,6 @@
 # gs_10 REFERENCE — sqrt(y) ~ x_pos, plotted on the original y scale. Predictions
 # are back-transformed by squaring, giving a parabola-shaped curve.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x_pos <- runif(n, 0, 10)
@@ -17,5 +17,5 @@ p <- ggplot(dat, aes(x_pos, y)) +
   labs(title = "gs_10 REFERENCE — sqrt(y) ~ x_pos, back-transformed by squaring",
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_10_ytransform_sqrt.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_10_ytransform_sqrt.png")
+ggsave("tests/reference/gs_10_ytransform_sqrt.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_10_ytransform_sqrt.png")

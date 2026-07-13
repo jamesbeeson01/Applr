@@ -5,7 +5,7 @@
 #         labels are BLACK, not skyblue — a manual color = "black" on
 #         geom_slice_text overrides the inherit-the-line-color default.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

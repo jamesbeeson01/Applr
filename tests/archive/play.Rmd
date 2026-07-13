@@ -2,7 +2,7 @@
 pacman::p_load(tidyverse)
 devtools::load_all()
 
-grades <- read_csv("testing/archive/Math425PastGrades.csv")
+grades <- read_csv("tests/archive/Math425PastGrades.csv")
 
 glimpse(grades)
 

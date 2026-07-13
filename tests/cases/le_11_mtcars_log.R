@@ -4,7 +4,7 @@
 # EXPECT: Real-data equation with a negative slope rendered via "- " (not
 #         "+ -"): "log(mpg) = 3.45 - 0.00212*disp".
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(log(mpg) ~ disp, mtcars)
 

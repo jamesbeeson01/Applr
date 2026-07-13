@@ -6,7 +6,7 @@
 #         predictions are made at the data points and placed at x*x_pos.
 #         Silent: every predictor is on the x-axis, nothing is held.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

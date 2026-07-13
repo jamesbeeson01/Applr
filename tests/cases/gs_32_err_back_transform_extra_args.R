@@ -4,7 +4,7 @@
 # EXPECT: A back_transform function of 2+ arguments should produce a clear
 #         error or warning — not silently misbehave.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

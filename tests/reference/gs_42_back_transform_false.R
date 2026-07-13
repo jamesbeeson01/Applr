@@ -1,7 +1,7 @@
 # gs_42 REFERENCE — 1/y ~ x with back_transform = FALSE, plotted against the
 # precomputed transformed response y_trans = 1/y. Raw predictions match the
 # axis: a straight line of slope ~1.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, 1, 10)
@@ -17,5 +17,5 @@ p <- ggplot(dat, aes(x, y_trans)) +
   labs(title = "gs_42 REFERENCE — 1/y ~ x, back_transform = FALSE",
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_42_back_transform_false.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_42_back_transform_false.png")
+ggsave("tests/reference/gs_42_back_transform_false.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_42_back_transform_false.png")

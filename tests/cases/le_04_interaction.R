@@ -3,7 +3,7 @@
 # FUNC: lm_equation
 # EXPECT: "y = <intercept> + 1*x:x_switch" — the interaction term shown as-is.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

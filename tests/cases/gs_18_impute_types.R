@@ -14,7 +14,7 @@
 #   impute item in for_devs/dev_todo.Rmd) and therefore cannot be tested yet — when
 #   that feature lands, add gs_ cases exercising each new impute method.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 120

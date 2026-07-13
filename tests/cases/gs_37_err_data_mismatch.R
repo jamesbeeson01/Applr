@@ -5,7 +5,7 @@
 #         data `model` was fitted to (raised when the layer is added to the
 #         plot, before anything is drawn).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

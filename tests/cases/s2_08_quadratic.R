@@ -5,7 +5,7 @@
 #         parabola through the points (not a straight line).
 #         Console message: x_axis not specified, first x variable (x) used.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

@@ -6,7 +6,7 @@
 #         ONE straight line of slope 3 and intercept 2, passing exactly
 #         through every point. No errors.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

@@ -1,6 +1,6 @@
 # sb_04 REFERENCE — same slice as sb_01, subtitle is the held-values line only
 # (model = FALSE drops the equation line).
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -18,5 +18,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "sb_04 REFERENCE — model = FALSE, values line only",
        subtitle = ref_held_line(held))
 
-ggsave("testing/reference/sb_04_model_off.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/sb_04_model_off.png")
+ggsave("tests/reference/sb_04_model_off.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/sb_04_model_off.png")

@@ -2,7 +2,7 @@
 # parallel slices (x2 = 0, 4), labeled "x2: 0" / "x2: 4" at their right ends
 # with the same small visual gap as gt_01 (the nudge scales with the axis
 # range, emulating a constant point offset).
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, 0, 50000)
@@ -34,5 +34,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gt_13 REFERENCE — same pt gap on a 0..50000 x-axis",
        subtitle = "Ground truth via predict() + geom_text (no Applr)")
 
-ggsave("testing/reference/gt_13_offset_scaled_axis.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gt_13_offset_scaled_axis.png")
+ggsave("tests/reference/gt_13_offset_scaled_axis.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gt_13_offset_scaled_axis.png")

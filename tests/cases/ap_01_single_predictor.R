@@ -6,7 +6,7 @@
 #         through the point cloud, theme_lc styling.
 #         No errors, warnings, or imputation messages.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(mpg ~ disp, data = mtcars)
 

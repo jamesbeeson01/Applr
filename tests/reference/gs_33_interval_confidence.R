@@ -1,6 +1,6 @@
 # gs_33 REFERENCE — slice at hp = 110 with its CONFIDENCE ribbon.
 # Ground truth for geom_slice(interval = "confidence").
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 
 model <- lm(mpg ~ disp + hp, data = mtcars)
 xr <- range(mtcars$disp)
@@ -15,5 +15,5 @@ p <- ggplot(mtcars, aes(disp, mpg)) +
   labs(title = "gs_33 REFERENCE — slice at hp = 110 with NARROW confidence ribbon",
        subtitle = "Ground truth via predict(interval = \"confidence\") (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_33_interval_confidence.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_33_interval_confidence.png")
+ggsave("tests/reference/gs_33_interval_confidence.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_33_interval_confidence.png")

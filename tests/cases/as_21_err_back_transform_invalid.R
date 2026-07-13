@@ -5,7 +5,7 @@
 #         known transformation name. A number errors up front with a clear
 #         message — consistent with geom_slice.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

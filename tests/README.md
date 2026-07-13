@@ -10,20 +10,20 @@ drift apart:
 
 | Entry point | Audience | What it does |
 |---|---|---|
-| `Rscript testing/run.R` | AI / terminal | Runs cases, saves PNGs / captures console output, prints OK/FAIL |
-| `Rscript -e "rmarkdown::render('testing/report.Rmd')"` | Human | Invokes `run.R` once (fresh Rscript session), then lays out that run's artifacts — status, source, output PNG, captured console output, reference image — as a tabbed HTML report |
+| `Rscript tests/run.R` | AI / terminal | Runs cases, saves PNGs / captures console output, prints OK/FAIL |
+| `Rscript -e "rmarkdown::render('tests/report.Rmd')"` | Human | Invokes `run.R` once (fresh Rscript session), then lays out that run's artifacts — status, source, output PNG, captured console output, reference image — as a tabbed HTML report |
 
 The report never executes case code in the knitting session and never loads
 the package (it sources only `_helpers.R`), so it cannot show anything other
 than what `run.R` produced, regardless of what is loaded in the session that
 knits it.
 
-Run everything **from the package root**, not from `testing/`.
+Run everything **from the package root**, not from `tests/`.
 
 ## Directory layout
 
 ```
-testing/
+tests/
 ├── README.md      <- this file
 ├── _setup.R       <- shared setup: loads the package, defines try_show().
 │                     Sourced as the first line of every case.
@@ -31,6 +31,8 @@ testing/
 │                     _setup.R and report.Rmd
 ├── run.R          <- terminal runner, the ONLY executor of cases (see usage below)
 ├── report.Rmd     <- human report; runs run.R once and displays its artifacts
+├── testthat.R     <- standard R-package test entry point (see "The testthat shim")
+├── testthat/      <- test-suite.R: thin shim that runs run.R via testthat
 ├── cases/         <- THE test suite (single source of truth)
 ├── reference/     <- ground-truth images for gs_ cases + the scripts that build them
 ├── expected/      <- expected console output (.txt) for console cases and for
@@ -43,10 +45,10 @@ testing/
 ## Running tests
 
 ```sh
-Rscript testing/run.R                  # run every case
-Rscript testing/run.R gs_01            # run one case (prefix is enough)
-Rscript testing/run.R gs err           # run all gs_* and err_* cases
-Rscript testing/run.R --update gs_02   # accept current console output as the new snapshot
+Rscript tests/run.R                  # run every case
+Rscript tests/run.R gs_01            # run one case (prefix is enough)
+Rscript tests/run.R gs err           # run all gs_* and err_* cases
+Rscript tests/run.R --update gs_02   # accept current console output as the new snapshot
 ```
 
 - **Visual cases** save `output/<id>.png`. The runner only checks that the
@@ -68,6 +70,23 @@ Rscript testing/run.R --update gs_02   # accept current console output as the ne
   documents a real, currently-unfixed bug. It FAILs on purpose — the runner's
   FAIL list doubles as the open-bug list — and turns OK once the bug is fixed.
 
+## The testthat shim (`testthat.R` + `testthat/test-suite.R`)
+
+`tests/` is also the standard R-package test directory, and the two testthat
+files here exist purely so the standard tooling finds something to run:
+`devtools::test()` and `R CMD check` execute `testthat/test-suite.R`, which
+shells out to `Rscript tests/run.R` and converts its per-case results into
+testthat expectations. It contains **no test logic of its own** — `run.R` and
+`cases/` remain the single source of truth, and the shim can never drift from
+them.
+
+Everything in `tests/` *except* the two testthat files is `.Rbuildignore`'d,
+so the built tarball ships only the shim; on the tarball (`R CMD check`) the
+shim detects that `run.R` is absent and skips. It runs for real only from a
+source checkout (locally and in the CI `case-suite` job). An OK from the shim
+means every case ran and matched its console snapshot — the visual comparison
+against `reference/` images is still a human step via `report.Rmd`.
+
 ## Case file anatomy
 
 **One case = one plot (or one console scenario) = one purpose.** Don't bundle
@@ -83,7 +102,7 @@ several layers, like three slices on one scatter, is still one case.)
 # EXPECT: One straight line, slope ~1.      <- what a CORRECT result looks like;
 #         Continuation lines are indented.     shown in the report and on failure
 
-source("testing/_setup.R")   # always the first code line
+source("tests/_setup.R")   # always the first code line
 set.seed(123)                # each case owns its data + seed (see note below)
 
 # ... build data and model ...
@@ -149,7 +168,7 @@ Ground truth for the `gs_` cases, built **without** Applr (plain ggplot2 +
 `geom_slice` should reproduce. Regenerate with:
 
 ```sh
-Rscript testing/reference/build_all.R
+Rscript tests/reference/build_all.R
 ```
 
 Only needed when a case's data, model, or styling changes.

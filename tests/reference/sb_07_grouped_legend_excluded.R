@@ -1,7 +1,7 @@
 # sb_07 REFERENCE — one slice per color group (g pinned per group, spanning
 # each group's own x-range), x2 held at its mean; the legend labels g, so the
 # subtitle reports only x2 (model = FALSE in the case, so no equation line).
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 80
 x <- runif(n, -10, 10)
@@ -24,5 +24,5 @@ p <- ggplot(dat, aes(x, y, color = g)) +
   labs(title = "sb_07 REFERENCE — legend labels g, only x2 in subtitle",
        subtitle = ref_held_line(list(x2 = m2)))
 
-ggsave("testing/reference/sb_07_grouped_legend_excluded.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/sb_07_grouped_legend_excluded.png")
+ggsave("tests/reference/sb_07_grouped_legend_excluded.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/sb_07_grouped_legend_excluded.png")

@@ -6,7 +6,7 @@
 #         hp is invisible, so geom_slice imputes it at its mean (~147, console
 #         message). Same slice as gs_12's reference.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(mpg ~ disp + hp, data = mtcars)
 

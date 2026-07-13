@@ -8,7 +8,7 @@
 #         (hjust = 1: right-aligned to the line end; vjust = -0.8: lifted
 #         off the line).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

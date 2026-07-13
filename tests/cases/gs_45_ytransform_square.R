@@ -7,7 +7,7 @@
 #         small x_pos, flattening to the right). Straight line = FAIL.
 #         Console message: predictions of y^2 back-transformed to the y axis.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

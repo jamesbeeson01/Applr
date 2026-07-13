@@ -7,7 +7,7 @@
 #         line 2 "held at: x2 = 1". User-specified predict_vars and imputed
 #         values are treated the same — both are unlabeled held values.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

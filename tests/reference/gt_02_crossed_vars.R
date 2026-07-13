@@ -1,6 +1,6 @@
 # gt_02 REFERENCE — six parallel slices (x2 in {0,2,4} x x3 in {0,1}), each
 # labeled "x2: v; x3: v" at its right end, skyblue.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 60
 x <- runif(n, -10, 10)
@@ -34,5 +34,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gt_02 REFERENCE — six lines labeled 'x2: v; x3: v'",
        subtitle = "Ground truth via predict() + geom_text (no Applr)")
 
-ggsave("testing/reference/gt_02_crossed_vars.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gt_02_crossed_vars.png")
+ggsave("tests/reference/gt_02_crossed_vars.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gt_02_crossed_vars.png")

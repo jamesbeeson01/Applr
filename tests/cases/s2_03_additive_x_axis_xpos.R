@@ -4,7 +4,7 @@
 # EXPECT: Scatter of x_pos vs y (y ~ x + x_pos) with a slice line, x held at 0
 #         (shown in the caption). Silent: both x_axis and x are specified.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

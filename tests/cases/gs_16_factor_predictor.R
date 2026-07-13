@@ -8,7 +8,7 @@
 #         Tests that geom_slice handles factor predictors without crashing.
 #         No errors. (If it crashes, factor handling in predict() is the likely culprit.)
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 mtcars2 <- mtcars
 mtcars2$cyl <- factor(mtcars2$cyl)

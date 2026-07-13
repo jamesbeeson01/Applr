@@ -10,7 +10,7 @@
 #         facet. This mirrors the house-price example plot (bands per color
 #         group across facets).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(hwy ~ displ * drv + cyl, data = mpg)
 

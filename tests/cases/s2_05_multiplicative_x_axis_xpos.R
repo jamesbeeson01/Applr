@@ -5,7 +5,7 @@
 #         with a slice line (x held at some value shown in the caption).
 #         Console message: x not specified, held at its mean (~0.4).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

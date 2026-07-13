@@ -1,6 +1,6 @@
 # gt_09 REFERENCE — no predict_vars: labels come from the grouping aesthetic
 # ("g: A", "g: B") in each group's color; the color legend is suppressed.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 80
 x <- runif(n, -10, 10)
@@ -32,5 +32,5 @@ p <- ggplot(dat, aes(x, y, color = g)) +
   labs(title = "gt_09 REFERENCE — 'g: A' / 'g: B' labels replace the legend",
        subtitle = "Ground truth via predict() + geom_text (no Applr)")
 
-ggsave("testing/reference/gt_09_legend_replacement.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gt_09_legend_replacement.png")
+ggsave("tests/reference/gt_09_legend_replacement.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gt_09_legend_replacement.png")

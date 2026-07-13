@@ -62,7 +62,7 @@ wrap plotly/interactive ones in `if (interactive())`.
 ## Phase 3 — Packaging mechanics (main session, mostly done 2026-07-12)
 
 - [x] Fix `.Rbuildignore` (was excluding `ALR.Rproj` — stale name — and
-      missing `testing/`, `for_devs/`, `scripts/`, `CLAUDE.md`, etc.)
+      missing `tests/`, `for_devs/`, `scripts/`, `CLAUDE.md`, etc.)
 - [x] Delete stray `Rplots.pdf`; gitignore it.
 - [x] Add `URL:`/`BugReports:` to DESCRIPTION.
 - [x] Narrow blanket `@import` tags to `@importFrom` (2026-07-12): central
@@ -75,14 +75,14 @@ wrap plotly/interactive ones in `if (interactive())`.
       `geom_fit`/`drawit` Rd pages exist as internal-keyword stubs;
       `get_inverse_function` has no Rd (`@noRd`), as intended.
 - [x] Thin testthat shim (2026-07-12): `tests/testthat/test-suite.R` re-runs
-      `Rscript testing/run.R` and turns `_results.csv` into expectations —
+      `Rscript tests/run.R` and turns `_results.csv` into expectations —
       `devtools::test()`/CI cover the real suite without duplicating logic;
-      skips inside R CMD check on the tarball (testing/ is buildignored).
+      skips inside R CMD check on the tarball (tests/ is buildignored).
 - [x] pkgdown + CI (2026-07-12, pulled forward from post-1.0): `_pkgdown.yml`
       with grouped reference index (validated clean); GitHub Actions
       `pkgdown.yaml` (deploys to gh-pages — enable Pages on the repo) and
       `R-CMD-check.yaml` (mac/win/ubuntu-release/ubuntu-devel + a
-      testing-suite job on the source tree). Site URL added to DESCRIPTION.
+      case-suite job on the source tree). Site URL added to DESCRIPTION.
 
 ## Phase 4 — Verification & release
 
@@ -90,7 +90,7 @@ wrap plotly/interactive ones in `if (interactive())`.
       (first run had one NOTE — missing `stats::get_all_vars` import — fixed).
       Vignette builds and examples all run inside check.
 - [x] Full test suite green: every case OK via the testthat shim 2026-07-12.
-      Visual pass via `testing/report.Rmd` remains a human step.
+      Visual pass via `tests/report.Rmd` remains a human step.
 - [x] Spell check clean 2026-07-12 (`Language: en-US` added to DESCRIPTION,
       jargon whitelisted in `inst/WORDLIST`, "labelling" → "labeling").
 - [ ] Bump Version to `1.0.0` in DESCRIPTION (deliberately left at 0.0.0.9000

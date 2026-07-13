@@ -8,7 +8,7 @@
 #         Console message: hp not specified, held at its mean (146.7).
 #         No errors.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(mpg ~ disp + hp, data = mtcars)
 

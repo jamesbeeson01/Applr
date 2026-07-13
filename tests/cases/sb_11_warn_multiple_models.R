@@ -6,7 +6,7 @@
 #         added. The warning names the models and hints to use one model per
 #         plot. Mirrors gt_12_warn_multiple_models.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 40

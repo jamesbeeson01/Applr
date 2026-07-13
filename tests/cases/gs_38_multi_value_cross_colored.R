@@ -5,7 +5,7 @@
 #         offset by 3*x2 + 3*x3. Lines are distinguished by color (x2) 
 #         and linetype (x3).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 60

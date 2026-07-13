@@ -1,6 +1,6 @@
 # sb_03 REFERENCE — two slices (x2 = 0, 4) labeled at their right ends like
 # gt_01, x3 held at its mean; subtitle reports ONLY x3 (x2 already labeled).
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 60
 x <- runif(n, -10, 10)
@@ -31,5 +31,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "sb_03 REFERENCE — x2 labeled on-plot, only x3 in subtitle",
        subtitle = paste0(ref_equation(model), "\n", ref_held_line(list(x3 = m3))))
 
-ggsave("testing/reference/sb_03_text_labeled_excluded.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/sb_03_text_labeled_excluded.png")
+ggsave("tests/reference/sb_03_text_labeled_excluded.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/sb_03_text_labeled_excluded.png")

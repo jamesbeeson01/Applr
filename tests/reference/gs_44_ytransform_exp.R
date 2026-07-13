@@ -1,6 +1,6 @@
 # gs_44 REFERENCE — exp(y) ~ x_pos, plotted on the original y scale.
 # Predictions are back-transformed with log(): a logarithmic curve.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x_pos <- runif(n, 0.5, 10)
@@ -16,5 +16,5 @@ p <- ggplot(dat, aes(x_pos, y)) +
   labs(title = "gs_44 REFERENCE — exp(y) ~ x_pos, back-transformed with log()",
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_44_ytransform_exp.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_44_ytransform_exp.png")
+ggsave("tests/reference/gs_44_ytransform_exp.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_44_ytransform_exp.png")

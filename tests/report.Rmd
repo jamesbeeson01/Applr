@@ -10,21 +10,21 @@ output:
 ---
 
 This report does **not** execute any case itself. It invokes
-`Rscript testing/run.R` once — the exact command the terminal / a coding
+`Rscript tests/run.R` once — the exact command the terminal / a coding
 agent runs — and then displays the artifacts of that run: the PNGs and
-captured console output in `testing/output/`, plus each case's status
+captured console output in `tests/output/`, plus each case's status
 straight from the runner. What you see here is, by construction, what
 `run.R` produced. Knit from the package root with:
 
 ```
-Rscript -e "rmarkdown::render('testing/report.Rmd')"
+Rscript -e "rmarkdown::render('tests/report.Rmd')"
 ```
 
 To keep a progress snapshot, rename the resulting `report.html` (e.g.
-`report 2026-07-06.html`) and move it into `testing/archive/`.
+`report 2026-07-06.html`) and move it into `tests/archive/`.
 
 ```{r setup, include=FALSE}
-# rmarkdown knits with the working directory set to testing/; the runner and
+# rmarkdown knits with the working directory set to tests/; the runner and
 # all artifact paths are relative to the package root, so point knitr there.
 if (!file.exists("DESCRIPTION") && file.exists("../DESCRIPTION")) {
   knitr::opts_knit$set(root.dir = normalizePath(".."))
@@ -35,7 +35,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r load, include=FALSE}
 # package-free helpers only — the report never loads Applr, so a stale
 # package in the knitting session can never leak into the results
-source("testing/_helpers.R")
+source("tests/_helpers.R")
 ```
 
 # Snapshot
@@ -44,9 +44,9 @@ source("testing/_helpers.R")
 # THE single execution of the suite: same entry point, same fresh Rscript
 # session, same checks as running it from the terminal.
 runner_log <- suppressWarnings(
-  system2("Rscript", "testing/run.R", stdout = TRUE, stderr = TRUE)
+  system2("Rscript", "tests/run.R", stdout = TRUE, stderr = TRUE)
 )
-status <- read.csv("testing/output/_results.csv", stringsAsFactors = FALSE)
+status <- read.csv("tests/output/_results.csv", stringsAsFactors = FALSE)
 n_ok <- sum(status$status == "OK")
 ```
 
@@ -76,7 +76,7 @@ is still judged by eye against the reference images below.
 ## Show
 
 ```{r overview}
-case_files <- sort(list.files("testing/cases", pattern = "\\.R$", full.names = TRUE))
+case_files <- sort(list.files("tests/cases", pattern = "\\.R$", full.names = TRUE))
 meta <- lapply(case_files, parse_case_header)
 overview <- data.frame(
   Case     = vapply(meta, `[[`, "", "id"),
@@ -95,7 +95,7 @@ knitr::kable(overview, row.names = FALSE)
 
 ```{r generate-cases, results='asis'}
 # Each case section is assembled from this run's artifacts. Image src paths
-# are resolved by pandoc relative to this Rmd (testing/); widths in px match
+# are resolved by pandoc relative to this Rmd (tests/); widths in px match
 # 72 px per inch of the case's SIZE so output and reference compare at the
 # same scale.
 case_block <- function(m) {
@@ -115,11 +115,11 @@ case_block <- function(m) {
   }
 
   # the case source, folded, never evaluated here
-  out <- c(out, sprintf('```{r %s, eval=FALSE, code=xfun::read_utf8("testing/cases/%s.R")}\n```\n',
+  out <- c(out, sprintf('```{r %s, eval=FALSE, code=xfun::read_utf8("tests/cases/%s.R")}\n```\n',
                         m$id, m$id))
 
-  pngs <- list.files("testing/output", sprintf("^%s(-\\d+)?\\.png$", m$id))
-  txt  <- file.path("testing/output", paste0(m$id, ".txt"))
+  pngs <- list.files("tests/output", sprintf("^%s(-\\d+)?\\.png$", m$id))
+  txt  <- file.path("tests/output", paste0(m$id, ".txt"))
 
   if (m$type != "console") {
     if (length(pngs) > 0) {
@@ -141,7 +141,7 @@ case_block <- function(m) {
     }
   }
 
-  if (m$type != "console" && file.exists(file.path("testing/reference", paste0(m$id, ".png")))) {
+  if (m$type != "console" && file.exists(file.path("tests/reference", paste0(m$id, ".png")))) {
     out <- c(out, "**Reference (ground truth):**\n",
              sprintf('<img src="reference/%s.png" width="%d">\n', m$id, px))
   }

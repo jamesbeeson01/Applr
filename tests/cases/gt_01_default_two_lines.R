@@ -9,7 +9,7 @@
 #         vertically centered, and the geom widens the x-range itself so the
 #         labels fit — no manual scale expansion in this case.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

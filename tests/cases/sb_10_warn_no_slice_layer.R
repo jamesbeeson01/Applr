@@ -6,7 +6,7 @@
 #         geom_slice() before geom_slice_subtitle(). Mirrors
 #         gt_11_warn_no_slice_layer.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 30

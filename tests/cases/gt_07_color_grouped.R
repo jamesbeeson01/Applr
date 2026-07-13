@@ -7,7 +7,7 @@
 #         label INHERITS ITS LINE'S COLOR — the two labels on g = "A" lines
 #         match A's color, the two on g = "B" lines match B's color.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 80

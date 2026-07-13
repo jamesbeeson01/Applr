@@ -1,5 +1,5 @@
 # gt_08 REFERENCE — skyblue lines, BLACK labels (manual color override).
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -30,5 +30,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gt_08 REFERENCE — black labels on skyblue lines",
        subtitle = "Ground truth via predict() + geom_text (no Applr)")
 
-ggsave("testing/reference/gt_08_manual_color.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gt_08_manual_color.png")
+ggsave("tests/reference/gt_08_manual_color.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gt_08_manual_color.png")

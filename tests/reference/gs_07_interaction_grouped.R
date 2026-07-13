@@ -1,6 +1,6 @@
 # gs_07 REFERENCE — interaction (y ~ x:x_switch), auto-grouped by color. Each line
 # spans only its group's x range (the decisions.Rmd group-range rule).
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -22,5 +22,5 @@ p <- ggplot(data.frame(x, y, x_switch = factor(x_switch)),
   labs(title = "gs_07 REFERENCE — interaction, grouped by color (per-group x range)",
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_07_interaction_grouped.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_07_interaction_grouped.png")
+ggsave("tests/reference/gs_07_interaction_grouped.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_07_interaction_grouped.png")

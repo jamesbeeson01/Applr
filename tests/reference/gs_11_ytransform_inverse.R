@@ -1,6 +1,6 @@
 # gs_11 REFERENCE — 1/y ~ x, plotted on the original y scale. Predictions are
 # back-transformed with 1/(.), giving a decreasing hyperbolic curve.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, 1, 10)
@@ -16,5 +16,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gs_11 REFERENCE — 1/y ~ x, back-transformed with 1/(.)",
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_11_ytransform_inverse.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_11_ytransform_inverse.png")
+ggsave("tests/reference/gs_11_ytransform_inverse.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_11_ytransform_inverse.png")

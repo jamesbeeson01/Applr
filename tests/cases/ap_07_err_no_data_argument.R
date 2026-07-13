@@ -7,7 +7,7 @@
 #         luck (here they are gone by plot time), so autoplot refuses up
 #         front instead of building a broken plot.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 # local() so the vectors are gone by plot time, as they would be for a model

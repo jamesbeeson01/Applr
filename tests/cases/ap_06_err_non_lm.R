@@ -6,7 +6,7 @@
 #         ggplot2's autoplot.default error — acceptable, but it carries no
 #         Applr-flavored hint to fit an lm() first.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 not_a_model <- data.frame(y = c(1, 2, 3), x = c(4, 5, 6))
 

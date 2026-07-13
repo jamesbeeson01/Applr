@@ -7,7 +7,7 @@
 #         as a rising curve that flattens to the right (log-looking), NOT a
 #         straight line. No errors.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

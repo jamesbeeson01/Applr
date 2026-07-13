@@ -5,7 +5,7 @@
 #         points) with a slice line of slope ~1 through the points.
 #         Console message: x_axis not specified, first x variable (x) used.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

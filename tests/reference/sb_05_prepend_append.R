@@ -1,6 +1,6 @@
 # sb_05 REFERENCE — default two-line subtitle wrapped in prepend/append text:
 # "Model: <equation>\nheld at: x2 = <mean> (mean-imputed)".
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -20,5 +20,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "sb_05 REFERENCE — prepend/append around the default subtitle",
        subtitle = subtitle)
 
-ggsave("testing/reference/sb_05_prepend_append.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/sb_05_prepend_append.png")
+ggsave("tests/reference/sb_05_prepend_append.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/sb_05_prepend_append.png")

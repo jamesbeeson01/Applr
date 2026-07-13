@@ -8,7 +8,7 @@
 #         quoted: "held at: x2 = 0, 4; g = \"A\"" (after the equation line).
 #         Console message: g not specified, most common level "A" used.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 60

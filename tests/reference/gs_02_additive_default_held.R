@@ -1,5 +1,5 @@
 # gs_02 REFERENCE — additive model, x_pos held at its mean (the geom_slice default).
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -16,5 +16,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gs_02 REFERENCE — additive model, x_pos = mean(x_pos)",
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_02_additive_default_held.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_02_additive_default_held.png")
+ggsave("tests/reference/gs_02_additive_default_held.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_02_additive_default_held.png")

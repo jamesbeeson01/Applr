@@ -6,7 +6,7 @@
 #         LEFT end of each line (right-aligned toward the line), not the
 #         right; the x-range expansion moves to the left side accordingly.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

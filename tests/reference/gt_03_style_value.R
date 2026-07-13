@@ -1,5 +1,5 @@
 # gt_03 REFERENCE — same slices as gt_01, but bare-value labels ("0", "4").
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -30,5 +30,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gt_03 REFERENCE — bare-value labels '0' and '4'",
        subtitle = "Ground truth via predict() + geom_text (no Applr)")
 
-ggsave("testing/reference/gt_03_style_value.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gt_03_style_value.png")
+ggsave("tests/reference/gt_03_style_value.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gt_03_style_value.png")

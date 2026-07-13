@@ -4,7 +4,7 @@
 # EXPECT: back_transform must be a boolean or one-argument function. A list
 #         should produce a clear warning or error saying so.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

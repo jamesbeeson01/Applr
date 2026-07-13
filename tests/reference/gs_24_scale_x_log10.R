@@ -1,7 +1,7 @@
 # gs_24 REFERENCE — y ~ x displayed with scale_x_log10(). Predictions are made
 # in raw data space; the scale transforms the line and the points identically,
 # so the line passes exactly through the points (curving upward on the log axis).
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, 1, 100)
@@ -18,5 +18,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gs_24 REFERENCE — y ~ x with scale_x_log10()",
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_24_scale_x_log10.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_24_scale_x_log10.png")
+ggsave("tests/reference/gs_24_scale_x_log10.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_24_scale_x_log10.png")

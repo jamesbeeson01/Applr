@@ -6,7 +6,7 @@
 #         Console messages: x_axis defaulting to the first x variable (x),
 #         and x_switch held at its mean (~0.9).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

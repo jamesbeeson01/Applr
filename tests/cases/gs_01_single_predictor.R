@@ -5,7 +5,7 @@
 #         Line should be nearly perfect (y = x, so slope ~1, intercept ~0).
 #         No errors or warnings about missing variables.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

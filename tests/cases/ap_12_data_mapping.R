@@ -11,7 +11,7 @@
 #         into one continuous model line (cyl_f is not in the model).
 #         An imputation message for the now-invisible disp is expected.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(mpg ~ disp + hp, data = mtcars)
 

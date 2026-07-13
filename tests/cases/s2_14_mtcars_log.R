@@ -5,7 +5,7 @@
 #         downward-curving back-transformed slice line.
 #         Console message: x_axis not specified, first x variable (disp) used.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(log(mpg) ~ disp, mtcars)
 

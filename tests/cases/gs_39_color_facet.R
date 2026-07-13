@@ -5,7 +5,7 @@
 #         6 lines, 3 per facet. Facets (x3) have values 1, 2. 
 #         color (x2) has values 0, 2, 4. No console output.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 60

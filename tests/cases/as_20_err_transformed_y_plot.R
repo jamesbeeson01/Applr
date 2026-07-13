@@ -6,7 +6,7 @@
 #         points. Ideally a warning; currently silent (review the plot in
 #         the report).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

@@ -8,7 +8,7 @@
 #         predictor (or a band = "variable" choice). The slice line still
 #         draws — no further errors.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

@@ -1,6 +1,6 @@
 # sb_12 REFERENCE — projection band on x2 (1 to 4); subtitle is the equation
 # plus the band reported with range wording: "projection: x2 spanning 1-4".
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -22,5 +22,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "sb_12 REFERENCE — banded variable reported as 'spanning'",
        subtitle = paste0(ref_equation(model), "\nprojection: x2 spanning 1-4"))
 
-ggsave("testing/reference/sb_12_band_spanning.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/sb_12_band_spanning.png")
+ggsave("tests/reference/sb_12_band_spanning.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/sb_12_band_spanning.png")

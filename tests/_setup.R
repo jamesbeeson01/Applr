@@ -3,7 +3,7 @@
 # This file only loads the package and defines helpers. It deliberately does
 # NOT generate data: each case creates its own data (with its own seed) so
 # that adding, editing, or deleting one case can never affect another, and so
-# the reference images in testing/reference/ stay valid.
+# the reference images in tests/reference/ stay valid.
 #
 # Paths are relative to the package root — run everything from there.
 
@@ -40,4 +40,4 @@ try_show <- function(expr) {
 
 # parse_case_header() and other package-free helpers live in _helpers.R so
 # report.Rmd can use them without loading the package.
-source("testing/_helpers.R")
+source("tests/_helpers.R")

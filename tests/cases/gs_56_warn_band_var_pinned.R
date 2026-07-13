@@ -7,7 +7,7 @@
 #         should name predictors a band could actually use (here cyl) and
 #         offer band = TRUE. The slice lines still draw — no further errors.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(hwy ~ displ * drv + cyl, data = mpg)
 

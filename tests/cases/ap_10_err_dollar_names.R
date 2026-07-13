@@ -6,7 +6,7 @@
 #         argument"). autoplot's own all.vars()/eval() handling of a
 #         $-style model must not crash with a less helpful error first.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(mtcars$mpg ~ mtcars$disp)
 

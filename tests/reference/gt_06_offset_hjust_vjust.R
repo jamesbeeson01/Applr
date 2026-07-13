@@ -1,6 +1,6 @@
 # gt_06 REFERENCE — manual hjust = 1, vjust = -0.8: labels tucked above and
 # inside the right line ends.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -26,5 +26,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gt_06 REFERENCE — hjust = 1, vjust = -0.8",
        subtitle = "Ground truth via predict() + geom_text (no Applr)")
 
-ggsave("testing/reference/gt_06_offset_hjust_vjust.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gt_06_offset_hjust_vjust.png")
+ggsave("tests/reference/gt_06_offset_hjust_vjust.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gt_06_offset_hjust_vjust.png")

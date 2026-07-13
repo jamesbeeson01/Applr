@@ -5,7 +5,7 @@
 #         '`x_axis` variable "nonexistent_var" not found in the model.'
 #         with a hint listing the model's predictors.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

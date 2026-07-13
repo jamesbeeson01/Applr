@@ -5,7 +5,7 @@
 #         x_axis = "x". Review how the slice line handles the product term.
 #         Console message: x_pos not specified, held at its mean (~4.8).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

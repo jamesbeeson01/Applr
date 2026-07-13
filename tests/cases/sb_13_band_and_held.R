@@ -7,7 +7,7 @@
 #         line 3 "projection: x2 spanning 1-4". Pinned values keep the
 #         "held at:" wording; only the banded variable uses "spanning".
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

@@ -7,7 +7,7 @@
 #         the models (or say how many were found) and hint to label one model
 #         per plot.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 40

@@ -10,7 +10,7 @@
 #         Lines should NOT be identical across panels (cyl matters).
 #         No errors.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(mpg ~ disp + hp + cyl, data = mtcars)
 

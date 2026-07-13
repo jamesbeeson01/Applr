@@ -6,7 +6,7 @@
 #         slice must be ONE straight line of slope 1 through the origin,
 #         passing exactly through every point. No errors.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

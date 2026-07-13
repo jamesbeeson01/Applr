@@ -6,7 +6,7 @@
 #         logarithmic curve: steep drop at small disp, flattening at large
 #         disp. No errors; no imputation messages.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(mpg ~ log(disp), data = mtcars)
 

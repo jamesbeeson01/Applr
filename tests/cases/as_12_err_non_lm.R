@@ -5,7 +5,7 @@
 #         ('`model` must be a model fitted by `lm()`; received a "..."',
 #         with a refit hint).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

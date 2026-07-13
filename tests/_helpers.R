@@ -2,11 +2,11 @@
 #
 # Deliberately does NOT load Applr: report.Rmd sources only this file, so
 # knitting the report never depends on (possibly stale) package code in the
-# knitting session — all case execution happens inside `Rscript testing/run.R`.
+# knitting session — all case execution happens inside `Rscript tests/run.R`.
 # Paths are relative to the package root.
 
 # parse_case_header(file) — read the structured comment header of a case file.
-# Recognized keys (see testing/README.md):
+# Recognized keys (see tests/README.md):
 #   # CASE: <id>        # TYPE: visual | console     # FUNC: <function under test>
 #   # SIZE: <w>x<h>     # EXPECT: <what a correct result looks like>
 # EXPECT may continue over following comment lines until the next key or blank.

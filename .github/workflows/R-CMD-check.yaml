@@ -1,6 +1,7 @@
 # Standard R CMD check across platforms, plus a job that runs the custom
-# testing/ suite from the source tree (the tarball check skips it because
-# testing/ is .Rbuildignore'd — see tests/testthat/test-suite.R).
+# tests/ suite from the source tree (the tarball check skips it because
+# the suite files in tests/ are .Rbuildignore'd — see
+# tests/testthat/test-suite.R).
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 on:
   push:
@@ -52,9 +53,9 @@ jobs:
           upload-snapshots: true
           build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
 
-  testing-suite:
+  case-suite:
     runs-on: ubuntu-latest
-    name: testing/ suite (source tree)
+    name: tests/ suite (source tree)
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}

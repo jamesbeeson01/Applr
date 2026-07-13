@@ -8,7 +8,7 @@
 #         decreasing-transform analog of gs_26 (which uses log).
 #         A hyperbolic curve means it wrongly back-transformed.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

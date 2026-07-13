@@ -1,7 +1,7 @@
 # cp_02 REFERENCE — band on x2 (1 to 4) with x3 pinned at 2; the CAPTION
 # (bottom-right) is the equation, the held line for x3, and the projection
 # line for x2.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -26,5 +26,5 @@ p <- ggplot(dat, aes(x, y)) +
                         "\n", ref_held_line(list(x3 = 2)),
                         "\nprojection: x2 spanning 1-4"))
 
-ggsave("testing/reference/cp_02_band_and_held.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/cp_02_band_and_held.png")
+ggsave("tests/reference/cp_02_band_and_held.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/cp_02_band_and_held.png")

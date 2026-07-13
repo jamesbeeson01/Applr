@@ -5,7 +5,7 @@
 #         deprecated in favor of `x_axis`. The plot is drawn as if
 #         `x_axis = "x_pos"` had been given (no "not specified" message).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

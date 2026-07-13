@@ -5,7 +5,7 @@
 #         offset by 3*x2 + 0.7*x3 (lowest: x2=1,x3=1; highest: x2=3,x3=4).
 #         geom_slice draws all six in its default color.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 60

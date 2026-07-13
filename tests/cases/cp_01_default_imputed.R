@@ -9,7 +9,7 @@
 #         "held at: x2 = <mean>" (4 sig figs). The subtitle stays empty and
 #         the user's own labs(title) is untouched.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

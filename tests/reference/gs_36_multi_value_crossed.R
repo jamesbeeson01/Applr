@@ -1,7 +1,7 @@
 # gs_36 REFERENCE — six parallel slices, one per (x2, x3) combination:
 # x2 in {1, 2, 3} crossed with x3 in {1, 4}.
 # Ground truth for crossed multi-value predict_vars (one line per combination).
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 60
 x <- runif(n, -10, 10)
@@ -26,5 +26,5 @@ p <- ggplot(dat, aes(x, y)) +
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)",
        color = "x2", linetype = "x3")
 
-ggsave("testing/reference/gs_36_multi_value_crossed.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_36_multi_value_crossed.png")
+ggsave("tests/reference/gs_36_multi_value_crossed.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_36_multi_value_crossed.png")

@@ -8,7 +8,7 @@
 #         style "held at: x2 = <mean>" (4 sig figs, matching the console
 #         message). The user's own labs(title) is untouched.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

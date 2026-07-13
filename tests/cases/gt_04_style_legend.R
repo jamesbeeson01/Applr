@@ -8,7 +8,7 @@
 #         skyblue because all lines share one color, and the geom adds
 #         y-headroom itself so the key clears the topmost line's label.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 60

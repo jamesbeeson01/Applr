@@ -1,6 +1,6 @@
 # sb_08 REFERENCE — single-predictor model, nothing held: the subtitle is the
 # equation line alone, with no "held at:" line.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 40
 x <- runif(n, -10, 10)
@@ -16,5 +16,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "sb_08 REFERENCE — nothing held, equation line only",
        subtitle = ref_equation(model))
 
-ggsave("testing/reference/sb_08_nothing_held.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/sb_08_nothing_held.png")
+ggsave("tests/reference/sb_08_nothing_held.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/sb_08_nothing_held.png")

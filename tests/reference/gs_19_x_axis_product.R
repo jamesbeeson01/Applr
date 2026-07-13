@@ -2,7 +2,7 @@
 # The model depends on the predictors only through the product, so the ground
 # truth is the prediction as a function of the product: a grid over the
 # product's range, realized as (x = t, x_pos = 1) so that x * x_pos == t.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -20,5 +20,5 @@ p <- ggplot(dat, aes(x * x_pos, y)) +
   labs(title = "gs_19 REFERENCE — y ~ I(x * x_pos), product on the x-axis",
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_19_xaxis_product.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_19_xaxis_product.png")
+ggsave("tests/reference/gs_19_xaxis_product.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_19_xaxis_product.png")

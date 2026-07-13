@@ -5,7 +5,7 @@
 #         mode) or fail with a clear message naming the variable and its
 #         class, with a hint about supported types.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

@@ -5,7 +5,7 @@
 #         clearer = TRUE, factor terms spell out variable and level —
 #         (g="B"), (g="C"), and interactions as x:(g="B"), x:(g="C").
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 60

@@ -6,7 +6,7 @@
 #         fitted to data that is not in autoplot's own scope still plots —
 #         no errors, warnings, or messages.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 # The data frame lives only in the local() scope, like data created inside a

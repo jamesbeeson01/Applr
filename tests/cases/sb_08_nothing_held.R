@@ -6,7 +6,7 @@
 #         the ONE equation line — no dangling "held at:" text, no blank
 #         second line.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 40

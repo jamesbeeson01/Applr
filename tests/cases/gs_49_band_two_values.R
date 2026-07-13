@@ -7,7 +7,7 @@
 #         multi-value predict_vars variable; the edge lines still draw as
 #         ordinary slices.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

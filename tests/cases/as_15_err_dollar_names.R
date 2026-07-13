@@ -4,7 +4,7 @@
 # EXPECT: A model fit as lm(df$y ~ df$x): a clear error naming the offending
 #         variable, with a refit hint.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

@@ -3,7 +3,7 @@
 # FUNC: lm_equation
 # EXPECT: The transformed response on the left-hand side: "1/y = ... + 1*x".
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

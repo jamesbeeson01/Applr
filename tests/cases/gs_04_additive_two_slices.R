@@ -7,7 +7,7 @@
 #         The two lines should be clearly separated (intercept difference ~8),
 #         same slope, no crossing.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

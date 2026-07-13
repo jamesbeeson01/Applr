@@ -4,7 +4,7 @@
 # EXPECT: A back_transform function of 2+ required arguments errors up front
 #         with a clear message ("must take exactly one argument").
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

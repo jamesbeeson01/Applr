@@ -5,7 +5,7 @@
 #         by mode ("a") with a console message and draw the slice without
 #         errors. (See gs_18 for the visual impute-type coverage.)
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

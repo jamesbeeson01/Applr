@@ -4,7 +4,7 @@
 # EXPECT: The transformed response on the left-hand side:
 #         "sqrt(y) = ... + 1*x_pos".
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

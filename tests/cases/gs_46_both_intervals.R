@@ -6,7 +6,7 @@
 #         together — a NARROW ribbon nested inside a WIDE one, sharing one
 #         straight downward line (see reference).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(mpg ~ disp + hp, data = mtcars)
 

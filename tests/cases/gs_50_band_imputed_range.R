@@ -9,7 +9,7 @@
 #         1-9). Console message: band range for x_pos not specified, imputed
 #         from the min/max data range.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

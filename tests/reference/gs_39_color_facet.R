@@ -1,6 +1,6 @@
 # gs_39 REFERENCE — six slices: x2 in {0, 2, 4} (color) crossed with
 # x3 in {0, 1} (facet). Three colored lines per facet.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 60
 x <- runif(n, -10, 10)
@@ -30,5 +30,5 @@ p <- ggplot(dat, aes(x, y, color = factor(x2))) +
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)",
        color = "x2")
 
-ggsave("testing/reference/gs_39_color_facet.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_39_color_facet.png")
+ggsave("tests/reference/gs_39_color_facet.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_39_color_facet.png")

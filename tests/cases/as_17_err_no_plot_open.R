@@ -5,7 +5,7 @@
 #         raw base-graphics "plot.new has not been called yet"; a friendlier
 #         message would be better.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

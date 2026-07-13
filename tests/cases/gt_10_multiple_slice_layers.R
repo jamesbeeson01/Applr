@@ -7,7 +7,7 @@
 #         gets a BLUE "x2: 0" label, the red line a RED "x2: 1" label, both at
 #         the right line ends with the usual constant gap and auto x-margin.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

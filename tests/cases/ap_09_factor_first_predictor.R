@@ -8,7 +8,7 @@
 #         geom_slice imputes its most common level ("setosa", message).
 #         The plot itself renders fine (same picture as ap_05).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(Sepal.Length ~ Species + Petal.Length, data = iris)
 

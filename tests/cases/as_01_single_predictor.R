@@ -5,7 +5,7 @@
 #         add_slice_2d(). Console message: x_axis not specified, so the
 #         first x variable (x) is used as the x-axis.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

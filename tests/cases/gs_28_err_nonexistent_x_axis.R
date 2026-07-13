@@ -6,7 +6,7 @@
 #         parameters: `x_axis`") and draws the default slice — if x_axis is not
 #         a supported parameter it should say so explicitly.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

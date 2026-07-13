@@ -5,7 +5,7 @@
 #         style = "value": the labels are bare values with no variable name —
 #         "0" on the lower line, "4" on the upper line. Skyblue, right ends.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

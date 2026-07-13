@@ -8,7 +8,7 @@
 #         Three distinct lines with different slopes radiating from origin.
 #         No errors.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

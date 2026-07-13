@@ -3,7 +3,7 @@
 # FUNC: lm_equation
 # EXPECT: "y = <intercept> + 1*x + 1*I(x^2)".
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

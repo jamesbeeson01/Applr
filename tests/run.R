@@ -1,25 +1,25 @@
 # run.R — test runner (terminal / AI entry point). Run from the package root:
 #
-#   Rscript testing/run.R                  # run every case in testing/cases/
-#   Rscript testing/run.R gs_01 err_02     # run specific cases (prefix is enough)
-#   Rscript testing/run.R --update gs_02   # re-snapshot expected/ console output for case(s)
+#   Rscript tests/run.R                  # run every case in tests/cases/
+#   Rscript tests/run.R gs_01 err_02     # run specific cases (prefix is enough)
+#   Rscript tests/run.R --update gs_02   # re-snapshot expected/ console output for case(s)
 #
-# Visual cases  -> testing/output/<id>.png   (compare by eye against testing/reference/<id>.png)
-#                  PLUS any console output the case emits -> testing/output/<id>.txt,
-#                  diffed against testing/expected/<id>.txt. A visual case with no
+# Visual cases  -> tests/output/<id>.png   (compare by eye against tests/reference/<id>.png)
+#                  PLUS any console output the case emits -> tests/output/<id>.txt,
+#                  diffed against tests/expected/<id>.txt. A visual case with no
 #                  expected/ snapshot must be silent — unexpected output reports NEW.
-# Console cases -> testing/output/<id>.txt   (diffed automatically against testing/expected/<id>.txt)
+# Console cases -> tests/output/<id>.txt   (diffed automatically against tests/expected/<id>.txt)
 #
-# See testing/README.md for the case file format.
+# See tests/README.md for the case file format.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 args <- commandArgs(trailingOnly = TRUE)
 update_expected <- "--update" %in% args
 args <- setdiff(args, c("--update", "all"))
 
-all_files <- sort(list.files("testing/cases", pattern = "\\.R$", full.names = TRUE))
-if (length(all_files) == 0) stop("No cases in testing/cases/. Run from the package root.")
+all_files <- sort(list.files("tests/cases", pattern = "\\.R$", full.names = TRUE))
+if (length(all_files) == 0) stop("No cases in tests/cases/. Run from the package root.")
 
 if (length(args) > 0) {
   keep <- Reduce(`|`, lapply(args, function(a) startsWith(basename(all_files), a)))
@@ -27,8 +27,8 @@ if (length(args) > 0) {
   all_files <- all_files[keep]
 }
 
-dir.create("testing/output",   showWarnings = FALSE, recursive = TRUE)
-dir.create("testing/expected", showWarnings = FALSE, recursive = TRUE)
+dir.create("tests/output",   showWarnings = FALSE, recursive = TRUE)
+dir.create("tests/expected", showWarnings = FALSE, recursive = TRUE)
 
 # diff right-trimmed lines against a snapshot; NULL when identical, else a message
 diff_lines <- function(got, want) {
@@ -45,11 +45,11 @@ read_snapshot <- function(path) trimws(readLines(path, warn = FALSE), "right")
 
 run_visual <- function(file, meta) {
   # clear stale outputs for this case, then draw every plot the case makes
-  stale <- list.files("testing/output", sprintf("^%s(-\\d+)?\\.(png|txt)$", meta$id), full.names = TRUE)
+  stale <- list.files("tests/output", sprintf("^%s(-\\d+)?\\.(png|txt)$", meta$id), full.names = TRUE)
   file.remove(stale)
-  out_file <- file.path("testing/output",   paste0(meta$id, ".txt"))
-  exp_file <- file.path("testing/expected", paste0(meta$id, ".txt"))
-  png(file.path("testing/output", paste0(meta$id, "-%02d.png")),
+  out_file <- file.path("tests/output",   paste0(meta$id, ".txt"))
+  exp_file <- file.path("tests/expected", paste0(meta$id, ".txt"))
+  png(file.path("tests/output", paste0(meta$id, "-%02d.png")),
       width = meta$width, height = meta$height, units = "in", res = 300)
   # capture everything the case prints (stdout + messages/warnings); warn = 1
   # makes warnings print immediately, while the sink is still in place
@@ -65,7 +65,7 @@ run_visual <- function(file, meta) {
   sink()
   close(con)
   dev.off()
-  made <- list.files("testing/output", sprintf("^%s-\\d+\\.png$", meta$id), full.names = TRUE)
+  made <- list.files("tests/output", sprintf("^%s-\\d+\\.png$", meta$id), full.names = TRUE)
   if (!is.null(err)) {
     file.remove(c(made, out_file))
     return(list(status = "FAIL", msg = err))
@@ -75,7 +75,7 @@ run_visual <- function(file, meta) {
     return(list(status = "FAIL", msg = "case ran but produced no plot"))
   }
   if (length(made) == 1) {
-    single <- file.path("testing/output", paste0(meta$id, ".png"))
+    single <- file.path("tests/output", paste0(meta$id, ".png"))
     file.rename(made, single)
     made <- single
   }
@@ -104,7 +104,7 @@ run_visual <- function(file, meta) {
   }
   if (!silent && !has_expected) {
     return(list(status = "NEW",
-                msg = sprintf("case printed console output — review %s, then snapshot: Rscript testing/run.R --update %s",
+                msg = sprintf("case printed console output — review %s, then snapshot: Rscript tests/run.R --update %s",
                               out_file, meta$id)))
   }
   if (!silent) {
@@ -116,8 +116,8 @@ run_visual <- function(file, meta) {
 }
 
 run_console <- function(file, meta) {
-  out_file <- file.path("testing/output",   paste0(meta$id, ".txt"))
-  exp_file <- file.path("testing/expected", paste0(meta$id, ".txt"))
+  out_file <- file.path("tests/output",   paste0(meta$id, ".txt"))
+  exp_file <- file.path("tests/expected", paste0(meta$id, ".txt"))
   # null graphics device: some console cases draw base plots as scaffolding
   png(tempfile(fileext = ".png"))
   con <- file(out_file, "w")
@@ -137,7 +137,7 @@ run_console <- function(file, meta) {
   }
   if (!file.exists(exp_file)) {
     return(list(status = "NEW",
-                msg = sprintf("review %s, then snapshot: Rscript testing/run.R --update %s",
+                msg = sprintf("review %s, then snapshot: Rscript tests/run.R --update %s",
                               out_file, meta$id)))
   }
   bad <- diff_lines(read_snapshot(out_file), read_snapshot(exp_file))
@@ -161,7 +161,7 @@ statuses <- vapply(results, `[[`, "", "status")
 write.csv(data.frame(id     = vapply(results, `[[`, "", "id"),
                      status = statuses,
                      msg    = vapply(results, `[[`, "", "msg")),
-          "testing/output/_results.csv", row.names = FALSE)
+          "tests/output/_results.csv", row.names = FALSE)
 cat(sprintf("\n%d/%d OK", sum(statuses == "OK"), length(statuses)))
 if (any(statuses == "UPDATED")) cat(sprintf(", %d snapshot(s) updated", sum(statuses == "UPDATED")))
 if (any(statuses == "NEW")) cat(sprintf(", %d NEW (no expected snapshot yet)", sum(statuses == "NEW")))
@@ -169,4 +169,4 @@ if (any(statuses == "FAIL")) {
   cat(sprintf(", %d FAILED:\n", sum(statuses == "FAIL")))
   for (r in results[statuses == "FAIL"]) cat("  - ", r$id, "\n", sep = "")
 } else cat("\n")
-cat("\nVisual outputs are in testing/output/ — compare each against testing/reference/<id>.png\n")
+cat("\nVisual outputs are in tests/output/ — compare each against tests/reference/<id>.png\n")

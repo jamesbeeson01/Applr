@@ -5,7 +5,7 @@
 #         scale. Back-transformed exponential curve. Straight line = FAIL.
 #         Console message: x_axis not specified, first x variable (x_pos) used.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

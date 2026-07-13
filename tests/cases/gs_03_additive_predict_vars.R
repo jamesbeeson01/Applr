@@ -6,7 +6,7 @@
 #         because x_pos=0.007 contributes much less to y than mean(x_pos)~=5.
 #         No errors.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

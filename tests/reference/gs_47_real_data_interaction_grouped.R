@@ -2,7 +2,7 @@
 # by color = drv. One quadratic curve per drive type in its natural ggplot
 # color, each spanning only its group's displ range (the decisions.Rmd
 # group-range rule).
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 
 model <- lm(hwy ~ displ + I(displ^2) + displ:drv, data = mpg)
 
@@ -18,5 +18,5 @@ p <- ggplot(mpg, aes(displ, hwy, color = drv)) +
   labs(title = "gs_47 REFERENCE — quadratic interaction, one curve per drv (per-group x range)",
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_47_real_data_interaction_grouped.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_47_real_data_interaction_grouped.png")
+ggsave("tests/reference/gs_47_real_data_interaction_grouped.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_47_real_data_interaction_grouped.png")

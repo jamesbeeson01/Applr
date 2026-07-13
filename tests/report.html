@@ -1578,22 +1578,22 @@ border-radius: 0px;
 
 
 <h1 class="title toc-ignore">Applr Test Suite</h1>
-<h4 class="date">2026-07-13 07:55</h4>
+<h4 class="date">2026-07-13 16:54</h4>
 
 </div>
 
 
 <p>This report does <strong>not</strong> execute any case itself. It
-invokes <code>Rscript testing/run.R</code> once — the exact command the
+invokes <code>Rscript tests/run.R</code> once — the exact command the
 terminal / a coding agent runs — and then displays the artifacts of that
-run: the PNGs and captured console output in
-<code>testing/output/</code>, plus each case’s status straight from the
-runner. What you see here is, by construction, what <code>run.R</code>
-produced. Knit from the package root with:</p>
-<pre><code>Rscript -e &quot;rmarkdown::render(&#39;testing/report.Rmd&#39;)&quot;</code></pre>
+run: the PNGs and captured console output in <code>tests/output/</code>,
+plus each case’s status straight from the runner. What you see here is,
+by construction, what <code>run.R</code> produced. Knit from the package
+root with:</p>
+<pre><code>Rscript -e &quot;rmarkdown::render(&#39;tests/report.Rmd&#39;)&quot;</code></pre>
 <p>To keep a progress snapshot, rename the resulting
 <code>report.html</code> (e.g. <code>report 2026-07-06.html</code>) and
-move it into <code>testing/archive/</code>.</p>
+move it into <code>tests/archive/</code>.</p>
 <div id="snapshot" class="section level1">
 <h1>Snapshot</h1>
 <p><strong>161 / 161 cases OK.</strong></p>
@@ -1672,7 +1672,7 @@ Running 161 case(s)...
   gs_27_err_non_lm                       [console] OK 
   gs_28_err_nonexistent_x_axis           [console] OK 
   gs_29_err_dollar_names                 [console] OK 
-  gs_30_err_character_variable           [console] OK 
+  gs_30_character_variable               [visual] OK 
   gs_31_err_back_transform_invalid       [console] OK 
   gs_32_err_back_transform_extra_args    [console] OK 
   gs_33_interval_confidence              [visual] OK 
@@ -1770,7 +1770,7 @@ Running 161 case(s)...
 
 161/161 OK
 
-Visual outputs are in testing/output/ — compare each against testing/reference/&lt;id&gt;.png
+Visual outputs are in tests/output/ — compare each against tests/reference/&lt;id&gt;.png
 </code></pre>
 </details>
 <p>Note: an <code>OK</code> on a visual case means it ran, produced a
@@ -1785,7 +1785,7 @@ below.</p>
 </div>
 <div id="show" class="section level2">
 <h2>Show</h2>
-<pre class="r"><code>case_files &lt;- sort(list.files(&quot;testing/cases&quot;, pattern = &quot;\\.R$&quot;, full.names = TRUE))
+<pre class="r"><code>case_files &lt;- sort(list.files(&quot;tests/cases&quot;, pattern = &quot;\\.R$&quot;, full.names = TRUE))
 meta &lt;- lapply(case_files, parse_case_header)
 overview &lt;- data.frame(
   Case     = vapply(meta, `[[`, &quot;&quot;, &quot;id&quot;),
@@ -2347,250 +2347,600 @@ Currently geom_slice SILENTLY IGNORES the x_axis argumen…</td>
 <td align="left">console</td>
 <td align="left">geom_slice</td>
 <td align="left">A model fit as lm(df<span class="math inline">\(y ~
-df\)</span>x): either work or fail with a clear message about “<span class="math inline">\(&quot; in variable names. Currentl... |
-|gs_30_err_character_variable        |OK     |console
-|geom_slice          |geom_slice SUPPORTS character predictors: it
-should impute char_var by mode (&quot;a&quot;) with a console message
-and d... |
-|gs_31_err_back_transform_invalid    |OK     |console
-|geom_slice          |back_transform must be a boolean or one-argument
-function. A list should produce a clear warning or error sayi... |
-|gs_32_err_back_transform_extra_args |OK     |console
-|geom_slice          |A back_transform function of 2+ arguments should
-produce a clear error or warning — not silently misbehave.       |
-|gs_33_interval_confidence           |OK     |visual  |geom_slice          |mtcars
-disp vs mpg, model mpg ~ disp + hp sliced at hp = 110: one straight
-downward line with a NARROW confide... |
-|gs_34_interval_prediction           |OK     |visual  |geom_slice          |mtcars
-disp vs mpg, model mpg ~ disp + hp sliced at hp = 110: one straight
-downward line with a WIDE predictio... |
-|gs_35_multi_value_single_var        |OK     |visual  |geom_slice          |Three
-parallel lines of slope ~1, one per x_pos value (1, 5, 9), evenly offset
-in y. geom_slice draws all thre... |
-|gs_36_multi_value_crossed           |OK     |visual  |geom_slice          |Six
-parallel lines of slope ~1, one per (x2, x3) combination, offset by 3*x2
-+ 0.7*x3 (lowest: x2=1,x3=1; high... |
-|gs_37_err_data_mismatch             |OK     |console
-|geom_slice          |A clear, student-readable error saying the plotted
-data is not the data `model` was fitted to (raised when the... |
-|gs_38_multi_value_cross_colored     |OK     |visual  |geom_slice          |Six
-parallel lines of slope ~1, one per (x2, x3) combination, offset by 3*x2
-+ 3*x3. Lines are distinguished b... |
-|gs_39_color_facet                   |OK     |visual  |geom_slice          |Color
-grouping (x2) + faceting (x3) combined, showing 6 lines, 3 per facet.
-Facets (x3) have values 1, 2. colo... |
-|gs_40_back_transform_fn             |OK     |visual  |geom_slice          |Same
-data and model as gs_11 (1/y ~ x, original y scale), but with an
-EXPLICIT back_transform = \(z) 1/z inste... |
-|gs_41_back_transform_string         |OK     |visual  |geom_slice          |Same
-data and model as gs_09 (log(y) ~ x_pos, original y scale), but with the
-NAMED-STRING form back_transform... |
-|gs_42_back_transform_false          |OK     |visual  |geom_slice          |Model
-1/y ~ x with back_transform = FALSE, plotted with the TRANSFORMED
-response precomputed as y_trans = 1/y ... |
-|gs_43_ytransform_inverse_axis       |OK     |visual  |geom_slice          |Model
-1/y ~ x, plotted with the TRANSFORMED response mapped inline on the
-y-axis (aes(x, 1/y)). geom_slice sho... |
-|gs_44_ytransform_exp                |OK     |visual  |geom_slice          |Scatter
-of x_pos vs y on the ORIGINAL y scale. Model is exp(y) ~ x_pos (y =
-log(x_pos) + noise), so geom_slice... |
-|gs_45_ytransform_square             |OK     |visual  |geom_slice          |Scatter
-of x_pos vs y on the ORIGINAL y scale. Model is y^2 ~ x_pos (y =
-sqrt(x_pos) + noise), so geom_slice m... |
-|gs_46_both_intervals                |OK     |visual  |geom_slice          |Same
-model and slice as gs_33/gs_34 (mpg ~ disp + hp at hp = 110), with TWO
-geom_slice layers: confidence and ... |
-|gs_47_real_data_interaction_grouped
-|OK     |visual  |geom_slice          |mpg dataset (displ vs hwy,
-colored by drv) with ONE geom_slice call drawing three quadratic curves,
-one per dr... |
-|gs_48_err_discrete_x_axis           |OK     |console
-|geom_slice          |A factor predictor mapped to the x-axis makes the
-x scale discrete; geom_slice needs a continuous axis to draw... |
-|gs_49_band_two_values               |OK     |visual  |geom_slice          |Two
-parallel skyblue lines (x_pos = 1 lower, x_pos = 9 upper) with a
-translucent skyblue ribbon filling the re... |
-|gs_50_band_imputed_range            |OK     |visual  |geom_slice          |A
-projection band with NO values pinned by the user: band =
-&quot;x_pos&quot; with x_pos absent from predict_vars impute... |
-|gs_51_band_grouped_faceted          |OK     |visual  |geom_slice          |mpg
-(displ vs hwy) colored by drv and faceted by year, with ONE geom_slice
-call drawing a projection band per ... |
-|gs_52_band_true_no_predict_vars     |OK     |visual  |geom_slice          |band
-= TRUE with NO predict_vars at all. The model has exactly one non-axis
-predictor (x_pos), so it is unambi... |
-|gs_53_warn_band_nothing_to_band     |OK     |visual  |geom_slice          |A
-clear, student-readable warning: band = TRUE but the model has no
-variable to band — y ~ x uses the x-axis v... |
-|gs_54_warn_band_var_not_in_model    |OK     |visual  |geom_slice          |A
-clear, student-readable warning: band = &quot;x3&quot; names a variable
-that exists in the data set but is NOT a predi... |
-|gs_55_warn_band_var_on_x_axis       |OK     |visual  |geom_slice          |A
-clear, student-readable warning: band = &quot;x&quot; names the
-predictor on the plot&#39;s x-axis, which already varies a... |
-|gs_56_warn_band_var_pinned          |OK     |visual  |geom_slice          |A
-clear, student-readable warning: band = &quot;drv&quot; names a
-predictor pinned per group by aes(color = drv), so eac... |
-|gs_57_full_range                    |OK     |visual  |geom_slice          |Two
-colored groups whose points occupy different x ranges (A on the left, B
-on the right), each with its own s... |
-|gt_01_default_two_lines             |OK     |visual  |geom_slice_text     |Two
-parallel skyblue slices (x2 held at 0 and 4). At the RIGHT end of each
-line, a text label in the default &quot;... |
-|gt_02_crossed_vars                  |OK     |visual  |geom_slice_text     |Six
-parallel skyblue slices — x2 in {0, 2, 4} crossed with x3 in {0, 1} —
-which without labels would be indist... |
-|gt_03_style_value                   |OK     |visual  |geom_slice_text     |Same
-two parallel slices as gt_01 (x2 held at 0 and 4), but with style =
-&quot;value&quot;: the labels are bare values w... |
-|gt_04_style_legend                  |OK     |visual  |geom_slice_text     |Six
-parallel skyblue slices (x2 in {0, 2, 4} x x3 in {0, 1}) with style =
-&quot;legend&quot;: each line&#39;s right end show... |
-|gt_05_location_left                 |OK     |visual  |geom_slice_text     |Two
-parallel skyblue slices (x2 held at 0 and 4) with location =
-&quot;left&quot;: the &quot;x2: 0&quot; / &quot;x2: 4&quot; labels sit
-just... |
-|gt_06_offset_hjust_vjust            |OK     |visual  |geom_slice_text     |Two
-parallel skyblue slices (x2 held at 0 and 4). Setting hjust manually
-DISABLES the automatic point-offset, ... |
-|gt_07_color_grouped                 |OK     |visual  |geom_slice_text     |Interaction
-model y ~ x * g + x2 with aes(color = g): two color groups (g =
-&quot;A&quot;, &quot;B&quot;) x two x2 values {0, 3} =... |
-|gt_08_manual_color                  |OK     |visual  |geom_slice_text     |Two
-parallel skyblue slices (x2 held at 0 and 4), but the &quot;x2: v&quot;
-labels are BLACK, not skyblue — a manual col... |
-|gt_09_legend_replacement            |OK     |visual  |geom_slice_text     |Interaction
-model y ~ x * g with aes(color = g) and the color legend suppressed.
-With no predict_vars, geom_sl... |
-|gt_10_multiple_slice_layers         |OK     |visual  |geom_slice_text     |The
-same model drawn as TWO separate geom_slice layers — x2 held at 0 (blue
-line) and 1 (red line). geom_slice... |
-|gt_11_warn_no_slice_layer           |OK     |console
-|geom_slice_text     |A clear warning that the plot has no geom_slice()
-layer to label (labels would describe lines that do not exis... |
-|gt_12_warn_multiple_models          |OK     |console
-|geom_slice_text     |A clear warning that the plot&#39;s geom_slice()
-layers use two different models — geom_slice_text() labels slices... |
-|gt_13_offset_scaled_axis            |OK     |visual  |geom_slice_text     |Same
-layout as gt_01 but the x-axis spans 0..50000 instead of -10..10. Two
-parallel skyblue slices (x2 held at... |
-|la_01_factor_default                |OK     |console
-|lm_latex            |display-math LaTeX (\)</span><span class="math inline">\(...\)</span><span class="math inline">\() with
-underbrace labels; factor terms shown as dummy coefficient names (gB,
-gC, x:... |
-|la_02_factor_clearer                |OK     |console
-|lm_latex            |display-math LaTeX (\)</span><span class="math inline">\(...\)</span><span class="math inline">\() with
-underbrace labels; with clearer = TRUE, factor terms spell out variable
-and ... |
-|le_01_single_predictor              |OK     |console
-|lm_equation         |&quot;y = &lt;intercept&gt; + 1*x&quot; with
-coefficients to 3 significant figures (intercept ~0 in scientific
-notation is fin... |
-|le_02_additive                      |OK     |console
-|lm_equation         |&quot;y = &lt;intercept&gt; + 1*x +
-1*x_pos&quot;.                                                                                |
-|le_03_multiplicative                |OK     |console
-|lm_equation         |&quot;y = &lt;intercept&gt; + 1*I(x * x_pos)&quot;
-— the I() term shown
-as-is.                                                    |
-|le_04_interaction                   |OK     |console
-|lm_equation         |&quot;y = &lt;intercept&gt; + 1*x:x_switch&quot; —
-the interaction term shown
-as-is.                                              |
-|le_05_quadratic                     |OK     |console
-|lm_equation         |&quot;y = &lt;intercept&gt; + 1*x +
-1*I(x^2)&quot;.                                                                               |
-|le_06_ytransform_inverse            |OK     |console
-|lm_equation         |The transformed response on the left-hand side:
-&quot;1/y = ... +
-1*x&quot;.                                                |
-|le_07_ytransform_sqrt               |OK     |console
-|lm_equation         |The transformed response on the left-hand side:
-&quot;sqrt(y) = ... +
-1*x_pos&quot;.                                        |
-|le_08_ytransform_log                |OK     |console
-|lm_equation         |The transformed response on the left-hand side:
-&quot;log(y) = ... +
-1*x_pos&quot;.                                         |
-|le_09_ytransform_exp                |OK     |console
-|lm_equation         |The transformed response on the left-hand side:
-&quot;exp(y) = ... +
-1*x_pos&quot;.                                         |
-|le_10_ytransform_square             |OK     |console
-|lm_equation         |The transformed response on the left-hand side:
-&quot;y^2 = ... +
-1*x_pos&quot;.                                            |
-|le_11_mtcars_log                    |OK     |console
-|lm_equation         |Real-data equation with a negative slope rendered
-via &quot;- &quot; (not &quot;+ -&quot;): &quot;log(mpg) = 3.45 -
-0.00212*disp&quot;.         |
-|le_12_factor_default                |OK     |console
-|lm_equation         |factor terms shown as dummy coefficient names (gB,
-gC, x:gB, x:gC) — the default (clearer unspecified) keeps d... |
-|le_13_factor_clearer                |OK     |console
-|lm_equation         |with clearer = TRUE, factor terms spell out
-variable and level — (g=&quot;B&quot;), (g=&quot;C&quot;), and
-interactions as x:(g=&quot;B... |
-|s2_01_single_predictor              |OK     |visual  |slice_2d            |slice_2d
-creates its own base plot: scatter of x vs y (steelblue points) with a
-slice line of slope ~1 through... |
-|s2_02_additive_default              |OK     |visual  |slice_2d            |Scatter
-of x vs y (y ~ x + x_pos) with one straight slice line, x_pos held at
-its default (mean, with a consol... |
-|s2_03_additive_x_axis_xpos          |OK     |visual  |slice_2d            |Scatter
-of x_pos vs y (y ~ x + x_pos) with a slice line, x held at 0 (shown in
-the caption). Silent: both x_ax... |
-|s2_04_multiplicative                |OK     |visual  |slice_2d            |Model
-y ~ I(x*x_pos). Default slice_2d plot: raw x on the x-axis (the default
-is the first x VARIABLE, not the... |
-|s2_05_multiplicative_x_axis_xpos    |OK     |visual  |slice_2d            |Model
-y ~ I(x*x_pos) with x_axis = &quot;x_pos&quot;: scatter of x_pos vs y
-with a slice line (x held at some value show... |
-|s2_06_multiplicative_x_axis_product
-|OK     |visual  |slice_2d            |Model y ~ I(x*x_pos) with x_axis
-= &quot;x*x_pos&quot; (the product itself): same shape as the default
-plot in s2_04 — a... |
-|s2_07_interaction                   |OK     |visual  |slice_2d            |Model
-y ~ x:x_switch. Default slice_2d plot: scatter of x vs y with one slice
-line at the default held x_switc... |
-|s2_08_quadratic                     |OK     |visual  |slice_2d            |Model
-y ~ x + I(x^2). Scatter of x vs y with an upward-opening parabola
-through the points (not a straight lin... |
-|s2_09_ytransform_inverse            |OK     |visual  |slice_2d            |Model
-1/y ~ x. Plot on the ORIGINAL y scale with a back-transformed hyperbolic
-slice line. A straight line mea... |
-|s2_10_ytransform_sqrt               |OK     |visual  |slice_2d            |Model
-sqrt(y) ~ x_pos (y = x_pos^2). Plot on the ORIGINAL y scale with a
-back-transformed upward parabola. Str... |
-|s2_11_ytransform_log                |OK     |visual  |slice_2d            |Model
-log(y) ~ x_pos (y = exp(x_pos)). Plot on the ORIGINAL y scale with a
-back-transformed exponential curve.... |
-|s2_12_ytransform_exp                |OK     |visual  |slice_2d            |Model
-exp(y) ~ x_pos (y = log(x_pos)). Plot on the ORIGINAL y scale with a
-back-transformed logarithmic curve.... |
-|s2_13_ytransform_square             |OK     |visual  |slice_2d            |Model
-y^2 ~ x_pos (y = sqrt(x_pos)). Plot on the ORIGINAL y scale with a
-back-transformed square-root curve. S... |
-|s2_14_mtcars_log                    |OK     |visual  |slice_2d            |Model
-log(mpg) ~ disp on mtcars. Scatter of disp vs mpg with a
-downward-curving back-transformed slice line. C... |
-|s2_15_err_non_lm                    |OK     |console
-|slice_2d            |A clear, student-readable error rejecting the
-non-lm object (&#39;`model` must be a model fitted by `lm()`; receiv...
-|
-|s2_16_err_nonexistent_x_axis        |OK     |console
-|slice_2d            |A clear error naming the missing variable:
-&#39;`x_axis` variable &quot;nonexistent_var&quot; not found in the
-model.&#39; with ... |
-|s2_17_err_factor_x_axis             |OK     |console
-|slice_2d            |A clear error explaining the x-axis must be
-numeric: &quot;`x_axis` must be numeric; the class \&quot;factor\&quot;
-is not su... |
-|s2_18_err_dollar_names              |OK     |console
-|slice_2d            |A model fit as lm(df\)</span>y ~ df<span class="math inline">\(x) has &quot;\)</span>” in its variable names. A
-clear error naming the offending variable, wit…</td>
+df\)</span>x): either work or fail with a clear message about “$” in
+variable names. Currentl…</td>
 </tr>
 <tr class="odd">
+<td align="left">gs_30_character_variable</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">geom_slice SUPPORTS character predictors: it should
+impute char_var by mode (“a”) with a console message and d…</td>
+</tr>
+<tr class="even">
+<td align="left">gs_31_err_back_transform_invalid</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">geom_slice</td>
+<td align="left">back_transform must be a boolean or one-argument
+function. A list should produce a clear warning or error sayi…</td>
+</tr>
+<tr class="odd">
+<td align="left">gs_32_err_back_transform_extra_args</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">geom_slice</td>
+<td align="left">A back_transform function of 2+ arguments should
+produce a clear error or warning — not silently misbehave.</td>
+</tr>
+<tr class="even">
+<td align="left">gs_33_interval_confidence</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">mtcars disp vs mpg, model mpg ~ disp + hp sliced at hp
+= 110: one straight downward line with a NARROW confide…</td>
+</tr>
+<tr class="odd">
+<td align="left">gs_34_interval_prediction</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">mtcars disp vs mpg, model mpg ~ disp + hp sliced at hp
+= 110: one straight downward line with a WIDE predictio…</td>
+</tr>
+<tr class="even">
+<td align="left">gs_35_multi_value_single_var</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">Three parallel lines of slope ~1, one per x_pos value
+(1, 5, 9), evenly offset in y. geom_slice draws all thre…</td>
+</tr>
+<tr class="odd">
+<td align="left">gs_36_multi_value_crossed</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">Six parallel lines of slope ~1, one per (x2, x3)
+combination, offset by 3<em>x2 + 0.7</em>x3 (lowest: x2=1,x3=1;
+high…</td>
+</tr>
+<tr class="even">
+<td align="left">gs_37_err_data_mismatch</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">geom_slice</td>
+<td align="left">A clear, student-readable error saying the plotted data
+is not the data <code>model</code> was fitted to (raised when the…</td>
+</tr>
+<tr class="odd">
+<td align="left">gs_38_multi_value_cross_colored</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">Six parallel lines of slope ~1, one per (x2, x3)
+combination, offset by 3<em>x2 + 3</em>x3. Lines are distinguished
+b…</td>
+</tr>
+<tr class="even">
+<td align="left">gs_39_color_facet</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">Color grouping (x2) + faceting (x3) combined, showing 6
+lines, 3 per facet. Facets (x3) have values 1, 2. colo…</td>
+</tr>
+<tr class="odd">
+<td align="left">gs_40_back_transform_fn</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">Same data and model as gs_11 (1/y ~ x, original y
+scale), but with an EXPLICIT back_transform = (z) 1/z inste…</td>
+</tr>
+<tr class="even">
+<td align="left">gs_41_back_transform_string</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">Same data and model as gs_09 (log(y) ~ x_pos, original
+y scale), but with the NAMED-STRING form back_transform…</td>
+</tr>
+<tr class="odd">
+<td align="left">gs_42_back_transform_false</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">Model 1/y ~ x with back_transform = FALSE, plotted with
+the TRANSFORMED response precomputed as y_trans = 1/y …</td>
+</tr>
+<tr class="even">
+<td align="left">gs_43_ytransform_inverse_axis</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">Model 1/y ~ x, plotted with the TRANSFORMED response
+mapped inline on the y-axis (aes(x, 1/y)). geom_slice sho…</td>
+</tr>
+<tr class="odd">
+<td align="left">gs_44_ytransform_exp</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">Scatter of x_pos vs y on the ORIGINAL y scale. Model is
+exp(y) ~ x_pos (y = log(x_pos) + noise), so geom_slice…</td>
+</tr>
+<tr class="even">
+<td align="left">gs_45_ytransform_square</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">Scatter of x_pos vs y on the ORIGINAL y scale. Model is
+y^2 ~ x_pos (y = sqrt(x_pos) + noise), so geom_slice m…</td>
+</tr>
+<tr class="odd">
+<td align="left">gs_46_both_intervals</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">Same model and slice as gs_33/gs_34 (mpg ~ disp + hp at
+hp = 110), with TWO geom_slice layers: confidence and …</td>
+</tr>
+<tr class="even">
+<td align="left">gs_47_real_data_interaction_grouped</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">mpg dataset (displ vs hwy, colored by drv) with ONE
+geom_slice call drawing three quadratic curves, one per dr…</td>
+</tr>
+<tr class="odd">
+<td align="left">gs_48_err_discrete_x_axis</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">geom_slice</td>
+<td align="left">A factor predictor mapped to the x-axis makes the x
+scale discrete; geom_slice needs a continuous axis to draw…</td>
+</tr>
+<tr class="even">
+<td align="left">gs_49_band_two_values</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">Two parallel skyblue lines (x_pos = 1 lower, x_pos = 9
+upper) with a translucent skyblue ribbon filling the re…</td>
+</tr>
+<tr class="odd">
+<td align="left">gs_50_band_imputed_range</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">A projection band with NO values pinned by the user:
+band = “x_pos” with x_pos absent from predict_vars impute…</td>
+</tr>
+<tr class="even">
+<td align="left">gs_51_band_grouped_faceted</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">mpg (displ vs hwy) colored by drv and faceted by year,
+with ONE geom_slice call drawing a projection band per …</td>
+</tr>
+<tr class="odd">
+<td align="left">gs_52_band_true_no_predict_vars</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">band = TRUE with NO predict_vars at all. The model has
+exactly one non-axis predictor (x_pos), so it is unambi…</td>
+</tr>
+<tr class="even">
+<td align="left">gs_53_warn_band_nothing_to_band</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">A clear, student-readable warning: band = TRUE but the
+model has no variable to band — y ~ x uses the x-axis v…</td>
+</tr>
+<tr class="odd">
+<td align="left">gs_54_warn_band_var_not_in_model</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">A clear, student-readable warning: band = “x3” names a
+variable that exists in the data set but is NOT a predi…</td>
+</tr>
+<tr class="even">
+<td align="left">gs_55_warn_band_var_on_x_axis</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">A clear, student-readable warning: band = “x” names the
+predictor on the plot’s x-axis, which already varies a…</td>
+</tr>
+<tr class="odd">
+<td align="left">gs_56_warn_band_var_pinned</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">A clear, student-readable warning: band = “drv” names a
+predictor pinned per group by aes(color = drv), so eac…</td>
+</tr>
+<tr class="even">
+<td align="left">gs_57_full_range</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice</td>
+<td align="left">Two colored groups whose points occupy different x
+ranges (A on the left, B on the right), each with its own s…</td>
+</tr>
+<tr class="odd">
+<td align="left">gt_01_default_two_lines</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice_text</td>
+<td align="left">Two parallel skyblue slices (x2 held at 0 and 4). At
+the RIGHT end of each line, a text label in the default “…</td>
+</tr>
+<tr class="even">
+<td align="left">gt_02_crossed_vars</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice_text</td>
+<td align="left">Six parallel skyblue slices — x2 in {0, 2, 4} crossed
+with x3 in {0, 1} — which without labels would be indist…</td>
+</tr>
+<tr class="odd">
+<td align="left">gt_03_style_value</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice_text</td>
+<td align="left">Same two parallel slices as gt_01 (x2 held at 0 and 4),
+but with style = “value”: the labels are bare values w…</td>
+</tr>
+<tr class="even">
+<td align="left">gt_04_style_legend</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice_text</td>
+<td align="left">Six parallel skyblue slices (x2 in {0, 2, 4} x x3 in
+{0, 1}) with style = “legend”: each line’s right end show…</td>
+</tr>
+<tr class="odd">
+<td align="left">gt_05_location_left</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice_text</td>
+<td align="left">Two parallel skyblue slices (x2 held at 0 and 4) with
+location = “left”: the “x2: 0” / “x2: 4” labels sit just…</td>
+</tr>
+<tr class="even">
+<td align="left">gt_06_offset_hjust_vjust</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice_text</td>
+<td align="left">Two parallel skyblue slices (x2 held at 0 and 4).
+Setting hjust manually DISABLES the automatic point-offset, …</td>
+</tr>
+<tr class="odd">
+<td align="left">gt_07_color_grouped</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice_text</td>
+<td align="left">Interaction model y ~ x * g + x2 with aes(color = g):
+two color groups (g = “A”, “B”) x two x2 values {0, 3} =…</td>
+</tr>
+<tr class="even">
+<td align="left">gt_08_manual_color</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice_text</td>
+<td align="left">Two parallel skyblue slices (x2 held at 0 and 4), but
+the “x2: v” labels are BLACK, not skyblue — a manual col…</td>
+</tr>
+<tr class="odd">
+<td align="left">gt_09_legend_replacement</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice_text</td>
+<td align="left">Interaction model y ~ x * g with aes(color = g) and the
+color legend suppressed. With no predict_vars, geom_sl…</td>
+</tr>
+<tr class="even">
+<td align="left">gt_10_multiple_slice_layers</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice_text</td>
+<td align="left">The same model drawn as TWO separate geom_slice layers
+— x2 held at 0 (blue line) and 1 (red line). geom_slice…</td>
+</tr>
+<tr class="odd">
+<td align="left">gt_11_warn_no_slice_layer</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">geom_slice_text</td>
+<td align="left">A clear warning that the plot has no geom_slice() layer
+to label (labels would describe lines that do not exis…</td>
+</tr>
+<tr class="even">
+<td align="left">gt_12_warn_multiple_models</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">geom_slice_text</td>
+<td align="left">A clear warning that the plot’s geom_slice() layers use
+two different models — geom_slice_text() labels slices…</td>
+</tr>
+<tr class="odd">
+<td align="left">gt_13_offset_scaled_axis</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">geom_slice_text</td>
+<td align="left">Same layout as gt_01 but the x-axis spans 0..50000
+instead of -10..10. Two parallel skyblue slices (x2 held at…</td>
+</tr>
+<tr class="even">
+<td align="left">la_01_factor_default</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">lm_latex</td>
+<td align="left">display-math LaTeX <span class="math display">\[\underbrace{\hat{Y_i}}_{\text{Pred. y}} = 2.12 +
+0.465\underbrace{X_{1i}}_{\text{x}} + 4\... |
+|la_02_factor_clearer                |OK     |console
+|lm_latex            |display-math LaTeX \]</span><em>{} = 2.12 +
+0.465</em>{} + 4...</td>
+</tr>
+<tr class="odd">
+<td align="left">le_01_single_predictor</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">lm_equation</td>
+<td align="left">“y = <intercept> + 1*x” with coefficients to 3
+significant figures (intercept ~0 in scientific notation is fin…</td>
+</tr>
+<tr class="even">
+<td align="left">le_02_additive</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">lm_equation</td>
+<td align="left">“y = <intercept> + 1<em>x + 1</em>x_pos”.</td>
+</tr>
+<tr class="odd">
+<td align="left">le_03_multiplicative</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">lm_equation</td>
+<td align="left">“y = <intercept> + 1<em>I(x </em> x_pos)” — the I()
+term shown as-is.</td>
+</tr>
+<tr class="even">
+<td align="left">le_04_interaction</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">lm_equation</td>
+<td align="left">“y = <intercept> + 1*x:x_switch” — the interaction term
+shown as-is.</td>
+</tr>
+<tr class="odd">
+<td align="left">le_05_quadratic</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">lm_equation</td>
+<td align="left">“y = <intercept> + 1<em>x + 1</em>I(x^2)”.</td>
+</tr>
+<tr class="even">
+<td align="left">le_06_ytransform_inverse</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">lm_equation</td>
+<td align="left">The transformed response on the left-hand side: “1/y =
+… + 1*x”.</td>
+</tr>
+<tr class="odd">
+<td align="left">le_07_ytransform_sqrt</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">lm_equation</td>
+<td align="left">The transformed response on the left-hand side:
+“sqrt(y) = … + 1*x_pos”.</td>
+</tr>
+<tr class="even">
+<td align="left">le_08_ytransform_log</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">lm_equation</td>
+<td align="left">The transformed response on the left-hand side: “log(y)
+= … + 1*x_pos”.</td>
+</tr>
+<tr class="odd">
+<td align="left">le_09_ytransform_exp</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">lm_equation</td>
+<td align="left">The transformed response on the left-hand side: “exp(y)
+= … + 1*x_pos”.</td>
+</tr>
+<tr class="even">
+<td align="left">le_10_ytransform_square</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">lm_equation</td>
+<td align="left">The transformed response on the left-hand side: “y^2 =
+… + 1*x_pos”.</td>
+</tr>
+<tr class="odd">
+<td align="left">le_11_mtcars_log</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">lm_equation</td>
+<td align="left">Real-data equation with a negative slope rendered via
+“-” (not “+ -”): “log(mpg) = 3.45 - 0.00212*disp”.</td>
+</tr>
+<tr class="even">
+<td align="left">le_12_factor_default</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">lm_equation</td>
+<td align="left">factor terms shown as dummy coefficient names (gB, gC,
+x:gB, x:gC) — the default (clearer unspecified) keeps d…</td>
+</tr>
+<tr class="odd">
+<td align="left">le_13_factor_clearer</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">lm_equation</td>
+<td align="left">with clearer = TRUE, factor terms spell out variable
+and level — (g=“B”), (g=“C”), and interactions as x:(g=“B…</td>
+</tr>
+<tr class="even">
+<td align="left">s2_01_single_predictor</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">slice_2d</td>
+<td align="left">slice_2d creates its own base plot: scatter of x vs y
+(steelblue points) with a slice line of slope ~1 through…</td>
+</tr>
+<tr class="odd">
+<td align="left">s2_02_additive_default</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">slice_2d</td>
+<td align="left">Scatter of x vs y (y ~ x + x_pos) with one straight
+slice line, x_pos held at its default (mean, with a consol…</td>
+</tr>
+<tr class="even">
+<td align="left">s2_03_additive_x_axis_xpos</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">slice_2d</td>
+<td align="left">Scatter of x_pos vs y (y ~ x + x_pos) with a slice
+line, x held at 0 (shown in the caption). Silent: both x_ax…</td>
+</tr>
+<tr class="odd">
+<td align="left">s2_04_multiplicative</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">slice_2d</td>
+<td align="left">Model y ~ I(x*x_pos). Default slice_2d plot: raw x on
+the x-axis (the default is the first x VARIABLE, not the…</td>
+</tr>
+<tr class="even">
+<td align="left">s2_05_multiplicative_x_axis_xpos</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">slice_2d</td>
+<td align="left">Model y ~ I(x*x_pos) with x_axis = “x_pos”: scatter of
+x_pos vs y with a slice line (x held at some value show…</td>
+</tr>
+<tr class="odd">
+<td align="left">s2_06_multiplicative_x_axis_product</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">slice_2d</td>
+<td align="left">Model y ~ I(x<em>x_pos) with x_axis = “x</em>x_pos”
+(the product itself): same shape as the default plot in s2_04 — a…</td>
+</tr>
+<tr class="even">
+<td align="left">s2_07_interaction</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">slice_2d</td>
+<td align="left">Model y ~ x:x_switch. Default slice_2d plot: scatter of
+x vs y with one slice line at the default held x_switc…</td>
+</tr>
+<tr class="odd">
+<td align="left">s2_08_quadratic</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">slice_2d</td>
+<td align="left">Model y ~ x + I(x^2). Scatter of x vs y with an
+upward-opening parabola through the points (not a straight lin…</td>
+</tr>
+<tr class="even">
+<td align="left">s2_09_ytransform_inverse</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">slice_2d</td>
+<td align="left">Model 1/y ~ x. Plot on the ORIGINAL y scale with a
+back-transformed hyperbolic slice line. A straight line mea…</td>
+</tr>
+<tr class="odd">
+<td align="left">s2_10_ytransform_sqrt</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">slice_2d</td>
+<td align="left">Model sqrt(y) ~ x_pos (y = x_pos^2). Plot on the
+ORIGINAL y scale with a back-transformed upward parabola. Str…</td>
+</tr>
+<tr class="even">
+<td align="left">s2_11_ytransform_log</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">slice_2d</td>
+<td align="left">Model log(y) ~ x_pos (y = exp(x_pos)). Plot on the
+ORIGINAL y scale with a back-transformed exponential curve….</td>
+</tr>
+<tr class="odd">
+<td align="left">s2_12_ytransform_exp</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">slice_2d</td>
+<td align="left">Model exp(y) ~ x_pos (y = log(x_pos)). Plot on the
+ORIGINAL y scale with a back-transformed logarithmic curve….</td>
+</tr>
+<tr class="even">
+<td align="left">s2_13_ytransform_square</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">slice_2d</td>
+<td align="left">Model y^2 ~ x_pos (y = sqrt(x_pos)). Plot on the
+ORIGINAL y scale with a back-transformed square-root curve. S…</td>
+</tr>
+<tr class="odd">
+<td align="left">s2_14_mtcars_log</td>
+<td align="left">OK</td>
+<td align="left">visual</td>
+<td align="left">slice_2d</td>
+<td align="left">Model log(mpg) ~ disp on mtcars. Scatter of disp vs mpg
+with a downward-curving back-transformed slice line. C…</td>
+</tr>
+<tr class="even">
+<td align="left">s2_15_err_non_lm</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">slice_2d</td>
+<td align="left">A clear, student-readable error rejecting the non-lm
+object (’<code>model</code> must be a model fitted by <code>lm()</code>;
+receiv…</td>
+</tr>
+<tr class="odd">
+<td align="left">s2_16_err_nonexistent_x_axis</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">slice_2d</td>
+<td align="left">A clear error naming the missing variable:
+‘<code>x_axis</code> variable “nonexistent_var” not found in the model.’
+with …</td>
+</tr>
+<tr class="even">
+<td align="left">s2_17_err_factor_x_axis</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">slice_2d</td>
+<td align="left">A clear error explaining the x-axis must be numeric:
+“<code>x_axis</code> must be numeric; the class &quot;factor&quot; is not su…</td>
+</tr>
+<tr class="odd">
+<td align="left">s2_18_err_dollar_names</td>
+<td align="left">OK</td>
+<td align="left">console</td>
+<td align="left">slice_2d</td>
+<td align="left">A model fit as lm(df<span class="math inline">\(y ~
+df\)</span>x) has “$” in its variable names. A clear error naming the
+offending variable, wit…</td>
+</tr>
+<tr class="even">
 <td align="left">s2_19_err_character_variable</td>
 <td align="left">OK</td>
 <td align="left">console</td>
@@ -2598,7 +2948,7 @@ clear error naming the offending variable, wit…</td>
 <td align="left">Model contains a character predictor. Either handle it
 (impute by mode) or fail with a clear message naming th…</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">s2_20_err_back_transform_invalid</td>
 <td align="left">OK</td>
 <td align="left">console</td>
@@ -2606,7 +2956,7 @@ clear error naming the offending variable, wit…</td>
 <td align="left">An unknown back_transform name errors up front, listing
 the known names (“log”, “log10”, …) — consistent wit…</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">s2_21_err_back_transform_extra_args</td>
 <td align="left">OK</td>
 <td align="left">console</td>
@@ -2614,7 +2964,7 @@ the known names (“log”, “log10”, …) — consistent wit…</td>
 <td align="left">A back_transform function of 2+ required arguments
 errors up front with a clear message (“must take exactly on…</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">s2_22_deprecated_xaxis_alias</td>
 <td align="left">OK</td>
 <td align="left">console</td>
@@ -2623,7 +2973,7 @@ errors up front with a clear message (“must take exactly on…</td>
 but warns that it is deprecated in favor of <code>x_axis</code>. The
 plot is dr…</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">s2_23_interval_confidence</td>
 <td align="left">OK</td>
 <td align="left">visual</td>
@@ -2631,7 +2981,7 @@ plot is dr…</td>
 <td align="left">mtcars mpg ~ disp + hp sliced over disp with hp held at
 110: the usual scatter and slice line, plus a narrow s…</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">s2_24_interval_prediction</td>
 <td align="left">OK</td>
 <td align="left">visual</td>
@@ -2639,7 +2989,7 @@ plot is dr…</td>
 <td align="left">mtcars mpg ~ disp + hp sliced over disp with hp held at
 110, drawn in firebrick with a wide translucent firebr…</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">s2_25_err_stale_data</td>
 <td align="left">OK</td>
 <td align="left">console</td>
@@ -2647,7 +2997,7 @@ plot is dr…</td>
 <td align="left">The data frame is mutated after the model is fitted, so
 the scatter slice_2d() would draw is not the data the …</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">s2_26_back_transform_string</td>
 <td align="left">OK</td>
 <td align="left">visual</td>
@@ -2655,7 +3005,7 @@ the scatter slice_2d() would draw is not the data the …</td>
 <td align="left">Model log(y) ~ x with back_transform = “log”: an
 exponential curve through the raw-scale points, identical to …</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">sb_01_default_imputed</td>
 <td align="left">OK</td>
 <td align="left">visual</td>
@@ -2663,7 +3013,7 @@ exponential curve through the raw-scale points, identical to …</td>
 <td align="left">One skyblue slice of y ~ x + x2 with x2 imputed at its
 mean. Called with NO parameters, geom_slice_subtitle() …</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">sb_02_predict_vars</td>
 <td align="left">OK</td>
 <td align="left">visual</td>
@@ -2671,7 +3021,7 @@ mean. Called with NO parameters, geom_slice_subtitle() …</td>
 <td align="left">One skyblue slice with x2 pinned by the USER via
 predict_vars = list(x2 = 1). Nothing on the plot labels that …</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">sb_03_text_labeled_excluded</td>
 <td align="left">OK</td>
 <td align="left">visual</td>
@@ -2679,7 +3029,7 @@ predict_vars = list(x2 = 1). Nothing on the plot labels that …</td>
 <td align="left">Two skyblue slices (x2 at 0 and 4) labeled at their
 right ends by geom_slice_text() (“x2: 0”, “x2: 4”), plus a…</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">sb_04_model_off</td>
 <td align="left">OK</td>
 <td align="left">visual</td>
@@ -2687,7 +3037,7 @@ right ends by geom_slice_text() (“x2: 0”, “x2: 4”), plus a…</td>
 <td align="left">Same slice as sb_01 (x2 imputed at its mean), but
 called with model = FALSE: the equation line is dropped, so …</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">sb_05_prepend_append</td>
 <td align="left">OK</td>
 <td align="left">visual</td>
@@ -2695,7 +3045,7 @@ called with model = FALSE: the equation line is dropped, so …</td>
 <td align="left">The simple-control version: prepend/append are plain
 strings pasted around the default subtitle. With prepend …</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">sb_06_format_function</td>
 <td align="left">OK</td>
 <td align="left">visual</td>
@@ -2703,7 +3053,7 @@ strings pasted around the default subtitle. With prepend …</td>
 <td align="left">The high-control version: format = function(equation,
 values) takes the ready-made equation string and the nam…</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">sb_07_grouped_legend_excluded</td>
 <td align="left">OK</td>
 <td align="left">visual</td>
@@ -2711,7 +3061,7 @@ values) takes the ready-made equation string and the nam…</td>
 <td align="left">Interaction model y ~ x * g + x2 with aes(color = g):
 one slice per group, g pinned per group and ALREADY labe…</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">sb_08_nothing_held</td>
 <td align="left">OK</td>
 <td align="left">visual</td>
@@ -2719,7 +3069,7 @@ one slice per group, g pinned per group and ALREADY labe…</td>
 <td align="left">Single-predictor model y ~ x: nothing is imputed or
 pinned, so there is no held-values line at all. The defaul…</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">sb_09_multi_value_factor</td>
 <td align="left">OK</td>
 <td align="left">visual</td>
@@ -2727,7 +3077,7 @@ pinned, so there is no held-values line at all. The defaul…</td>
 <td align="left">Model y ~ x + x2 + g (g a factor) with predict_vars =
 list(x2 = c(0, 4)) and NO geom_slice_text: two unlabeled…</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">sb_10_warn_no_slice_layer</td>
 <td align="left">OK</td>
 <td align="left">console</td>
@@ -2735,7 +3085,7 @@ list(x2 = c(0, 4)) and NO geom_slice_text: two unlabeled…</td>
 <td align="left">A clear warning that the plot has no geom_slice() layer
 to describe (there is no model or held values to repor…</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">sb_11_warn_multiple_models</td>
 <td align="left">OK</td>
 <td align="left">console</td>
@@ -2743,7 +3093,7 @@ to describe (there is no model or held values to repor…</td>
 <td align="left">A clear warning that the plot’s geom_slice() layers use
 two different models — a subtitle can describe ONE mod…</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">sb_12_band_spanning</td>
 <td align="left">OK</td>
 <td align="left">visual</td>
@@ -2751,7 +3101,7 @@ two different models — a subtitle can describe ONE mod…</td>
 <td align="left">One projection band (x2 from 1 to 4, band = TRUE) on a
 skyblue slice pair. The subtitle reports the banded var…</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">sb_13_band_and_held</td>
 <td align="left">OK</td>
 <td align="left">visual</td>
@@ -2766,7 +3116,7 @@ x3 pinned at a single value (2). The subtitle reports …</td>
 <div id="cases" class="section level1">
 <h1>Cases</h1>
 <pre class="r"><code># Each case section is assembled from this run&#39;s artifacts. Image src paths
-# are resolved by pandoc relative to this Rmd (testing/); widths in px match
+# are resolved by pandoc relative to this Rmd (tests/); widths in px match
 # 72 px per inch of the case&#39;s SIZE so output and reference compare at the
 # same scale.
 case_block &lt;- function(m) {
@@ -2786,11 +3136,11 @@ case_block &lt;- function(m) {
   }
 
   # the case source, folded, never evaluated here
-  out &lt;- c(out, sprintf(&#39;```{r %s, eval=FALSE, code=xfun::read_utf8(&quot;testing/cases/%s.R&quot;)}\n```\n&#39;,
+  out &lt;- c(out, sprintf(&#39;```{r %s, eval=FALSE, code=xfun::read_utf8(&quot;tests/cases/%s.R&quot;)}\n```\n&#39;,
                         m$id, m$id))
 
-  pngs &lt;- list.files(&quot;testing/output&quot;, sprintf(&quot;^%s(-\\d+)?\\.png$&quot;, m$id))
-  txt  &lt;- file.path(&quot;testing/output&quot;, paste0(m$id, &quot;.txt&quot;))
+  pngs &lt;- list.files(&quot;tests/output&quot;, sprintf(&quot;^%s(-\\d+)?\\.png$&quot;, m$id))
+  txt  &lt;- file.path(&quot;tests/output&quot;, paste0(m$id, &quot;.txt&quot;))
 
   if (m$type != &quot;console&quot;) {
     if (length(pngs) &gt; 0) {
@@ -2812,7 +3162,7 @@ case_block &lt;- function(m) {
     }
   }
 
-  if (m$type != &quot;console&quot; &amp;&amp; file.exists(file.path(&quot;testing/reference&quot;, paste0(m$id, &quot;.png&quot;)))) {
+  if (m$type != &quot;console&quot; &amp;&amp; file.exists(file.path(&quot;tests/reference&quot;, paste0(m$id, &quot;.png&quot;)))) {
     out &lt;- c(out, &quot;**Reference (ground truth):**\n&quot;,
              sprintf(&#39;&lt;img src=&quot;reference/%s.png&quot; width=&quot;%d&quot;&gt;\n&#39;, m$id, px))
   }
@@ -2847,7 +3197,7 @@ line through the points. Line should be nearly perfect (y = x, so slope
 #         Line should be nearly perfect (y = x, so slope ~1, intercept ~0).
 #         No errors or warnings about missing variables.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -2882,7 +3232,7 @@ should sit near the center of the point cloud. No errors.</p>
 #         Line should sit near the center of the point cloud.
 #         No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -2922,7 +3272,7 @@ mean(x_pos)~=5. No errors.</p>
 #         because x_pos=0.007 contributes much less to y than mean(x_pos)~=5.
 #         No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -2960,7 +3310,7 @@ separated (intercept difference ~8), same slope, no crossing.</p>
 #         The two lines should be clearly separated (intercept difference ~8),
 #         same slope, no crossing.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -2998,7 +3348,7 @@ curvature. No errors.</p>
 #         Not a straight line — must show visible curvature.
 #         No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3037,7 +3387,7 @@ errors.</p>
 #         Three distinct lines with different slopes radiating from origin.
 #         No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3080,7 +3430,7 @@ per x_switch value). Result should visually match gs_06. No errors.</p>
 #         Result should visually match gs_06.
 #         No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3121,7 +3471,7 @@ slice accordingly. No errors.</p>
 #         geom_slice() should detect the facet variable and slice accordingly.
 #         No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3164,7 +3514,7 @@ log(y) back-transformed to the y axis.</p>
 #         Console message: predictions of log(y) back-transformed to the
 #         y axis.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3207,7 +3557,7 @@ back-transformed to the y axis.</p>
 #         Console message: predictions of sqrt(y) back-transformed to the
 #         y axis.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3251,7 +3601,7 @@ of 1/y back-transformed to the y axis.</p>
 #         A straight line on this plot means back-transformation failed.
 #         Console message: predictions of 1/y back-transformed to the y axis.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3293,7 +3643,7 @@ its mean (146.7). No errors.</p>
 #         Console message: hp not specified, held at its mean (146.7).
 #         No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ disp + hp, data = mtcars)
 
@@ -3331,7 +3681,7 @@ line. No errors.</p>
 #         Both lines slope downward. Red line sits below blue line.
 #         No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ disp + hp, data = mtcars)
 
@@ -3370,7 +3720,7 @@ matters). No errors.</p>
 #         Lines should NOT be identical across panels (cyl matters).
 #         No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ disp + hp + cyl, data = mtcars)
 
@@ -3408,7 +3758,7 @@ variables simultaneously. No errors.</p>
 #         Tests that geom_slice can handle many held variables simultaneously.
 #         No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ disp + hp + wt + drat, data = mtcars)
 
@@ -3446,7 +3796,7 @@ crashes, factor handling in predict() is the likely culprit.)</p>
 #         Tests that geom_slice handles factor predictors without crashing.
 #         No errors. (If it crashes, factor handling in predict() is the likely culprit.)
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 mtcars2 &lt;- mtcars
 mtcars2$cyl &lt;- factor(mtcars2$cyl)
@@ -3502,7 +3852,7 @@ group.</p>
 #   This is the integration stress test: grouping + faceting together is the combination
 #   the SliceLayer structural issue (see for_devs/known_issues.Rmd) is expected to break.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 240
@@ -3563,7 +3913,7 @@ w_fac (factor) -&gt; mode (“a”), s_chr (character) -&gt; mode (“p”).</p>
 #   impute item in for_devs/dev_todo.Rmd) and therefore cannot be tested yet — when
 #   that feature lands, add gs_ cases exercising each new impute method.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 120
@@ -3611,7 +3961,7 @@ through the origin, passing exactly through every point. No errors.</p>
 #         slice must be ONE straight line of slope 1 through the origin,
 #         passing exactly through every point. No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3648,7 +3998,7 @@ exactly through every point. No errors.</p>
 #         ONE straight line of slope 3 and intercept 2, passing exactly
 #         through every point. No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3684,7 +4034,7 @@ exactly through every point. No errors.</p>
 #         line of slope 2 and intercept 1, passing exactly through every
 #         point. No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3720,7 +4070,7 @@ through every point. No errors.</p>
 #         line of slope 5 and intercept 2, passing exactly through every
 #         point. No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3758,7 +4108,7 @@ through the origin, passing exactly through every point. No errors.</p>
 #         slice must be ONE straight line of slope 1 through the origin,
 #         passing exactly through every point. No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3799,7 +4149,7 @@ axis the line appears as a steepening upward curve
 #         appears as a steepening upward curve (exponential-looking), NOT a
 #         straight line. No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3838,7 +4188,7 @@ axis the line appears as a rising curve that flattens to the right
 #         as a rising curve that flattens to the right (log-looking), NOT a
 #         straight line. No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3881,7 +4231,7 @@ errors.</p>
 #         A curved (exponential) line means it wrongly back-transformed.
 #         No errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3917,7 +4267,7 @@ should be a friendly model-type check instead.</p>
 #         internal &quot;no terms component nor attribute&quot; error — should be a
 #         friendly model-type check instead.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3950,7 +4300,7 @@ explicitly.</p>
 #         parameters: `x_axis`&quot;) and draws the default slice — if x_axis is not
 #         a supported parameter it should say so explicitly.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -3984,7 +4334,7 @@ newdata row counts — review.</p>
 #         &quot;df_with_dollar$y&quot; and &quot;df_with_dollar$x&quot; as held variables (with
 #         messages) and warns about newdata row counts — review.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4000,8 +4350,8 @@ try_show(ggplot(data.frame(x, y), aes(x, y)) +
 <pre><code>Error: Models with `$` in their variable names (`df_with_dollar$y`) are not supported.
     Refit using the data argument, such as &#39;lm(y ~ x, data = your_data)&#39;. </code></pre>
 </div>
-<div id="gs_30_err_character_variable" class="section level3">
-<h3>gs_30_err_character_variable</h3>
+<div id="gs_30_character_variable" class="section level3">
+<h3>gs_30_character_variable</h3>
 <blockquote>
 <p><strong>Expect:</strong> geom_slice SUPPORTS character predictors: it
 should impute char_var by mode (“a”) with a console message and draw the
@@ -4009,14 +4359,14 @@ slice without errors. (See gs_18 for the visual impute-type
 coverage.)</p>
 </blockquote>
 <p><strong>Status:</strong> OK</p>
-<pre class="r"><code># CASE: gs_30_err_character_variable
-# TYPE: console
+<pre class="r"><code># CASE: gs_30_character_variable
+# TYPE: visual
 # FUNC: geom_slice
 # EXPECT: geom_slice SUPPORTS character predictors: it should impute char_var
 #         by mode (&quot;a&quot;) with a console message and draw the slice without
 #         errors. (See gs_18 for the visual impute-type coverage.)
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4029,6 +4379,8 @@ model &lt;- lm(y ~ x + char_var, data = df_char)
 try_show(ggplot(df_char, aes(x, y)) +
            geom_point() +
            geom_slice(model))</code></pre>
+<p><strong>Output (this run):</strong></p>
+<p><img role="img" src="data:image/png;base64,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" width="504"></p>
 <p><strong>Console output (this run):</strong></p>
 <pre><code>Message: Value for `char_var` not specified - Used most common: &quot;a&quot;
     To choose a slice, use &#39;predict_vars = list(char_var = &quot;a&quot;)&#39;. </code></pre>
@@ -4047,7 +4399,7 @@ saying so.</p>
 # EXPECT: back_transform must be a boolean or one-argument function. A list
 #         should produce a clear warning or error saying so.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4075,7 +4427,7 @@ should produce a clear error or warning — not silently misbehave.</p>
 # EXPECT: A back_transform function of 2+ arguments should produce a clear
 #         error or warning — not silently misbehave.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4105,7 +4457,7 @@ ribbon around it (see reference).</p>
 #         straight downward line with a NARROW confidence ribbon around it
 #         (see reference).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ disp + hp, data = mtcars)
 
@@ -4132,7 +4484,7 @@ ribbon containing most of the points (see reference).</p>
 #         straight downward line with a WIDE prediction ribbon containing
 #         most of the points (see reference).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ disp + hp, data = mtcars)
 
@@ -4158,7 +4510,7 @@ its default color.</p>
 # EXPECT: Three parallel lines of slope ~1, one per x_pos value (1, 5, 9),
 #         evenly offset in y. geom_slice draws all three in its default color.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4191,7 +4543,7 @@ highest: x2=3,x3=4). geom_slice draws all six in its default color.</p>
 #         offset by 3*x2 + 0.7*x3 (lowest: x2=1,x3=1; highest: x2=3,x3=4).
 #         geom_slice draws all six in its default color.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 60
@@ -4225,7 +4577,7 @@ when the layer is added to the plot, before anything is drawn).</p>
 #         data `model` was fitted to (raised when the layer is added to the
 #         plot, before anything is drawn).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4259,7 +4611,7 @@ by color (x2) and linetype (x3).</p>
 #         offset by 3*x2 + 3*x3. Lines are distinguished by color (x2) 
 #         and linetype (x3).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 60
@@ -4293,7 +4645,7 @@ color (x2) has values 0, 2, 4. No console output.</p>
 #         6 lines, 3 per facet. Facets (x3) have values 1, 2. 
 #         color (x2) has values 0, 2, 4. No console output.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 60
@@ -4331,7 +4683,7 @@ was ignored.</p>
 #         The fitted line must be the same decreasing hyperbolic curve as
 #         gs_11. A straight line means the explicit function was ignored.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4369,7 +4721,7 @@ upward exponential curve as gs_09. A straight line = FAIL.</p>
 #         of auto-detection. The fitted line must be the same upward
 #         exponential curve as gs_09. A straight line = FAIL.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4407,7 +4759,7 @@ the opt-out was ignored and it back-transformed anyway.</p>
 #         line of slope ~1 through the points. A hyperbolic curve means the
 #         opt-out was ignored and it back-transformed anyway.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4447,7 +4799,7 @@ hyperbolic curve means it wrongly back-transformed.</p>
 #         decreasing-transform analog of gs_26 (which uses log).
 #         A hyperbolic curve means it wrongly back-transformed.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4486,7 +4838,7 @@ predictions of exp(y) back-transformed to the y axis.</p>
 #         Console message: predictions of exp(y) back-transformed to the
 #         y axis.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4527,7 +4879,7 @@ message: predictions of y^2 back-transformed to the y axis.</p>
 #         small x_pos, flattening to the right). Straight line = FAIL.
 #         Console message: predictions of y^2 back-transformed to the y axis.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4566,7 +4918,7 @@ one, sharing one straight downward line (see reference).</p>
 #         together — a NARROW ribbon nested inside a WIDE one, sharing one
 #         straight downward line (see reference).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ disp + hp, data = mtcars)
 
@@ -4598,7 +4950,7 @@ only its own group’s displ range.</p>
 #         curve should follow its own group&#39;s points and span only its own
 #         group&#39;s displ range.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(hwy ~ displ + I(displ^2) + displ:drv, data = mpg)
 
@@ -4629,7 +4981,7 @@ first).</p>
 #         discrete.&quot; (imputation messages for the held variable may print
 #         first).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 mtcars2 &lt;- mtcars
 mtcars2$cyl &lt;- factor(mtcars2$cyl)
@@ -4665,7 +5017,7 @@ still draw as ordinary slices.</p>
 #         multi-value predict_vars variable; the edge lines still draw as
 #         ordinary slices.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4706,7 +5058,7 @@ imputed from the min/max data range.</p>
 #         1-9). Console message: band range for x_pos not specified, imputed
 #         from the min/max data range.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4751,7 +5103,7 @@ group across facets).</p>
 #         facet. This mirrors the house-price example plot (bands per color
 #         group across facets).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(hwy ~ displ * drv + cyl, data = mpg)
 
@@ -4787,7 +5139,7 @@ imputed from the min/max data range).</p>
 #         including the same console message (band range for x_pos imputed
 #         from the min/max data range).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4829,7 +5181,7 @@ still draws — no further errors.</p>
 #         predictor (or a band = &quot;variable&quot; choice). The slice line still
 #         draws — no further errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4870,7 +5222,7 @@ still draws — no further errors.</p>
 #         to choose automatically. The slice line still draws — no further
 #         errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4912,7 +5264,7 @@ errors.</p>
 #         band could actually use (here x_pos) and offer band = TRUE to choose
 #         automatically. The slice line still draws — no further errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -4953,7 +5305,7 @@ errors.</p>
 #         should name predictors a band could actually use (here cyl) and
 #         offer band = TRUE. The slice lines still draw — no further errors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(hwy ~ displ * drv + cyl, data = mpg)
 
@@ -4987,7 +5339,7 @@ group’s points. No errors or warnings.</p>
 #         range (0 to ~10), extending well past their own group&#39;s points.
 #         No errors or warnings.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(57)
 
 n &lt;- 40
@@ -5027,7 +5379,7 @@ used.</p>
 #         points) with a slice line of slope ~1 through the points.
 #         Console message: x_axis not specified, first x variable (x) used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5059,7 +5411,7 @@ message reports x_axis defaulting to the first x variable (x).</p>
 #         in the caption above the plot. A second console message reports
 #         x_axis defaulting to the first x variable (x).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5091,7 +5443,7 @@ x are specified.</p>
 # EXPECT: Scatter of x_pos vs y (y ~ x + x_pos) with a slice line, x held at 0
 #         (shown in the caption). Silent: both x_axis and x are specified.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5125,7 +5477,7 @@ message reports x_axis defaulting to x.</p>
 #         through the middle of the point cloud. A second console message
 #         reports x_axis defaulting to x.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5159,7 +5511,7 @@ the caption). Console message: x not specified, held at its mean
 #         with a slice line (x held at some value shown in the caption).
 #         Console message: x not specified, held at its mean (~0.4).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5193,7 +5545,7 @@ is held.</p>
 #         predictions are made at the data points and placed at x*x_pos.
 #         Silent: every predictor is on the x-axis, nothing is held.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5223,7 +5575,7 @@ variable (x), and x_switch held at its mean (~0.9).</p>
 #         Console messages: x_axis defaulting to the first x variable (x),
 #         and x_switch held at its mean (~0.9).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5256,7 +5608,7 @@ Console message: x_axis not specified, first x variable (x) used.</p>
 #         parabola through the points (not a straight line).
 #         Console message: x_axis not specified, first x variable (x) used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5287,7 +5639,7 @@ variable (x) used.</p>
 #         hyperbolic slice line. A straight line means back-transform failed.
 #         Console message: x_axis not specified, first x variable (x) used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5318,7 +5670,7 @@ line = FAIL. Console message: x_axis not specified, first x variable
 #         with a back-transformed upward parabola. Straight line = FAIL.
 #         Console message: x_axis not specified, first x variable (x_pos) used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5349,7 +5701,7 @@ variable (x_pos) used.</p>
 #         with a back-transformed exponential curve. Straight line = FAIL.
 #         Console message: x_axis not specified, first x variable (x_pos) used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5380,7 +5732,7 @@ variable (x_pos) used.</p>
 #         with a back-transformed logarithmic curve. Straight line = FAIL.
 #         Console message: x_axis not specified, first x variable (x_pos) used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5411,7 +5763,7 @@ line = FAIL. Console message: x_axis not specified, first x variable
 #         with a back-transformed square-root curve. Straight line = FAIL.
 #         Console message: x_axis not specified, first x variable (x_pos) used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5441,7 +5793,7 @@ message: x_axis not specified, first x variable (disp) used.</p>
 #         downward-curving back-transformed slice line.
 #         Console message: x_axis not specified, first x variable (disp) used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(log(mpg) ~ disp, mtcars)
 
@@ -5468,7 +5820,7 @@ internal one.</p>
 #         (&#39;`model` must be a model fitted by `lm()`; received a &quot;...&quot;&#39;,
 #         with a refit hint), not an obscure internal one.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 not_a_model &lt;- data.frame(y = c(1, 2, 3), x = c(4, 5, 6))
 
@@ -5492,7 +5844,7 @@ with a hint listing the model’s predictors.</p>
 #         &#39;`x_axis` variable &quot;nonexistent_var&quot; not found in the model.&#39;
 #         with a hint listing the model&#39;s predictors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5520,7 +5872,7 @@ supported.”</p>
 # EXPECT: A clear error explaining the x-axis must be numeric:
 #         &quot;`x_axis` must be numeric; the class \&quot;factor\&quot; is not supported.&quot;
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 mtcars2 &lt;- mtcars
 mtcars2$cyl &lt;- factor(mtcars2$cyl)
@@ -5546,7 +5898,7 @@ cryptic parse failure.</p>
 #         clear error naming the offending variable, with a refit hint — not
 #         a cryptic parse failure.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5575,7 +5927,7 @@ variable and its class, with a hint about supported types.</p>
 #         mode) or fail with a clear message naming the variable and its
 #         class, with a hint about supported types.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5606,7 +5958,7 @@ geom_slice.</p>
 # EXPECT: An unknown back_transform name errors up front, listing the known
 #         names (&quot;log&quot;, &quot;log10&quot;, ...) — consistent with geom_slice.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5633,7 +5985,7 @@ argument”).</p>
 # EXPECT: A back_transform function of 2+ required arguments errors up front
 #         with a clear message (&quot;must take exactly one argument&quot;).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5663,7 +6015,7 @@ message).</p>
 #         deprecated in favor of `x_axis`. The plot is drawn as if
 #         `x_axis = &quot;x_pos&quot;` had been given (no &quot;not specified&quot; message).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5695,7 +6047,7 @@ specified.</p>
 #         usual scatter and slice line, plus a narrow shaded 95% confidence
 #         band hugging the line. Silent: x_axis and hp are both specified.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ disp + hp, data = mtcars)
 slice_2d(model, x_axis = &quot;disp&quot;, hp = 110, interval = &quot;confidence&quot;)</code></pre>
@@ -5719,7 +6071,7 @@ fit the band. Silent: x_axis and hp are both specified.</p>
 #         that covers most of the points. The y-axis extends to fit the band.
 #         Silent: x_axis and hp are both specified.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ disp + hp, data = mtcars)
 slice_2d(model, x_axis = &quot;disp&quot;, hp = 110, interval = &quot;prediction&quot;, col = &quot;firebrick&quot;)</code></pre>
@@ -5743,7 +6095,7 @@ describes. A clear error saying the plotted data is not the data
 #         error saying the plotted data is not the data `model` was fitted to,
 #         with a refit hint.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5776,7 +6128,7 @@ x_axis specified, nothing held.</p>
 #         back-transform (s2_11-style) would draw. Silent: x_axis specified,
 #         nothing held.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5806,7 +6158,7 @@ specified, so the first x variable (x) is used as the x-axis.</p>
 #         add_slice_2d(). Console message: x_axis not specified, so the
 #         first x variable (x) is used as the x-axis.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5841,7 +6193,7 @@ cloud.</p>
 #         A second console message reports x_axis defaulting to the first
 #         x variable (x). Line should sit near the center of the point cloud.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5881,7 +6233,7 @@ so it is specified.)</p>
 #         x-axis, nothing is held. (The default x_axis would pick the first
 #         raw variable `x` — wrong for this plot — so it is specified.)
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5912,7 +6264,7 @@ product term. Console message: x_pos not specified, held at its mean
 #         x_axis = &quot;x&quot;. Review how the slice line handles the product term.
 #         Console message: x_pos not specified, held at its mean (~4.8).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5947,7 +6299,7 @@ times, once per add_slice_2d() call.</p>
 #         Console: the x_axis-not-specified message prints THREE times, once
 #         per add_slice_2d() call.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -5987,7 +6339,7 @@ Console message: x_axis not specified, first x variable (x) used.</p>
 #         parabola through the points (not a straight line).
 #         Console message: x_axis not specified, first x variable (x) used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6020,7 +6372,7 @@ variable (x) used.</p>
 #         hyperbolic slice line. A straight line means back-transform failed.
 #         Console message: x_axis not specified, first x variable (x) used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6053,7 +6405,7 @@ used.</p>
 #         Back-transformed upward parabola. Straight line = FAIL.
 #         Console message: x_axis not specified, first x variable (x_pos) used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6086,7 +6438,7 @@ variable (x_pos) used.</p>
 #         scale. Back-transformed exponential curve. Straight line = FAIL.
 #         Console message: x_axis not specified, first x variable (x_pos) used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6119,7 +6471,7 @@ variable (x_pos) used.</p>
 #         scale. Back-transformed logarithmic curve. Straight line = FAIL.
 #         Console message: x_axis not specified, first x variable (x_pos) used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6152,7 +6504,7 @@ line = FAIL. Console message: x_axis not specified, first x variable
 #         scale. Back-transformed square-root curve. Straight line = FAIL.
 #         Console message: x_axis not specified, first x variable (x_pos) used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6184,7 +6536,7 @@ the non-lm object (‘<code>model</code> must be a model fitted by
 #         (&#39;`model` must be a model fitted by `lm()`; received a &quot;...&quot;&#39;,
 #         with a refit hint).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6213,7 +6565,7 @@ with a hint listing the model’s predictors.</p>
 #         &#39;`x_axis` variable &quot;nonexistent_var&quot; not found in the model.&#39;
 #         with a hint listing the model&#39;s predictors.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6242,7 +6594,7 @@ supported.”</p>
 # EXPECT: A clear error explaining the x-axis must be numeric:
 #         &quot;`x_axis` must be numeric; the class \&quot;factor\&quot; is not supported.&quot;
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 mtcars2 &lt;- mtcars
 mtcars2$cyl &lt;- factor(mtcars2$cyl)
@@ -6267,7 +6619,7 @@ offending variable, with a refit hint.</p>
 # EXPECT: A model fit as lm(df$y ~ df$x): a clear error naming the offending
 #         variable, with a refit hint.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6297,7 +6649,7 @@ variable and its class, with a hint about supported types.</p>
 #         mode) or fail with a clear message naming the variable and its
 #         class, with a hint about supported types.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6330,7 +6682,7 @@ called yet”; a friendlier message would be better.</p>
 #         raw base-graphics &quot;plot.new has not been called yet&quot;; a friendlier
 #         message would be better.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6360,7 +6712,7 @@ report).</p>
 #         data. Ideally a warning that the ranges don&#39;t match; currently the
 #         line is drawn silently (review the plot in the report).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6392,7 +6744,7 @@ a warning; currently silent (review the plot in the report).</p>
 #         x_pos — the line lands in the wrong region. Ideally a warning;
 #         currently silent (review the plot in the report).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6425,7 +6777,7 @@ the plot in the report).</p>
 #         points. Ideally a warning; currently silent (review the plot in
 #         the report).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6454,7 +6806,7 @@ up front with a clear message — consistent with geom_slice.</p>
 #         known transformation name. A number errors up front with a clear
 #         message — consistent with geom_slice.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6482,7 +6834,7 @@ argument”).</p>
 # EXPECT: A back_transform function of 2+ required arguments errors up front
 #         with a clear message (&quot;must take exactly one argument&quot;).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6512,7 +6864,7 @@ hp are specified.</p>
 #         a firebrick slice line (hp held at 110) with a translucent firebrick
 #         95% confidence band around it. Silent: x_axis and hp are specified.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ disp + hp, data = mtcars)
 
@@ -6537,7 +6889,7 @@ add_slice_2d(model, x_axis = &quot;disp&quot;, hp = 110, interval = &quot;confid
 # EXPECT: &quot;y = &lt;intercept&gt; + 1*x&quot; with coefficients to 3 significant figures
 #         (intercept ~0 in scientific notation is fine).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6561,7 +6913,7 @@ try_show(lm_equation(model))</code></pre>
 # FUNC: lm_equation
 # EXPECT: &quot;y = &lt;intercept&gt; + 1*x + 1*x_pos&quot;.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6586,7 +6938,7 @@ the I() term shown as-is.</p>
 # FUNC: lm_equation
 # EXPECT: &quot;y = &lt;intercept&gt; + 1*I(x * x_pos)&quot; — the I() term shown as-is.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6611,7 +6963,7 @@ interaction term shown as-is.</p>
 # FUNC: lm_equation
 # EXPECT: &quot;y = &lt;intercept&gt; + 1*x:x_switch&quot; — the interaction term shown as-is.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6636,7 +6988,7 @@ try_show(lm_equation(model))</code></pre>
 # FUNC: lm_equation
 # EXPECT: &quot;y = &lt;intercept&gt; + 1*x + 1*I(x^2)&quot;.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6660,7 +7012,7 @@ side: “1/y = … + 1*x”.</p>
 # FUNC: lm_equation
 # EXPECT: The transformed response on the left-hand side: &quot;1/y = ... + 1*x&quot;.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6685,7 +7037,7 @@ side: “sqrt(y) = … + 1*x_pos”.</p>
 # EXPECT: The transformed response on the left-hand side:
 #         &quot;sqrt(y) = ... + 1*x_pos&quot;.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6710,7 +7062,7 @@ side: “log(y) = … + 1*x_pos”.</p>
 # EXPECT: The transformed response on the left-hand side:
 #         &quot;log(y) = ... + 1*x_pos&quot;.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6735,7 +7087,7 @@ side: “exp(y) = … + 1*x_pos”.</p>
 # EXPECT: The transformed response on the left-hand side:
 #         &quot;exp(y) = ... + 1*x_pos&quot;.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6760,7 +7112,7 @@ side: “y^2 = … + 1*x_pos”.</p>
 # EXPECT: The transformed response on the left-hand side:
 #         &quot;y^2 = ... + 1*x_pos&quot;.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -6785,7 +7137,7 @@ rendered via “-” (not “+ -”): “log(mpg) = 3.45 - 0.00212*disp”.</p>
 # EXPECT: Real-data equation with a negative slope rendered via &quot;- &quot; (not
 #         &quot;+ -&quot;): &quot;log(mpg) = 3.45 - 0.00212*disp&quot;.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(log(mpg) ~ disp, mtcars)
 
@@ -6807,7 +7159,7 @@ design-matrix names.</p>
 # EXPECT: factor terms shown as dummy coefficient names (gB, gC, x:gB, x:gC)
 #         — the default (clearer unspecified) keeps design-matrix names.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 60
@@ -6834,7 +7186,7 @@ x:(g=“C”).</p>
 # EXPECT: with clearer = TRUE, factor terms spell out variable and level —
 #         (g=&quot;B&quot;), (g=&quot;C&quot;), and interactions as x:(g=&quot;B&quot;), x:(g=&quot;C&quot;).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 60
@@ -6853,19 +7205,23 @@ try_show(lm_equation(model, clearer = TRUE))</code></pre>
 <div id="la_01_factor_default" class="section level3">
 <h3>la_01_factor_default</h3>
 <blockquote>
-<p><strong>Expect:</strong> display-math LaTeX (<span class="math display">\[...\]</span>) with underbrace labels; factor
-terms shown as dummy coefficient names (gB, gC, x:gB, x:gC) — the
+<p><strong>Expect:</strong> display-math LaTeX <span class="math display">\[\underbrace{\hat{Y_i}}_{\text{Pred. y}} = 2.12 +
+0.465\underbrace{X_{1i}}_{\text{x}} + 4\underbrace{X_{2i}}_{\text{gB}} -
+3.19\underbrace{X_{3i}}_{\text{gC}} +
+0.771\underbrace{X_{4i}}_{\text{x:gB}} +
+0.046\underbrace{X_{5i}}_{\text{x:gC}}\]</span> with underbrace labels;
+factor terms shown as dummy coefficient names (gB, gC, x:gB, x:gC) — the
 default (clearer unspecified) keeps design-matrix names.</p>
 </blockquote>
 <p><strong>Status:</strong> OK</p>
 <pre class="r"><code># CASE: la_01_factor_default
 # TYPE: console
 # FUNC: lm_latex
-# EXPECT: display-math LaTeX ($$...$$) with underbrace labels; factor terms
+# EXPECT: display-math LaTeX $$\underbrace{\hat{Y_i}}_{\text{Pred. y}} = 2.12 + 0.465\underbrace{X_{1i}}_{\text{x}} + 4\underbrace{X_{2i}}_{\text{gB}} - 3.19\underbrace{X_{3i}}_{\text{gC}} + 0.771\underbrace{X_{4i}}_{\text{x:gB}} + 0.046\underbrace{X_{5i}}_{\text{x:gC}}$$ with underbrace labels; factor terms
 #         shown as dummy coefficient names (gB, gC, x:gB, x:gC) — the default
 #         (clearer unspecified) keeps design-matrix names.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 60
@@ -6887,19 +7243,25 @@ try_show(lm_latex(model))</code></pre>
 <div id="la_02_factor_clearer" class="section level3">
 <h3>la_02_factor_clearer</h3>
 <blockquote>
-<p><strong>Expect:</strong> display-math LaTeX (<span class="math display">\[...\]</span>) with underbrace labels; with
-clearer = TRUE, factor terms spell out variable and level — (g=“B”),
-(g=“C”), and interactions as x:(g=“B”), x:(g=“C”).</p>
+<p><strong>Expect:</strong> display-math LaTeX <span class="math display">\[\underbrace{\hat{Y_i}}_{\text{Pred. y}} = 2.12 +
+0.465\underbrace{X_{1i}}_{\text{x}} +
+4\underbrace{X_{2i}}_{\text{(g=&quot;B&quot;)}} -
+3.19\underbrace{X_{3i}}_{\text{(g=&quot;C&quot;)}} +
+0.771\underbrace{X_{4i}}_{\text{x:(g=&quot;B&quot;)}} +
+0.046\underbrace{X_{5i}}_{\text{x:(g=&quot;C&quot;)}}\]</span> with
+underbrace labels; with clearer = TRUE, factor terms spell out variable
+and level — (g=“B”), (g=“C”), and interactions as x:(g=“B”),
+x:(g=“C”).</p>
 </blockquote>
 <p><strong>Status:</strong> OK</p>
 <pre class="r"><code># CASE: la_02_factor_clearer
 # TYPE: console
 # FUNC: lm_latex
-# EXPECT: display-math LaTeX ($$...$$) with underbrace labels; with
+# EXPECT: display-math LaTeX $$\underbrace{\hat{Y_i}}_{\text{Pred. y}} = 2.12 + 0.465\underbrace{X_{1i}}_{\text{x}} + 4\underbrace{X_{2i}}_{\text{(g=&quot;B&quot;)}} - 3.19\underbrace{X_{3i}}_{\text{(g=&quot;C&quot;)}} + 0.771\underbrace{X_{4i}}_{\text{x:(g=&quot;B&quot;)}} + 0.046\underbrace{X_{5i}}_{\text{x:(g=&quot;C&quot;)}}$$ with underbrace labels; with
 #         clearer = TRUE, factor terms spell out variable and level —
 #         (g=&quot;B&quot;), (g=&quot;C&quot;), and interactions as x:(g=&quot;B&quot;), x:(g=&quot;C&quot;).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 60
@@ -6939,7 +7301,7 @@ No errors, warnings, or imputation messages.</p>
 #         through the point cloud, theme_lc styling.
 #         No errors, warnings, or imputation messages.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ disp, data = mtcars)
 
@@ -6967,7 +7329,7 @@ downward line — hp is invisible, so geom_slice imputes it at its mean
 #         hp is invisible, so geom_slice imputes it at its mean (~147, console
 #         message). Same slice as gs_12&#39;s reference.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ disp + hp, data = mtcars)
 
@@ -6999,7 +7361,7 @@ line.</p>
 #         must auto back-transform (console message): one smooth decreasing
 #         exp() curve through the raw-scale point cloud, not a straight line.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(log(mpg) ~ disp, data = mtcars)
 
@@ -7030,7 +7392,7 @@ flattening at large disp. No errors; no imputation messages.</p>
 #         logarithmic curve: steep drop at small disp, flattening at large
 #         disp. No errors; no imputation messages.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ log(disp), data = mtcars)
 
@@ -7062,7 +7424,7 @@ grouping into three lines.</p>
 #         setosa cluster and sits above the point cloud at large petal
 #         lengths. No grouping into three lines.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(Sepal.Length ~ Petal.Length + Species, data = iris)
 
@@ -7093,7 +7455,7 @@ no Applr-flavored hint to fit an lm() first.</p>
 #         ggplot2&#39;s autoplot.default error — acceptable, but it carries no
 #         Applr-flavored hint to fit an lm() first.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 not_a_model &lt;- data.frame(y = c(1, 2, 3), x = c(4, 5, 6))
 
@@ -7122,7 +7484,7 @@ plot.</p>
 #         luck (here they are gone by plot time), so autoplot refuses up
 #         front instead of building a broken plot.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 # local() so the vectors are gone by plot time, as they would be for a model
@@ -7155,7 +7517,7 @@ autoplot’s own scope still plots — no errors, warnings, or messages.</p>
 #         fitted to data that is not in autoplot&#39;s own scope still plots —
 #         no errors, warnings, or messages.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 # The data frame lives only in the local() scope, like data created inside a
@@ -7191,7 +7553,7 @@ The plot itself renders fine (same picture as ap_05).</p>
 #         geom_slice imputes its most common level (&quot;setosa&quot;, message).
 #         The plot itself renders fine (same picture as ap_05).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(Sepal.Length ~ Species + Petal.Length, data = iris)
 
@@ -7220,7 +7582,7 @@ first.</p>
 #         argument&quot;). autoplot&#39;s own all.vars()/eval() handling of a
 #         $-style model must not crash with a less helpful error first.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mtcars$mpg ~ mtcars$disp)
 
@@ -7246,7 +7608,7 @@ errors, warnings, or messages.</p>
 #         &quot;confidence&quot;) just work — the plot renders with a ribbon and no
 #         errors, warnings, or messages.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ disp, data = mtcars)
 
@@ -7281,7 +7643,7 @@ for the now-invisible disp is expected.</p>
 #         into one continuous model line (cyl_f is not in the model).
 #         An imputation message for the now-invisible disp is expected.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 
 model &lt;- lm(mpg ~ disp + hp, data = mtcars)
 
@@ -7325,7 +7687,7 @@ untouched.</p>
 #         &quot;held at: x2 = &lt;mean&gt;&quot; (4 sig figs). The subtitle stays empty and
 #         the user&#39;s own labs(title) is untouched.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -7370,7 +7732,7 @@ wording; only the banded variable uses “spanning”.</p>
 #         line 3 &quot;projection: x2 spanning 1-4&quot;. Pinned values keep the
 #         &quot;held at:&quot; wording; only the banded variable uses &quot;spanning&quot;.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -7418,7 +7780,7 @@ the labels fit — no manual scale expansion in this case.</p>
 #         vertically centered, and the geom widens the x-range itself so the
 #         labels fit — no manual scale expansion in this case.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -7463,7 +7825,7 @@ itself to fit the longest label.</p>
 #         same constant gap past their line ends; the geom widens the x-range
 #         itself to fit the longest label.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 60
@@ -7502,7 +7864,7 @@ Skyblue, right ends.</p>
 #         style = &quot;value&quot;: the labels are bare values with no variable name —
 #         &quot;0&quot; on the lower line, &quot;4&quot; on the upper line. Skyblue, right ends.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -7545,7 +7907,7 @@ itself so the key clears the topmost line’s label.</p>
 #         skyblue because all lines share one color, and the geom adds
 #         y-headroom itself so the key clears the topmost line&#39;s label.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 60
@@ -7585,7 +7947,7 @@ right; the x-range expansion moves to the left side accordingly.</p>
 #         LEFT end of each line (right-aligned toward the line), not the
 #         right; the x-range expansion moves to the left side accordingly.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -7628,7 +7990,7 @@ line).</p>
 #         (hjust = 1: right-aligned to the line end; vjust = -0.8: lifted
 #         off the line).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -7670,7 +8032,7 @@ color.</p>
 #         label INHERITS ITS LINE&#39;S COLOR — the two labels on g = &quot;A&quot; lines
 #         match A&#39;s color, the two on g = &quot;B&quot; lines match B&#39;s color.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 80
@@ -7709,7 +8071,7 @@ default.</p>
 #         labels are BLACK, not skyblue — a manual color = &quot;black&quot; on
 #         geom_slice_text overrides the inherit-the-line-color default.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -7749,7 +8111,7 @@ replace the legend.</p>
 #         with its GROUPING variable instead: &quot;g: A&quot; and &quot;g: B&quot; at the right
 #         ends, each in its line&#39;s color — the labels replace the legend.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 80
@@ -7792,7 +8154,7 @@ constant gap and auto x-margin.</p>
 #         gets a BLUE &quot;x2: 0&quot; label, the red line a RED &quot;x2: 1&quot; label, both at
 #         the right line ends with the usual constant gap and auto x-margin.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -7830,7 +8192,7 @@ exist), with a hint to add geom_slice() before geom_slice_text().</p>
 #         (labels would describe lines that do not exist), with a hint to add
 #         geom_slice() before geom_slice_text().
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 30
@@ -7866,7 +8228,7 @@ per plot.</p>
 #         the models (or say how many were found) and hint to label one model
 #         per plot.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 40
@@ -7913,7 +8275,7 @@ emulates.</p>
 #         would be invisible here; a proportional one is what the reference
 #         emulates.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -7959,7 +8321,7 @@ The user’s own labs(title) is untouched.</p>
 #         style &quot;held at: x2 = &lt;mean&gt;&quot; (4 sig figs, matching the console
 #         message). The user&#39;s own labs(title) is untouched.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -8002,7 +8364,7 @@ treated the same — both are unlabeled held values.</p>
 #         line 2 &quot;held at: x2 = 1&quot;. User-specified predict_vars and imputed
 #         values are treated the same — both are unlabeled held values.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -8047,7 +8409,7 @@ subtitle. Console message: x3 not specified, held at its mean
 #         &quot;held at: x3 = &lt;mean&gt;&quot;. No mention of x2 in the subtitle.
 #         Console message: x3 not specified, held at its mean (~-0.083).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 60
@@ -8090,7 +8452,7 @@ x2 not specified, held at its mean (~2.385).</p>
 #         single line &quot;held at: x2 = &lt;mean&gt;&quot;.
 #         Console message: x2 not specified, held at its mean (~2.385).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -8137,7 +8499,7 @@ Console message: x2 not specified, held at its mean (~2.385).</p>
 #         line layout otherwise unchanged.
 #         Console message: x2 not specified, held at its mean (~2.385).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -8185,7 +8547,7 @@ message: x2 not specified, held at its mean (~2.385).</p>
 #         ignored/unused).
 #         Console message: x2 not specified, held at its mean (~2.385).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -8235,7 +8597,7 @@ message: x2 not specified, held at its mean (~2.578).</p>
 #         is the single line &quot;held at: x2 = &lt;mean&gt;&quot;.
 #         Console message: x2 not specified, held at its mean (~2.578).
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 80
@@ -8277,7 +8639,7 @@ blank second line.</p>
 #         the ONE equation line — no dangling &quot;held at:&quot; text, no blank
 #         second line.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 40
@@ -8318,7 +8680,7 @@ message: g not specified, most common level “A” used.</p>
 #         quoted: &quot;held at: x2 = 0, 4; g = \&quot;A\&quot;&quot; (after the equation line).
 #         Console message: g not specified, most common level &quot;A&quot; used.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 60
@@ -8360,7 +8722,7 @@ Mirrors gt_11_warn_no_slice_layer.</p>
 #         geom_slice() before geom_slice_subtitle(). Mirrors
 #         gt_11_warn_no_slice_layer.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 30
@@ -8394,7 +8756,7 @@ per plot. Mirrors gt_12_warn_multiple_models.</p>
 #         added. The warning names the models and hints to use one model per
 #         plot. Mirrors gt_12_warn_multiple_models.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 40
@@ -8435,7 +8797,7 @@ single value would still use the “held at:” wording.</p>
 #         equation, line 2 &quot;projection: x2 spanning 1-4&quot;. Variables pinned
 #         to a single value would still use the &quot;held at:&quot; wording.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50
@@ -8475,7 +8837,7 @@ the “held at:” wording; only the banded variable uses “spanning”.</p>
 #         line 3 &quot;projection: x2 spanning 1-4&quot;. Pinned values keep the
 #         &quot;held at:&quot; wording; only the banded variable uses &quot;spanning&quot;.
 
-source(&quot;testing/_setup.R&quot;)
+source(&quot;tests/_setup.R&quot;)
 set.seed(123)
 
 n &lt;- 50

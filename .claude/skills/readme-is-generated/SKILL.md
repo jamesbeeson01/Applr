@@ -1,6 +1,6 @@
 ---
 name: readme-is-generated
-description: Read BEFORE editing, writing, or fixing anything in README.md at the package root (other README.md files, e.g. testing/README.md, are fine to edit directly). The root README.md is a generated file.
+description: Read BEFORE editing, writing, or fixing anything in README.md at the package root (other README.md files, e.g. tests/README.md, are fine to edit directly). The root README.md is a generated file.
 ---
 
 # The root README.md is generated — never edit it by hand

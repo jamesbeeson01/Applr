@@ -7,7 +7,7 @@
 #         equation, line 2 "projection: x2 spanning 1-4". Variables pinned
 #         to a single value would still use the "held at:" wording.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

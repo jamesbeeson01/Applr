@@ -9,7 +9,7 @@
 #         A curved (exponential) line means it wrongly back-transformed.
 #         No errors.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

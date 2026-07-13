@@ -3,7 +3,7 @@
 # that group's displ range within its facet.
 # Ground truth for geom_slice(predict_vars = list(cyl = c(4, 8)), band = TRUE)
 # on a drv-colored, year-faceted mpg plot.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 
 model <- lm(hwy ~ displ * drv + cyl, data = mpg)
 
@@ -24,5 +24,5 @@ p <- ggplot(mpg, aes(displ, hwy, color = drv)) +
   labs(title = "gs_51 REFERENCE — cyl 4-8 band per drv group, faceted by year",
        subtitle = "Ground truth via predict() at cyl = 4 and cyl = 8 per group subset (no geom_slice)")
 
-ggsave("testing/reference/gs_51_band_grouped_faceted.png", plot = p, width = 10, height = 5)
-message("OK: testing/reference/gs_51_band_grouped_faceted.png")
+ggsave("tests/reference/gs_51_band_grouped_faceted.png", plot = p, width = 10, height = 5)
+message("OK: tests/reference/gs_51_band_grouped_faceted.png")

@@ -1,6 +1,6 @@
 # gs_18 REFERENCE — impute-type coverage ground truth. Single additive slice with
 # z_num / w_fac / s_chr held at mean / mode / mode (the values geom_slice imputes).
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 
 n <- 120
@@ -26,5 +26,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gs_18 REFERENCE — impute types (numeric mean, factor/character mode)",
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_18_impute_types.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_18_impute_types.png")
+ggsave("tests/reference/gs_18_impute_types.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_18_impute_types.png")

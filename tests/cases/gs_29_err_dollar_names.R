@@ -6,7 +6,7 @@
 #         "df_with_dollar$y" and "df_with_dollar$x" as held variables (with
 #         messages) and warns about newdata row counts — review.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

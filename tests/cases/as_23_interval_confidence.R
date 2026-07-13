@@ -5,7 +5,7 @@
 #         a firebrick slice line (hp held at 110) with a translucent firebrick
 #         95% confidence band around it. Silent: x_axis and hp are specified.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(mpg ~ disp + hp, data = mtcars)
 

@@ -6,7 +6,7 @@
 #         The fitted line must be the same decreasing hyperbolic curve as
 #         gs_11. A straight line means the explicit function was ignored.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

@@ -5,7 +5,7 @@
 #         shown as dummy coefficient names (gB, gC, x:gB, x:gC) — the default
 #         (clearer unspecified) keeps design-matrix names.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 60

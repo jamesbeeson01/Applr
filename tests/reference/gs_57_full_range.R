@@ -1,6 +1,6 @@
 # gs_57 REFERENCE — full_range = TRUE. Ground truth, no geom_slice/geom_smooth.
 # Each group's line spans the FULL panel x range (all data), not its own range.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(57)
 
 n <- 40
@@ -24,5 +24,5 @@ p <- ggplot(dat, aes(x, y, color = g)) +
   labs(title = "gs_57 REFERENCE — full_range = TRUE",
        subtitle = "Ground truth via predict(): both lines span the whole panel x range")
 
-ggsave("testing/reference/gs_57_full_range.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_57_full_range.png")
+ggsave("tests/reference/gs_57_full_range.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_57_full_range.png")

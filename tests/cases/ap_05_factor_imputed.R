@@ -8,7 +8,7 @@
 #         setosa cluster and sits above the point cloud at large petal
 #         lengths. No grouping into three lines.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 
 model <- lm(Sepal.Length ~ Petal.Length + Species, data = iris)
 

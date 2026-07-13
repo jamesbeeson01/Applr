@@ -9,7 +9,7 @@
 #         ignored/unused).
 #         Console message: x2 not specified, held at its mean (~2.385).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

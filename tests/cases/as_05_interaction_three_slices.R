@@ -6,7 +6,7 @@
 #         Console: the x_axis-not-specified message prints THREE times, once
 #         per add_slice_2d() call.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

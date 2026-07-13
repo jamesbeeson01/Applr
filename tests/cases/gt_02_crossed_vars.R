@@ -9,7 +9,7 @@
 #         same constant gap past their line ends; the geom widens the x-range
 #         itself to fit the longest label.
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 60

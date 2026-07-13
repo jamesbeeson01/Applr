@@ -1,7 +1,7 @@
 # gs_46 REFERENCE — slice at hp = 110 with BOTH ribbons: the wide prediction
 # ribbon underneath and the narrow confidence ribbon nested on top, sharing
 # one fitted line. Ground truth for two stacked geom_slice interval layers.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 
 model <- lm(mpg ~ disp + hp, data = mtcars)
 xr <- range(mtcars$disp)
@@ -19,5 +19,5 @@ p <- ggplot(mtcars, aes(disp, mpg)) +
   labs(title = "gs_46 REFERENCE — hp = 110 slice, confidence ribbon nested in prediction ribbon",
        subtitle = "Ground truth via predict(interval = ...) (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_46_both_intervals.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_46_both_intervals.png")
+ggsave("tests/reference/gs_46_both_intervals.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_46_both_intervals.png")

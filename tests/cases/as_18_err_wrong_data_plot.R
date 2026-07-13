@@ -5,7 +5,7 @@
 #         data. Ideally a warning that the ranges don't match; currently the
 #         line is drawn silently (review the plot in the report).
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

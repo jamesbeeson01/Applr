@@ -1,6 +1,6 @@
 # gt_01 REFERENCE — two parallel slices (x2 = 0, 4), each labeled at its right
 # end in the default "variable: value" style ("x2: 0", "x2: 4"), skyblue.
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -32,5 +32,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "gt_01 REFERENCE — 'x2: 0' and 'x2: 4' at right line ends",
        subtitle = "Ground truth via predict() + geom_text (no Applr)")
 
-ggsave("testing/reference/gt_01_default_two_lines.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gt_01_default_two_lines.png")
+ggsave("tests/reference/gt_01_default_two_lines.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gt_01_default_two_lines.png")

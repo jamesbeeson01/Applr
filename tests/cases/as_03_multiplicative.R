@@ -7,7 +7,7 @@
 #         x-axis, nothing is held. (The default x_axis would pick the first
 #         raw variable `x` — wrong for this plot — so it is specified.)
 
-source("testing/_setup.R")
+source("tests/_setup.R")
 set.seed(123)
 
 n <- 50

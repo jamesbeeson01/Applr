@@ -1,5 +1,5 @@
 # gs_16 REFERENCE — mtcars, mpg ~ factor(cyl) + disp, cyl held at its most common level ("8").
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 mtcars2 <- mtcars
 mtcars2$cyl <- factor(mtcars2$cyl)
 model <- lm(mpg ~ cyl + disp, data = mtcars2)
@@ -15,5 +15,5 @@ p <- ggplot(mtcars2, aes(disp, mpg)) +
                       most_common_level, " (most common)"),
        subtitle = "Ground truth via predict() (no geom_slice, no geom_smooth)")
 
-ggsave("testing/reference/gs_16_factor_predictor.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/gs_16_factor_predictor.png")
+ggsave("tests/reference/gs_16_factor_predictor.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/gs_16_factor_predictor.png")

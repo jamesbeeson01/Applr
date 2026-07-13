@@ -1,6 +1,6 @@
 # sb_06 REFERENCE — a custom format function replaces the whole subtitle with
 # one line: "Fitted <equation> holding x2 at <mean>".
-source("testing/reference/_ref_helpers.R")
+source("tests/reference/_ref_helpers.R")
 set.seed(123)
 n <- 50
 x <- runif(n, -10, 10)
@@ -20,5 +20,5 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "sb_06 REFERENCE — custom one-line format function",
        subtitle = subtitle)
 
-ggsave("testing/reference/sb_06_format_function.png", plot = p, width = 7, height = 5)
-message("OK: testing/reference/sb_06_format_function.png")
+ggsave("tests/reference/sb_06_format_function.png", plot = p, width = 7, height = 5)
+message("OK: tests/reference/sb_06_format_function.png")
