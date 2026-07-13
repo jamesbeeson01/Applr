@@ -306,7 +306,10 @@ ggplot_add.slice_text_spec <- function(object, plot, ...) {
     labels <- unique(unlist(lapply(slice_layers, slice_text_labels,
                                    plot = plot, style = object$style)))
     if (length(labels) > 0) {
-      ex <- 0.025 + 0.013 * max(nchar(labels))
+      # The draw-time point-offset never trains the x-scale, so the expansion
+      # must cover it too (0.0028 per point ~ the offset as a fraction of a
+      # typical panel width).
+      ex <- 0.025 + 0.013 * max(nchar(labels)) + 0.0028 * abs(offset_points)
       mult <- if (right) c(0.05, ex) else c(ex, 0.05)
       plot <- plot + scale_x_continuous(expand = expansion(mult = mult))
       if (object$style == "legend") {
