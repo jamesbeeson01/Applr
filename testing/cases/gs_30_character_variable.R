@@ -1,5 +1,5 @@
-# CASE: gs_30_err_character_variable
-# TYPE: console
+# CASE: gs_30_character_variable
+# TYPE: visual
 # FUNC: geom_slice
 # EXPECT: geom_slice SUPPORTS character predictors: it should impute char_var
 #         by mode ("a") with a console message and draw the slice without
