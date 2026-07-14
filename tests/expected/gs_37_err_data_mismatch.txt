@@ -1,2 +1,2 @@
 Error: The data on the plot is not the data `model` was fitted to.
-    Fit the model to the plotted data, such as 'model <- lm(y ~ x, data = your_data)', or plot the data the model was fitted to.
+    Fit a model to the plotted data, such as 'model <- lm(y ~ x, data = your_data)', or plot the data the model was fitted to.

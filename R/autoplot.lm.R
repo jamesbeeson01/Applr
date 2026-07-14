@@ -111,7 +111,7 @@ autoplot.lm <- function(object, ..., data = NULL, mapping = NULL,
   if (is.null(object$call$data)) {
     slice_abort(
       what = "The model was fitted without a `data` argument, so autoplot() cannot recover its data.",
-      hint = "Refit with a data argument, such as 'lm(y ~ x, data = your_data)'."
+      hint = "Refit using the data argument, such as 'lm(y ~ x, data = your_data)'."
     )
   }
   model_data <- slice_model_frame(object)

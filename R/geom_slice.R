@@ -192,14 +192,15 @@ check_slice_model <- function(model, fn = "geom_slice") {
   if (missing(model) || is.null(model)) {
     slice_abort(
       what = paste0(fn, "() needs a fitted model."),
-      hint = paste0("Fit one first, such as 'model <- lm(y ~ x, data = your_data)', then call '",
+      hint = paste0("Fit a model first, such as 'model <- lm(y ~ x, data = your_data)', then call '",
                     fn, "(model)'.")
     )
   }
   if (!inherits(model, "lm")) {
     slice_abort(
       what = paste0("`model` must be a model fitted by `lm()`; received a \"", class(model)[1], "\"."),
-      hint = "Fit the model first, such as 'model <- lm(y ~ x, data = your_data)'."
+      hint = paste0("Fit a model first, such as 'model <- lm(y ~ x, data = your_data)', then call '",
+                    fn, "(model)'.")
     )
   }
   dollar <- grep("\\$", names(model$model), value = TRUE)
@@ -432,7 +433,7 @@ check_slice_plot_data <- function(model, plot_data, model_name = "model") {
   if (!same) {
     slice_abort(
       what = paste0("The data on the plot is not the data `", model_name, "` was fitted to."),
-      hint = paste0("Fit the model to the plotted data, such as ",
+      hint = paste0("Fit a model to the plotted data, such as ",
                     "'model <- lm(y ~ x, data = your_data)', ",
                     "or plot the data the model was fitted to.")
     )
