@@ -4,16 +4,11 @@ output: html_document
 date: "2026-07-11"
 ---
 
-## v1.0 release — decisions needed from James (priority: ULTRA-HIGH)
-
-See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settlement phase:
-
-- [x] **DECISION:** Final public names before the 1.0 stability promise — keep or rename `slice_2d` / `geom_slice`; commit or reject the snake_case migration (`x_axis` → `x_axis`). Renaming after 1.0 costs a full deprecation cycle; renaming now is free.
-- [x] **DECISION:** Package identity in DESCRIPTION — rebranded as a general lm-visualization package (Title/Description no longer say "Math425 at BYUI"); James Beeson added to `Authors@R` as maintainer (`cre`); canonical GitHub remote confirmed as `saundersg/Applr`.
-- [x] **DECISION:** `geom_fit` (error stub) and `drawit` (deprecation stub) ship inside 1.0 and are removed at 2.0.
-
 ## General
 
+- [x] **priority: high** — Human review of all test cases and their output
+- [ ] **priority: high** — Human review all documentation
+- [ ] **priority: high** — `devtools::check()` clean, then bump Version to 1.0.0 and tag (see `release_plan_1.0.md` Phase 4)
 - [x] Link to autoplot.lm in the main docs page
 - [x] plotly overwrite issue in `known_issues.md` (should resolve with `@importFrom`) — RESOLVED 2026-07-12: blanket imports narrowed, load warnings gone (see known_issues.Rmd Resolved)
 - [x] pictures in README
@@ -24,10 +19,10 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 - [x] **priority: high** — Narrow blanket `@import` roxygen tags to `@importFrom` across `R/` — DONE 2026-07-12 (central block in `Applr-package.R`; `@import ggplot2` kept — standard for ggplot2 extensions; tidyr dropped entirely, it was unused; stale per-file tags removed; `devtools::document()` run, package loads clean)
 - [x] Thin testthat shim over `tests/` — DONE 2026-07-12 (`tests/testthat/test-suite.R` re-runs `tests/run.R` and asserts every case is OK; skips inside R CMD check on the tarball, where tests/ is buildignored; `devtools::test()` green)
 - [x] pkgdown site + CI — DONE 2026-07-12 (`_pkgdown.yml` grouped reference index validated by `pkgdown::check_pkgdown()`; `.github/workflows/pkgdown.yaml` deploys to gh-pages; `R-CMD-check.yaml` checks 4 platforms plus a job running the real tests/ suite)
-- [ ] **priority: high** — `devtools::check()` clean, then bump Version to 1.0.0 and tag (see `release_plan_1.0.md` Phase 4)
-- [ ] Check for comprehensiveness of testing suite and edge cases
+- [x] Check for comprehensiveness of testing suite and edge cases: see `for_devs/testing_revisions.md`
 - [ ] Fix remaining errors in `known_issues.Rmd`
 - [ ] Simplify context in CLAUDE.md - move to either skill or tests/README.md
+- [ ] Refactor test suite following `for_devs/testing_revisions.md`
 
 ## README 
 
@@ -41,6 +36,15 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 - [x] **priority: high** — Document well — DONE 2026-07-12 (runnable examples incl. `x_axis`, forwarded `predict_vars`/`interval`; `@seealso` cross-links)
 - [x] Add aes() and data mapping
 
+## lm_equation/lm_latex
+
+- [ ] Change "clearer" to "prettier"?
+- [ ] Remove "I()" when prettier=TRUE
+- [ ] Add "threshold" that sets very small numbers to 0; has a default, but can be specified or set to FALSE
+- [ ] Add a $\beta_x$ version
+- [ ] Can this display in a report without copy/paste?
+- [ ] Do they use the same engine? Should they?
+
 ## geom_slice
 
 - [ ] Additional tests
@@ -49,6 +53,7 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 - [ ] Add `data` and aesthetic arguments to `geom_slice`
 - [x] Add a `full_range` boolean argument to `geom_slice` which plots lines to the edge of the panel, not the end of the group
 - [ ] Add projection band and 95% confidence/prediction interval to legend optionally
+- [ ] Support for `level` passed to `predict` to change the confidence interval
 
 ## slice_2d
 
@@ -59,6 +64,9 @@ See `for_devs/release_plan_1.0.md` for the full plan. These block the API-settle
 - [x] Add error to check if the data being plotted is the same as the data the lm was fit to — DONE 2026-07-12 (`check_slice_fit_data()` compares the model's stored fitted frame against the data its call currently points to, catching post-fit mutation; conservative — skips when `model = FALSE` or `subset` was used. Case s2_25. For `add_slice_2d` onto an arbitrary base plot the range warning remains the practical check, since base R plots keep no data.)
 - [x] Add an interval to `slice_2d` (like `geom_slice`) — DONE 2026-07-12 (`interval = "none"/"confidence"/"prediction"` on both `slice_2d` and `add_slice_2d`: translucent polygon band in the line's color, y-axis extended to fit; cases s2_23/s2_24/as_23.)
 - [x] priority low; investigate usefulness of back_transform = "log" — RESOLVED 2026-07-12: adopted. `slice_2d`/`add_slice_2d` now accept the same names as `geom_slice` ("log", "log10", "log2", "sqrt", "exp", "inverse") via the shared `check_back_transform()`; mostly redundant with auto-detect but useful for explicitness and API parity (case s2_26). Invalid values now error up front instead of warning-and-inferring.
+- [ ] Allow character type
+- [ ] Caption more similar to geom_slice_subtitle
+- [ ] Add `caption` and `subtitle` arguments. Default to `subtitle=TRUE` and `caption=FALSE`. If `caption=TRUE`, make `subtitle=FALSE` unless both are set to true explicitly
 
 ## scatter_3d
 
