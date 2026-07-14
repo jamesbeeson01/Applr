@@ -1,7 +1,10 @@
 # CASE: as_19_err_mismatched_x_axis
 # TYPE: console
 # FUNC: add_slice_2d
-# EXPECT: The slice is computed over the range of "x" while the plot shows
+# EXPECT: Scatter plot with a line that doesn't represent the model. 
+#         This test should correctly produce bad output, showing the limits 
+#         of the function due to base R's painter sytem for drawing plots. 
+#         The slice is computed over the range of "x" while the plot shows
 #         x_pos — the line lands in the wrong region. Ideally a warning;
 #         currently silent (review the plot in the report).
 

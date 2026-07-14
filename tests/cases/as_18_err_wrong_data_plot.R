@@ -1,7 +1,10 @@
 # CASE: as_18_err_wrong_data_plot
 # TYPE: console
 # FUNC: add_slice_2d
-# EXPECT: Adding a slice from one model onto a plot of ENTIRELY different
+# EXPECT: Scatter plot with a line that doesn't represent the model. 
+#         This test should correctly produce bad output, showing the limits 
+#         of the function due to base R's painter sytem for drawing plots. 
+#         Adding a slice from one model onto a plot of ENTIRELY different
 #         data. Ideally a warning that the ranges don't match; currently the
 #         line is drawn silently (review the plot in the report).
 
