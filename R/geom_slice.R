@@ -328,9 +328,10 @@ resolve_slice_band <- function(band, predict_vars, predictor_vars, x_vars,
                             c(x_vars, pinned_vars, names(predict_vars)))
       if (length(candidates) == 0) {
         slice_warn(
-          what = paste0("band = TRUE, but the model has no variable to span - ",
-                        "every predictor is already shown on the plot. No band is drawn."),
-          hint = "A band spans a second predictor besides the x-axis variable; add one to the model."
+          what = paste0("band = TRUE, but no variable is available - ",
+                        "every model predictor is already shown on the plot. No band is drawn."),
+          hint = paste0("A projection band spans a predictor not represented on the plot; ",
+                        "add another predictor to the model, such as `lm(y ~ x + new_predictor, ...)`")
         )
         return(NULL)
       }
