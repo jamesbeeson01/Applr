@@ -121,13 +121,17 @@ case_block <- function(m) {
   pngs <- list.files("tests/output", sprintf("^%s(-\\d+)?\\.png$", m$id))
   txt  <- file.path("tests/output", paste0(m$id, ".txt"))
 
-  if (m$type != "console") {
-    if (length(pngs) > 0) {
-      out <- c(out, "**Output (this run):**\n",
-               sprintf('<img src="output/%s" width="%d">\n', pngs, px))
-    } else {
-      out <- c(out, "_No plot produced by this run (see status above)._\n")
-    }
+  # plots are shown for every case, console cases included — for a console
+  # case the plot is informational only (its status is decided by the console
+  # diff), and the "no plot" note is the visible sign that nothing rendered
+  # (e.g. an error case)
+  if (length(pngs) > 0) {
+    out <- c(out, "**Output (this run):**\n",
+             sprintf('<img src="output/%s" width="%d">\n', pngs, px))
+  } else {
+    out <- c(out, if (m$type == "console")
+               "_No plot produced by this run (expected for error cases)._\n"
+             else "_No plot produced by this run (see status above)._\n")
   }
 
   if (file.exists(txt)) {
@@ -141,7 +145,7 @@ case_block <- function(m) {
     }
   }
 
-  if (m$type != "console" && file.exists(file.path("tests/reference", paste0(m$id, ".png")))) {
+  if (file.exists(file.path("tests/reference", paste0(m$id, ".png")))) {
     out <- c(out, "**Reference (ground truth):**\n",
              sprintf('<img src="reference/%s.png" width="%d">\n', m$id, px))
   }

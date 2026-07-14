@@ -8,7 +8,10 @@
 #                  PLUS any console output the case emits -> tests/output/<id>.txt,
 #                  diffed against tests/expected/<id>.txt. A visual case with no
 #                  expected/ snapshot must be silent — unexpected output reports NEW.
-# Console cases -> tests/output/<id>.txt   (diffed automatically against tests/expected/<id>.txt)
+# Console cases -> tests/output/<id>.txt   (diffed automatically against tests/expected/<id>.txt).
+#                  Any plot the case draws is also saved to tests/output/<id>.png
+#                  for the human report — it never affects the case's status,
+#                  so agents need not view images for console cases.
 #
 # See tests/README.md for the case file format.
 
@@ -42,6 +45,18 @@ diff_lines <- function(got, want) {
 }
 
 read_snapshot <- function(path) trimws(readLines(path, warn = FALSE), "right")
+
+# TRUE for a PNG that is an empty page — byte-identical to a device page with
+# nothing drawn on it (e.g. ggplot's print() opens the page, then errors)
+is_blank_png <- function(path, width, height) {
+  blank <- tempfile(fileext = ".png")
+  png(blank, width = width, height = height, units = "in", res = 300)
+  plot.new()
+  dev.off()
+  on.exit(file.remove(blank))
+  identical(readBin(path,  "raw", file.size(path)),
+            readBin(blank, "raw", file.size(blank)))
+}
 
 run_visual <- function(file, meta) {
   # clear stale outputs for this case, then draw every plot the case makes
@@ -116,10 +131,16 @@ run_visual <- function(file, meta) {
 }
 
 run_console <- function(file, meta) {
+  # clear stale outputs for this case
+  stale <- list.files("tests/output", sprintf("^%s(-\\d+)?\\.(png|txt)$", meta$id), full.names = TRUE)
+  file.remove(stale)
   out_file <- file.path("tests/output",   paste0(meta$id, ".txt"))
   exp_file <- file.path("tests/expected", paste0(meta$id, ".txt"))
-  # null graphics device: some console cases draw base plots as scaffolding
-  png(tempfile(fileext = ".png"))
+  # any plot the case draws is saved too — it plays no part in the case's
+  # status (console diff decides that), but the report shows it for humans;
+  # a case that draws nothing (e.g. an error case) simply leaves no PNG
+  png(file.path("tests/output", paste0(meta$id, "-%02d.png")),
+      width = meta$width, height = meta$height, units = "in", res = 300)
   con <- file(out_file, "w")
   sink(con)
   err <- NULL
@@ -128,6 +149,16 @@ run_console <- function(file, meta) {
   sink()
   close(con)
   dev.off()
+  made <- list.files("tests/output", sprintf("^%s-\\d+\\.png$", meta$id), full.names = TRUE)
+  # an empty page (opened but never drawn on) is not a plot — drop it so the
+  # report's "no plot produced" note appears instead of a blank image
+  blank <- vapply(made, is_blank_png, TRUE, width = meta$width, height = meta$height)
+  file.remove(made[blank])
+  made <- made[!blank]
+  if (length(made) == 1) {
+    single <- file.path("tests/output", paste0(meta$id, ".png"))
+    file.rename(made, single)
+  }
   if (!is.null(err)) {
     return(list(status = "FAIL", msg = paste("uncaught error (use try_show):", err)))
   }

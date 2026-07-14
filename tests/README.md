@@ -65,7 +65,11 @@ Rscript tests/run.R --update gs_02   # accept current console output as the new 
   plot AND its console behavior — no duplicate text-only case needed.
 - **Console cases** save `output/<id>.txt` and are diffed automatically against
   `expected/<id>.txt`. A case with no snapshot yet reports `NEW`; review its
-  output, then run with `--update` to accept it as the baseline.
+  output, then run with `--update` to accept it as the baseline. Any plot the
+  case draws is *also* saved to `output/<id>.png` — purely so the report can
+  show it to humans. It never affects the case's status, and agents don't need
+  to view images for console cases; a missing PNG (typical for error cases) is
+  the visible sign that no plot rendered.
 - **Known-broken cases:** a case whose `EXPECT` header says `KNOWN ISSUE`
   documents a real, currently-unfixed bug. It FAILs on purpose — the runner's
   FAIL list doubles as the open-bug list — and turns OK once the bug is fixed.
