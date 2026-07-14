@@ -3,11 +3,24 @@ title: "known_issues"
 output: html_document
 ---
 
-- `slice_2d` and its related functions use ... while `geom_slice` uses `names(model$model)`. The latter is a serious issue that is often invisible, and needs to be converted to the `slice_2d` implementation. 
-  - As to the reason, consider the simple example `model <- lm(y ~ I(x^2))`. `model$model` returns a `data.frame` with the prediction and used 
-
-- `detect_response_transform` found in `geom_slice.R` is vastly inferior to `get_inverse_function` in `get_inverse_function.R`, which is better with edge cases. Ideally, it should be replaced, but care needs to be taken that the change in return type (list vs function) is handled comprehensively.
-
 - `scatter_3d` has not been rigorously tested
 
-- `lm`'s with data accessed by `$` (ie `lm(mtcars$mpg ~ mtcars$disp)`) are currently not allowed. This should be extended to all accessed variables (ie `mtcars['mpg']`) because of how they are handled in the `predict` function. When this is fixed, `decisions.Rmd` should be updated.
+- `lm`'s with data accessed by `$` (ie `lm(mtcars$mpg ~ mtcars$disp)`) are currently not allowed (`geom_slice` and `slice_2d` both reject them with a clear error). This should be extended to all accessed variables (ie `mtcars['mpg']`) because of how they are handled in the `predict` function. When this is fixed, `decisions.Rmd` should be updated.
+
+- `SliceLayer` in `geom_slice.R` inherits from `ggplot2:::Layer` via `:::` because ggplot2 (4.0.3) does not export the `Layer` class even though `layer(layer_class = ...)` is the documented extension point. Harmless at runtime, but `R CMD check` will note the use of an unexported object. If ggplot2 ever exports `Layer`, drop the `:::`.
+
+- `geom_slice` grouping is recovered from *visible* aesthetics (`color`, `linetype`, ...). A bare `group = var` aesthetic cannot pin `var` per group — ggplot2 reduces group values to opaque integer ids before the stat runs — so `geom_slice` warns and holds the variable constant instead. (Covered by a warning, not silent; see `resolve_y_fn`/`build_slice_spec` in `R/geom_slice.R`.)
+
+- In composite-axis mode (an x-axis *expression* like `aes(x * x_pos, y)`), the line is evaluated at the model's own data points rather than an `n`-point grid, so `n` is ignored there. Also, the plotted "line" is only guaranteed to be a clean curve when the model's predictions are a function of the axis expression (true for the `gs_19`–`gs_23` family); otherwise points would not be collinear against that axis and the connected line can zigzag — arguably the honest picture, but worth knowing.
+
+- `geom_slice_text(expand = TRUE)` (the default) adds a `scale_x_continuous(expand = ...)` to the plot (`ggplot_add.slice_text_spec` in `R/geom_slice_text.R`). On a plot whose x-axis already has a non-default continuous scale — a Date/datetime axis, `scale_x_log10()`, or any user-supplied `scale_x_*` — this *replaces* that scale (with ggplot2's "Scale for x is already present" message), losing date labels, transformations, or user settings. Not yet observed in practice: a model fitted on a numeric date index but plotted against the Date column takes the "x-axis uses none of the model's predictors" flat-line path, which produces no labels and so no expansion. But a Date axis with real labels would hit it. Workaround: `expand = FALSE` and set the expansion on your own scale. A proper fix would mutate the existing scale's expand instead of adding a new scale.
+
+## Resolved
+
+- ~~`devtools::load_all()` warned "replacing previous import" three times (plotly vs graphics/ggplot2/stats)~~ — resolved 2026-07-12 by narrowing the blanket `@import` tags to `@importFrom` (only `plot_ly`/`add_markers`/`add_trace`/`layout` are imported from plotly now, and `graphics::layout`, `ggplot2::last_plot`, `stats::filter` are not imported at all).
+
+## Resolved (2026-07-07 geom_slice overhaul — see for_devs/geom_slice_progress.Rmd)
+
+- ~~`geom_slice` used `names(model$model)` for variable handling~~ — now uses the formula + `get_all_vars()`, so `lm(y ~ I(x^2))` etc. resolve to raw variables.
+- ~~`detect_response_transform` vastly inferior to `get_inverse_function`~~ — `detect_response_transform` is gone; `geom_slice` now uses `get_inverse_function`.
+- ~~`SliceLayer` inherited from a Layer *instance*~~ — now a proper `Layer` subclass passed via `layer(layer_class = ...)` (the fix recommended in `ggplot_layer_internals.Rmd`), which is what made grouping and faceting work.

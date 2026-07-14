@@ -1,0 +1,2 @@
+Error: `x_axis` is not an argument of `geom_slice()`.
+    Set the x-axis in the plot's aes() instead, such as 'ggplot(your_data, aes(x = disp, y = mpg))'. 

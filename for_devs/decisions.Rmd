@@ -9,31 +9,62 @@ The original intent of this package is to make life easier for a student in a li
 
 ## Error Messages
 
-Most error messages should follow this format:
+Use the helpers in `R/conditions.R` instead of bare `stop()` / `warning()` /
+`message()`, so the format lives in one place.
 
-**insert**
+User-facing conditions use a **two-part format**: a first line stating *what
+happened* (naming the offending value), and — when the user can act on it — an
+indented second line stating *how to fix it* with a concrete, copy-pasteable
+example.
 
-Which can be implemented with this code template:
+Rules:
 
-```{r}
-# insert
+- **Name the offending value.** Say *which* variable/argument is at fault, not just that something failed.
+- **Give a copy-pasteable hint.** Show real syntax the user can paste (`hp = 146.7`), not an abstract description.
+- **Typography:** backticks `` `x` `` for names (variables, arguments, columns); single quotes `'...'` for syntax examples; double quotes `"..."` for literal values and class names.
+- **Severity:** `slice_abort()` cannot proceed; `slice_warn()` proceeds but the result is likely wrong; `slice_inform()` reports a normal-but-hidden choice (e.g. an imputed value).
+
+```r
+# Cannot proceed
+slice_abort(
+  what = "`x_axis` variable \"wt\" not found in the model.",
+  hint = "Specify one of the model's predictors, such as 'x_axis = \"disp\"'."
+)
+#> Error: `x_axis` variable "wt" not found in the model.
+#>     Specify one of the model's predictors, such as 'x_axis = "disp"'.
+
+# Hidden-but-normal choice
+slice_inform(
+  what = "Value for `hp` not specified - Used mean: 146.7",
+  hint = "To choose a slice, use 'var_name = value', such as 'hp = 146.7'."
+)
+#> Value for `hp` not specified - Used mean: 146.7
+#>     To choose a slice, use 'var_name = value', such as 'hp = 146.7'.
 ```
 
 ## Naming conventions
 
-Variable names and such should follow this format:
+Follow the [tidyverse style guide](https://style.tidyverse.org/) (snake_case,
+`<-` for assignment, verbs for functions, nouns for objects). The
+**package-specific deltas** are:
 
-**insert**
+| Kind | Convention | Example |
+|---|---|---|
+| ggproto objects | `PascalCase`, `Stat`/`Geom` prefix | `StatSlice`, `GeomSlice` |
+| Layer constructors | `geom_*` / `stat_*` | `geom_slice` |
+| S3 methods | `generic.class` | `autoplot.lm` |
+| Role prefixes | `get_` (compute/accessor), `add_` (add to existing plot), `lm_` (lm helper) | `get_default_value`, `add_slice_2d`, `lm_equation` |
+| Dimensionality | `_2d` / `_3d` suffix | `slice_2d`, `scatter_3d` |
+
+Defer to base R / ggplot2 spelling when extending them (`inherit.aes`,
+`linewidth`, `newdata`).
 
 
 ## X Range
 
 **The range of a model's line should be the range of a group, not the whole plot.** Consider grouped data where group A is modeled by `y = x^2` and only has data from 0 to 2. If the line is plotted from 0 to 10, it changes the y axis to a range of 100 instead of 4. 
 
-So, in `geom_slice` (where grouping is permitted), the x range should be computed by the min and max of the group (in `compute_group`), not by panel (in `compute_panel`). 
-
-If the plot weren't adjusted on the y axis from this line, it may be nice to have it fill the x rage where it is seen on the plot, especially working with high-dimensional models.
-
+So, in `geom_slice` (where grouping is permitted), the x range should be computed by the min and max of the group (in `compute_group`), not by panel (in `compute_panel`).
 
 ## Communicating Imputed Values
 
@@ -43,7 +74,7 @@ If the plot weren't adjusted on the y axis from this line, it may be nice to hav
 
 **`slice_2d` additionally adds a caption to communicate hidden values.**
 
-There was thought to add captions for all functions, but this was largely abandoned due to several large issues:
+There was thought to add captions for all functions, but this was largely abandoned due to the following large issues.
 
 #### Base R
 
@@ -83,18 +114,9 @@ I tried to allow them. Those are hours wasted.
 
 This is the simplest way we know to get y values based on an `lm`, and it works well enough. It is a semi-arbitrary decision.
 
+## Dependencies
 
-## geom_slice vs geom_add_slice_2d vs geom_fit
+**`DESCRIPTION` now pins `ggplot2 (>= 3.5.0)`.** (Decided 2026-06-01. Developed and tested against ggplot2 4.0.3, R 4.5.3. `dplyr` was declared here until 2026-07-07, when its last uses were removed and it was dropped from `Imports`.)
 
-**These should be combined into one function.**
+- **`ggplot2 (>= 3.5.0)`** — 3.5.0 is the first release to expose the `layer_class` argument to `layer()`. That argument is the documented, idiomatic fix for the `SliceLayer` structural issue (see `known_issues.Rmd` and `for_devs/ggplot_layer_internals.Rmd`): it lets `SliceLayer` inherit from the `Layer` *class* instead of a layer *instance*. Declaring the floor makes that fix path valid and guards against installs old enough to lack it. If we ever need to support < 3.5.0, a fallback is required (see the internals doc).
 
-In intense troubles getting `geom_slice` to work, `geom_add_slice_2d` was added to avoid low level ggplot and literally use the working logic from `add_slice_2d` (hence the name). It has serious limitations, but works in most contexts. In particular, it does not allow grouping or faceting. Each call is a new line. 
-
-`geom_fit` is another sub-standard function that does not follow package naming convensions, but is incredibly simple to follow and allows prediction and confidence intervals. It exists as an example with good use in simple contexts. Ideally, its extra functionality should be added to `geom_fit`.
-
-`geom_fit` is intended to allow high dimensional modeling with grouping and faceting integrated. It is for both exploration and visualization.
-
-
-## add_slice_2d vs drawit
-
-These two functions intend to create the same result by different means. `drawit` requires every column name to be passed and uses `curve` to plot, while `slice_2d` can impute and uses `predict` with `lines`. `drawit` has multiple issues and should probably be deprecated...

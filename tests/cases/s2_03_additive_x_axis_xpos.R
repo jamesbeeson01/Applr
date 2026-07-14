@@ -1,0 +1,16 @@
+# CASE: s2_03_additive_x_axis_xpos
+# TYPE: visual
+# FUNC: slice_2d
+# EXPECT: Scatter of x_pos vs y (y ~ x + x_pos) with a slice line, x held at 0
+#         (shown in the caption). Silent: both x_axis and x are specified.
+
+source("tests/_setup.R")
+set.seed(123)
+
+n <- 50
+x <- runif(n, -10, 10)
+x_pos <- runif(n, 0, 10)
+y <- x + x_pos
+model <- lm(y ~ x + x_pos)
+
+slice_2d(model, x_axis = "x_pos", x = 0)

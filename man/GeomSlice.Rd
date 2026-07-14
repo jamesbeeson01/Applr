@@ -5,14 +5,15 @@
 \alias{GeomSlice}
 \title{GeomSlice}
 \format{
-An object of class \code{GeomSlice} (inherits from \code{GeomLine}, \code{GeomPath}, \code{Geom}, \code{ggproto}, \code{gg}) of length 2.
+An object of class \code{ggproto}, inheriting from \code{GeomSmooth}.
 }
 \usage{
 GeomSlice
 }
 \description{
-A custom 'ggproto' object that provides the graphing aesthetics
-for the 'StatSlice' object. This defines how the slice lines should look.
-It is essentially GeomLine with modified aesthetics
+The geom behind \code{\link[=geom_slice]{geom_slice()}}: \link[ggplot2:Geom]{ggplot2::GeomSmooth} with slice-flavored
+default aesthetics. Like \code{geom_smooth()}, it draws a line plus — when the
+stat supplies \code{ymin}/\code{ymax} (i.e. \code{interval = "confidence"} or
+\code{"prediction"}) — a ribbon; \code{alpha} styles the ribbon, not the line.
 }
 \keyword{datasets}

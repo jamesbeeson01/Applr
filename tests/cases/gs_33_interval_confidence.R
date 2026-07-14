@@ -1,0 +1,14 @@
+# CASE: gs_33_interval_confidence
+# TYPE: visual
+# FUNC: geom_slice
+# EXPECT: mtcars disp vs mpg, model mpg ~ disp + hp sliced at hp = 110: one
+#         straight downward line with a NARROW confidence ribbon around it
+#         (see reference).
+
+source("tests/_setup.R")
+
+model <- lm(mpg ~ disp + hp, data = mtcars)
+
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_slice(model, predict_vars = list(hp = 110), interval = "confidence")

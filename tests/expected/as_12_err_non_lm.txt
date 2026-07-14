@@ -1,0 +1,2 @@
+Error: `model` must be a model fitted by `lm()`; received a "data.frame".
+    Fit a model first, such as 'model <- lm(y ~ x, data = your_data)', then call 'add_slice_2d(model)'.

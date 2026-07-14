@@ -1,0 +1,2 @@
+Value for `g` not specified - Used most common: "A"
+    To choose a slice, use 'predict_vars = list(g = "A")'.

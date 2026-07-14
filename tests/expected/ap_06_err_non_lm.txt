@@ -1,0 +1,2 @@
+Error: Objects of class <data.frame> are not supported by autoplot.
+ℹ Have you loaded the required package? 

@@ -1,0 +1,166 @@
+---
+title: "Applr Test Suite"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M')`"
+output:
+  html_document:
+    theme: simplex
+    code_folding: hide
+    toc: true
+    toc_float: true
+---
+
+This report does **not** execute any case itself. It invokes
+`Rscript tests/run.R` once — the exact command the terminal / a coding
+agent runs — and then displays the artifacts of that run: the PNGs and
+captured console output in `tests/output/`, plus each case's status
+straight from the runner. What you see here is, by construction, what
+`run.R` produced. Knit from the package root with:
+
+```
+Rscript -e "rmarkdown::render('tests/report.Rmd')"
+```
+
+To keep a progress snapshot, rename the resulting `report.html` (e.g.
+`report 2026-07-06.html`) and move it into `tests/archive/`.
+
+```{r setup, include=FALSE}
+# rmarkdown knits with the working directory set to tests/; the runner and
+# all artifact paths are relative to the package root, so point knitr there.
+if (!file.exists("DESCRIPTION") && file.exists("../DESCRIPTION")) {
+  knitr::opts_knit$set(root.dir = normalizePath(".."))
+}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load, include=FALSE}
+# package-free helpers only — the report never loads Applr, so a stale
+# package in the knitting session can never leak into the results
+source("tests/_helpers.R")
+```
+
+# Snapshot
+
+```{r snapshot, include=FALSE}
+# THE single execution of the suite: same entry point, same fresh Rscript
+# session, same checks as running it from the terminal.
+runner_log <- suppressWarnings(
+  system2("Rscript", "tests/run.R", stdout = TRUE, stderr = TRUE)
+)
+status <- read.csv("tests/output/_results.csv", stringsAsFactors = FALSE)
+n_ok <- sum(status$status == "OK")
+```
+
+```{r snapshot-summary, results='asis', echo=FALSE}
+cat(sprintf("**%d / %d cases OK.**\n\n", n_ok, nrow(status)))
+not_ok <- status[status$status != "OK", ]
+if (nrow(not_ok) > 0) {
+  cat("Cases not passing:\n\n")
+  cat(sprintf("- `%s` — %s\n", not_ok$id, not_ok$status), sep = "")
+} else {
+  cat("All cases passing.\n")
+}
+cat("\n<details><summary>Full runner transcript (exactly what the terminal shows)</summary>\n\n")
+cat("````\n")
+cat(runner_log, sep = "\n")
+cat("\n````\n\n</details>\n")
+```
+
+Note: an `OK` on a visual case means it ran, produced a plot, and its
+console output matched its snapshot (or was silent) — visual correctness
+is still judged by eye against the reference images below.
+
+# Overview {.tabset .tabset-pills}
+
+## Hide
+
+## Show
+
+```{r overview}
+case_files <- sort(list.files("tests/cases", pattern = "\\.R$", full.names = TRUE))
+meta <- lapply(case_files, parse_case_header)
+overview <- data.frame(
+  Case     = vapply(meta, `[[`, "", "id"),
+  Status   = status$status[match(vapply(meta, `[[`, "", "id"), status$id)],
+  Type     = vapply(meta, `[[`, "", "type"),
+  Function = vapply(meta, `[[`, "", "func"),
+  Expect   = vapply(meta, function(m) {
+    e <- ifelse(is.na(m$expect), "", m$expect)
+    if (nchar(e) > 110) paste0(substr(e, 1, 110), "...") else e
+  }, "")
+)
+knitr::kable(overview, row.names = FALSE)
+```
+
+# Cases
+
+```{r generate-cases, results='asis'}
+# Each case section is assembled from this run's artifacts. Image src paths
+# are resolved by pandoc relative to this Rmd (tests/); widths in px match
+# 72 px per inch of the case's SIZE so output and reference compare at the
+# same scale.
+case_block <- function(m) {
+  i <- match(m$id, status$id)
+  stat <- if (is.na(i)) "?" else status$status[i]
+  msg  <- if (is.na(i)) "" else status$msg[i]
+  px   <- round(m$width * 72)
+  expect <- ifelse(is.na(m$expect), "(no EXPECT header)", m$expect)
+
+  out <- c(sprintf("### %s%s\n", m$id, if (identical(stat, "OK")) "" else " ⚠️"),
+           sprintf("> **Expect:** %s\n", expect))
+
+  if (identical(stat, "OK")) {
+    out <- c(out, "**Status:** OK\n")
+  } else {
+    out <- c(out, sprintf("**Status: %s**\n", stat), "````", msg, "````\n")
+  }
+
+  # the case source, folded, never evaluated here
+  out <- c(out, sprintf('```{r %s, eval=FALSE, code=xfun::read_utf8("tests/cases/%s.R")}\n```\n',
+                        m$id, m$id))
+
+  pngs <- list.files("tests/output", sprintf("^%s(-\\d+)?\\.png$", m$id))
+  txt  <- file.path("tests/output", paste0(m$id, ".txt"))
+
+  # plots are shown for every case, console cases included — for a console
+  # case the plot is informational only (its status is decided by the console
+  # diff), and the "no plot" note is the visible sign that nothing rendered
+  # (e.g. an error case)
+  if (length(pngs) > 0) {
+    out <- c(out, "**Output (this run):**\n",
+             sprintf('<img src="output/%s" width="%d">\n', pngs, px))
+  } else {
+    out <- c(out, if (m$type == "console")
+               "_No plot produced by this run (expected for error cases)._\n"
+             else "_No plot produced by this run (see status above)._\n")
+  }
+
+  if (file.exists(txt)) {
+    txt_lines <- readLines(txt, warn = FALSE)
+    out <- c(out, "**Console output (this run):**\n", "````",
+             txt_lines, "````\n")
+    # lm_latex cases emit display-math LaTeX ($$...$$); also show it rendered
+    # via MathJax so the typeset equation can be eyeballed next to the string.
+    if (identical(m$func, "lm_latex")) {
+      out <- c(out, "**Rendered:**\n", txt_lines, "\n")
+    }
+  }
+
+  if (file.exists(file.path("tests/reference", paste0(m$id, ".png")))) {
+    out <- c(out, "**Reference (ground truth):**\n",
+             sprintf('<img src="reference/%s.png" width="%d">\n', m$id, px))
+  }
+  out
+}
+
+preferred <- c("geom_slice", "geom_fit", "slice_2d", "add_slice_2d",
+               "geom_add_slice_2d", "lm_equation", "lm_latex", "error handling")
+funcs <- vapply(meta, `[[`, "", "func")
+func_order <- c(intersect(preferred, funcs), setdiff(unique(funcs), preferred))
+
+blocks <- character()
+for (fn in func_order) {
+  blocks <- c(blocks, sprintf("## %s {.tabset .tabset-pills}\n", fn))
+  for (i in which(funcs == fn)) blocks <- c(blocks, case_block(meta[[i]]))
+}
+cat(knitr::knit_child(text = paste(blocks, collapse = "\n"), quiet = TRUE), sep = "\n")
+```

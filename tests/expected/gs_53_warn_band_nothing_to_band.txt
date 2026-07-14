@@ -1,0 +1,2 @@
+Warning: band = TRUE, but no variable is available - every model predictor is already shown on the plot. No band is drawn.
+    A projection band spans a predictor not represented on the plot; add another predictor to the model, such as `lm(y ~ x + new_predictor, ...)`

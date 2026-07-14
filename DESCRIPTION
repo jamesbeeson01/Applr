@@ -1,17 +1,30 @@
 Package: Applr
-Title: Useful Commands For Math425 at BYUI
+Title: Visualize and Explain Linear Models
 Version: 0.0.0.9000
-Authors@R: 
-    person("Cameron", "McClellan", , "cameron.m.mcclellan@gmail.com", role = c("aut", "cre"))
-Description: A package to make life in Math425 a little easier. Combines various functions and provides functions that should make graphing and explaining HD regressions easier.
+Authors@R: c(
+    person("Cameron", "McClellan", , "cameron.m.mcclellan@gmail.com", role = "aut"),
+    person("James", "Beeson", , "jamesbeeson01@gmail.com", role = c("aut", "cre")))
+Description: Tools for visualizing and explaining linear models fit with lm().
+    Draws 2D slices of higher-dimensional models in base graphics and as a
+    ggplot2 layer, offers an interactive 3D scatter with a fitted surface for
+    two-predictor models, and renders model equations as plain text or LaTeX.
 License: MIT + file LICENSE
+URL: https://saundersg.github.io/Applr/, https://github.com/saundersg/Applr
+BugReports: https://github.com/saundersg/Applr/issues
 Encoding: UTF-8
+Language: en-US
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
-Imports: 
-    ggplot2,
-    tidyr,
+RoxygenNote: 7.3.3
+Imports:
+    ggplot2 (>= 3.5.0),
     plotly,
     rlang,
     graphics,
+    grDevices,
     stats
+Suggests:
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr

@@ -1,0 +1,4 @@
+Warning: The `xaxis` argument of `slice_2d()` is deprecated.
+    Use `x_axis` instead. 
+Message: Value for `x` not specified - Used mean: 0.4
+    To specify, use 'var_name = value', such as 'x = 0.4' 

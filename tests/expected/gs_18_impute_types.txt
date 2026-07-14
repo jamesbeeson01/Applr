@@ -1,0 +1,6 @@
+Value for `z_num` not specified - Used mean: 49.59
+    To choose a slice, use 'predict_vars = list(z_num = 49.59)'.
+Value for `w_fac` not specified - Used most common: "a"
+    To choose a slice, use 'predict_vars = list(w_fac = "a")'.
+Value for `s_chr` not specified - Used most common: "p"
+    To choose a slice, use 'predict_vars = list(s_chr = "p")'.

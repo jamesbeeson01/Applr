@@ -1,0 +1,2 @@
+Warning: geom_slice_text() found no geom_slice() layer to label, so no labels were drawn.
+    Add the slice first, such as 'geom_slice(model) + geom_slice_text()'. 

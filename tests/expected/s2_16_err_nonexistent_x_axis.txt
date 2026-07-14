@@ -1,0 +1,2 @@
+Error: `x_axis` variable "nonexistent_var" not found in the model.
+    Specify one of the model's predictors (`x`, `x_pos`), such as 'x_axis = "x"', or an expression of them. 

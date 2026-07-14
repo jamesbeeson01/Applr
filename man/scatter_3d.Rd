@@ -2,31 +2,52 @@
 % Please edit documentation in R/scatter_3d.R
 \name{scatter_3d}
 \alias{scatter_3d}
-\title{Plot a 3D-grapheable linear model}
+\title{Plot a 3D-graphable linear model}
 \usage{
 scatter_3d(model, n = 100, colors = c("blue", "yellow"))
 }
 \arguments{
-\item{model}{A saved linear model with 2 predictor variables}
+\item{model}{A fitted \code{\link[=lm]{lm()}} with exactly two numeric predictor variables.}
 
-\item{n}{Number of evaluations for creating the surface grid}
+\item{n}{Number of grid points along each predictor axis used to evaluate
+the prediction surface (default 100); larger values give a smoother
+surface at the cost of speed.}
 
-\item{colors}{Colors used for the gradient scale}
+\item{colors}{Character vector defining the marker color gradient, mapped to
+the response value so points read from low to high.}
 }
 \value{
-A 3D graph in the viewer section
+A plotly object (an interactive 3D plot). When printed — e.g. at
+the console or in RStudio — it renders in the Viewer pane.
 }
 \description{
-Creates an interactive 3D visualization of a linear model with exactly 2 predictor variables.
-The function plots the original data points as scattered points in 3D space and overlays
-a semi-transparent regression surface showing the model predictions across the entire
-predictor space. This provides an intuitive way to understand how a linear model
-behaves across different combinations of two predictor variables.
+Creates an interactive 3D visualization of a linear model with exactly two
+predictor variables. The model's own data is drawn as scattered points and a
+semi-transparent regression surface is overlaid across the whole predictor
+space, so you can \emph{see} the fitted surface rather than read its coefficients.
+}
+\details{
+Reach for it when a model has exactly two predictors and you want to
+understand how it behaves across their combinations. Transformed terms are
+fine — the surface is evaluated with \code{\link[=predict]{predict()}} on the raw predictors, so
+\code{lm(z ~ x + I(x^2) + y)} graphs over \code{x} and \code{y} as expected.
 }
 \examples{
-\dontrun{
-model <- lm(mpg ~ disp + hp, data = mtcars)
-scatter_3d(model, colors=c('blue','yellow'))
+if (interactive()) {
+  # A flat regression plane over two predictors
+  model <- lm(mpg ~ disp + hp, data = mtcars)
+  scatter_3d(model)
+
+  # Custom marker gradient and a finer surface grid
+  scatter_3d(model, n = 200, colors = c("blue", "yellow"))
+
+  # Transformed terms graph over their raw predictors
+  curved <- lm(mpg ~ wt + I(wt^2) + hp, data = mtcars)
+  scatter_3d(curved)
+
+  # Interaction models produce a twisted (non-planar) surface
+  twisted <- lm(Sepal.Length ~ Sepal.Width * Petal.Length, data = iris)
+  scatter_3d(twisted)
 }
 
 }

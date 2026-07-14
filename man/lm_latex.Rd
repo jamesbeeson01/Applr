@@ -4,25 +4,44 @@
 \alias{lm_latex}
 \title{Write out the equation of a linear model in LaTeX format}
 \usage{
-lm_latex(model)
+lm_latex(model, clearer = FALSE)
 }
 \arguments{
 \item{model}{A linear model}
+
+\item{clearer}{If \code{TRUE}, factor terms are displayed with the factor name
+and level spelled out (e.g. \code{(g="B")} instead of \code{gB}).}
 }
 \value{
-The equation of an indicated linear model with coefficients and variable names in LaTeX form
+A character string of length 1 containing the display-math LaTeX
+equation (wrapped in \verb{$$...$$}), printed to the console with \code{cat()} and
+returned invisibly.
 }
 \description{
-Takes a fitted linear model and generates a properly formatted LaTeX equation
-suitable for inclusion in R Markdown documents, academic papers, or presentations.
-The output includes underbrace notation to clearly label predicted values and
-predictor variables, making it ideal for educational or presentation purposes.
-Coefficients are rounded to 3 significant figures.
+Takes a fitted linear model and generates a properly formatted LaTeX
+equation suitable for inclusion in R Markdown documents, academic papers,
+or presentations. The output includes underbrace notation to clearly label
+predicted values and predictor variables, making it ideal for educational
+or presentation purposes. Coefficients are rounded to 3 significant
+figures.
+}
+\details{
+Use it when a model needs to appear as typeset math — in an R Markdown
+chunk with \code{results = "asis"}, the LaTeX string prints ready to render.
 }
 \examples{
-\dontrun{
-model <- lm(width ~ length + I(length^2) + sex + sex:length + sex:I(length^2), KidsFeet)
-lm_latex(model)
-}
+# Simple regression
+lm_latex(lm(mpg ~ wt, data = mtcars))
+
+# Multiple predictors and a transformed term
+lm_latex(lm(mpg ~ disp + hp + I(hp^2), data = mtcars))
+
+# Factor predictor with interactions; `clearer = TRUE` spells out levels
+model <- lm(Sepal.Length ~ Sepal.Width * Species, data = iris)
+lm_latex(model, clearer = TRUE)
+
+# Capture the string instead of just printing it
+eq <- lm_latex(lm(mpg ~ wt, data = mtcars))
+nchar(eq)
 
 }

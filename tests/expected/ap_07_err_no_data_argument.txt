@@ -1,0 +1,2 @@
+Error: The model was fitted without a `data` argument, so autoplot() cannot recover its data.
+    Refit model with a data argument, such as 'lm(y ~ x, data = your_data)'. 

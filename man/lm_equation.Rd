@@ -4,24 +4,50 @@
 \alias{lm_equation}
 \title{Write out the equation of a linear model}
 \usage{
-lm_equation(model)
+lm_equation(model, clearer = FALSE)
 }
 \arguments{
 \item{model}{A linear model}
+
+\item{clearer}{If \code{TRUE}, factor terms are displayed with the factor name
+and level spelled out (e.g. \code{4.09*(g="B")} instead of \code{4.09*gB}).}
 }
 \value{
-The equation of an indicated linear model with coefficients and variable names
+A character string of length 1 containing the fitted equation,
+e.g. \code{"mpg = 30.7 - 0.0248*disp - 0.0245*hp"}.
 }
 \description{
-Takes a fitted linear model and returns a human-readable equation string showing
-the relationship between the response variable and predictors. This is useful for
-presenting model results in reports or understanding the mathematical form of the model.
-Coefficients are rounded to 3 significant figures for readability.
+Takes a fitted linear model and returns a human-readable equation string
+showing the relationship between the response variable and predictors.
+Coefficients are rounded to 3 significant figures for readability. Terms
+are named as in the fitted coefficients, so factor predictors show one term
+per dummy level (e.g. \code{2.1*gB}) and models without an intercept print no
+intercept.
+}
+\details{
+Use it when you want to report or sanity-check a fitted model as an
+equation rather than a coefficient table — for example when writing up
+homework or checking which dummy terms a factor produced.
 }
 \examples{
-\dontrun{
-model <- lm(mpg ~ disp + hp, data = mtcars)
+# Simple regression
+lm_equation(lm(mpg ~ wt, data = mtcars))
+
+# Multiple predictors
+lm_equation(lm(mpg ~ disp + hp, data = mtcars))
+
+# Factor predictor: one term per non-reference level
+model <- lm(Sepal.Length ~ Sepal.Width + Species, data = iris)
 lm_equation(model)
-}
+
+# `clearer = TRUE` spells out factor levels
+lm_equation(model, clearer = TRUE)
+
+# Transformed terms and interactions
+lm_equation(lm(mpg ~ wt + I(wt^2), data = mtcars))
+lm_equation(lm(Sepal.Length ~ Sepal.Width * Species, data = iris))
+
+# No-intercept models print no intercept
+lm_equation(lm(mpg ~ 0 + wt, data = mtcars))
 
 }

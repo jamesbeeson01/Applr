@@ -1,0 +1,2 @@
+Error: The data being plotted is not the data `model` was fitted to.
+    The data changed after the model was fitted; refit it, such as 'model <- lm(y ~ x, data = your_data)'. 

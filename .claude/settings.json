@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Rscript tests/run.R)",
+      "Bash(Rscript tests/run.R *)",
+      "Bash(Rscript -e \"rmarkdown::render('tests/report.Rmd')\")"
+    ]
+  }
+}
