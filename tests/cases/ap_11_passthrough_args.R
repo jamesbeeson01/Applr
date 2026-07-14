@@ -1,10 +1,11 @@
 # CASE: ap_11_passthrough_args
-# TYPE: console
+# TYPE: visual
 # FUNC: autoplot
-# EXPECT: No output at all. autoplot.lm() forwards ... to geom_slice(), so
+# EXPECT: Scatter plot with line and confidence interval band.
+#         autoplot.lm() forwards ... to geom_slice(), so
 #         geom_slice options passed to autoplot (here interval =
-#         "confidence") just work — the plot renders with a ribbon and no
-#         errors, warnings, or messages.
+#         "confidence") and renders with no errors, warnings, or 
+#         messages.
 
 source("tests/_setup.R")
 

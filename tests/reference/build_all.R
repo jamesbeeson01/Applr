@@ -2,7 +2,7 @@
 # Run from the package root:
 #   Rscript tests/reference/build_all.R
 
-cases <- sort(list.files("tests/reference", pattern = "^(gs|gt|sb|cp)_.*\\.R$", full.names = TRUE))
+cases <- sort(list.files("tests/reference", pattern = "^(gs|gt|sb|cp|ap)_.*\\.R$", full.names = TRUE))
 cat(sprintf("Building %d reference images...\n\n", length(cases)))
 
 for (f in cases) {
