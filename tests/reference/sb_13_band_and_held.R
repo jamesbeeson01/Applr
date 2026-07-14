@@ -23,7 +23,7 @@ p <- ggplot(dat, aes(x, y)) +
   labs(title = "sb_13 REFERENCE — held value and span with separate wording",
        subtitle = paste0(ref_equation(model),
                          "\n", ref_held_line(list(x3 = 2)),
-                         "\nprojection: x2 spanning 1-4"))
+                         "\nprojection band: x2 spanning 1-4"))
 
 ggsave("tests/reference/sb_13_band_and_held.png", plot = p, width = 7, height = 5)
 message("OK: tests/reference/sb_13_band_and_held.png")

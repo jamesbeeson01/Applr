@@ -4,7 +4,7 @@
 # EXPECT: One projection band (x2 from 1 to 4, band = TRUE) on a skyblue
 #         slice pair. The subtitle reports the banded variable with range
 #         wording instead of the pinned-value wording: line 1 the model
-#         equation, line 2 "projection: x2 spanning 1-4". Variables pinned
+#         equation, line 2 "projection band: x2 spanning 1-4". Variables pinned
 #         to a single value would still use the "held at:" wording.
 
 source("tests/_setup.R")

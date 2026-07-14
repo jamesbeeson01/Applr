@@ -4,7 +4,7 @@
 # EXPECT: A projection band on x2 (1 to 4) with a THIRD predictor x3 pinned
 #         at a single value (2). The subtitle reports both, each with its own
 #         wording: line 1 the model equation, line 2 "held at: x3 = 2",
-#         line 3 "projection: x2 spanning 1-4". Pinned values keep the
+#         line 3 "projection band: x2 spanning 1-4". Pinned values keep the
 #         "held at:" wording; only the banded variable uses "spanning".
 
 source("tests/_setup.R")

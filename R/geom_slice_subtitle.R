@@ -110,10 +110,10 @@ slice_subtitle_held_line <- function(held) {
   paste0("held at: ", paste(parts, collapse = "; "))
 }
 
-# The "projection: x2 spanning 1-4" line for a banded variable, from the
+# The "projection band: x2 spanning 1-4" line for a banded variable, from the
 # list(var =, values = c(lo, hi)) that resolve_slice_band() returns.
 slice_subtitle_band_line <- function(band) {
-  paste0("projection: ", band$var, " spanning ",
+  paste0("projection band: ", band$var, " spanning ",
          format_value(band$values[1]), "-", format_value(band$values[2]))
 }
 
