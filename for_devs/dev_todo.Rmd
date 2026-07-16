@@ -9,17 +9,6 @@ date: "2026-07-11"
 - [x] **priority: high** — Human review of all test cases and their output
 - [ ] **priority: high** — Human review all documentation
 - [ ] **priority: high** — `devtools::check()` clean, then bump Version to 1.0.0 and tag (see `release_plan_1.0.md` Phase 4)
-- [x] Link to autoplot.lm in the main docs page
-- [x] plotly overwrite issue in `known_issues.md` (should resolve with `@importFrom`) — RESOLVED 2026-07-12: blanket imports narrowed, load warnings gone (see known_issues.Rmd Resolved)
-- [x] pictures in README
-- [x] **priority: high** — Update code examples in README (particularly geom_slice) — DONE 2026-07-12 (full rewrite: current API, drawit removed, covers autoplot / intervals / bands / slice-text helpers, issues link)
-- [x] **priority: high** (folded into ULTRA naming decision above) — Consider if the names `slice_2d` and `geom_slice` convey their function best — RESOLVED 2026-07-12: names kept
-- [x] **priority: high** — `@return` + rich `@examples` on every exported function — DONE 2026-07-12 (utility + geom_slice family + autoplot; `get_inverse_function` now `@noRd`; examples smoke-tested. `slice_2d`/`add_slice_2d` kept their existing briefer examples — enrich if desired)
-- [x] **priority: high** — "Getting started" vignette — DONE 2026-07-12 (`vignettes/Applr.Rmd`: lm → autoplot → geom_slice with slices/intervals/labels on mtcars; knitr/rmarkdown added to Suggests)
-- [x] **priority: high** — Narrow blanket `@import` roxygen tags to `@importFrom` across `R/` — DONE 2026-07-12 (central block in `Applr-package.R`; `@import ggplot2` kept — standard for ggplot2 extensions; tidyr dropped entirely, it was unused; stale per-file tags removed; `devtools::document()` run, package loads clean)
-- [x] Thin testthat shim over `tests/` — DONE 2026-07-12 (`tests/testthat/test-suite.R` re-runs `tests/run.R` and asserts every case is OK; skips inside R CMD check on the tarball, where tests/ is buildignored; `devtools::test()` green)
-- [x] pkgdown site + CI — DONE 2026-07-12 (`_pkgdown.yml` grouped reference index validated by `pkgdown::check_pkgdown()`; `.github/workflows/pkgdown.yaml` deploys to gh-pages; `R-CMD-check.yaml` checks 4 platforms plus a job running the real tests/ suite)
-- [x] Check for comprehensiveness of testing suite and edge cases: see `for_devs/testing_revisions.md`
 - [ ] Fix remaining errors in `known_issues.Rmd`
 - [ ] Simplify context in CLAUDE.md - move to either skill or tests/README.md
 - [ ] Refactor test suite following `for_devs/testing_revisions.md`
@@ -31,10 +20,6 @@ date: "2026-07-11"
 - [ ] Show off the labeling functions
 
 ## autoplot
-
-- [x] Add labels to autoplot by default (`geom_slice_subtitle`, maybe `geom_slice_text`)
-- [x] **priority: high** — Document well — DONE 2026-07-12 (runnable examples incl. `x_axis`, forwarded `predict_vars`/`interval`; `@seealso` cross-links)
-- [x] Add aes() and data mapping
 
 ## lm_equation/lm_latex
 
@@ -51,38 +36,24 @@ date: "2026-07-11"
   - [ ] back transform complex function
   - [ ] x axis transform that is a curved line with gaps between points (shows an potential issue with current implementation)
 - [ ] Add `data` and aesthetic arguments to `geom_slice`
-- [x] Add a `full_range` boolean argument to `geom_slice` which plots lines to the edge of the panel, not the end of the group
 - [ ] Add projection band and 95% confidence/prediction interval to legend optionally
 - [ ] Support for `level` passed to `predict` to change the confidence interval
 
 ## slice_2d
 
-- [x] Either add functionality for fancy x-axes, or deprecate fancy x axis test cases — DONE 2026-07-12 (added: `x_axis` may be an expression of the model's predictors, e.g. `x_axis = "x * x_pos"`; composite mode predicts at the model's own data points like geom_slice. Also fixed the `...` partial-matching bug that broke `slice_2d(model, x_axis = "x_pos", x = 0)`. Cases s2_03/s2_06/as_03 now pass.)
-- [x] Roll out the `slice_*()` condition helpers to `slice_2d.R` and related — DONE 2026-07-12 (full rewrite of `prepare_slice_data`; validation now shares geom_slice's `check_slice_model`/`check_back_transform`/`check_slice_interval`; error wording harmonized to decisions.Rmd format, snapshots for s2_15–21/as_12–22 updated.)
-- [x] **priority: high** (blocked on ULTRA naming decision above) — Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `x_axis`), adding deprecation aliases for any public arguments that change. (`geom_slice`'s public args — `predict_vars`, `back_transform`, `n` — now conform; `slice_2d`/`drawit` still use `x_axis`, which `decisions.Rmd` currently permits.)
-- [x] **priority: high** (blocked on ULTRA naming decision above) — Migrate fully to snake_case (e.g. `x_axis` → `x_axis`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.
-- [x] Add error to check if the data being plotted is the same as the data the lm was fit to — DONE 2026-07-12 (`check_slice_fit_data()` compares the model's stored fitted frame against the data its call currently points to, catching post-fit mutation; conservative — skips when `model = FALSE` or `subset` was used. Case s2_25. For `add_slice_2d` onto an arbitrary base plot the range warning remains the practical check, since base R plots keep no data.)
-- [x] Add an interval to `slice_2d` (like `geom_slice`) — DONE 2026-07-12 (`interval = "none"/"confidence"/"prediction"` on both `slice_2d` and `add_slice_2d`: translucent polygon band in the line's color, y-axis extended to fit; cases s2_23/s2_24/as_23.)
-- [x] priority low; investigate usefulness of back_transform = "log" — RESOLVED 2026-07-12: adopted. `slice_2d`/`add_slice_2d` now accept the same names as `geom_slice` ("log", "log10", "log2", "sqrt", "exp", "inverse") via the shared `check_back_transform()`; mostly redundant with auto-detect but useful for explicitness and API parity (case s2_26). Invalid values now error up front instead of warning-and-inferring.
 - [ ] Allow character type
-- [ ] Caption more similar to geom_slice_subtitle
+- [ ] Subtitle/caption more similar to geom_slice_subtitle
 - [ ] Add `caption` and `subtitle` arguments. Default to `subtitle=TRUE` and `caption=FALSE`. If `caption=TRUE`, make `subtitle=FALSE` unless both are set to true explicitly
 
 ## scatter_3d
 
 - [ ] Find a way to test it (if only just in report.Rmd)
-- [x] scatter_3d breaks on models with I() terms — DONE 2026-07-12 (axes now read from `all.vars(formula)` + `slice_model_frame()` for the raw predictors, not `model$model`'s columns, so transformed terms like `I(wt^2)` graph over their raw variables; predict() failures are caught with a `slice_abort`).
-- [x] scatter_3d's colors argument appears ineffective in practice — DONE 2026-07-12 (`add_markers(color = ~z, colors = colors)` now maps the response to the gradient so it shows).
-- [x] scatter_3d builds its plotly call via eval(parse(text = ...))) — DONE 2026-07-12 (rewritten with a safe-named `~x/~y/~z` frame and direct plotly calls; no `eval(parse())`, no unusual-name fragility).
-
-## drawit
-
-- [x] **priority: high** — Deprecate it — DONE 2026-07-12 (deprecation shim in `R/deprecated.R` warns and forwards to `slice_2d()`)
 
 ## New Functions 
 
 - [ ] `autoplot(model, sliders=TRUE)` changing the implementation to plotly for interactive visualization
 - [ ] gif animation
+- [ ] glm support
 
 ## Complete
 
@@ -125,3 +96,29 @@ date: "2026-07-11"
 - [x] `autoplot(model, type = "3d")` delegates to `scatter_3d()` (2-D slice remains the default); non-numeric predictors get a clean error rather than a broken plot.
 - [x] Tidy repo functions that haven't been visited since geom_slice refactor
 - [x] delete `global.R`
+- [x] Link to autoplot.lm in the main docs page
+- [x] plotly overwrite issue in `known_issues.md` (should resolve with `@importFrom`) — RESOLVED 2026-07-12: blanket imports narrowed, load warnings gone (see known_issues.Rmd Resolved)
+- [x] pictures in README
+- [x] **priority: high** — Update code examples in README (particularly geom_slice) — DONE 2026-07-12 (full rewrite: current API, drawit removed, covers autoplot / intervals / bands / slice-text helpers, issues link)
+- [x] **priority: high** (folded into ULTRA naming decision above) — Consider if the names `slice_2d` and `geom_slice` convey their function best — RESOLVED 2026-07-12: names kept
+- [x] **priority: high** — `@return` + rich `@examples` on every exported function — DONE 2026-07-12 (utility + geom_slice family + autoplot; `get_inverse_function` now `@noRd`; examples smoke-tested. `slice_2d`/`add_slice_2d` kept their existing briefer examples — enrich if desired)
+- [x] **priority: high** — "Getting started" vignette — DONE 2026-07-12 (`vignettes/Applr.Rmd`: lm → autoplot → geom_slice with slices/intervals/labels on mtcars; knitr/rmarkdown added to Suggests)
+- [x] **priority: high** — Narrow blanket `@import` roxygen tags to `@importFrom` across `R/` — DONE 2026-07-12 (central block in `Applr-package.R`; `@import ggplot2` kept — standard for ggplot2 extensions; tidyr dropped entirely, it was unused; stale per-file tags removed; `devtools::document()` run, package loads clean)
+- [x] Thin testthat shim over `tests/` — DONE 2026-07-12 (`tests/testthat/test-suite.R` re-runs `tests/run.R` and asserts every case is OK; skips inside R CMD check on the tarball, where tests/ is buildignored; `devtools::test()` green)
+- [x] pkgdown site + CI — DONE 2026-07-12 (`_pkgdown.yml` grouped reference index validated by `pkgdown::check_pkgdown()`; `.github/workflows/pkgdown.yaml` deploys to gh-pages; `R-CMD-check.yaml` checks 4 platforms plus a job running the real tests/ suite)
+- [x] Check for comprehensiveness of testing suite and edge cases: see `for_devs/testing_revisions.md`
+- [x] Add labels to autoplot by default (`geom_slice_subtitle`, maybe `geom_slice_text`)
+- [x] **priority: high** — Document well — DONE 2026-07-12 (runnable examples incl. `x_axis`, forwarded `predict_vars`/`interval`; `@seealso` cross-links)
+- [x] Add aes() and data mapping
+- [x] Add a `full_range` boolean argument to `geom_slice` which plots lines to the edge of the panel, not the end of the group
+- [x] **priority: high** — Deprecate it — DONE 2026-07-12 (deprecation shim in `R/deprecated.R` warns and forwards to `slice_2d()`)
+- [x] Either add functionality for fancy x-axes, or deprecate fancy x axis test cases — DONE 2026-07-12 (added: `x_axis` may be an expression of the model's predictors, e.g. `x_axis = "x * x_pos"`; composite mode predicts at the model's own data points like geom_slice. Also fixed the `...` partial-matching bug that broke `slice_2d(model, x_axis = "x_pos", x = 0)`. Cases s2_03/s2_06/as_03 now pass.)
+- [x] Roll out the `slice_*()` condition helpers to `slice_2d.R` and related — DONE 2026-07-12 (full rewrite of `prepare_slice_data`; validation now shares geom_slice's `check_slice_model`/`check_back_transform`/`check_slice_interval`; error wording harmonized to decisions.Rmd format, snapshots for s2_15–21/as_12–22 updated.)
+- [x] **priority: high** (blocked on ULTRA naming decision above) — Fix argument-name and other naming violations to match `decisions.Rmd` (e.g. axis args like `x_axis`), adding deprecation aliases for any public arguments that change. (`geom_slice`'s public args — `predict_vars`, `back_transform`, `n` — now conform; `slice_2d`/`drawit` still use `x_axis`, which `decisions.Rmd` currently permits.)
+- [x] **priority: high** (blocked on ULTRA naming decision above) — Migrate fully to snake_case (e.g. `x_axis` → `x_axis`), dropping the current public-argument exceptions in `decisions.Rmd`. Requires: (1) a deprecation plan for renamed public arguments (aliases + warning/`lifecycle`, removal timeline), and (2) updating the naming-conventions standard once settled.
+- [x] Add error to check if the data being plotted is the same as the data the lm was fit to — DONE 2026-07-12 (`check_slice_fit_data()` compares the model's stored fitted frame against the data its call currently points to, catching post-fit mutation; conservative — skips when `model = FALSE` or `subset` was used. Case s2_25. For `add_slice_2d` onto an arbitrary base plot the range warning remains the practical check, since base R plots keep no data.)
+- [x] Add an interval to `slice_2d` (like `geom_slice`) — DONE 2026-07-12 (`interval = "none"/"confidence"/"prediction"` on both `slice_2d` and `add_slice_2d`: translucent polygon band in the line's color, y-axis extended to fit; cases s2_23/s2_24/as_23.)
+- [x] priority low; investigate usefulness of back_transform = "log" — RESOLVED 2026-07-12: adopted. `slice_2d`/`add_slice_2d` now accept the same names as `geom_slice` ("log", "log10", "log2", "sqrt", "exp", "inverse") via the shared `check_back_transform()`; mostly redundant with auto-detect but useful for explicitness and API parity (case s2_26). Invalid values now error up front instead of warning-and-inferring.
+- [x] scatter_3d breaks on models with I() terms — DONE 2026-07-12 (axes now read from `all.vars(formula)` + `slice_model_frame()` for the raw predictors, not `model$model`'s columns, so transformed terms like `I(wt^2)` graph over their raw variables; predict() failures are caught with a `slice_abort`).
+- [x] scatter_3d's colors argument appears ineffective in practice — DONE 2026-07-12 (`add_markers(color = ~z, colors = colors)` now maps the response to the gradient so it shows).
+- [x] scatter_3d builds its plotly call via eval(parse(text = ...))) — DONE 2026-07-12 (rewritten with a safe-named `~x/~y/~z` frame and direct plotly calls; no `eval(parse())`, no unusual-name fragility).
