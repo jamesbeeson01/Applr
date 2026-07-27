@@ -18,4 +18,4 @@ model <- local({
   lm(weight_kg ~ height_cm)
 })
 
-try_show(autoplot(model))
+try_show(autoplot(model, summary = FALSE))

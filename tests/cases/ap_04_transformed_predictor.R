@@ -10,7 +10,7 @@ source("tests/_setup.R")
 
 model <- lm(mpg ~ log(disp), data = mtcars)
 
-p <- autoplot(model) +
+p <- autoplot(model, summary = FALSE) +
   labs(title = "ap_04: autoplot(lm), transformed predictor (mpg ~ log(disp))",
        subtitle = "EXPECT: logarithmic curve on the raw disp axis")
 p

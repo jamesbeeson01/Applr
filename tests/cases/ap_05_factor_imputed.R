@@ -12,7 +12,7 @@ source("tests/_setup.R")
 
 model <- lm(Sepal.Length ~ Petal.Length + Species, data = iris)
 
-p <- autoplot(model) +
+p <- autoplot(model, summary = FALSE) +
   labs(title = "ap_05: autoplot(lm), factor covariate (Sepal.Length ~ Petal.Length + Species)",
        subtitle = "EXPECT: one line, Species imputed to \"setosa\"")
 p

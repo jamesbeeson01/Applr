@@ -100,5 +100,5 @@ wrap plotly/interactive ones in `if (interactive())`.
 
 - Intervals in legend; plotly `autoplot(sliders=TRUE)`; gif animation;
   scatter_3d test story. (Formerly listed here but since done pre-release:
-  `full_range`, `data`/mapping on autoplot, `slice_2d` interval, pkgdown
+  `full_range`, `mapping` on autoplot, `slice_2d` interval, pkgdown
   site + R CMD check GitHub Action.)

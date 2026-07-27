@@ -7,11 +7,11 @@
 \method{autoplot}{lm}(
   object,
   ...,
-  data = NULL,
   mapping = NULL,
   type = c("2d", "3d"),
   x_axis = NULL,
-  xaxis = NULL
+  xaxis = NULL,
+  summary = TRUE
 )
 }
 \arguments{
@@ -23,12 +23,6 @@ works but \code{lm(your_data$y ~ your_data$x)} does not.}
 \code{predict_vars = list(hp = 110)} to choose the slice,
 \code{interval = "confidence"} for a ribbon, or fixed aesthetics such as
 \code{color = "red"} — or to \code{\link[=scatter_3d]{scatter_3d()}} when \code{type = "3d"}.}
-
-\item{data}{A data frame to draw the scatter from instead of the data
-recovered from the model — for example the model's data with extra
-columns added for \code{mapping} aesthetics. Passed to \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}}.
-The rows must still match the data the model was fitted to
-(\code{\link[=geom_slice]{geom_slice()}} checks, and errors on a mismatch).}
 
 \item{mapping}{Extra aesthetics created with \code{\link[ggplot2:aes]{ggplot2::aes()}}, passed to
 \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} — for example \code{mapping = aes(color = factor(cyl))}.
@@ -42,6 +36,11 @@ interactive \code{\link[=scatter_3d]{scatter_3d()}} surface (needs exactly two n
 Ignored when \code{type = "3d"}.}
 
 \item{xaxis}{Deprecated; use \code{x_axis} instead.}
+
+\item{summary}{Whether to print \code{summary(object)} to the console before
+returning the plot (default \code{TRUE}). Printing it up front means you can
+refit the model and inspect its coefficients from inside the same
+\code{autoplot()} call; pass \code{summary = FALSE} to suppress it.}
 }
 \value{
 A ggplot of the model's data with a slice of the model drawn
@@ -85,9 +84,9 @@ autoplot(lm(mpg ~ disp + hp, data = mtcars),
          predict_vars = list(hp = 110), interval = "confidence") +
   labs(title = "Slice at hp = 110")
 
-# Custom data and extra aesthetics for the scatter
-autoplot(lm(mpg ~ disp, data = mtcars),
-         data = mtcars, mapping = aes(color = factor(cyl)))
+# Extra aesthetics for the scatter (mapping goes to ggplot())
+autoplot(lm(mpg ~ hp + factor(cyl), data = mtcars),
+         mapping = aes(color = factor(cyl)))
 
 # An interactive 3-D surface for a two-predictor model
 if (interactive()) {

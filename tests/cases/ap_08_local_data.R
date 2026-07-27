@@ -17,4 +17,4 @@ model <- local({
   lm(y ~ x, data = class_data)
 })
 
-try_show(autoplot(model))
+try_show(autoplot(model, summary = FALSE))

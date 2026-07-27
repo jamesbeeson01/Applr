@@ -12,4 +12,4 @@ source("tests/_setup.R")
 
 model <- lm(Sepal.Length ~ Species + Petal.Length, data = iris)
 
-try_show(autoplot(model))
+try_show(autoplot(model, summary = FALSE))

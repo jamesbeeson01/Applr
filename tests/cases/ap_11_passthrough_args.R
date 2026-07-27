@@ -11,4 +11,4 @@ source("tests/_setup.R")
 
 model <- lm(mpg ~ disp, data = mtcars)
 
-try_show(autoplot(model, interval = "confidence"))
+try_show(autoplot(model, interval = "confidence", summary = FALSE))

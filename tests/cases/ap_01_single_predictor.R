@@ -10,7 +10,7 @@ source("tests/_setup.R")
 
 model <- lm(mpg ~ disp, data = mtcars)
 
-p <- autoplot(model) +
+p <- autoplot(model, summary = FALSE) +
   labs(title = "ap_01: autoplot(lm), single predictor (mpg ~ disp)",
        subtitle = "EXPECT: One straight downward line through the point cloud")
 p

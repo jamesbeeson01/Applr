@@ -10,7 +10,7 @@ source("tests/_setup.R")
 
 model <- lm(mpg ~ disp + hp, data = mtcars)
 
-p <- autoplot(model) +
+p <- autoplot(model, summary = FALSE) +
   labs(title = "ap_02: autoplot(lm), additive (mpg ~ disp + hp)",
        subtitle = "EXPECT: x-axis = disp (first predictor); hp imputed at mean")
 p

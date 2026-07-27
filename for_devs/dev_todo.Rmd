@@ -21,6 +21,15 @@ date: "2026-07-11"
 
 ## autoplot
 
+- [x] `mapping =` resolves against the model's full data, not just the formula
+  variables, so `autoplot(lm(mpg ~ log(disp), mtcars), mapping = aes(color = cyl))`
+  works (used to error with `cyl` not found) — case ap_14
+- [x] Move `...` to the last argument so `mapping` is second and positional
+  (`autoplot(model, aes(...))`), matching convention
+- [x] Remove the `x_axis` argument (redundant with `mapping = aes(x = ...)`);
+  keep `xaxis` as a deprecation shim that folds into the mapping's x aesthetic
+  and errors if x is set both ways — cases ap_15, ap_16
+
 ## lm_equation/lm_latex
 
 - [ ] Change "clearer" to "prettier"?

@@ -114,6 +114,10 @@ I tried to allow them. Those are hours wasted.
 
 This is the simplest way we know to get y values based on an `lm`, and it works well enough. It is a semi-arbitrary decision.
 
+## No `data` argument in `autoplot()`
+
+`autoplot.lm()` deliberately has no `data` argument — the scatter always comes from the model's own data — because plotting a model over data it was not fitted to is misleading; add any derived columns to the data before fitting the model, or use `mapping` for extra aesthetics on the model's variables.
+
 ## Dependencies
 
 **`DESCRIPTION` now pins `ggplot2 (>= 3.5.0)`.** (Decided 2026-06-01. Developed and tested against ggplot2 4.0.3, R 4.5.3. `dplyr` was declared here until 2026-07-07, when its last uses were removed and it was dropped from `Imports`.)

@@ -10,7 +10,7 @@ source("tests/_setup.R")
 
 model <- lm(log(mpg) ~ disp, data = mtcars)
 
-p <- autoplot(model) +
+p <- autoplot(model, summary = FALSE) +
   labs(title = "ap_03: autoplot(lm), transformed response (log(mpg) ~ disp)",
        subtitle = "EXPECT: decreasing exp curve, back-transformed to raw mpg axis")
 p
