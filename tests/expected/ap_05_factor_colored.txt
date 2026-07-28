@@ -1,0 +1,2 @@
+Coloured the plot by `Species` - one slice line per level.
+    To choose the colour, use 'mapping = aes(color = ...)'.

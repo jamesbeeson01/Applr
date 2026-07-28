@@ -1,0 +1,4 @@
+Coloured the plot by `cyl` - one slice line per level.
+    To choose the colour, use 'mapping = aes(color = ...)'.
+Faceted the plot by `gear` - one panel per level.
+    For a single panel, drop `gear` from the model.

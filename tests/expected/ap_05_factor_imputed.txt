@@ -1,2 +1,0 @@
-Value for `Species` not specified - Used most common: "setosa"
-    To choose a slice, use 'predict_vars = list(Species = "setosa")'.

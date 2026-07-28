@@ -27,7 +27,11 @@ ggplot2::autoplot
 #'
 #' The model's *first numeric* predictor goes on the x-axis (override with
 #' `mapping = aes(x = ...)`) and the raw response variable goes on the y-axis.
-#' Everything else
+#' A predictor that groups into a few discrete lines rather than varying
+#' continuously — non-numeric, or numeric with at most five distinct values
+#' (like `cyl`'s 4/6/8) — is worth showing, not holding at one value: the first
+#' such predictor not already on the plot becomes `aes(color = ...)` (one slice
+#' line per level) and a second one facets the plot. Everything past that
 #' is handled by [geom_slice()] and reported on the console: predictors not
 #' visible on the plot are imputed (mean for numeric, most common value for
 #' factor/character), and a transformed response such as `lm(log(y) ~ x)` is
@@ -185,8 +189,53 @@ autoplot.lm <- function(object, mapping = NULL, type = c("2d", "3d"),
     plot_mapping[names(mapping)] <- mapping
   }
 
-  ggplot(model_data, plot_mapping) +
+  # A step above the imputation geom_slice() does on its own: a predictor that
+  # groups into a few discrete lines, rather than varying continuously, is
+  # worth *showing* instead of holding at one value. The first such predictor
+  # not already on the plot becomes a colour aesthetic (geom_slice() then draws
+  # one line per level); a second one facets the plot. Anything past that
+  # geom_slice() still imputes. "Categorical-like" means non-numeric, or
+  # numeric with only a handful of distinct values (like cyl's 4/6/8).
+  categorical_like <- function(v) {
+    column <- model_data[[v]]
+    !is.numeric(column) || length(unique(column[!is.na(column)])) <= 5
+  }
+  shown_vars <- unique(unlist(lapply(plot_mapping, function(q)
+    all.vars(rlang::quo_get_expr(q)))))
+  candidates <- setdiff(predictor_vars, shown_vars)
+  candidates <- candidates[vapply(candidates, categorical_like, logical(1))]
+
+  facet_var <- NULL
+  if (!"colour" %in% names(plot_mapping) && length(candidates) >= 1) {
+    color_var <- candidates[1]
+    # A numeric few-value predictor is wrapped in factor() so it groups into
+    # discrete levels instead of stretching across a continuous colour scale.
+    color_expr <- if (is.numeric(model_data[[color_var]])) {
+      call("factor", as.name(color_var))
+    } else {
+      as.name(color_var)
+    }
+    plot_mapping$colour <- aes(colour = !!color_expr)$colour
+    candidates <- candidates[-1]
+    slice_inform(
+      what = paste0("Coloured the plot by `", color_var, "` - one slice line per level."),
+      hint = "To choose the colour, use 'mapping = aes(color = ...)'."
+    )
+  }
+  if (length(candidates) >= 1) {
+    facet_var <- candidates[1]
+    slice_inform(
+      what = paste0("Faceted the plot by `", facet_var, "` - one panel per level."),
+      hint = paste0("For a single panel, drop `", facet_var, "` from the model.")
+    )
+  }
+
+  plot <- ggplot(model_data, plot_mapping) +
     geom_point() +
     geom_slice(object, ...) +
     geom_slice_subtitle()
+  if (!is.null(facet_var)) {
+    plot <- plot + facet_wrap(vars(!!as.name(facet_var)))
+  }
+  plot
 }

@@ -1,4 +1,4 @@
 Message: The first predictor `Species` is not numeric - used `Petal.Length` for the x-axis.
-    To choose the x-axis, use 'mapping = aes(x = Petal.Length)'.
-Message: Value for `Species` not specified - Used most common: "setosa"
-    To choose a slice, use 'predict_vars = list(Species = "setosa")'.
+    To choose the x-axis, use 'mapping = aes(x = Petal.Length)'. 
+Message: Coloured the plot by `Species` - one slice line per level.
+    To choose the colour, use 'mapping = aes(color = ...)'. 

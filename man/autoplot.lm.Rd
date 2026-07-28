@@ -48,7 +48,11 @@ forwarded to \code{\link[=scatter_3d]{scatter_3d()}} (e.g. \code{n}, \code{color
 
 The model's \emph{first numeric} predictor goes on the x-axis (override with
 \code{mapping = aes(x = ...)}) and the raw response variable goes on the y-axis.
-Everything else
+A predictor that groups into a few discrete lines rather than varying
+continuously — non-numeric, or numeric with at most five distinct values
+(like \code{cyl}'s 4/6/8) — is worth showing, not holding at one value: the first
+such predictor not already on the plot becomes \code{aes(color = ...)} (one slice
+line per level) and a second one facets the plot. Everything past that
 is handled by \code{\link[=geom_slice]{geom_slice()}} and reported on the console: predictors not
 visible on the plot are imputed (mean for numeric, most common value for
 factor/character), and a transformed response such as \code{lm(log(y) ~ x)} is
