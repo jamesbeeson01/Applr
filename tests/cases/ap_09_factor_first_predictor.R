@@ -4,7 +4,7 @@
 # EXPECT: The model's FIRST predictor is the factor Species, which cannot go
 #         on geom_slice's continuous x-axis, so autoplot chooses the first
 #         numeric predictor (Petal.Length) instead and says so (message with
-#         an 'x_axis =' hint). Species is then invisible on the plot, so
+#         a 'mapping = aes(x = ...)' hint). Species is then invisible on the plot, so
 #         geom_slice imputes its most common level ("setosa", message).
 #         The plot itself renders fine (same picture as ap_05).
 

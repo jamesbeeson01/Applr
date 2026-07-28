@@ -1,4 +1,0 @@
-Warning: The `xaxis` argument of `autoplot()` is deprecated.
-    Use `mapping = aes(x = your_predictor)` instead. 
-Message: Value for `disp` not specified - Used mean: 230.7
-    To choose a slice, use 'predict_vars = list(disp = 230.7)'. 

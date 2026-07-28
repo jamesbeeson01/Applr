@@ -224,9 +224,9 @@ strings, and a `format` function for full control.
 
 `autoplot()` on an `lm` builds the whole plot: the model's own data as a
 scatter with a `geom_slice()` line through it. The model's first numeric
-predictor goes on the x-axis (override with `x_axis`), and everything in
-`...` is passed on to `geom_slice()`. The result is a regular ggplot, so
-extend it with `+` as usual.
+predictor goes on the x-axis (override with `mapping = aes(x = ...)`), and
+everything in `...` is passed on to `geom_slice()`. The result is a regular
+ggplot, so extend it with `+` as usual.
 
 ```{r autoplot, fig.keep = "last", fig.alt = "autoplot() with a confidence interval and a custom title"}
 library(ggplot2)   # for labs() below; autoplot() itself needs only Applr
@@ -239,15 +239,10 @@ autoplot(lm(mpg ~ disp + hp, data = mtcars),
   labs(title = "Slice at hp = 110")
 ```
 
-```{r autoplot-x-axis, fig.keep = "none"}
-# Choose the x-axis
-autoplot(lm(mpg ~ disp + hp, data = mtcars), x_axis = "hp")
-```
-
 `mapping` goes to `ggplot()` itself: override or add to the automatic
 `aes()` (entries named `x` or `y` replace the chosen axes, and aesthetics
 such as `color` are inherited by `geom_slice()`, so a model variable draws
-one line per group).
+one line per group). Choose the x-axis with `mapping = aes(x = ...)`.
 
 ```{r autoplot-mapping, fig.alt = "autoplot() with an x-axis override and a color mapping"}
 autoplot(lm(mpg ~ disp + hp + factor(cyl), data = mtcars),

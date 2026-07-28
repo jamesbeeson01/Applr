@@ -1,4 +1,0 @@
-Warning: The `xaxis` argument of `autoplot()` is deprecated.
-    Use `mapping = aes(x = your_predictor)` instead. 
-Error: The x-axis is set by both `xaxis` and `mapping = aes(x = ...)`.
-    Drop the deprecated `xaxis` and keep 'mapping = aes(x = ...)'. 

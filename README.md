@@ -4,13 +4,24 @@
 
 # Applr
 
-A small R package for visualizing linear models — especially
-high-dimensional ones — with ease.
+A small R package for visualizing linear models. Plots linear models
+from simple lines to high-dimensional squiggles all with the same level
+of difficulty.
 
-Fit a model with `lm()`, then let Applr draw it: a one-call
-`autoplot()`, a ggplot2 layer (`geom_slice()`) that draws *your* fitted
-model the way `geom_smooth()` draws its own, base-R helpers
-(`slice_2d()`), interactive 3-D surfaces (`scatter_3d()`), and friends.
+Fit a model with `lm()`, then let Applr draw it. Explore easily with
+`autoplot()`, or have fine-grained control with `geom_slice()`: a
+ggplot2 layer baked with confidence bands, projections, and group/facet
+support for *your* fitted model, plotting it the way `geom_smooth()`
+draws its own. Most importantly, you can specify predictor values to
+control what “slice” of high-dimensional space is shown, or let
+`geom_slice` pick for you. See its choice with console messages, or show
+it with `geom_slice_subtitle()` and its friends.
+
+Also includes base-R helpers (`slice_2d()`), interactive 3-D surfaces
+(`scatter_3d()`), LaTeX generator (`lm_latex()`), and a simple
+diagnostic helper (`diagnose()`).
+
+Perfect for any **App**lied **l**inear **r**egression.
 
 ## Installation
 
@@ -28,6 +39,25 @@ library(Applr)
 # One call: scatter + fitted line from any lm()
 model <- lm(mpg ~ disp + hp, data = mtcars)
 autoplot(model)
+#> 
+#> Call:
+#> lm(formula = mpg ~ disp + hp, data = mtcars)
+#> 
+#> Residuals:
+#>     Min      1Q  Median      3Q     Max 
+#> -4.7945 -2.3036 -0.8246  1.8582  6.9363 
+#> 
+#> Coefficients:
+#>              Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept) 30.735904   1.331566  23.083  < 2e-16 ***
+#> disp        -0.030346   0.007405  -4.098 0.000306 ***
+#> hp          -0.024840   0.013385  -1.856 0.073679 .  
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 3.127 on 29 degrees of freedom
+#> Multiple R-squared:  0.7482, Adjusted R-squared:  0.7309 
+#> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09
 
 # Or build the plot yourself with a geom_slice() layer
 library(ggplot2)
@@ -223,43 +253,116 @@ strings, and a `format` function for full control.
 
 `autoplot()` on an `lm` builds the whole plot: the model’s own data as a
 scatter with a `geom_slice()` line through it. The model’s first numeric
-predictor goes on the x-axis (override with `x_axis`), and everything in
-`...` is passed on to `geom_slice()`. The result is a regular ggplot, so
-extend it with `+` as usual.
+predictor goes on the x-axis (override with `mapping = aes(x = ...)`),
+and everything in `...` is passed on to `geom_slice()`. The result is a
+regular ggplot, so extend it with `+` as usual.
 
 ``` r
 library(ggplot2)   # for labs() below; autoplot() itself needs only Applr
 
 autoplot(lm(mpg ~ disp, data = mtcars))
+#> 
+#> Call:
+#> lm(formula = mpg ~ disp, data = mtcars)
+#> 
+#> Residuals:
+#>     Min      1Q  Median      3Q     Max 
+#> -4.8922 -2.2022 -0.9631  1.6272  7.2305 
+#> 
+#> Coefficients:
+#>              Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept) 29.599855   1.229720  24.070  < 2e-16 ***
+#> disp        -0.041215   0.004712  -8.747 9.38e-10 ***
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 3.251 on 30 degrees of freedom
+#> Multiple R-squared:  0.7183, Adjusted R-squared:  0.709 
+#> F-statistic: 76.51 on 1 and 30 DF,  p-value: 9.38e-10
 
 # Pass geom_slice() options through; the result is a normal ggplot
 autoplot(lm(mpg ~ disp + hp, data = mtcars),
          predict_vars = list(hp = 110), interval = "confidence") +
   labs(title = "Slice at hp = 110")
+#> 
+#> Call:
+#> lm(formula = mpg ~ disp + hp, data = mtcars)
+#> 
+#> Residuals:
+#>     Min      1Q  Median      3Q     Max 
+#> -4.7945 -2.3036 -0.8246  1.8582  6.9363 
+#> 
+#> Coefficients:
+#>              Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept) 30.735904   1.331566  23.083  < 2e-16 ***
+#> disp        -0.030346   0.007405  -4.098 0.000306 ***
+#> hp          -0.024840   0.013385  -1.856 0.073679 .  
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 3.127 on 29 degrees of freedom
+#> Multiple R-squared:  0.7482, Adjusted R-squared:  0.7309 
+#> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09
 ```
 
 <img src="man/figures/README-autoplot-1.png" alt="autoplot() with a confidence interval and a custom title"  />
 
-``` r
-# Choose the x-axis
-autoplot(lm(mpg ~ disp + hp, data = mtcars), x_axis = "hp")
-```
-
-`data` and `mapping` go to `ggplot()` itself: pass the model’s data with
-extra columns for aesthetics, and override or add to the automatic
-`aes()` (entries named `x` or `y` replace the chosen axes).
+`mapping` goes to `ggplot()` itself: override or add to the automatic
+`aes()` (entries named `x` or `y` replace the chosen axes, and
+aesthetics such as `color` are inherited by `geom_slice()`, so a model
+variable draws one line per group). Choose the x-axis with
+`mapping = aes(x = ...)`.
 
 ``` r
-cars2 <- transform(mtcars, cyl_f = factor(cyl))
-autoplot(lm(mpg ~ disp, data = mtcars),
-         data = cars2, mapping = aes(color = cyl_f))
+autoplot(lm(mpg ~ disp + hp + factor(cyl), data = mtcars),
+         mapping = aes(x = hp, color = factor(cyl)))
+#> 
+#> Call:
+#> lm(formula = mpg ~ disp + hp + factor(cyl), data = mtcars)
+#> 
+#> Residuals:
+#>    Min     1Q Median     3Q    Max 
+#> -4.470 -1.773 -0.413  1.928  5.977 
+#> 
+#> Coefficients:
+#>              Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept)  31.14773    1.76712  17.626 2.44e-16 ***
+#> disp         -0.02604    0.01042  -2.499   0.0189 *  
+#> hp           -0.02114    0.01419  -1.490   0.1479    
+#> factor(cyl)6 -4.04719    1.68944  -2.396   0.0238 *  
+#> factor(cyl)8 -2.43193    3.23978  -0.751   0.4594    
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 2.888 on 27 degrees of freedom
+#> Multiple R-squared:  0.8001, Adjusted R-squared:  0.7705 
+#> F-statistic: 27.01 on 4 and 27 DF,  p-value: 4.3e-09
 ```
 
-<img src="man/figures/README-autoplot-data-mapping-1.png" alt="autoplot() with a custom data frame and color mapping"  />
+<img src="man/figures/README-autoplot-mapping-1.png" alt="autoplot() with an x-axis override and a color mapping"  />
 
 ``` r
 # Two numeric predictors? Get the interactive 3-D surface instead
 autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
+#> 
+#> Call:
+#> lm(formula = mpg ~ disp + hp, data = mtcars)
+#> 
+#> Residuals:
+#>     Min      1Q  Median      3Q     Max 
+#> -4.7945 -2.3036 -0.8246  1.8582  6.9363 
+#> 
+#> Coefficients:
+#>              Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept) 30.735904   1.331566  23.083  < 2e-16 ***
+#> disp        -0.030346   0.007405  -4.098 0.000306 ***
+#> hp          -0.024840   0.013385  -1.856 0.073679 .  
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 3.127 on 29 degrees of freedom
+#> Multiple R-squared:  0.7482, Adjusted R-squared:  0.7309 
+#> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09
 ```
 
 <img src="man/figures/README-autoplot-3d-1.png" alt="Interactive 3-D scatter with the fitted regression surface (static snapshot)"  />

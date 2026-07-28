@@ -4,43 +4,32 @@
 \alias{autoplot.lm}
 \title{Automatically plot a linear model}
 \usage{
-\method{autoplot}{lm}(
-  object,
-  ...,
-  mapping = NULL,
-  type = c("2d", "3d"),
-  x_axis = NULL,
-  xaxis = NULL,
-  summary = TRUE
-)
+\method{autoplot}{lm}(object, mapping = NULL, type = c("2d", "3d"), summary = TRUE, ...)
 }
 \arguments{
 \item{object}{A linear model fitted by \code{\link[=lm]{lm()}} \strong{with a \code{data} argument} —
 the data is recovered from the model, so \code{lm(y ~ x, data = your_data)}
 works but \code{lm(your_data$y ~ your_data$x)} does not.}
 
-\item{...}{Passed on to \code{\link[=geom_slice]{geom_slice()}} — for example
-\code{predict_vars = list(hp = 110)} to choose the slice,
-\code{interval = "confidence"} for a ribbon, or fixed aesthetics such as
-\code{color = "red"} — or to \code{\link[=scatter_3d]{scatter_3d()}} when \code{type = "3d"}.}
-
-\item{mapping}{Extra aesthetics created with \code{\link[ggplot2:aes]{ggplot2::aes()}}, passed to
+\item{mapping}{Aesthetics created with \code{\link[ggplot2:aes]{ggplot2::aes()}}, passed to
 \code{\link[ggplot2:ggplot]{ggplot2::ggplot()}} — for example \code{mapping = aes(color = factor(cyl))}.
-Entries named \code{x} or \code{y} override the automatically chosen axes.}
+They resolve against the model's full data frame, so a column the model
+never mentions (such as \code{cyl} above) still works. An entry named \code{x}
+chooses the x-axis (\code{mapping = aes(x = hp)}), overriding the default first
+numeric predictor; an entry named \code{y} overrides the response axis.}
 
 \item{type}{\code{"2d"} (default) for a \code{\link[=geom_slice]{geom_slice()}} ggplot, or \code{"3d"} for an
 interactive \code{\link[=scatter_3d]{scatter_3d()}} surface (needs exactly two numeric predictors).}
-
-\item{x_axis}{The name of the predictor to place on the x-axis, such as
-\code{x_axis = "disp"}. Defaults to the model's first numeric predictor.
-Ignored when \code{type = "3d"}.}
-
-\item{xaxis}{Deprecated; use \code{x_axis} instead.}
 
 \item{summary}{Whether to print \code{summary(object)} to the console before
 returning the plot (default \code{TRUE}). Printing it up front means you can
 refit the model and inspect its coefficients from inside the same
 \code{autoplot()} call; pass \code{summary = FALSE} to suppress it.}
+
+\item{...}{Passed on to \code{\link[=geom_slice]{geom_slice()}} — for example
+\code{predict_vars = list(hp = 110)} to choose the slice,
+\code{interval = "confidence"} for a ribbon, or fixed aesthetics such as
+\code{color = "red"} — or to \code{\link[=scatter_3d]{scatter_3d()}} when \code{type = "3d"}.}
 }
 \value{
 A ggplot of the model's data with a slice of the model drawn
@@ -58,7 +47,8 @@ interactive \code{\link[=scatter_3d]{scatter_3d()}} surface instead of the 2-D s
 forwarded to \code{\link[=scatter_3d]{scatter_3d()}} (e.g. \code{n}, \code{colors}).
 
 The model's \emph{first numeric} predictor goes on the x-axis (override with
-\code{x_axis}) and the raw response variable goes on the y-axis. Everything else
+\code{mapping = aes(x = ...)}) and the raw response variable goes on the y-axis.
+Everything else
 is handled by \code{\link[=geom_slice]{geom_slice()}} and reported on the console: predictors not
 visible on the plot are imputed (mean for numeric, most common value for
 factor/character), and a transformed response such as \code{lm(log(y) ~ x)} is
@@ -74,7 +64,7 @@ autoplot(lm(mpg ~ disp, data = mtcars))
 autoplot(lm(mpg ~ disp + hp, data = mtcars))
 
 # Choose which predictor goes on the x-axis
-autoplot(lm(mpg ~ disp + hp, data = mtcars), x_axis = "hp")
+autoplot(lm(mpg ~ disp + hp, data = mtcars), mapping = aes(x = hp))
 
 # Transformed response, back-transformed onto the raw mpg axis
 autoplot(lm(log(mpg) ~ disp, data = mtcars))

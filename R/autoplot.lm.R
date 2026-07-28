@@ -48,7 +48,6 @@ ggplot2::autoplot
 #'   returning the plot (default `TRUE`). Printing it up front means you can
 #'   refit the model and inspect its coefficients from inside the same
 #'   `autoplot()` call; pass `summary = FALSE` to suppress it.
-#' @param xaxis Deprecated; use `mapping = aes(x = your_predictor)` instead.
 #' @param ... Passed on to [geom_slice()] — for example
 #'   `predict_vars = list(hp = 110)` to choose the slice,
 #'   `interval = "confidence"` for a ribbon, or fixed aesthetics such as
@@ -92,7 +91,7 @@ ggplot2::autoplot
 #'
 #' @export
 autoplot.lm <- function(object, mapping = NULL, type = c("2d", "3d"),
-                        summary = TRUE, xaxis = NULL, ...) {
+                        summary = TRUE, ...) {
   type <- match.arg(type)
   check_slice_model(object)
 
@@ -114,30 +113,6 @@ autoplot.lm <- function(object, mapping = NULL, type = c("2d", "3d"),
       what = "`mapping` must be created by aes().",
       hint = "For example, 'mapping = aes(color = cyl)'."
     )
-  }
-
-  # The x-axis is now chosen through the mapping (aes(x = ...)), so the
-  # deprecated scalar `xaxis` just seeds that aesthetic — erroring if the
-  # mapping already sets x, since the two would then disagree.
-  if (!is.null(xaxis)) {
-    slice_warn(
-      what = "The `xaxis` argument of `autoplot()` is deprecated.",
-      hint = "Use `mapping = aes(x = your_predictor)` instead."
-    )
-    if (!is.character(xaxis) || length(xaxis) != 1 || is.na(xaxis)) {
-      slice_abort(
-        what = "`xaxis` must be a single variable name.",
-        hint = "For example, 'mapping = aes(x = hp)'."
-      )
-    }
-    if (!is.null(mapping) && "x" %in% names(mapping)) {
-      slice_abort(
-        what = "The x-axis is set by both `xaxis` and `mapping = aes(x = ...)`.",
-        hint = "Drop the deprecated `xaxis` and keep 'mapping = aes(x = ...)'."
-      )
-    }
-    if (is.null(mapping)) mapping <- aes()
-    mapping$x <- aes(x = !!as.name(xaxis))$x
   }
 
   # slice_model_frame() can sometimes recover data-argument-less models from

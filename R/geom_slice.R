@@ -931,9 +931,6 @@ ggplot_add.SliceLayer <- function(object, plot, ...) {
 #'   `"log2"`, `"sqrt"`, `"exp"`, `"inverse"`) applies that transformation.
 #' @param ... Other arguments passed to the layer, such as fixed aesthetics
 #'   (`color = "red"`, `linewidth = 1.2`).
-#' @param x_axis,xaxis Not arguments of `geom_slice()` — the x-axis comes from
-#'   the plot's `aes()`. Included only to give a helpful error to `slice_2d()`
-#'   users who try them here.
 #'
 #' @returns A ggplot2 layer that draws the slice.
 #'
@@ -1022,15 +1019,7 @@ geom_slice <- function(model,
                        band = FALSE,
                        full_range = FALSE,
                        ...,
-                       fullrange = NULL,
-                       x_axis = NULL,
-                       xaxis = NULL) {
-  if (!is.null(x_axis) || !is.null(xaxis)) {
-    slice_abort(
-      what = "`x_axis` is not an argument of `geom_slice()`.",
-      hint = "Set the x-axis in the plot's aes() instead, such as 'ggplot(your_data, aes(x = disp, y = mpg))'."
-    )
-  }
+                       fullrange = NULL) {
   check_slice_model(model)
   # A stray aes() is a common mistake, rarely assigned to a specific parameter
   if (inherits(n, "uneval") || inherits(inherit.aes, "uneval") ||

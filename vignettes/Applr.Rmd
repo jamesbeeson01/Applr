@@ -50,11 +50,11 @@ autoplot(model)
 ```
 
 The message tells you what happened: `hp` was not on an axis, so the line
-holds it at its mean. Use `x_axis` to slice along a different predictor, and
-pass any `geom_slice()` argument through `...`:
+holds it at its mean. Use `mapping = aes(x = ...)` to slice along a different
+predictor, and pass any `geom_slice()` argument through `...`:
 
 ```{r}
-autoplot(model, x_axis = "hp", interval = "confidence")
+autoplot(model, mapping = aes(x = hp), interval = "confidence")
 ```
 
 ## Build the plot yourself with geom_slice()

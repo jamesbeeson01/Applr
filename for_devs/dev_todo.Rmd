@@ -26,9 +26,9 @@ date: "2026-07-11"
   works (used to error with `cyl` not found) — case ap_14
 - [x] Move `...` to the last argument so `mapping` is second and positional
   (`autoplot(model, aes(...))`), matching convention
-- [x] Remove the `x_axis` argument (redundant with `mapping = aes(x = ...)`);
-  keep `xaxis` as a deprecation shim that folds into the mapping's x aesthetic
-  and errors if x is set both ways — cases ap_15, ap_16
+- [x] Remove the `x_axis`/`xaxis` arguments entirely (redundant with
+  `mapping = aes(x = ...)`, never used in production for autoplot/geom_slice).
+  `slice_2d` keeps its `x_axis` (and `xaxis` deprecation alias).
 
 ## lm_equation/lm_latex
 

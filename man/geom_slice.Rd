@@ -14,9 +14,7 @@ geom_slice(
   band = FALSE,
   full_range = FALSE,
   ...,
-  fullrange = NULL,
-  x_axis = NULL,
-  xaxis = NULL
+  fullrange = NULL
 )
 }
 \arguments{
@@ -60,10 +58,6 @@ are made at the data points, so the lines keep their data extent.}
 
 \item{...}{Other arguments passed to the layer, such as fixed aesthetics
 (\code{color = "red"}, \code{linewidth = 1.2}).}
-
-\item{x_axis, xaxis}{Not arguments of \code{geom_slice()} — the x-axis comes from
-the plot's \code{aes()}. Included only to give a helpful error to \code{slice_2d()}
-users who try them here.}
 }
 \value{
 A ggplot2 layer that draws the slice.
