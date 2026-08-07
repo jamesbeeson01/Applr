@@ -1,14 +1,14 @@
 # CASE: ap_11_passthrough_args
 # TYPE: visual
 # FUNC: autoplot
-# EXPECT: Scatter plot with line and confidence interval band.
-#         autoplot.lm() forwards ... to geom_slice(), so
-#         geom_slice options passed to autoplot (here interval =
-#         "confidence") and renders with no errors, warnings, or 
-#         messages.
+# EXPECT: Scatter plot with line and a WIDE prediction interval band —
+#         noticeably wider than autoplot's default confidence ribbon, and
+#         covering most of the point cloud. autoplot.lm() forwards its
+#         geom_slice options, so interval = "prediction" overrides the
+#         "confidence" default. No errors, warnings, or messages.
 
 source("tests/_setup.R")
 
 model <- lm(mpg ~ disp, data = mtcars)
 
-try_show(autoplot(model, interval = "confidence", summary = FALSE))
+try_show(autoplot(model, interval = "prediction", summary = FALSE))

@@ -223,10 +223,12 @@ strings, and a `format` function for full control.
 ## `autoplot()` — a complete plot in one call
 
 `autoplot()` on an `lm` builds the whole plot: the model's own data as a
-scatter with a `geom_slice()` line through it. The model's first numeric
-predictor goes on the x-axis (override with `mapping = aes(x = ...)`), and
-everything in `...` is passed on to `geom_slice()`. The result is a regular
-ggplot, so extend it with `+` as usual.
+scatter with a `geom_slice()` line — and its confidence ribbon — through it.
+The model's first numeric predictor goes on the x-axis (override with
+`mapping = aes(x = ...)`), and everything in `...` is passed on to
+`geom_slice()`. The result is a regular ggplot, so extend it with `+` as
+usual. Pass `interval = "prediction"` for the wider ribbon, or
+`interval = "none"` for a bare line.
 
 ```{r autoplot, fig.keep = "last", fig.alt = "autoplot() with a confidence interval and a custom title"}
 library(ggplot2)   # for labs() below; autoplot() itself needs only Applr
@@ -235,7 +237,7 @@ autoplot(lm(mpg ~ disp, data = mtcars))
 
 # Pass geom_slice() options through; the result is a normal ggplot
 autoplot(lm(mpg ~ disp + hp, data = mtcars),
-         predict_vars = list(hp = 110), interval = "confidence") +
+         predict_vars = list(hp = 110), interval = "prediction") +
   labs(title = "Slice at hp = 110")
 ```
 

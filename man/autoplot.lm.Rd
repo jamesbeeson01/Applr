@@ -4,7 +4,14 @@
 \alias{autoplot.lm}
 \title{Automatically plot a linear model}
 \usage{
-\method{autoplot}{lm}(object, mapping = NULL, type = c("2d", "3d"), summary = TRUE, ...)
+\method{autoplot}{lm}(
+  object,
+  mapping = NULL,
+  type = c("2d", "3d"),
+  summary = TRUE,
+  interval = "confidence",
+  ...
+)
 }
 \arguments{
 \item{object}{A linear model fitted by \code{\link[=lm]{lm()}} \strong{with a \code{data} argument} —
@@ -26,10 +33,14 @@ returning the plot (default \code{TRUE}). Printing it up front means you can
 refit the model and inspect its coefficients from inside the same
 \code{autoplot()} call; pass \code{summary = FALSE} to suppress it.}
 
+\item{interval}{The ribbon drawn around the slice line, passed to
+\code{\link[=geom_slice]{geom_slice()}}: \code{"confidence"} (default) for the mean's confidence
+interval, \code{"prediction"} for a single new observation's interval, or
+\code{"none"} for a bare line. Ignored when \code{type = "3d"}.}
+
 \item{...}{Passed on to \code{\link[=geom_slice]{geom_slice()}} — for example
-\code{predict_vars = list(hp = 110)} to choose the slice,
-\code{interval = "confidence"} for a ribbon, or fixed aesthetics such as
-\code{color = "red"} — or to \code{\link[=scatter_3d]{scatter_3d()}} when \code{type = "3d"}.}
+\code{predict_vars = list(hp = 110)} to choose the slice, or fixed aesthetics
+such as \code{color = "red"} — or to \code{\link[=scatter_3d]{scatter_3d()}} when \code{type = "3d"}.}
 }
 \value{
 A ggplot of the model's data with a slice of the model drawn
@@ -38,8 +49,9 @@ through it, or — when \code{type = "3d"} — a plotly surface from \code{\link
 \description{
 \code{autoplot()} turns a fitted \code{\link[=lm]{lm()}} into a complete ggplot in one call: the
 data the model was fitted to as a scatter, with a \code{\link[=geom_slice]{geom_slice()}} prediction
-line through it. The result is a regular ggplot, so it can be extended with
-\code{+} as usual (labels, scales, more layers).
+line — and, by default, its confidence ribbon — through it. The result is a
+regular ggplot, so it can be extended with \code{+} as usual (labels, scales,
+more layers).
 }
 \details{
 Pass \code{type = "3d"} for a model with exactly two numeric predictors to get an
@@ -75,7 +87,7 @@ autoplot(lm(log(mpg) ~ disp, data = mtcars))
 
 # Options pass through to geom_slice(); the result is a normal ggplot
 autoplot(lm(mpg ~ disp + hp, data = mtcars),
-         predict_vars = list(hp = 110), interval = "confidence") +
+         predict_vars = list(hp = 110), interval = "prediction") +
   labs(title = "Slice at hp = 110")
 
 # Extra aesthetics for the scatter (mapping goes to ggplot())

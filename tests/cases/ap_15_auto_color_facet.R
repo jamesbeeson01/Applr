@@ -3,7 +3,8 @@
 # FUNC: autoplot
 # EXPECT: mtcars scatter (hp on x, mpg on y) that autoplot infers into groups:
 #         the few-value predictor cyl becomes the colour (one slice line per
-#         cyl level) and gear becomes facet panels. Console: one "Coloured by
+#         cyl level, each with its own confidence ribbon) and gear becomes
+#         facet panels. Console: one "Coloured by
 #         cyl" and one "Faceted by gear" message; nothing is imputed.
 
 source("tests/_setup.R")

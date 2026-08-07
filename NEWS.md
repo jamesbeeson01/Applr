@@ -13,8 +13,9 @@ cycle.
   `interval = "confidence"` / `"prediction"` bands.
 * `geom_slice_caption()`, `geom_slice_subtitle()`, `geom_slice_text()` —
   annotation helpers that report the model, held values, and line labels.
-* `autoplot()` method for `lm` objects — scatter + `geom_slice()` +
-  `theme_lc()` in one call.
+* `autoplot()` method for `lm` objects — scatter + `geom_slice(..., interval = "confidence")` +
+  `geom_slice_subtitle()` in one call, with model summary printed to console
+  for easy exploration and iteration.
 * `lm_equation()` / `lm_latex()` — plain-text and LaTeX model equations,
   with clearer factor formatting.
 

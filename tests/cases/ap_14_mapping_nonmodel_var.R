@@ -9,7 +9,8 @@
 #         it does not change the slice — every group shares the same log(disp)
 #         curve. geom_slice draws each group over its own disp range, so the
 #         curve appears as one continuous line split into three colors: red
-#         (4-cyl, low disp) -> green (6-cyl, mid) -> blue (8-cyl, high disp).
+#         (4-cyl, low disp) -> green (6-cyl, mid) -> blue (8-cyl, high disp),
+#         with the default confidence ribbon split the same way.
 #         The x-axis is the model's only predictor (disp), so nothing is
 #         imputed and the case is silent (summary = FALSE).
 

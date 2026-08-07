@@ -6,7 +6,8 @@
 #         to ggplot(): the user's aes(x = hp) overrides the default disp
 #         x-axis, so the slice line runs over hp, and points are colored by
 #         factor(cyl) with a legend. geom_slice inherits the color aesthetic,
-#         so the line is drawn per cyl group over that group's hp range. cyl
+#         so the line is drawn per cyl group over that group's hp range, each
+#         with its own default confidence ribbon in the group's colour. cyl
 #         is a model variable, so grouping by it splits the one model into a
 #         line per cyl level. disp is now invisible on the plot, so an
 #         imputation message for it is expected.

@@ -3,8 +3,9 @@
 # FUNC: autoplot
 # EXPECT: autoplot's all.vars() strips the predictor transform, so the x-axis
 #         is RAW disp even though the model is mpg ~ log(disp). One smooth
-#         logarithmic curve: steep drop at small disp, flattening at large
-#         disp. No errors; no imputation messages.
+#         logarithmic curve with its default confidence ribbon: steep drop at
+#         small disp, flattening at large disp. No errors; no imputation
+#         messages.
 
 source("tests/_setup.R")
 

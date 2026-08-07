@@ -5,6 +5,8 @@
 #         is RAW mpg even though the model is log(mpg) ~ disp. geom_slice
 #         must auto back-transform (console message): one smooth decreasing
 #         exp() curve through the raw-scale point cloud, not a straight line.
+#         Its default confidence ribbon is back-transformed with it, so the
+#         band follows the curve and is asymmetric about it.
 
 source("tests/_setup.R")
 

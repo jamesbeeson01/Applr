@@ -42,8 +42,8 @@ lm_equation(model)
 
 `autoplot()` is the quickest way to see it. It rebuilds the scatterplot from
 the model's own data, picks the first numeric predictor for the x-axis, and
-adds a slice line — with a subtitle recording which values the other
-predictors were held at:
+adds a slice line with its confidence ribbon — plus a subtitle recording
+which values the other predictors were held at:
 
 ```{r}
 autoplot(model)
@@ -54,7 +54,7 @@ holds it at its mean. Use `mapping = aes(x = ...)` to slice along a different
 predictor, and pass any `geom_slice()` argument through `...`:
 
 ```{r}
-autoplot(model, mapping = aes(x = hp), interval = "confidence")
+autoplot(model, mapping = aes(x = hp), interval = "prediction")
 ```
 
 ## Build the plot yourself with geom_slice()

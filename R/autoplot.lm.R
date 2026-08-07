@@ -18,8 +18,9 @@ ggplot2::autoplot
 #'
 #' `autoplot()` turns a fitted [lm()] into a complete ggplot in one call: the
 #' data the model was fitted to as a scatter, with a [geom_slice()] prediction
-#' line through it. The result is a regular ggplot, so it can be extended with
-#' `+` as usual (labels, scales, more layers).
+#' line — and, by default, its confidence ribbon — through it. The result is a
+#' regular ggplot, so it can be extended with `+` as usual (labels, scales,
+#' more layers).
 #'
 #' Pass `type = "3d"` for a model with exactly two numeric predictors to get an
 #' interactive [scatter_3d()] surface instead of the 2-D slice; `...` is then
@@ -52,10 +53,13 @@ ggplot2::autoplot
 #'   returning the plot (default `TRUE`). Printing it up front means you can
 #'   refit the model and inspect its coefficients from inside the same
 #'   `autoplot()` call; pass `summary = FALSE` to suppress it.
+#' @param interval The ribbon drawn around the slice line, passed to
+#'   [geom_slice()]: `"confidence"` (default) for the mean's confidence
+#'   interval, `"prediction"` for a single new observation's interval, or
+#'   `"none"` for a bare line. Ignored when `type = "3d"`.
 #' @param ... Passed on to [geom_slice()] — for example
-#'   `predict_vars = list(hp = 110)` to choose the slice,
-#'   `interval = "confidence"` for a ribbon, or fixed aesthetics such as
-#'   `color = "red"` — or to [scatter_3d()] when `type = "3d"`.
+#'   `predict_vars = list(hp = 110)` to choose the slice, or fixed aesthetics
+#'   such as `color = "red"` — or to [scatter_3d()] when `type = "3d"`.
 #'
 #' @returns A ggplot of the model's data with a slice of the model drawn
 #'   through it, or — when `type = "3d"` — a plotly surface from [scatter_3d()].
@@ -81,7 +85,7 @@ ggplot2::autoplot
 #'
 #' # Options pass through to geom_slice(); the result is a normal ggplot
 #' autoplot(lm(mpg ~ disp + hp, data = mtcars),
-#'          predict_vars = list(hp = 110), interval = "confidence") +
+#'          predict_vars = list(hp = 110), interval = "prediction") +
 #'   labs(title = "Slice at hp = 110")
 #'
 #' # Extra aesthetics for the scatter (mapping goes to ggplot())
@@ -95,7 +99,7 @@ ggplot2::autoplot
 #'
 #' @export
 autoplot.lm <- function(object, mapping = NULL, type = c("2d", "3d"),
-                        summary = TRUE, ...) {
+                        summary = TRUE, interval = "confidence", ...) {
   type <- match.arg(type)
   check_slice_model(object)
 
@@ -230,9 +234,17 @@ autoplot.lm <- function(object, mapping = NULL, type = c("2d", "3d"),
     )
   }
 
+  # The default confidence ribbon is a default, not a demand: geom_slice()
+  # refuses `band` and `interval` in one layer, so a caller who asked for a
+  # band gets the band and no ribbon rather than an error.
+  dots <- list(...)
+  if (missing(interval) && !is.null(dots$band) && !isFALSE(dots$band)) {
+    interval <- "none"
+  }
+
   plot <- ggplot(model_data, plot_mapping) +
     geom_point() +
-    geom_slice(object, ...) +
+    geom_slice(object, interval = interval, ...) +
     geom_slice_subtitle()
   if (!is.null(facet_var)) {
     plot <- plot + facet_wrap(vars(!!as.name(facet_var)))

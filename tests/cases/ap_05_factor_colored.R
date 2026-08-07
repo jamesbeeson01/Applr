@@ -4,7 +4,8 @@
 # EXPECT: iris scatter (Petal.Length vs Sepal.Length). Species is a non-numeric
 #         second predictor, so autoplot shows it as colour rather than imputing
 #         it: THREE slice lines (setosa/versicolor/virginica), each over its own
-#         petal range. Console: one "Coloured by Species" message.
+#         petal range, each with its own confidence ribbon in its line's colour.
+#         Console: one "Coloured by Species" message.
 
 source("tests/_setup.R")
 

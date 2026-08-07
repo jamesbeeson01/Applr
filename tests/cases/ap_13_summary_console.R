@@ -5,7 +5,8 @@
 #         the plot, so you can refit and read coefficients from the same call.
 #         Console output = the model summary (call, residuals, coefficients,
 #         R-squared, F-statistic). A plot is also produced (mpg ~ disp scatter
-#         with a straight downward line) — its appearance is ap_01's concern.
+#         with a straight downward line and its confidence ribbon) — its
+#         appearance is ap_01's concern.
 
 source("tests/_setup.R")
 

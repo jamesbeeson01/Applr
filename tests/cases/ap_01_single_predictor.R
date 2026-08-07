@@ -3,7 +3,8 @@
 # FUNC: autoplot
 # EXPECT: Complete plot built by autoplot(model) alone: mtcars scatter
 #         (disp on x, mpg on y), one straight downward-sloping slice line
-#         through the point cloud, theme_lc styling.
+#         through the point cloud with its default confidence ribbon (a
+#         narrow shaded band hugging the line), theme_lc styling.
 #         No errors, warnings, or imputation messages.
 
 source("tests/_setup.R")
