@@ -15,5 +15,6 @@ The geom behind \code{\link[=geom_slice]{geom_slice()}}: \link[ggplot2:Geom]{ggp
 default aesthetics. Like \code{geom_smooth()}, it draws a line plus — when the
 stat supplies \code{ymin}/\code{ymax} (i.e. \code{interval = "confidence"} or
 \code{"prediction"}) — a ribbon; \code{alpha} styles the ribbon, not the line.
+The ribbon follows its line's colour unless \code{fill} is set explicitly.
 }
 \keyword{datasets}

@@ -39,7 +39,8 @@ one-argument function (e.g. \code{exp}) or a name (\code{"log"}, \code{"log10"},
 
 \item{interval}{Draw a ribbon around the line: \code{"none"} (default), or
 \code{"confidence"} / \code{"prediction"} for the corresponding \code{\link[=predict.lm]{predict.lm()}}
-interval. Cannot be combined with \code{band}.}
+interval. The ribbon follows its line's color unless you set \code{fill}.
+Cannot be combined with \code{band}.}
 
 \item{band}{Draw a \emph{projection band} — two edge slices with a translucent
 ribbon between them — instead of a single line. \code{band = "variable"} spans
@@ -75,7 +76,8 @@ model you are looking at:
 \itemize{
 \item Variables named in \code{predict_vars} are held at your chosen values.
 \item Variables mapped to a grouping aesthetic (e.g. \code{aes(color = g)}) are
-pinned to each group's own value — one line per group.
+pinned to each group's own value — one line per group. Any \code{interval} or
+\code{band} ribbon is drawn in its own line's color.
 \item Facet variables are pinned to each panel's value.
 \item Anything left over is \emph{imputed} (mean for numeric, most common value for
 factor/character), with a console message naming the value used.

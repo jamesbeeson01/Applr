@@ -785,6 +785,7 @@ StatSlice <- ggproto(
 #' default aesthetics. Like `geom_smooth()`, it draws a line plus — when the
 #' stat supplies `ymin`/`ymax` (i.e. `interval = "confidence"` or
 #' `"prediction"`) — a ribbon; `alpha` styles the ribbon, not the line.
+#' The ribbon follows its line's colour unless `fill` is set explicitly.
 #'
 #' @format An object of class \code{ggproto}, inheriting from \code{GeomSmooth}.
 #'
@@ -799,8 +800,32 @@ GeomSlice <- ggproto(
     linetype = "solid",
     weight = 1,
     alpha = 0.4
-  )
+  ),
+  draw_key = function(data, params, size) {
+    data$fill <- slice_ribbon_fill(data, GeomSlice$default_aes$fill)
+    draw_key_smooth(data, params, size)
+  },
+  draw_group = function(self, data, panel_params, coord, lineend = "butt",
+                        linejoin = "round", linemitre = 10, se = FALSE,
+                        flipped_aes = FALSE) {
+    data$fill <- slice_ribbon_fill(data, self$default_aes$fill)
+    ggproto_parent(GeomSmooth, self)$draw_group(
+      data, panel_params, coord, lineend = lineend, linejoin = linejoin,
+      linemitre = linemitre, se = se, flipped_aes = flipped_aes
+    )
+  }
 )
+
+# An interval band or slice band belongs to its line: when `fill` was never set
+# (still the geom default), the ribbon takes the line's colour, so a grouping
+# aesthetic mapped to colour tints the ribbon too. An explicit `fill` — mapped
+# or set — always wins.
+slice_ribbon_fill <- function(data, default_fill) {
+  if (is.null(data$fill) || is.null(data$colour)) {
+    return(data$fill)
+  }
+  ifelse(data$fill == default_fill, data$colour, data$fill)
+}
 
 #' GeomSliceBand
 #'
@@ -826,11 +851,9 @@ GeomSliceBand <- ggproto(
       ))
     }
     ribbon <- transform(data, colour = NA)
-    # A band is one object in one color: when fill was not set (still the
-    # default), the ribbon takes the edge lines' colour, so a grouping
-    # aesthetic mapped to colour colors the whole band.
-    default_fill <- self$default_aes$fill
-    ribbon$fill <- ifelse(ribbon$fill == default_fill, data$colour, ribbon$fill)
+    # A band is one object in one color: it takes the edge lines' colour unless
+    # `fill` was set explicitly.
+    ribbon$fill <- slice_ribbon_fill(data, self$default_aes$fill)
     edges <- lapply(c("ymin", "ymax"), function(edge) {
       line <- data
       line$y <- data[[edge]]
@@ -889,7 +912,8 @@ ggplot_add.SliceLayer <- function(object, plot, ...) {
 #'
 #' - Variables named in `predict_vars` are held at your chosen values.
 #' - Variables mapped to a grouping aesthetic (e.g. `aes(color = g)`) are
-#'   pinned to each group's own value — one line per group.
+#'   pinned to each group's own value — one line per group. Any `interval` or
+#'   `band` ribbon is drawn in its own line's color.
 #' - Facet variables are pinned to each panel's value.
 #' - Anything left over is *imputed* (mean for numeric, most common value for
 #'   factor/character), with a console message naming the value used.
@@ -910,7 +934,8 @@ ggplot_add.SliceLayer <- function(object, plot, ...) {
 #'   `predict_vars = list(x2 = c(1, 2, 3), x3 = c(1, 4))` draws 6 lines.
 #' @param interval Draw a ribbon around the line: `"none"` (default), or
 #'   `"confidence"` / `"prediction"` for the corresponding [predict.lm()]
-#'   interval. Cannot be combined with `band`.
+#'   interval. The ribbon follows its line's color unless you set `fill`.
+#'   Cannot be combined with `band`.
 #' @param band Draw a *projection band* — two edge slices with a translucent
 #'   ribbon between them — instead of a single line. `band = "variable"` spans
 #'   that predictor: between the values you gave in `predict_vars` (e.g.
