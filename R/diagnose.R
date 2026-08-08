@@ -32,6 +32,18 @@ diagnose <- function(model) {
 
   # Display diagnostic plots
   par(mfrow = c(1,3))
-  plot(model, which = 1:2)
-  plot(model$res)
+  plot(model, which = 1:2) # First two
+
+  # Third plot (Residual vs Index) needs customization to match the first two
+  res <- model$res
+  plot(res, ylab = "Residuals")        # base plot
+  mtext("Residuals vs Index", 3, 0.25) # replicates plot.lm title style
+
+  # Label the 3 largest absolute residuals
+  show_idx <- order(abs(res), decreasing = TRUE)[1:3] # Identify them
+  text(x = show_idx, y = res[show_idx], labels = names(res)[show_idx], pos = 2, cex = 0.8)
+
+  # Add lines to Residual vs Index (matching Residual vs Fitted)
+  abline(h = 0, lty = 3, col = "gray")
+  lines(lowess(res), col = "red")
 }

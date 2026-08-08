@@ -14,6 +14,10 @@ Rscript tests/run.R gs_14      # one case (prefix is enough)
 Rscript tests/run.R gs         # all geom_slice cases
 ```
 
+Rarely run all cases; only run cases where edited code touches (and downstream if relevant).
+
+Always run `Rscript -e "rmarkdown::render('tests/report.Rmd')"` at the end of your testing, for human review of your work
+
 - **Visual cases** (e.g. `gs_*`) save `tests/output/<id>.png`. Any console
   output they emit is also captured to `tests/output/<id>.txt` and diffed
   against `tests/expected/<id>.txt`; with no snapshot, the case must be
