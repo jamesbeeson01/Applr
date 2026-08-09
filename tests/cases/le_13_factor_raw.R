@@ -1,8 +1,8 @@
-# CASE: le_13_factor_clearer
+# CASE: le_13_factor_raw
 # TYPE: console
 # FUNC: lm_equation
-# EXPECT: with clearer = TRUE, factor terms spell out variable and level —
-#         (g="B"), (g="C"), and interactions as x:(g="B"), x:(g="C").
+# EXPECT: with prettier = FALSE, factor terms shown as dummy coefficient
+#         names (gB, gC, x:gB, x:gC) — raw design-matrix names.
 
 source("tests/_setup.R")
 set.seed(123)
@@ -13,4 +13,4 @@ g <- factor(sample(c("A", "B", "C"), n, replace = TRUE))
 y <- 2 + 0.5 * x + 4 * (g == "B") - 3 * (g == "C") + 0.8 * x * (g == "B") + rnorm(n)
 model <- lm(y ~ x * g)
 
-try_show(lm_equation(model, clearer = TRUE))
+try_show(lm_equation(model, prettier = FALSE))

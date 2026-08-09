@@ -4,13 +4,14 @@
 \alias{lm_equation}
 \title{Write out the equation of a linear model}
 \usage{
-lm_equation(model, clearer = FALSE)
+lm_equation(model, prettier = TRUE)
 }
 \arguments{
 \item{model}{A linear model}
 
-\item{clearer}{If \code{TRUE}, factor terms are displayed with the factor name
-and level spelled out (e.g. \code{4.09*(g="B")} instead of \code{4.09*gB}).}
+\item{prettier}{If \code{TRUE} (the default), factor terms are displayed with
+the factor name and level spelled out (e.g. \code{4.09*(g="B")} instead of
+\code{4.09*gB}).}
 }
 \value{
 A character string of length 1 containing the fitted equation,
@@ -36,12 +37,12 @@ lm_equation(lm(mpg ~ wt, data = mtcars))
 # Multiple predictors
 lm_equation(lm(mpg ~ disp + hp, data = mtcars))
 
-# Factor predictor: one term per non-reference level
+# Factor predictor: one term per non-reference level, spelled out by default
 model <- lm(Sepal.Length ~ Sepal.Width + Species, data = iris)
 lm_equation(model)
 
-# `clearer = TRUE` spells out factor levels
-lm_equation(model, clearer = TRUE)
+# `prettier = FALSE` keeps raw design-matrix names
+lm_equation(model, prettier = FALSE)
 
 # Transformed terms and interactions
 lm_equation(lm(mpg ~ wt + I(wt^2), data = mtcars))

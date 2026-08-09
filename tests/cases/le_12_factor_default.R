@@ -1,8 +1,9 @@
 # CASE: le_12_factor_default
 # TYPE: console
 # FUNC: lm_equation
-# EXPECT: factor terms shown as dummy coefficient names (gB, gC, x:gB, x:gC)
-#         — the default (clearer unspecified) keeps design-matrix names.
+# EXPECT: factor terms spell out variable and level — (g="B"), (g="C"), and
+#         interactions as x:(g="B"), x:(g="C") — the default (prettier
+#         unspecified, defaults to TRUE).
 
 source("tests/_setup.R")
 set.seed(123)

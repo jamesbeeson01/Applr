@@ -4,13 +4,13 @@
 \alias{lm_latex}
 \title{Write out the equation of a linear model in LaTeX format}
 \usage{
-lm_latex(model, clearer = FALSE)
+lm_latex(model, prettier = TRUE)
 }
 \arguments{
 \item{model}{A linear model}
 
-\item{clearer}{If \code{TRUE}, factor terms are displayed with the factor name
-and level spelled out (e.g. \code{(g="B")} instead of \code{gB}).}
+\item{prettier}{If \code{TRUE} (the default), factor terms are displayed with
+the factor name and level spelled out (e.g. \code{(g="B")} instead of \code{gB}).}
 }
 \value{
 A character string of length 1 containing the display-math LaTeX
@@ -36,9 +36,12 @@ lm_latex(lm(mpg ~ wt, data = mtcars))
 # Multiple predictors and a transformed term
 lm_latex(lm(mpg ~ disp + hp + I(hp^2), data = mtcars))
 
-# Factor predictor with interactions; `clearer = TRUE` spells out levels
+# Factor predictor with interactions, spelled out by default
 model <- lm(Sepal.Length ~ Sepal.Width * Species, data = iris)
-lm_latex(model, clearer = TRUE)
+lm_latex(model)
+
+# `prettier = FALSE` keeps raw design-matrix names
+lm_latex(model, prettier = FALSE)
 
 # Capture the string instead of just printing it
 eq <- lm_latex(lm(mpg ~ wt, data = mtcars))

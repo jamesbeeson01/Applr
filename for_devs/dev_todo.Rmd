@@ -32,7 +32,7 @@ date: "2026-07-11"
 
 ## lm_equation/lm_latex
 
-- [ ] Change "clearer" to "prettier"?
+- [x] Change "clearer" to "prettier"; default to TRUE.
 - [ ] Remove "I()" when prettier=TRUE
 - [ ] Add "threshold" that sets very small numbers to 0; has a default, but can be specified or set to FALSE
 - [ ] Add a $\beta_x$ version

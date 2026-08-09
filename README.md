@@ -4,21 +4,17 @@
 
 # Applr
 
-A small R package for visualizing linear models. Plots linear models
-from simple lines to high-dimensional squiggles all with the same level
-of difficulty.
+A small R package for visualizing linear models. Plots anything from
+simple lines to high-dimensional squiggles all with the same functions.
 
-Fit a model with `lm()`, then let Applr draw it. Explore easily with
-`autoplot()`, or have fine-grained control with `geom_slice()`: a
-ggplot2 layer baked with confidence bands, projections, and group/facet
-support for *your* fitted model, plotting it the way `geom_smooth()`
-draws its own. Most importantly, you can specify predictor values to
-control what “slice” of high-dimensional space is shown, or let
-`geom_slice` pick for you. See its choice with console messages, or show
-it with `geom_slice_subtitle()` and its friends.
+Start by fitting an `lm()`, then hand it to Applr. Explore it with
+`autoplot()`, or present it with polish and fine-grained control using
+`geom_slice()`. Either way, you can trust the linear model, because you
+can see it and control it - something `geom_smooth()` only aspires to.
 
-Also includes base-R helpers (`slice_2d()`), interactive 3-D surfaces
-(`scatter_3d()`), LaTeX generator (`lm_latex()`), and a simple
+Also includes label helpers (`geom_slice_subtitle()`,
+`geom_slice_text()`), base-R plots (`slice_2d()`), interactive 3-D
+surfaces (`scatter_3d()`), LaTeX generator (`lm_latex()`), and a simple
 diagnostic helper (`diagnose()`).
 
 Perfect for any **App**lied **l**inear **r**egression.
@@ -452,8 +448,9 @@ for values)*
 ### `lm_equation()` and `lm_latex()`
 
 Return the fitted model’s equation as plain text, or print it
-LaTeX-formatted (ideal for LaTeX or R Markdown documents).
-`clearer = TRUE` spells out factor terms more readably.
+LaTeX-formatted (ideal for LaTeX or R Markdown documents). Factor terms
+are spelled out readably by default (`prettier = TRUE`); set
+`prettier = FALSE` for raw design-matrix names.
 
 ``` r
 model <- lm(mpg ~ disp + hp, data = mtcars)
