@@ -3,8 +3,8 @@
 # FUNC: lm_latex
 # EXPECT: display-math LaTeX $$\underbrace{\hat{Y_i}}_{\text{Pred. y}} = 2.12 + 0.465\underbrace{X_{1i}}_{\text{x}} + 4\underbrace{X_{2i}}_{\text{(g="B")}} - 3.19\underbrace{X_{3i}}_{\text{(g="C")}} + 0.771\underbrace{X_{4i}}_{\text{x:(g="B")}} + 0.046\underbrace{X_{5i}}_{\text{x:(g="C")}}$$ with underbrace labels; with
 #         factor terms spelled out — (g="B"), (g="C"), and interactions as
-#         x:(g="B"), x:(g="C") — the default (prettier unspecified, defaults
-#         to TRUE).
+#         x:(g="B"), x:(g="C") — the default (format unspecified, defaults
+#         to "prettier").
 
 source("tests/_setup.R")
 set.seed(123)

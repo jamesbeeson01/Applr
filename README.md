@@ -449,8 +449,10 @@ for values)*
 
 Return the fitted model’s equation as plain text, or print it
 LaTeX-formatted (ideal for LaTeX or R Markdown documents). Factor terms
-are spelled out readably by default (`prettier = TRUE`); set
-`prettier = FALSE` for raw design-matrix names.
+are spelled out readably by default (`format = "prettier"`, e.g.
+`(Species="setosa")`); `format = "brackets"` shortens these to the level
+alone (`[setosa]`), and `format = "raw"` keeps the design-matrix names
+(`Speciessetosa`).
 
 ``` r
 model <- lm(mpg ~ disp + hp, data = mtcars)
