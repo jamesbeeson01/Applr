@@ -20,10 +20,10 @@ lines <- do.call(rbind, lapply(seq_len(nrow(combos)), function(i) {
 ends <- do.call(rbind, lapply(split(lines, lines$label),
                               function(d) d[which.max(d$x), ]))
 
-# Constant gap past the line end; x-expansion sized by the longest label,
+# Constant gap past the line end; x-expansion sized by the widest label,
 # plus y-headroom so the corner key clears the topmost line's label.
 nx <- 0.012 * diff(range(dat$x))
-ex <- 0.025 + 0.013 * max(nchar(ends$label))
+ex <- ref_text_expand(ends$label)
 
 p <- ggplot(dat, aes(x, y)) +
   geom_point(color = "gray60") +

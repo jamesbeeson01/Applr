@@ -54,4 +54,27 @@ ref_held_line <- function(held) {
   paste0("held at: ", paste(parts, collapse = "; "))
 }
 
+# Ground-truth x-expansion for end-of-line text labels: the labels' drawn
+# width in points, plus the gap past the line end, turned into a fraction of
+# the data range through a pessimistic guess at the drawn panel width.
+# Mirrors what geom_slice_text(expand = TRUE) reserves.
+ref_text_expand <- function(labels, offset = 5, size = 3.88,
+                            device_in = grDevices::dev.size("in")[1]) {
+  panel <- max(device_in * 72 - 140, 100)
+  # Measure on a throwaway device so nothing is drawn on the current one.
+  old <- grDevices::dev.cur()
+  grDevices::pdf(NULL)
+  on.exit({
+    grDevices::dev.off()
+    if (old != 1L) grDevices::dev.set(old)
+  }, add = TRUE)
+  gp <- grid::gpar(fontsize = size * .pt)
+  widest <- max(vapply(labels, function(l) {
+    grid::convertWidth(grid::grobWidth(grid::textGrob(l, gp = gp)), "pt",
+                       valueOnly = TRUE)
+  }, numeric(1)))
+  frac <- min((widest + abs(offset) + 4) / panel, 0.4)
+  frac * 1.05 / (1 - frac)
+}
+
 dir.create("tests/reference", showWarnings = FALSE, recursive = TRUE)

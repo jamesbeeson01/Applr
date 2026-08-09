@@ -24,9 +24,9 @@ lines <- do.call(rbind, lapply(seq_len(nrow(combos)), function(i) {
 ends <- do.call(rbind, lapply(split(lines, lines$id),
                               function(d) d[which.max(d$x), ]))
 
-# Constant gap past the line end; x-expansion sized by the longest label.
+# Constant gap past the line end; x-expansion sized by the widest label.
 nx <- 0.012 * diff(range(dat$x))
-ex <- 0.025 + 0.013 * max(nchar(ends$label))
+ex <- ref_text_expand(ends$label)
 
 p <- ggplot(dat, aes(x, y, color = g)) +
   geom_point(alpha = 0.5) +

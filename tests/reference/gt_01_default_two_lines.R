@@ -18,9 +18,9 @@ ends <- do.call(rbind, lapply(split(lines, lines$label),
                               function(d) d[which.max(d$x), ]))
 
 # Constant gap past the line end (hjust = 0 + fixed nudge, NOT hjust < 0,
-# which scales with label width); x-expansion sized by the longest label.
+# which scales with label width); x-expansion sized by the widest label.
 nx <- 0.012 * diff(range(dat$x))
-ex <- 0.025 + 0.013 * max(nchar(ends$label))
+ex <- ref_text_expand(ends$label)
 
 p <- ggplot(dat, aes(x, y)) +
   geom_point(color = "gray60") +

@@ -35,7 +35,10 @@ disables the automatic offset entirely.}
 
 \item{expand}{If \code{TRUE} (default), widen the x-range on the label side so
 the labels fit (plus y-headroom for the \code{"legend"} key). \code{FALSE} leaves
-the scales alone.}
+the scales alone. The room reserved is measured from the widest label's
+drawn width and the size of the graphics device open when the layer is
+added, so it errs on the generous side; a plot re-sized much narrower
+afterwards may still clip.}
 }
 \value{
 An object that adds the label layers when added to a ggplot.

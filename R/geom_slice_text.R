@@ -84,6 +84,66 @@ slice_text_labels <- function(slice_layer, plot, style) {
   }, character(1))
 }
 
+# Width of the widest label in POINTS, in the font the layer draws with
+# (`size` is the GeomSliceText default, in mm). nchar() is a poor stand-in:
+# "iiiiiiii" and "MMMMMMMM" are both 8 characters and differ threefold.
+label_width_pt <- function(labels, size = 3.88, family = "") {
+  if (length(labels) == 0) return(0)
+  # Font metrics need a device, but measuring on the current one would open a
+  # page on it — a blank leading page in a png()/pdf() script, or the user's
+  # graphics window popping up as a side effect of `+`.
+  old <- grDevices::dev.cur()
+  grDevices::pdf(NULL)
+  on.exit({
+    grDevices::dev.off()
+    if (old != 1L) grDevices::dev.set(old)
+  }, add = TRUE)
+  gp <- grid::gpar(fontsize = size * .pt, fontfamily = family)
+  max(vapply(labels, function(l) {
+    grid::convertWidth(grid::grobWidth(grid::textGrob(l, gp = gp)), "pt",
+                       valueOnly = TRUE)
+  }, numeric(1)))
+}
+
+# Panels side by side, each of which gets its own share of the plot's width.
+# Like everything else here, blind to a facet added after geom_slice_text().
+facet_col_count <- function(plot) {
+  tryCatch({
+    facet <- plot$facet
+    params <- facet$params
+    quo_vars <- function(qs) {
+      unique(unlist(lapply(qs, function(q) all.vars(rlang::quo_get_expr(q)))))
+    }
+    n_combos <- function(vars) {
+      vars <- intersect(vars, names(plot$data))
+      if (length(vars) == 0) return(1L)
+      nrow(unique(plot$data[vars]))
+    }
+    if (inherits(facet, "FacetGrid")) {
+      return(max(1L, n_combos(quo_vars(params$cols))))
+    }
+    if (inherits(facet, "FacetWrap")) {
+      n <- n_combos(quo_vars(params$facets))
+      if (!is.null(params$ncol)) return(max(1L, params$ncol))
+      if (!is.null(params$nrow)) return(max(1L, ceiling(n / params$nrow)))
+      # ggplot2's own default layout when neither nrow nor ncol is given.
+      return(max(1L, grDevices::n2mfrow(n)[1]))
+    }
+    1L
+  }, error = function(e) 1L)
+}
+
+# A pessimistic guess at the drawn width of one panel, in POINTS, from the
+# device open at add time (the drawing device in every workflow that opens one
+# first: the RStudio pane, a png()/pdf() script, a knitr chunk; 7x7 in when
+# there is none). The allowance covers the axis, its title, the plot margins
+# and a right-hand legend, and errs high — over-reserving only costs white
+# space, under-reserving clips.
+panel_width_pt <- function(plot) {
+  device_pt <- grDevices::dev.size("in")[1] * 72
+  max((device_pt - 140) / facet_col_count(plot), 100)
+}
+
 # The variable names the labels describe (for the "labels: x2; x3" corner key).
 slice_text_label_vars <- function(slice_layer, plot) {
   pv <- slice_layer$stat_params$predict_vars %||% list()
@@ -300,16 +360,21 @@ ggplot_add.slice_text_spec <- function(object, plot, ...) {
   }
 
   # The geom manages its own margin: widen the x-range on the label side,
-  # scaled by the longest label; style = "legend" also adds y-headroom so the
+  # enough for the widest label; style = "legend" also adds y-headroom so the
   # corner key clears the topmost line's label.
   if (isTRUE(object$expand)) {
     labels <- unique(unlist(lapply(slice_layers, slice_text_labels,
                                    plot = plot, style = object$style)))
     if (length(labels) > 0) {
-      # The draw-time point-offset never trains the x-scale, so the expansion
-      # must cover it too (0.0028 per point ~ the offset as a fraction of a
-      # typical panel width).
-      ex <- 0.025 + 0.013 * max(nchar(labels)) + 0.0028 * abs(offset_points)
+      # The labels need a fixed number of points: the widest one, the
+      # draw-time offset (which never trains the x-scale), and a gap.
+      needed <- label_width_pt(labels) + abs(offset_points) + 4
+      # `frac` is the share of the panel they claim, `ex` the same space as a
+      # multiple of the data range, which is what expansion() takes:
+      # panel = range * (1 + 0.05 + ex). The cap keeps a huge label on a tiny
+      # device from erasing the data.
+      frac <- min(needed / panel_width_pt(plot), 0.4)
+      ex <- frac * 1.05 / (1 - frac)
       mult <- if (right) c(0.05, ex) else c(ex, 0.05)
       plot <- plot + scale_x_continuous(expand = expansion(mult = mult))
       if (object$style == "legend") {
@@ -355,7 +420,10 @@ ggplot_add.slice_text_spec <- function(object, plot, ...) {
 #' @param color Label color. Default `NULL` inherits each line's color.
 #' @param expand If `TRUE` (default), widen the x-range on the label side so
 #'   the labels fit (plus y-headroom for the `"legend"` key). `FALSE` leaves
-#'   the scales alone.
+#'   the scales alone. The room reserved is measured from the widest label's
+#'   drawn width and the size of the graphics device open when the layer is
+#'   added, so it errs on the generous side; a plot re-sized much narrower
+#'   afterwards may still clip.
 #'
 #' @returns An object that adds the label layers when added to a ggplot.
 #'

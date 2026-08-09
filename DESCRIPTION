@@ -21,6 +21,7 @@ Imports:
     rlang,
     graphics,
     grDevices,
+    grid,
     stats
 Suggests:
     knitr,

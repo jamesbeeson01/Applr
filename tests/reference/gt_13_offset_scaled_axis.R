@@ -22,7 +22,7 @@ ends <- do.call(rbind, lapply(split(lines, lines$label),
 # Constant *visual* gap: the nudge is proportional to the axis range, so it
 # stays ≈ 5 pt at 7x5 in no matter the data units.
 nx <- 0.012 * diff(range(dat$x))
-ex <- 0.025 + 0.013 * max(nchar(ends$label))
+ex <- ref_text_expand(ends$label)
 
 p <- ggplot(dat, aes(x, y)) +
   geom_point(color = "gray60") +

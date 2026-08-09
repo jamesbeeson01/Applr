@@ -18,7 +18,7 @@ ends <- do.call(rbind, lapply(split(lines, lines$label),
 
 # Constant gap past the LEFT line end; expansion moves to the left side.
 nx <- 0.012 * diff(range(dat$x))
-ex <- 0.025 + 0.013 * max(nchar(ends$label))
+ex <- ref_text_expand(ends$label)
 
 p <- ggplot(dat, aes(x, y)) +
   geom_point(color = "gray60") +
