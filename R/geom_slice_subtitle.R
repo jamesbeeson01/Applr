@@ -156,14 +156,17 @@ slice_annotation_text <- function(object, plot, fn_name, where) {
   equation <- lm_equation(model)
 
   if (is.function(object$format)) {
-    return(object$format(equation, held))
+    text <- object$format(equation, held)
+  } else {
+    lines <- character(0)
+    if (isTRUE(object$model)) lines <- equation
+    if (length(held) > 0) lines <- c(lines, slice_subtitle_held_line(held))
+    if (!is.null(band)) lines <- c(lines, slice_subtitle_band_line(band))
+    if (length(lines) == 0) return(NULL)
+    text <- paste0(object$prepend, paste(lines, collapse = "\n"), object$append)
   }
-  lines <- character(0)
-  if (isTRUE(object$model)) lines <- equation
-  if (length(held) > 0) lines <- c(lines, slice_subtitle_held_line(held))
-  if (!is.null(band)) lines <- c(lines, slice_subtitle_band_line(band))
-  if (length(lines) == 0) return(NULL)
-  paste0(object$prepend, paste(lines, collapse = "\n"), object$append)
+  if (is.null(text)) return(NULL)
+  wrap_annotation_text(text, plot, where, object$wrap)
 }
 
 # Adding to a plot is the only moment geom_slice_subtitle() can see the
@@ -204,6 +207,14 @@ ggplot_add.slice_subtitle_spec <- function(object, plot, ...) {
 #'   string and the named list of unlabeled held values — returning the whole
 #'   subtitle. When given, it fully replaces the default layout (`model`,
 #'   `prepend`, and `append` are ignored).
+#' @param wrap Controls wrapping of lines too long to fit. `TRUE` (default)
+#'   measures how much room the subtitle has in this plot on the current
+#'   graphics device and breaks long lines to fit, between terms only, with
+#'   continuation lines hanging under the right-hand side of the equal sign.
+#'   `FALSE` leaves the text as one line per item, however far it runs off the
+#'   plot. A number is a width in inches to wrap to instead of measuring —
+#'   useful when the plot will be drawn at a size other than the current
+#'   device, as with `ggsave(width = )`.
 #'
 #' @returns An object that sets the plot subtitle when added to a ggplot.
 #'
@@ -225,14 +236,16 @@ ggplot_add.slice_subtitle_spec <- function(object, plot, ...) {
 geom_slice_subtitle <- function(model = TRUE,
                                 prepend = "",
                                 append = "",
-                                format = NULL) {
-  new_slice_annotation_spec(model, prepend, append, format,
+                                format = NULL,
+                                wrap = TRUE) {
+  new_slice_annotation_spec(model, prepend, append, format, wrap,
                             class = "slice_subtitle_spec")
 }
 
 # Shared validation + construction for geom_slice_subtitle() and
 # geom_slice_caption(); `class` picks which ggplot_add method fires.
-new_slice_annotation_spec <- function(model, prepend, append, format, class) {
+new_slice_annotation_spec <- function(model, prepend, append, format, wrap,
+                                      class) {
   if (!is.logical(model) || length(model) != 1 || is.na(model)) {
     slice_abort(
       what = "`model` must be TRUE or FALSE.",
@@ -257,8 +270,17 @@ new_slice_annotation_spec <- function(model, prepend, append, format, class) {
       hint = "For example, 'format = function(equation, values) equation'."
     )
   }
+  ok_wrap <- length(wrap) == 1 && !is.na(wrap) &&
+    (is.logical(wrap) || (is.numeric(wrap) && wrap > 0))
+  if (!ok_wrap) {
+    slice_abort(
+      what = "`wrap` must be TRUE, FALSE, or a width in inches.",
+      hint = "For example, 'wrap = 6' to wrap to a 6-inch plot."
+    )
+  }
   structure(
-    list(model = model, prepend = prepend, append = append, format = format),
+    list(model = model, prepend = prepend, append = append, format = format,
+         wrap = wrap),
     class = class
   )
 }

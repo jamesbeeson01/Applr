@@ -77,4 +77,24 @@ ref_text_expand <- function(labels, offset = 5, size = 3.88,
   frac * 1.05 / (1 - frac)
 }
 
+# Ground truth for a wrapped subtitle: the caller states where the equation
+# should break (a human reading of "break between terms, never mid-term"), and
+# this indents every line after the first to sit under the right-hand side of
+# the equal sign. The indent is a count of spaces derived from measured
+# widths, not a guess at how many look about right — the same idea
+# geom_slice_subtitle() implements, re-derived here without Applr.
+ref_wrapped_equation <- function(lines, prefix, size = 11) {
+  old <- grDevices::dev.cur()
+  grDevices::pdf(NULL)
+  on.exit({
+    grDevices::dev.off()
+    if (old != 1L) grDevices::dev.set(old)
+  }, add = TRUE)
+  gp <- grid::gpar(fontsize = size)
+  w <- function(s) grid::convertWidth(grid::grobWidth(grid::textGrob(s, gp = gp)),
+                                      "in", valueOnly = TRUE)
+  n <- round(w(prefix) / w(" "))
+  paste(c(lines[1], paste0(strrep(" ", n), lines[-1])), collapse = "\n")
+}
+
 dir.create("tests/reference", showWarnings = FALSE, recursive = TRUE)

@@ -4,7 +4,13 @@
 \alias{geom_slice_subtitle}
 \title{Describe the lines drawn by geom_slice() in the plot subtitle}
 \usage{
-geom_slice_subtitle(model = TRUE, prepend = "", append = "", format = NULL)
+geom_slice_subtitle(
+  model = TRUE,
+  prepend = "",
+  append = "",
+  format = NULL,
+  wrap = TRUE
+)
 }
 \arguments{
 \item{model}{If \code{TRUE} (default), the subtitle's first line is the model
@@ -17,6 +23,15 @@ the last line of the default subtitle.}
 string and the named list of unlabeled held values — returning the whole
 subtitle. When given, it fully replaces the default layout (\code{model},
 \code{prepend}, and \code{append} are ignored).}
+
+\item{wrap}{Controls wrapping of lines too long to fit. \code{TRUE} (default)
+measures how much room the subtitle has in this plot on the current
+graphics device and breaks long lines to fit, between terms only, with
+continuation lines hanging under the right-hand side of the equal sign.
+\code{FALSE} leaves the text as one line per item, however far it runs off the
+plot. A number is a width in inches to wrap to instead of measuring —
+useful when the plot will be drawn at a size other than the current
+device, as with \code{ggsave(width = )}.}
 }
 \value{
 An object that sets the plot subtitle when added to a ggplot.
