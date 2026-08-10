@@ -153,20 +153,50 @@ slice_annotation_text <- function(object, plot, fn_name, where) {
   info <- slice_subtitle_held(plot, slice_layers, model)
   held <- info$held
   band <- info$band
-  equation <- lm_equation(model)
 
-  if (is.function(object$format)) {
-    text <- object$format(equation, held)
-  } else {
+  # The whole annotation, written with one set of `lm_equation()` arguments.
+  # Whether it comes back NULL never depends on how the equation is written,
+  # so testing the first candidate settles it for all of them.
+  build <- function(args) {
+    equation <- do.call(lm_equation, c(list(model), args))
     lines <- character(0)
     if (isTRUE(object$model)) lines <- equation
     if (length(held) > 0) lines <- c(lines, slice_subtitle_held_line(held))
     if (!is.null(band)) lines <- c(lines, slice_subtitle_band_line(band))
     if (length(lines) == 0) return(NULL)
-    text <- paste0(object$prepend, paste(lines, collapse = "\n"), object$append)
+    paste0(object$prepend, paste(lines, collapse = "\n"), object$append)
   }
-  if (is.null(text)) return(NULL)
-  wrap_annotation_text(text, plot, where, object$wrap)
+
+  candidates <- lapply(annotation_equation_args(object$dots, model), build)
+  if (is.null(candidates[[1]])) return(NULL)
+  wrapped <- wrap_annotation_text(unlist(candidates), plot, where, object$wrap)
+
+  # Renaming the reader's factor levels to make room is not something to do
+  # silently — say what was written, and how to ask for the other thing.
+  if (wrapped$candidate != 1L) {
+    eg <- brackets_example(model)
+    slice_inform(
+      what = paste0("Factor terms were shortened to fit the ", where,
+                    if (is.null(eg)) "" else
+                      paste0(" - wrote `", eg[["short"]], "` for `", eg[["long"]], "`"),
+                    "."),
+      hint = paste0("To keep the full names, use '", fn_name,
+                    "(style = \"prettier\")' - the ", where,
+                    " may then run past the edge of the plot.")
+    )
+  }
+  wrapped$text
+}
+
+# The `lm_equation()` argument lists to write this annotation with, most
+# preferred first. A caller-named `style` is left to stand alone; otherwise a
+# second candidate with the briefer bracketed levels is offered for the wrap
+# to fall back on, but only where a bare level name still identifies its
+# factor. The rest of `...` rides along unexamined — validating it is
+# lm_equation()'s job, not this one's.
+annotation_equation_args <- function(dots, model) {
+  if (!is.null(dots$style) || !brackets_unambiguous(model)) return(list(dots))
+  list(dots, c(dots, list(style = "brackets")))
 }
 
 # Adding to a plot is the only moment geom_slice_subtitle() can see the
@@ -203,10 +233,22 @@ ggplot_add.slice_subtitle_spec <- function(object, plot, ...) {
 #'   equation; `FALSE` drops it, leaving only the held-values line.
 #' @param prepend,append Plain strings pasted before the first line and after
 #'   the last line of the default subtitle.
-#' @param format A function of `(equation, values)` — the ready-made equation
-#'   string and the named list of unlabeled held values — returning the whole
-#'   subtitle. When given, it fully replaces the default layout (`model`,
-#'   `prepend`, and `append` are ignored).
+#' @param ... Passed to [lm_equation()] when the equation is written, under
+#'   its own argument names — chiefly `style`, which controls how factor terms
+#'   are labelled.
+#'
+#'   Left unset, `style` is chosen to fit: with `wrap` on, the equation is
+#'   tried spelled out (`4.09*(Species="setosa")`) and briefly
+#'   (`4.09*[setosa]`), each with and without the hanging indent, preferring
+#'   the spelled-out form and giving up the indent last. The first that fits
+#'   wins, and a message says so if the brief form did. Because the indent
+#'   goes last, a narrower plot can bring the full names *back*. The brief
+#'   form is never offered when two terms would shorten to the same label — a
+#'   bare `[High]` from two different factors no longer says which it meant.
+#'
+#'   Naming `style` yourself pins it and switches all of that off. Pin it (or
+#'   give `wrap` a width) when the annotation must come out the same whatever
+#'   size device it is drawn on.
 #' @param wrap Controls wrapping of lines too long to fit. `TRUE` (default)
 #'   measures how much room the subtitle has in this plot on the current
 #'   graphics device and breaks long lines to fit, between terms only, with
@@ -236,15 +278,15 @@ ggplot_add.slice_subtitle_spec <- function(object, plot, ...) {
 geom_slice_subtitle <- function(model = TRUE,
                                 prepend = "",
                                 append = "",
-                                format = NULL,
+                                ...,
                                 wrap = TRUE) {
-  new_slice_annotation_spec(model, prepend, append, format, wrap,
+  new_slice_annotation_spec(model, prepend, append, list(...), wrap,
                             class = "slice_subtitle_spec")
 }
 
 # Shared validation + construction for geom_slice_subtitle() and
 # geom_slice_caption(); `class` picks which ggplot_add method fires.
-new_slice_annotation_spec <- function(model, prepend, append, format, wrap,
+new_slice_annotation_spec <- function(model, prepend, append, dots, wrap,
                                       class) {
   if (!is.logical(model) || length(model) != 1 || is.na(model)) {
     slice_abort(
@@ -264,12 +306,6 @@ new_slice_annotation_spec <- function(model, prepend, append, format, wrap,
       hint = "For example, 'append = \" (mean-imputed)\"'."
     )
   }
-  if (!is.null(format) && !is.function(format)) {
-    slice_abort(
-      what = "`format` must be a function of (equation, values).",
-      hint = "For example, 'format = function(equation, values) equation'."
-    )
-  }
   ok_wrap <- length(wrap) == 1 && !is.na(wrap) &&
     (is.logical(wrap) || (is.numeric(wrap) && wrap > 0))
   if (!ok_wrap) {
@@ -279,7 +315,7 @@ new_slice_annotation_spec <- function(model, prepend, append, format, wrap,
     )
   }
   structure(
-    list(model = model, prepend = prepend, append = append, format = format,
+    list(model = model, prepend = prepend, append = append, dots = dots,
          wrap = wrap),
     class = class
   )

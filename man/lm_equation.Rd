@@ -4,12 +4,12 @@
 \alias{lm_equation}
 \title{Write out the equation of a linear model}
 \usage{
-lm_equation(model, format = c("prettier", "brackets", "raw"))
+lm_equation(model, style = c("prettier", "brackets", "raw"))
 }
 \arguments{
 \item{model}{A linear model}
 
-\item{format}{How factor terms are named. \code{"prettier"} (the default)
+\item{style}{How factor terms are named. \code{"prettier"} (the default)
 spells out the factor name and level (e.g. \code{4.09*(Species="setosa")}),
 \code{"brackets"} shows the level alone (e.g. \verb{4.09*[setosa]}), and \code{"raw"}
 keeps the design-matrix names (e.g. \code{4.09*Speciessetosa}).}
@@ -42,9 +42,9 @@ lm_equation(lm(mpg ~ disp + hp, data = mtcars))
 model <- lm(Sepal.Length ~ Sepal.Width + Species, data = iris)
 lm_equation(model)
 
-# `format = "brackets"` shows just the level; `"raw"` keeps design-matrix names
-lm_equation(model, format = "brackets")
-lm_equation(model, format = "raw")
+# `style = "brackets"` shows just the level; `"raw"` keeps design-matrix names
+lm_equation(model, style = "brackets")
+lm_equation(model, style = "raw")
 
 # Transformed terms and interactions
 lm_equation(lm(mpg ~ wt + I(wt^2), data = mtcars))

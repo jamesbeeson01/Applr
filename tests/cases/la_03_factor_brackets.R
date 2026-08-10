@@ -1,7 +1,7 @@
 # CASE: la_03_factor_brackets
 # TYPE: console
 # FUNC: lm_latex
-# EXPECT: display-math LaTeX with underbrace labels; with format = "brackets"
+# EXPECT: display-math LaTeX with underbrace labels; with style = "brackets"
 #         (abbreviated to "bracket" here, which partial-matches), factor terms
 #         are labelled by level alone — [B], [C], x:[B], x:[C].
 
@@ -14,4 +14,4 @@ g <- factor(sample(c("A", "B", "C"), n, replace = TRUE))
 y <- 2 + 0.5 * x + 4 * (g == "B") - 3 * (g == "C") + 0.8 * x * (g == "B") + rnorm(n)
 model <- lm(y ~ x * g)
 
-try_show(lm_latex(model, format = "bracket"))
+try_show(lm_latex(model, style = "bracket"))

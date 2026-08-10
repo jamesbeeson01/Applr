@@ -1,0 +1,2 @@
+Value for `facility_tier` not specified - Used most common: "High"
+    To choose a slice, use 'predict_vars = list(facility_tier = "High")'.

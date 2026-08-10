@@ -18,6 +18,13 @@
 #      sign, or the equation stops reading as an equation. The indent is a
 #      measured width, and the run of spaces that produces it is assembled to
 #      match that width rather than counted out (pad_run()).
+#   4. Some equations do not fit however they are broken: a single interaction
+#      term like `0.286*Sepal.Width:(Species="virginica")` can be wider than
+#      the whole subtitle, and the indent of point 3 makes that worse by
+#      taking room away from every term. Wrapping alone cannot settle this, so
+#      the annotation is built with the factor levels written both ways and
+#      the two are tried with and without the indent, in a fixed order of
+#      preference (wrap_annotation_text()).
 #
 # Why the wrap is computed here, when the annotation is added, and not when
 # the plot is drawn: the width a subtitle gets is the width of its cell in the
@@ -182,17 +189,22 @@ annotation_line_parts <- function(line) {
 # Greedy fill of one line into `avail` inches, hanging the continuations under
 # the prefix. A token wider than the whole line goes on a line by itself and
 # overflows — there is nowhere else for it to go.
+#
+# `indent` is honoured as asked rather than second-guessed: this function does
+# not decide that an indent is costing too much room and quietly drop it,
+# because that decision belongs to whoever is choosing between layouts
+# (wrap_annotation_text()), which can see the alternatives. It just wraps as
+# instructed and lets the result overflow if it must.
 wrap_annotation_line <- function(line, avail, gp, indent = TRUE) {
   if (annotation_width(line, gp) <= avail) return(line)
 
   parts <- annotation_line_parts(line)
   if (length(parts$tokens) < 2) return(line)
   indent_in <- if (indent) annotation_width(parts$prefix, gp) else 0
-  # past half the line the indent costs more room than the alignment is worth
+  # past half the line the indent costs more room than the alignment is worth,
+  # whatever `indent` asked for. This one is about the width of the prefix, so
+  # no choice of factor style can rescue it.
   if (indent_in > avail / 2) indent_in <- 0
-  # nor is it worth pushing a term that would otherwise have fit off the plot:
-  # a long interaction term can be wider than what the indent leaves behind
-  if (indent_in + max(annotation_width(parts$tokens, gp)) > avail) indent_in <- 0
 
   lines <- character(0)
   current <- paste0(parts$prefix, parts$tokens[1])
@@ -216,18 +228,76 @@ wrap_annotation_line <- function(line, avail, gp, indent = TRUE) {
   lines
 }
 
+# Every line of one whole annotation, wrapped to `avail`.
+wrap_annotation_lines <- function(text, avail, gp, indent) {
+  unlist(lapply(strsplit(text, "\n", fixed = TRUE)[[1]],
+                wrap_annotation_line, avail = avail, gp = gp, indent = indent))
+}
+
+# TRUE when some line still runs past the edge after wrapping — a token wider
+# than the whole line, which no break can rescue. The tolerance absorbs the
+# rounding in a measured width, so a line that lands exactly on `avail` is not
+# read as overflowing it.
+annotation_overflows <- function(lines, avail, gp) {
+  any(annotation_width(lines, gp) > avail + 1e-6)
+}
+
+# The layouts to try, in the order they are preferred. Two things can be given
+# up to make an annotation fit — the spelled-out factor names and the hanging
+# indent — and the indent is given up last, because losing it costs the
+# equation its shape on every line while the briefer labels cost only the
+# variable name on the few terms that carry a factor. So both styles are
+# tried with the indent before either is tried without it:
+#
+#   prettier + indent  ->  brackets + indent  ->  prettier  ->  brackets
+#
+# `styles` indexes into the candidate strings, most preferred first. When the
+# annotation is right-aligned there is no indent to preserve and the ladder is
+# just the styles.
+annotation_layouts <- function(styles, indent) {
+  if (!indent) return(list(style = styles, indent = rep(FALSE, length(styles))))
+  list(style = c(styles, styles),
+       indent = rep(c(TRUE, FALSE), each = length(styles)))
+}
+
 # The whole annotation, wrapped. `wrap` is TRUE (measure the plot), FALSE
 # (leave the text alone), or a width in inches. Text that already fits comes
 # back untouched, so short subtitles keep exactly the string they had.
-wrap_annotation_text <- function(text, plot, element, wrap) {
-  if (isFALSE(wrap)) return(text)
+#
+# `candidates` is the same annotation written one way per candidate factor
+# style, most preferred first (see annotation_equation_args()). Each is wrapped
+# in each layout of the ladder above, and the first that fits without
+# overflowing wins. So the shorter `[setosa]` labels appear only where they buy something
+# the spelled-out `(Species="setosa")` could not — either fitting at all, or
+# fitting while keeping the indent — never to save a line the spelled-out form
+# was fitting anyway.
+#
+# When nothing fits, the annotation is going to run off the plot whatever is
+# done to it, so it falls back to the most permissive layout that still spells
+# the names out: the preferred style, no indent. Shortening the labels is not
+# offered as a consolation prize for a fit it did not achieve.
+#
+# Returns the text alongside WHICH candidate it came from, so the caller can
+# say so: a subtitle that quietly renames the reader's factor levels should
+# mention that it did (slice_annotation_text()).
+wrap_annotation_text <- function(candidates, plot, element, wrap) {
+  unwrapped <- list(text = candidates[[1]], candidate = 1L)
+  if (isFALSE(wrap)) return(unwrapped)
   with_measuring_device({
     avail <- if (is.numeric(wrap)) wrap else annotation_avail_width(plot, element)
-    if (!is.finite(avail) || avail <= 0) return(text)
-    style <- annotation_style(plot, element)
-    lines <- unlist(lapply(strsplit(text, "\n", fixed = TRUE)[[1]],
-                           wrap_annotation_line, avail = avail, gp = style$gp,
-                           indent = style$hjust < 0.5))
-    paste(lines, collapse = "\n")
+    if (!is.finite(avail) || avail <= 0) return(unwrapped)
+    el <- annotation_style(plot, element)
+
+    ladder <- annotation_layouts(seq_along(candidates), el$hjust < 0.5)
+    wrapped <- Map(function(s, ind) {
+      wrap_annotation_lines(candidates[[s]], avail, el$gp, ind)
+    }, ladder$style, ladder$indent)
+
+    over <- vapply(wrapped, annotation_overflows, logical(1),
+                   avail = avail, gp = el$gp)
+    chosen <- if (any(!over)) which(!over)[1]
+              else which(ladder$style == 1 & !ladder$indent)[1]
+    list(text = paste(wrapped[[chosen]], collapse = "\n"),
+         candidate = ladder$style[chosen])
   })
 }

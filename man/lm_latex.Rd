@@ -4,12 +4,12 @@
 \alias{lm_latex}
 \title{Write out the equation of a linear model in LaTeX format}
 \usage{
-lm_latex(model, format = c("prettier", "brackets", "raw"))
+lm_latex(model, style = c("prettier", "brackets", "raw"))
 }
 \arguments{
 \item{model}{A linear model}
 
-\item{format}{How factor terms are labelled. \code{"prettier"} (the default)
+\item{style}{How factor terms are labelled. \code{"prettier"} (the default)
 spells out the factor name and level (e.g. \code{(Species="setosa")}),
 \code{"brackets"} shows the level alone (e.g. \verb{[setosa]}), and \code{"raw"} keeps
 the design-matrix names (e.g. \code{Speciessetosa}).}
@@ -42,9 +42,9 @@ lm_latex(lm(mpg ~ disp + hp + I(hp^2), data = mtcars))
 model <- lm(Sepal.Length ~ Sepal.Width * Species, data = iris)
 lm_latex(model)
 
-# `format = "brackets"` shows just the level; `"raw"` keeps design-matrix names
-lm_latex(model, format = "brackets")
-lm_latex(model, format = "raw")
+# `style = "brackets"` shows just the level; `"raw"` keeps design-matrix names
+lm_latex(model, style = "brackets")
+lm_latex(model, style = "raw")
 
 # Capture the string instead of just printing it
 eq <- lm_latex(lm(mpg ~ wt, data = mtcars))

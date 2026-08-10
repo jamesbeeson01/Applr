@@ -11,6 +11,10 @@
 #         edge, and the subtitle never overlaps the panel: the plot area
 #         shrinks to make room for however many lines the equation needs.
 #         The "held at:" line is short and stays on one line of its own.
+#         This is the top rung of the ladder: wide enough to spell the factor
+#         names out AND keep the indent, so nothing is given up. sb_19,
+#         sb_20 and sb_15 are the same model and code at narrower widths,
+#         giving up one thing at a time.
 
 source("tests/_setup.R")
 

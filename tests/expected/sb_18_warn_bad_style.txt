@@ -1,0 +1,3 @@
+Warning: `style` must be one of "prettier", "brackets", "raw", so "prettier" was used.
+    For example, 'style = "brackets"' to label factor terms by level alone. 
+[1] "Sepal.Length = 2.25 + 0.804*Sepal.Width + 1.46*(Species=\"versicolor\")\n                         + 1.95*(Species=\"virginica\")"

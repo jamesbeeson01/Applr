@@ -215,8 +215,11 @@ ggplot(mtcars, aes(disp, mpg)) +
   geom_slice_subtitle()   # or geom_slice_caption()
 ```
 
-Both take `model = FALSE` (drop the equation line), `prepend`/`append`
-strings, and a `format` function for full control.
+Both take `model = FALSE` (drop the equation line) and `prepend`/`append`
+strings. Long equations are wrapped to the plot, and anything else you pass
+goes to `lm_equation()` — `style = "brackets"` to always label factor terms
+by level alone, for instance. Left alone, the style is chosen to fit the
+plot.
 
 ## `autoplot()` — a complete plot in one call
 
@@ -330,9 +333,9 @@ scatter_3d(lm(mpg ~ wt + I(wt^2) + hp, data = mtcars))
 
 Return the fitted model's equation as plain text, or print it
 LaTeX-formatted (ideal for LaTeX or R Markdown documents). Factor terms are
-spelled out readably by default (`format = "prettier"`, e.g.
-`(Species="setosa")`); `format = "brackets"` shortens these to the level
-alone (`[setosa]`), and `format = "raw"` keeps the design-matrix names
+spelled out readably by default (`style = "prettier"`, e.g.
+`(Species="setosa")`); `style = "brackets"` shortens these to the level
+alone (`[setosa]`), and `style = "raw"` keeps the design-matrix names
 (`Speciessetosa`).
 
 ```{r lm-equation}

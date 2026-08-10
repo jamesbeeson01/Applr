@@ -4,13 +4,7 @@
 \alias{geom_slice_subtitle}
 \title{Describe the lines drawn by geom_slice() in the plot subtitle}
 \usage{
-geom_slice_subtitle(
-  model = TRUE,
-  prepend = "",
-  append = "",
-  format = NULL,
-  wrap = TRUE
-)
+geom_slice_subtitle(model = TRUE, prepend = "", append = "", ..., wrap = TRUE)
 }
 \arguments{
 \item{model}{If \code{TRUE} (default), the subtitle's first line is the model
@@ -19,10 +13,22 @@ equation; \code{FALSE} drops it, leaving only the held-values line.}
 \item{prepend, append}{Plain strings pasted before the first line and after
 the last line of the default subtitle.}
 
-\item{format}{A function of \verb{(equation, values)} — the ready-made equation
-string and the named list of unlabeled held values — returning the whole
-subtitle. When given, it fully replaces the default layout (\code{model},
-\code{prepend}, and \code{append} are ignored).}
+\item{...}{Passed to \code{\link[=lm_equation]{lm_equation()}} when the equation is written, under
+its own argument names — chiefly \code{style}, which controls how factor terms
+are labelled.
+
+Left unset, \code{style} is chosen to fit: with \code{wrap} on, the equation is
+tried spelled out (\code{4.09*(Species="setosa")}) and briefly
+(\verb{4.09*[setosa]}), each with and without the hanging indent, preferring
+the spelled-out form and giving up the indent last. The first that fits
+wins, and a message says so if the brief form did. Because the indent
+goes last, a narrower plot can bring the full names \emph{back}. The brief
+form is never offered when two terms would shorten to the same label — a
+bare \verb{[High]} from two different factors no longer says which it meant.
+
+Naming \code{style} yourself pins it and switches all of that off. Pin it (or
+give \code{wrap} a width) when the annotation must come out the same whatever
+size device it is drawn on.}
 
 \item{wrap}{Controls wrapping of lines too long to fit. \code{TRUE} (default)
 measures how much room the subtitle has in this plot on the current

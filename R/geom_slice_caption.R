@@ -48,8 +48,8 @@ ggplot_add.slice_caption_spec <- function(object, plot, ...) {
 geom_slice_caption <- function(model = TRUE,
                                prepend = "",
                                append = "",
-                               format = NULL,
+                               ...,
                                wrap = TRUE) {
-  new_slice_annotation_spec(model, prepend, append, format, wrap,
+  new_slice_annotation_spec(model, prepend, append, list(...), wrap,
                             class = "slice_caption_spec")
 }

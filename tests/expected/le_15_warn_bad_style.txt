@@ -1,0 +1,7 @@
+Warning: `style` must be one of "prettier", "brackets", "raw", so "prettier" was used.
+    For example, 'style = "brackets"' to label factor terms by level alone. 
+[1] "Sepal.Length = 2.25 + 0.804*Sepal.Width + 1.46*(Species=\"versicolor\") + 1.95*(Species=\"virginica\")"
+[1] "Sepal.Length = 2.25 + 0.804*Sepal.Width + 1.46*[versicolor] + 1.95*[virginica]"
+Warning: `style` must be one of "prettier", "brackets", "raw", so "prettier" was used.
+    For example, 'style = "brackets"' to label factor terms by level alone. 
+$$\underbrace{\hat{Y_i}}_{\text{Pred. Sepal.Length}} = 2.25 + 0.804\underbrace{X_{1i}}_{\text{Sepal.Width}} + 1.46\underbrace{X_{2i}}_{\text{(Species="versicolor")}} + 1.95\underbrace{X_{3i}}_{\text{(Species="virginica")}}$$

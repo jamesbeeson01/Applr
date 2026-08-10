@@ -1,3 +1,18 @@
+# Resolve `style` to one of the choices, partial matches included. Anything
+# match.arg() rejects warns and falls back to the first choice.
+check_equation_style <- function(style) {
+  choices <- c("prettier", "brackets", "raw")
+  tryCatch(match.arg(style, choices), error = function(e) {
+    slice_warn(
+      what = paste0("`style` must be one of ",
+                    paste0('"', choices, '"', collapse = ", "),
+                    ", so \"", choices[1], "\" was used."),
+      hint = "For example, 'style = \"brackets\"' to label factor terms by level alone."
+    )
+    choices[1]
+  })
+}
+
 # Shared core: coefficient values and display names for one fitted lm.
 # Built from coef(model), NOT terms(model)'s term.labels — a factor expands
 # into one coefficient per non-reference level (g -> gB, gC; x:g -> x:gB, ...),
@@ -5,14 +20,14 @@
 # Coefficient names are the design-matrix column names and always align.
 # NA coefficients (rank-deficient fits) are dropped: they contribute nothing
 # to predictions and "NA*x" is not an equation.
-lm_equation_parts <- function(model, format = c("prettier", "brackets", "raw")) {
-  format <- match.arg(format)
+lm_equation_parts <- function(model, style = c("prettier", "brackets", "raw")) {
+  style <- check_equation_style(style)
   co <- coef(model)
   co <- co[!is.na(co)]
   has_intercept <- names(co)[1] == "(Intercept)"
   slopes <- signif(if (has_intercept) co[-1] else co, 3)
-  if (format != "raw") {
-    names(slopes) <- pretty_coef_names(names(slopes), model, format)
+  if (style != "raw") {
+    names(slopes) <- pretty_coef_names(names(slopes), model, style)
   }
   list(
     response = deparse(formula(model)[[2]]),
@@ -26,14 +41,14 @@ lm_equation_parts <- function(model, format = c("prettier", "brackets", "raw")) 
 # Interaction terms are handled per ":"-separated piece, so x:gB ->
 # x:(g="B"). Pieces that don't match a factor level (numeric predictors,
 # I(...) terms) are left untouched.
-pretty_coef_names <- function(coef_names, model, format = "prettier") {
+pretty_coef_names <- function(coef_names, model, style = "prettier") {
   xlevels <- model$xlevels
   if (is.null(xlevels) || length(xlevels) == 0) return(coef_names)
   rewrite_piece <- function(piece) {
     for (var in names(xlevels)) {
       for (lev in xlevels[[var]]) {
         if (piece == paste0(var, lev)) {
-          return(if (format == "brackets") {
+          return(if (style == "brackets") {
             paste0("[", lev, "]")
           } else {
             paste0("(", var, "=\"", lev, "\")")
@@ -50,6 +65,35 @@ pretty_coef_names <- function(coef_names, model, format = "prettier") {
   }, character(1), USE.NAMES = FALSE)
 }
 
+# Whether "brackets" still says which factor each term came from. Two factors
+# sharing a level "High" would print two `[High]` terms that cannot be told
+# apart. The test is on the labels the model actually prints rather than on
+# model$xlevels: a level shared only as the reference level of both factors
+# never reaches a coefficient, while an interaction can push one level into
+# two terms. FALSE too when the styles agree, since a model with no factor
+# terms gains nothing by shortening.
+brackets_unambiguous <- function(model) {
+  co <- coef(model)
+  nms <- names(co)[!is.na(co)]
+  nms <- setdiff(nms, "(Intercept)")
+  if (length(nms) == 0) return(FALSE)
+  brief <- pretty_coef_names(nms, model, "brackets")
+  if (identical(brief, pretty_coef_names(nms, model, "prettier"))) return(FALSE)
+  !anyDuplicated(brief)
+}
+
+# The first coefficient the two styles disagree on, written both ways, so a
+# message can show what the shortening did rather than describe it.
+brackets_example <- function(model) {
+  co <- coef(model)
+  nms <- setdiff(names(co)[!is.na(co)], "(Intercept)")
+  if (length(nms) == 0) return(NULL)
+  long <- pretty_coef_names(nms, model, "prettier")
+  short <- pretty_coef_names(nms, model, "brackets")
+  i <- which(long != short)[1]
+  if (is.na(i)) NULL else c(long = long[[i]], short = short[[i]])
+}
+
 #' Write out the equation of a linear model
 #'
 #' Takes a fitted linear model and returns a human-readable equation string
@@ -64,7 +108,7 @@ pretty_coef_names <- function(coef_names, model, format = "prettier") {
 #' homework or checking which dummy terms a factor produced.
 #'
 #' @param model A linear model
-#' @param format How factor terms are named. `"prettier"` (the default)
+#' @param style How factor terms are named. `"prettier"` (the default)
 #'   spells out the factor name and level (e.g. `4.09*(Species="setosa")`),
 #'   `"brackets"` shows the level alone (e.g. `4.09*[setosa]`), and `"raw"`
 #'   keeps the design-matrix names (e.g. `4.09*Speciessetosa`).
@@ -83,9 +127,9 @@ pretty_coef_names <- function(coef_names, model, format = "prettier") {
 #' model <- lm(Sepal.Length ~ Sepal.Width + Species, data = iris)
 #' lm_equation(model)
 #'
-#' # `format = "brackets"` shows just the level; `"raw"` keeps design-matrix names
-#' lm_equation(model, format = "brackets")
-#' lm_equation(model, format = "raw")
+#' # `style = "brackets"` shows just the level; `"raw"` keeps design-matrix names
+#' lm_equation(model, style = "brackets")
+#' lm_equation(model, style = "raw")
 #'
 #' # Transformed terms and interactions
 #' lm_equation(lm(mpg ~ wt + I(wt^2), data = mtcars))
@@ -95,8 +139,8 @@ pretty_coef_names <- function(coef_names, model, format = "prettier") {
 #' lm_equation(lm(mpg ~ 0 + wt, data = mtcars))
 #'
 #' @export
-lm_equation <- function(model, format = c("prettier", "brackets", "raw")){
-  parts <- lm_equation_parts(model, format = match.arg(format))
+lm_equation <- function(model, style = c("prettier", "brackets", "raw")){
+  parts <- lm_equation_parts(model, style = style)
   rhs <- paste0(parts$slopes, "*", names(parts$slopes), collapse = " + ")
   if (!is.null(parts$intercept)) rhs <- paste0(parts$intercept, " + ", rhs)
   # "+ -3*x" reads better as "- 3*x"
@@ -116,7 +160,7 @@ lm_equation <- function(model, format = c("prettier", "brackets", "raw")){
 #' chunk with `results = "asis"`, the LaTeX string prints ready to render.
 #'
 #' @param model A linear model
-#' @param format How factor terms are labelled. `"prettier"` (the default)
+#' @param style How factor terms are labelled. `"prettier"` (the default)
 #'   spells out the factor name and level (e.g. `(Species="setosa")`),
 #'   `"brackets"` shows the level alone (e.g. `[setosa]`), and `"raw"` keeps
 #'   the design-matrix names (e.g. `Speciessetosa`).
@@ -136,17 +180,17 @@ lm_equation <- function(model, format = c("prettier", "brackets", "raw")){
 #' model <- lm(Sepal.Length ~ Sepal.Width * Species, data = iris)
 #' lm_latex(model)
 #'
-#' # `format = "brackets"` shows just the level; `"raw"` keeps design-matrix names
-#' lm_latex(model, format = "brackets")
-#' lm_latex(model, format = "raw")
+#' # `style = "brackets"` shows just the level; `"raw"` keeps design-matrix names
+#' lm_latex(model, style = "brackets")
+#' lm_latex(model, style = "raw")
 #'
 #' # Capture the string instead of just printing it
 #' eq <- lm_latex(lm(mpg ~ wt, data = mtcars))
 #' nchar(eq)
 #'
 #' @export
-lm_latex <- function(model, format = c("prettier", "brackets", "raw")){
-  parts <- lm_equation_parts(model, format = match.arg(format))
+lm_latex <- function(model, style = c("prettier", "brackets", "raw")){
+  parts <- lm_equation_parts(model, style = style)
 
   # Each coefficient becomes coef*\underbrace{X_{ki}}_{\text{name}}: math
   # notation on top, the design-matrix column name labeled underneath.
