@@ -48,6 +48,7 @@ date: "2026-07-11"
 - [ ] Additional tests
   - [ ] back transform complex function
   - [ ] x axis transform that is a curved line with gaps between points (shows an potential issue with current implementation)
+- [ ] Add `group` support. Implementation option: Unify grouping-aesthetic pinning: stash each mapped aesthetic's original values in a shadow column at `SliceLayer$compute_aesthetics()` time, so `build_slice_spec()` and `compute_slice_group()` read one uniform source instead of the aes column, and `aes(group = x2)` works like `aes(color = x2)` rather than warning and falling back to held-constant. This drops the `if (aes_name == "group")` special case from the aes loop and the undocumented dependency on non-positional scales being mapped after the stat; facet pinning stays on `layout$layout`, which is a genuinely different source, not a special case.
 - [ ] Add `data` and aesthetic arguments to `geom_slice`
 - [ ] Add projection band and 95% confidence/prediction interval to legend optionally
 - [ ] Support for `level` passed to `predict` to change the confidence interval
@@ -64,6 +65,11 @@ date: "2026-07-11"
 
 ## New Functions 
 
+- [ ] `slice_defaults(model)` — named list of the value `geom_slice()` would
+  impute for each predictor, in `predict_vars` shape. Answers "what is it
+  holding things at?" before a plot exists, and round-trips: inspect it, edit
+  one value, pass it back as `predict_vars`. Nothing else exposes this; ~6
+  lines over `slice_model_frame()` + `impute_value()`.
 - [ ] `autoplot(model, sliders=TRUE)` changing the implementation to plotly for interactive visualization
 - [ ] gif animation
 - [ ] glm support
