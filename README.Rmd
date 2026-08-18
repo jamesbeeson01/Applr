@@ -27,7 +27,7 @@ simple lines to high-dimensional squiggles all with the same functions.
 Start by fitting an `lm()`, then hand it to Applr. Explore it with `autoplot()`, 
 or present it with polish and fine-grained control using `geom_slice()`.
 Either way, you can trust the linear model, because you can see it and control it -
-something `geom_smooth()` only aspires to.
+something `geom_smooth()` attempts, but can't reach.
 
 Also includes label helpers (`geom_slice_subtitle()`, `geom_slice_text()`), base-R 
 plots (`slice_2d()`), interactive 3-D surfaces (`scatter_3d()`), LaTeX generator 
@@ -45,23 +45,74 @@ library(Applr)
 
 ## Quick start
 
-```{r quickstart-autoplot, fig.keep = "first", fig.show = "hold", fig.alt = "autoplot() of an lm: scatter plot with the fitted slice line"}
+```{r quickstart-autoplot, fig.keep = "first", fig.show = "hold", fig.alt = "autoplot() of an lm: scatter plot with the fitted slice line", results = "hide"}
 library(Applr)
 
-# One call: scatter + fitted line from any lm()
-model <- lm(mpg ~ disp + hp, data = mtcars)
+# One call: scatter + fitted line + label from any lm()
+model <- lm(mpg ~ qsec + am, data = mtcars)
 autoplot(model)
 
 # Or build the plot yourself with a geom_slice() layer
 library(ggplot2)
-ggplot(mtcars, aes(disp, mpg)) +
+ggplot(mtcars, aes(qsec, mpg, color = am)) +
   geom_point() +
-  geom_slice(model)
+  geom_slice(model) +
+  geom_slice_subtitle()
 ```
 
-Both report on the console how the predictor you *don't* see (`hp`) was
-handled — it is held at its mean — so it is always clear which slice of the
-model you are looking at.
+Both report helpful messages to the console about what decisions it made, 
+and how you can control those decisions.
+
+------------------------------------------------------------------------
+
+## `autoplot.lm` — a complete plot in one call
+
+See your model instantly and iterate easily to find the right model.
+`autoplot()` on an `lm` builds the whole plot: the model's own data as a
+scatter, a fitted `geom_slice()` line with confidence ribbons, and a 
+subtitle that communicates what the model is. To help with iteration,
+`summary()` is also printed to the console, showing P-values, R^2, and 
+other statistics (override with `summary = FALSE`).
+
+The result is a regular ggplot you can extend with `mapping` and `+` as usual.
+
+```{r autoplot, fig.keep = "last", fig.alt = "autoplot() with a confidence interval and a custom title"}
+autoplot(lm(Petal.Length ~ Sepal.Length + I(Sepal.Length^2):Species, iris))
+```
+
+`autoplot` makes a few decisions for you, but lets you control them. 
+The model's first numeric predictor goes on the x-axis, and subsequent 
+predictors group by `color`, then `facet_wrap()`, and `linetype`. 
+Override or add to the automatic `aes()` by passing a `mapping`. 
+Choose a different x-axis predictor with `aes(x = ...)`, and pass other 
+aesthetics such as `color`. Everything else in `...` is passed on to 
+`geom_slice()` or `geom_slice_subtitle()`. Pass `interval = "prediction"` 
+for the wider ribbon, or `interval = "none"` for a bare line.
+
+```{r autoplot-mapping, fig.alt = "autoplot() with an x-axis override and a color mapping", results = "hide"}
+model <- lm(hwy ~ displ + drv + cyl, data = mpg)
+
+# Change the defaults like a normal ggplot; it will still infer the rest
+autoplot(model, aes(color = factor(cyl))) + facet_wrap(~drv)
+
+# Pass geom_slice() options through
+autoplot(model,
+         aes(x = cyl, color = factor(drv)),
+         interval = "none") +
+  labs(title = "The Same Model From a Different Angle")
+```
+
+### 3d
+
+`autoplot.lm` can also interactive 3d plotly plots using `type = "3d"`.
+Additional arguments pass to `scatter_3d`.
+
+```{r autoplot-3d, screenshot.opts = list(vwidth = 800, vheight = 550, delay = 2), fig.alt = "Interactive 3-D scatter with the fitted regression surface (static snapshot)", results = "hide"}
+# Two numeric predictors? Get the interactive 3-D surface instead
+autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
+```
+
+*(static snapshot — the real plot is interactive: drag to rotate, hover for values)*
 
 ------------------------------------------------------------------------
 
@@ -111,27 +162,47 @@ ggplot(mtcars, aes(disp, mpg)) +
 `predict.lm()` ribbon around the line:
 
 ```{r interval, fig.alt = "Slice line with a prediction-interval ribbon"}
-model <- lm(mpg ~ disp + hp, data = mtcars)
+model <- lm(hwy ~ displ + I(displ^2) + displ:drv, data = mpg)
 
-ggplot(mtcars, aes(disp, mpg)) +
+c <- ggplot(mpg, aes(displ, hwy)) +
   geom_point() +
-  geom_slice(model, interval = "prediction")
+  geom_slice(model, interval = "confidence") +
+  labs(title = "Confidence Interval")
+
+p <- ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  geom_slice(model, interval = "prediction") +
+  labs(title = "Prediction Interval")
+
+c + p  # "patchwork" package
 ```
 
 ### Projection bands
 
 Where an interval shows uncertainty, `band` shows the *reach of a predictor*:
-two edge slices with a translucent ribbon between them. `band = "variable"`
-spans that predictor — between the values you gave in `predict_vars`, or its
+two edge slices with a translucent ribbon between them. `band = TRUE` will 
+make a decision about what the band should project over. `band = "variable"`
+spans that predictor between the values you gave in `predict_vars`, or its
 observed data range when `predict_vars` leaves it out:
 
 ```{r band, fig.alt = "Projection band spanning hp from 66 to 335"}
-model <- lm(mpg ~ disp + hp, data = mtcars)
+model <- lm(hwy ~ displ * drv + cyl, data = mpg)
+
+# Projection band infered using the min and max of an unused variable
+# In this case: cyl from 4 to 8
+ggplot(mpg, aes(displ, hwy, color = drv)) +
+  geom_point() +
+  geom_slice(model, band = TRUE) +
+  geom_slice_subtitle() +
+  geom_slice_text()
+
+
 
 # The band spans hp from 66 to 335
-ggplot(mtcars, aes(disp, mpg)) +
+ggplot(mtcars, aes(displ, hwy, color = drv)) +
   geom_point() +
-  geom_slice(model, band = "hp", predict_vars = list(hp = c(66, 335)))
+  geom_slice(model, band = "cyl", predict_vars = list(hp = c(4, 7))) +
+  geom_slice_text()
 ```
 
 `band = TRUE` infers the variable when there is only one sensible choice
@@ -220,47 +291,6 @@ strings. Long equations are wrapped to the plot, and anything else you pass
 goes to `lm_equation()` — `style = "brackets"` to always label factor terms
 by level alone, for instance. Left alone, the style is chosen to fit the
 plot.
-
-## `autoplot()` — a complete plot in one call
-
-`autoplot()` on an `lm` builds the whole plot: the model's own data as a
-scatter with a `geom_slice()` line — and its confidence ribbon — through it.
-The model's first numeric predictor goes on the x-axis (override with
-`mapping = aes(x = ...)`), and everything in `...` is passed on to
-`geom_slice()`. The result is a regular ggplot, so extend it with `+` as
-usual. Pass `interval = "prediction"` for the wider ribbon, or
-`interval = "none"` for a bare line.
-
-```{r autoplot, fig.keep = "last", fig.alt = "autoplot() with a confidence interval and a custom title"}
-library(ggplot2)   # for labs() below; autoplot() itself needs only Applr
-
-autoplot(lm(mpg ~ disp, data = mtcars))
-
-# Pass geom_slice() options through; the result is a normal ggplot
-autoplot(lm(mpg ~ disp + hp, data = mtcars),
-         predict_vars = list(hp = 110), interval = "prediction") +
-  labs(title = "Slice at hp = 110")
-```
-
-`mapping` goes to `ggplot()` itself: override or add to the automatic
-`aes()` (entries named `x` or `y` replace the chosen axes, and aesthetics
-such as `color` are inherited by `geom_slice()`, so a model variable draws
-one line per group). Choose the x-axis with `mapping = aes(x = ...)`.
-
-```{r autoplot-mapping, fig.alt = "autoplot() with an x-axis override and a color mapping"}
-autoplot(lm(mpg ~ disp + hp + factor(cyl), data = mtcars),
-         mapping = aes(x = hp, color = factor(cyl)))
-```
-
-```{r autoplot-3d, screenshot.opts = list(vwidth = 800, vheight = 550, delay = 2), fig.alt = "Interactive 3-D scatter with the fitted regression surface (static snapshot)"}
-# Two numeric predictors? Get the interactive 3-D surface instead
-autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
-```
-
-*(static snapshot — the real plot is interactive: drag to rotate, hover for values)*
-
-Note: the model must be fitted with a `data` argument
-(`lm(y ~ x, data = your_data)`) so `autoplot()` can recover the data.
 
 ------------------------------------------------------------------------
 
@@ -354,17 +384,6 @@ model <- lm(mpg ~ wt, data = mtcars)
 diagnose(model)
 ```
 
-### `theme_lc()`
-
-A custom **ggplot2** theme plus default aesthetic tweaks.
-
-```{r theme-lc, fig.alt = "Scatter plot drawn with theme_lc()"}
-library(ggplot2)
-ggplot(mtcars, aes(wt, mpg)) +
-  geom_point() +
-  theme_lc()
-```
-
 ### Advanced: `StatSlice` and `GeomSlice`
 
 Low-level **ggproto** objects that power `geom_slice()`. Most users never
@@ -404,4 +423,9 @@ Enjoy clearer model visualizations with **Applr**!
 
 ## Attributions
 
-We thank Cameron McClellan and James Beeson for their work on the package, and of course Garrett Saunders for being a remarkable teacher and inspiration to do great things with statistics!
+Thanks to **Cameron McClellan** for his vision and initiation, **James Beeson** for seeing it through, **Anthropic's Claude** for solving the problems we couldn't, and **Brother Saunders** - our teacher and inspiration to do great things.
+
+And of course, Brigham Young University Idaho - our alma mater; the school we love and cherish. And the God of Heaven and Earth, who gives us all.
+
+33 For God is not the author of *confusion*, but of *peace*, as in all churches of the saints.
+- 1 Corinthians 14:33

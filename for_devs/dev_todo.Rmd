@@ -19,6 +19,10 @@ date: "2026-07-11"
 - [ ] Readability for band (using geom_slice_text)
 - [ ] Show off the labeling functions
 
+## geom_slice_text
+
+- [ ] Label top and bottom of bands (not color)
+
 ## autoplot
 
 - [x] `mapping =` resolves against the model's full data, not just the formula

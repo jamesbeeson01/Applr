@@ -10,7 +10,8 @@ simple lines to high-dimensional squiggles all with the same functions.
 Start by fitting an `lm()`, then hand it to Applr. Explore it with
 `autoplot()`, or present it with polish and fine-grained control using
 `geom_slice()`. Either way, you can trust the linear model, because you
-can see it and control it - something `geom_smooth()` only aspires to.
+can see it and control it - something `geom_smooth()` attempts, but
+can’t reach.
 
 Also includes label helpers (`geom_slice_subtitle()`,
 `geom_slice_text()`), base-R plots (`slice_2d()`), interactive 3-D
@@ -32,9 +33,80 @@ library(Applr)
 ``` r
 library(Applr)
 
-# One call: scatter + fitted line from any lm()
-model <- lm(mpg ~ disp + hp, data = mtcars)
+# One call: scatter + fitted line + label from any lm()
+model <- lm(mpg ~ qsec + am, data = mtcars)
 autoplot(model)
+
+# Or build the plot yourself with a geom_slice() layer
+library(ggplot2)
+ggplot(mtcars, aes(qsec, mpg, color = am)) +
+  geom_point() +
+  geom_slice(model) +
+  geom_slice_subtitle()
+```
+
+<img src="man/figures/README-quickstart-autoplot-1.png" alt="autoplot() of an lm: scatter plot with the fitted slice line"  />
+
+Both report helpful messages to the console about what decisions it
+made, and how you can control those decisions.
+
+------------------------------------------------------------------------
+
+## `autoplot.lm` — a complete plot in one call
+
+See your model instantly and iterate easily to find the right model.
+`autoplot()` on an `lm` builds the whole plot: the model’s own data as a
+scatter, a fitted `geom_slice()` line with confidence ribbons, and a
+subtitle that communicates what the model is. To help with iteration,
+`summary()` is also printed to the console, showing P-values, R^2, and
+other statistics (override with `summary = FALSE`).
+
+The result is a regular ggplot you can extend with `mapping` and `+` as
+usual.
+
+``` r
+autoplot(lm(Petal.Length ~ Sepal.Length + I(Sepal.Length^2):Species, iris))
+#> 
+#> Call:
+#> lm(formula = Petal.Length ~ Sepal.Length + I(Sepal.Length^2):Species, 
+#>     data = iris)
+#> 
+#> Residuals:
+#>      Min       1Q   Median       3Q      Max 
+#> -0.72665 -0.15039  0.00562  0.16639  0.76639 
+#> 
+#> Coefficients:
+#>                                     Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept)                         -3.79412    1.09932  -3.451 0.000731 ***
+#> Sepal.Length                         2.04477    0.36389   5.619 9.51e-08 ***
+#> I(Sepal.Length^2):Speciessetosa     -0.19763    0.02958  -6.680 4.75e-10 ***
+#> I(Sepal.Length^2):Speciesversicolor -0.11503    0.03033  -3.793 0.000218 ***
+#> I(Sepal.Length^2):Speciesvirginica  -0.09427    0.02987  -3.156 0.001944 ** 
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 0.262 on 145 degrees of freedom
+#> Multiple R-squared:  0.9786, Adjusted R-squared:  0.978 
+#> F-statistic:  1655 on 4 and 145 DF,  p-value: < 2.2e-16
+```
+
+<img src="man/figures/README-autoplot-1.png" alt="autoplot() with a confidence interval and a custom title"  />
+
+`autoplot` makes a few decisions for you, but lets you control them. The
+model’s first numeric predictor goes on the x-axis, and subsequent
+predictors group by `color`, then `facet_wrap()`, and `linetype`.
+Override or add to the automatic `aes()` by passing a `mapping`. Choose
+a different x-axis predictor with `aes(x = ...)`, and pass other
+aesthetics such as `color`. Everything else in `...` is passed on to
+`geom_slice()` or `geom_slice_subtitle()`. Pass
+`interval = "prediction"` for the wider ribbon, or `interval = "none"`
+for a bare line.
+
+``` r
+# Pass geom_slice() options through; the result is a normal ggplot
+autoplot(lm(mpg ~ disp + hp, data = mtcars),
+         predict_vars = list(hp = 110), interval = "prediction") +
+  labs(title = "Slice at hp = 110")
 #> 
 #> Call:
 #> lm(formula = mpg ~ disp + hp, data = mtcars)
@@ -54,19 +126,72 @@ autoplot(model)
 #> Residual standard error: 3.127 on 29 degrees of freedom
 #> Multiple R-squared:  0.7482, Adjusted R-squared:  0.7309 
 #> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09
-
-# Or build the plot yourself with a geom_slice() layer
-library(ggplot2)
-ggplot(mtcars, aes(disp, mpg)) +
-  geom_point() +
-  geom_slice(model)
 ```
 
-<img src="man/figures/README-quickstart-autoplot-1.png" alt="autoplot() of an lm: scatter plot with the fitted slice line"  />
+<img src="man/figures/README-autoplot-mapping-1.png" alt="autoplot() with an x-axis override and a color mapping"  />
 
-Both report on the console how the predictor you *don’t* see (`hp`) was
-handled — it is held at its mean — so it is always clear which slice of
-the model you are looking at.
+``` r
+
+autoplot(lm(mpg ~ disp + hp + factor(cyl), data = mtcars),
+         mapping = aes(x = hp, color = factor(cyl)))
+#> 
+#> Call:
+#> lm(formula = mpg ~ disp + hp + factor(cyl), data = mtcars)
+#> 
+#> Residuals:
+#>    Min     1Q Median     3Q    Max 
+#> -4.470 -1.773 -0.413  1.928  5.977 
+#> 
+#> Coefficients:
+#>              Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept)  31.14773    1.76712  17.626 2.44e-16 ***
+#> disp         -0.02604    0.01042  -2.499   0.0189 *  
+#> hp           -0.02114    0.01419  -1.490   0.1479    
+#> factor(cyl)6 -4.04719    1.68944  -2.396   0.0238 *  
+#> factor(cyl)8 -2.43193    3.23978  -0.751   0.4594    
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 2.888 on 27 degrees of freedom
+#> Multiple R-squared:  0.8001, Adjusted R-squared:  0.7705 
+#> F-statistic: 27.01 on 4 and 27 DF,  p-value: 4.3e-09
+```
+
+<img src="man/figures/README-autoplot-mapping-2.png" alt="autoplot() with an x-axis override and a color mapping"  />
+
+### 3d
+
+`autoplot.lm` can also interactive 3d plotly plots using `type = "3d"`.
+Additional arguments pass to `scatter_3d`.
+
+``` r
+# Two numeric predictors? Get the interactive 3-D surface instead
+autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
+#> 
+#> Call:
+#> lm(formula = mpg ~ disp + hp, data = mtcars)
+#> 
+#> Residuals:
+#>     Min      1Q  Median      3Q     Max 
+#> -4.7945 -2.3036 -0.8246  1.8582  6.9363 
+#> 
+#> Coefficients:
+#>              Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept) 30.735904   1.331566  23.083  < 2e-16 ***
+#> disp        -0.030346   0.007405  -4.098 0.000306 ***
+#> hp          -0.024840   0.013385  -1.856 0.073679 .  
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 3.127 on 29 degrees of freedom
+#> Multiple R-squared:  0.7482, Adjusted R-squared:  0.7309 
+#> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09
+```
+
+<img src="man/figures/README-autoplot-3d-1.png" alt="Interactive 3-D scatter with the fitted regression surface (static snapshot)"  />
+
+*(static snapshot — the real plot is interactive: drag to rotate, hover
+for values)*
 
 ------------------------------------------------------------------------
 
@@ -248,132 +373,6 @@ anything else you pass goes to `lm_equation()` — `style = "brackets"` to
 always label factor terms by level alone, for instance. Left alone, the
 style is chosen to fit the plot.
 
-## `autoplot()` — a complete plot in one call
-
-`autoplot()` on an `lm` builds the whole plot: the model’s own data as a
-scatter with a `geom_slice()` line — and its confidence ribbon — through
-it. The model’s first numeric predictor goes on the x-axis (override
-with `mapping = aes(x = ...)`), and everything in `...` is passed on to
-`geom_slice()`. The result is a regular ggplot, so extend it with `+` as
-usual. Pass `interval = "prediction"` for the wider ribbon, or
-`interval = "none"` for a bare line.
-
-``` r
-library(ggplot2)   # for labs() below; autoplot() itself needs only Applr
-
-autoplot(lm(mpg ~ disp, data = mtcars))
-#> 
-#> Call:
-#> lm(formula = mpg ~ disp, data = mtcars)
-#> 
-#> Residuals:
-#>     Min      1Q  Median      3Q     Max 
-#> -4.8922 -2.2022 -0.9631  1.6272  7.2305 
-#> 
-#> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept) 29.599855   1.229720  24.070  < 2e-16 ***
-#> disp        -0.041215   0.004712  -8.747 9.38e-10 ***
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 3.251 on 30 degrees of freedom
-#> Multiple R-squared:  0.7183, Adjusted R-squared:  0.709 
-#> F-statistic: 76.51 on 1 and 30 DF,  p-value: 9.38e-10
-
-# Pass geom_slice() options through; the result is a normal ggplot
-autoplot(lm(mpg ~ disp + hp, data = mtcars),
-         predict_vars = list(hp = 110), interval = "prediction") +
-  labs(title = "Slice at hp = 110")
-#> 
-#> Call:
-#> lm(formula = mpg ~ disp + hp, data = mtcars)
-#> 
-#> Residuals:
-#>     Min      1Q  Median      3Q     Max 
-#> -4.7945 -2.3036 -0.8246  1.8582  6.9363 
-#> 
-#> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept) 30.735904   1.331566  23.083  < 2e-16 ***
-#> disp        -0.030346   0.007405  -4.098 0.000306 ***
-#> hp          -0.024840   0.013385  -1.856 0.073679 .  
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 3.127 on 29 degrees of freedom
-#> Multiple R-squared:  0.7482, Adjusted R-squared:  0.7309 
-#> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09
-```
-
-<img src="man/figures/README-autoplot-1.png" alt="autoplot() with a confidence interval and a custom title"  />
-
-`mapping` goes to `ggplot()` itself: override or add to the automatic
-`aes()` (entries named `x` or `y` replace the chosen axes, and
-aesthetics such as `color` are inherited by `geom_slice()`, so a model
-variable draws one line per group). Choose the x-axis with
-`mapping = aes(x = ...)`.
-
-``` r
-autoplot(lm(mpg ~ disp + hp + factor(cyl), data = mtcars),
-         mapping = aes(x = hp, color = factor(cyl)))
-#> 
-#> Call:
-#> lm(formula = mpg ~ disp + hp + factor(cyl), data = mtcars)
-#> 
-#> Residuals:
-#>    Min     1Q Median     3Q    Max 
-#> -4.470 -1.773 -0.413  1.928  5.977 
-#> 
-#> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)  31.14773    1.76712  17.626 2.44e-16 ***
-#> disp         -0.02604    0.01042  -2.499   0.0189 *  
-#> hp           -0.02114    0.01419  -1.490   0.1479    
-#> factor(cyl)6 -4.04719    1.68944  -2.396   0.0238 *  
-#> factor(cyl)8 -2.43193    3.23978  -0.751   0.4594    
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 2.888 on 27 degrees of freedom
-#> Multiple R-squared:  0.8001, Adjusted R-squared:  0.7705 
-#> F-statistic: 27.01 on 4 and 27 DF,  p-value: 4.3e-09
-```
-
-<img src="man/figures/README-autoplot-mapping-1.png" alt="autoplot() with an x-axis override and a color mapping"  />
-
-``` r
-# Two numeric predictors? Get the interactive 3-D surface instead
-autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
-#> 
-#> Call:
-#> lm(formula = mpg ~ disp + hp, data = mtcars)
-#> 
-#> Residuals:
-#>     Min      1Q  Median      3Q     Max 
-#> -4.7945 -2.3036 -0.8246  1.8582  6.9363 
-#> 
-#> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept) 30.735904   1.331566  23.083  < 2e-16 ***
-#> disp        -0.030346   0.007405  -4.098 0.000306 ***
-#> hp          -0.024840   0.013385  -1.856 0.073679 .  
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 3.127 on 29 degrees of freedom
-#> Multiple R-squared:  0.7482, Adjusted R-squared:  0.7309 
-#> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09
-```
-
-<img src="man/figures/README-autoplot-3d-1.png" alt="Interactive 3-D scatter with the fitted regression surface (static snapshot)"  />
-
-*(static snapshot — the real plot is interactive: drag to rotate, hover
-for values)*
-
-Note: the model must be fitted with a `data` argument
-(`lm(y ~ x, data = your_data)`) so `autoplot()` can recover the data.
-
 ------------------------------------------------------------------------
 
 ## Base R plotting
@@ -534,6 +533,14 @@ Enjoy clearer model visualizations with **Applr**!
 
 ## Attributions
 
-We thank Cameron McClellan and James Beeson for their work on the
-package, and of course Garrett Saunders for being a remarkable teacher
-and inspiration to do great things with statistics!
+Thanks to **Cameron McClellan** for his vision and initiation, **James
+Beeson** for seeing it through, **Anthropic’s Claude** for solving the
+problems we couldn’t, and **Brother Saunders** - our teacher and
+inspiration to do great things.
+
+And of course, Brigham Young University Idaho - our alma mater; the
+school we love and cherish. And the God of Heaven and Earth, who gives
+us all.
+
+33 For God is not the author of *confusion*, but of *peace*, as in all
+churches of the saints. - 1 Corinthians 14:33
