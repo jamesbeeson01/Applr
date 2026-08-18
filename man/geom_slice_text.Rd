@@ -56,6 +56,12 @@ describe the \code{predict_vars} values (\code{"x2: 0"}, joined with \code{"; "}
 several variables are crossed); when the slice layer has no \code{predict_vars},
 labels describe the grouping aesthetic instead (\code{"g: A"}). Each label
 inherits its line's color.
+
+A \code{geom_slice(band = )} layer is labeled on its two \strong{edges} rather than as
+a whole: one label per edge, naming the banded variable's value that
+produced it (so the low value is not always on the lower edge — an
+increasing band and a decreasing one are labeled correctly). This takes
+precedence over the grouping aesthetic, which the legend already covers.
 }
 \examples{
 library(ggplot2)
@@ -65,6 +71,12 @@ model <- lm(mpg ~ disp + hp, data = mtcars)
 ggplot(mtcars, aes(disp, mpg)) +
   geom_point() +
   geom_slice(model, predict_vars = list(hp = c(66, 335))) +
+  geom_slice_text()
+
+# A projection band, labeled on each edge
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_slice(model, band = TRUE) +
   geom_slice_text()
 
 }

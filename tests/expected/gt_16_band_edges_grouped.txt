@@ -1,0 +1,2 @@
+Band range for `cyl` not specified - used the min/max data range: 4 to 8.
+    To choose the range, use 'predict_vars = list(cyl = c(4, 8))'.

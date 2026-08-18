@@ -31,10 +31,6 @@ is_slice_text_layer <- function(layer) {
 # (the strips label those), or already labeled by geom_slice_text() are
 # excluded; what's left is a predict_vars value or the imputed default.
 slice_subtitle_held <- function(plot, slice_layers, model) {
-  raw_data <- slice_model_frame(model)
-  response_vars <- all.vars(formula(model)[[2]])
-  predictor_vars <- setdiff(all.vars(delete.response(terms(model))), response_vars)
-
   # predict_vars combined across the slice layers (they share one model)
   predict_vars <- list()
   for (sl in slice_layers) {
@@ -44,24 +40,14 @@ slice_subtitle_held <- function(plot, slice_layers, model) {
     }
   }
 
-  x_vars <- if (!is.null(plot$mapping$x)) {
-    intersect(all.vars(rlang::quo_get_expr(plot$mapping$x)), predictor_vars)
-  } else {
-    character(0)
-  }
-
-  # explicit predict_vars win over group pinning, as in build_slice_spec()
-  group_vars <- setdiff(slice_text_group_vars(plot$mapping, model),
-                        names(predict_vars))
-
-  facet_params <- plot$facet$params
-  facet_vars <- intersect(
-    unique(c(names(facet_params$facets %||% list()),
-             names(facet_params$rows %||% list()),
-             names(facet_params$cols %||% list()))),
-    predictor_vars
-  )
-  facet_vars <- setdiff(facet_vars, names(predict_vars))
+  # Explicit predict_vars win over group/facet pinning, as in
+  # build_slice_spec(); the context is shared with the band resolution below.
+  context <- slice_add_time_context(plot, model, predict_vars)
+  raw_data <- context$raw_data
+  predictor_vars <- context$predictor_vars
+  x_vars <- context$x_vars
+  group_vars <- context$group_vars
+  facet_vars <- context$facet_vars
 
   labeled_vars <- unique(unlist(lapply(
     Filter(is_slice_text_layer, plot$layers),
@@ -69,18 +55,10 @@ slice_subtitle_held <- function(plot, slice_layers, model) {
   )))
 
   # A banded variable spans a range instead of being held; report it with its
-  # own wording. Resolution mirrors build_slice_spec(); errors are its job to
-  # raise (they fire when the plot builds), so failures here just drop the line.
+  # own wording.
   band <- NULL
   for (sl in slice_layers) {
-    b <- sl$stat_params$band
-    if (is.null(b) || isFALSE(b)) next
-    band <- tryCatch(
-      resolve_slice_band(b, sl$stat_params$predict_vars %||% list(),
-                         predictor_vars, x_vars, c(group_vars, facet_vars),
-                         raw_data, quiet = TRUE),
-      error = function(e) NULL
-    )
+    band <- slice_layer_band(sl, plot, context)
     if (!is.null(band)) break
   }
 

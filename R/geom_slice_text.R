@@ -24,7 +24,7 @@
 
 # Format one held value for a label: bare numbers, bare strings (no quotes).
 label_value <- function(value) {
-  if (is.numeric(value)) format(value) else as.character(value)
+  if (is.numeric(value)) format(signif(value, 4)) else as.character(value)
 }
 
 # Join per-variable label parts in the requested style.
@@ -59,11 +59,26 @@ slice_text_group_vars <- function(mapping, model) {
   unique(vars)
 }
 
+# The predict_vars one slice layer's labels describe: the layer's own, plus the
+# band's variable held at the two values that make its edges — replacing any
+# individual values predict_vars gave it.
+#
+# This is what makes band labels work. The text layer never receives `band`
+# itself, so those two values make it draw the two edge lines, one label each,
+# named by the value that produced it — right way up even when the effect is
+# decreasing. Add-time and therefore provisional; see slice_layer_band().
+slice_text_predict_vars <- function(slice_layer, plot) {
+  pv <- slice_layer$stat_params$predict_vars %||% list()
+  band <- slice_layer_band(slice_layer, plot)
+  if (!is.null(band)) pv[[band$var]] <- band$values
+  pv
+}
+
 # Every label string one slice layer will produce, computed at add time (used
 # to size the x-expansion and the corner key). predict_vars labels win over
 # grouping-aesthetic labels, mirroring StatSliceText.
 slice_text_labels <- function(slice_layer, plot, style) {
-  pv <- slice_layer$stat_params$predict_vars %||% list()
+  pv <- slice_text_predict_vars(slice_layer, plot)
   if (length(pv) > 0) {
     combos <- expand.grid(pv, KEEP.OUT.ATTRS = FALSE, stringsAsFactors = FALSE)
     return(vapply(seq_len(nrow(combos)), function(i) {
@@ -146,7 +161,7 @@ panel_width_pt <- function(plot) {
 
 # The variable names the labels describe (for the "labels: x2; x3" corner key).
 slice_text_label_vars <- function(slice_layer, plot) {
-  pv <- slice_layer$stat_params$predict_vars %||% list()
+  pv <- slice_text_predict_vars(slice_layer, plot)
   if (length(pv) > 0) return(names(pv))
   slice_text_group_vars(plot$mapping, slice_layer$stat_params$model)
 }
@@ -318,7 +333,7 @@ ggplot_add.slice_text_spec <- function(object, plot, ...) {
     params <- list(
       model = sl$stat_params$model,
       model_name = sl$stat_params$model_name,
-      predict_vars = sl$stat_params$predict_vars %||% list(),
+      predict_vars = slice_text_predict_vars(sl, plot),
       back_transform = sl$stat_params$back_transform,
       label_style = object$style,
       location = object$location,
@@ -439,6 +454,12 @@ ggplot_add.slice_text_spec <- function(object, plot, ...) {
 #' ggplot(mtcars, aes(disp, mpg)) +
 #'   geom_point() +
 #'   geom_slice(model, predict_vars = list(hp = c(66, 335))) +
+#'   geom_slice_text()
+#'
+#' # A projection band, labeled on each edge
+#' ggplot(mtcars, aes(disp, mpg)) +
+#'   geom_point() +
+#'   geom_slice(model, band = TRUE) +
 #'   geom_slice_text()
 #'
 #' @export

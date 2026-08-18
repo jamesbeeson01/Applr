@@ -401,6 +401,68 @@ resolve_slice_band <- function(band, predict_vars, predictor_vars, x_vars,
   list(var = var, values = values)
 }
 
+# --- add-time band resolution ----------------------------------------------
+#
+# build_slice_spec() resolves the band at *build* time, once the layout and the
+# fully-inherited mapping exist. geom_slice_subtitle() (to describe the band)
+# and geom_slice_text() (to label its edges) need it at add time, so both
+# rebuild that context from the plot and call the same resolve_slice_band()
+# rather than each carrying its own inference.
+#
+# Build time stays authoritative for what is *drawn*; the two answers can
+# disagree when a facet, a layer-level aes(), or a `%+%` data swap is added
+# after the slice layer. See for_devs/known_issues.Rmd.
+
+# The pieces of build_slice_spec()'s context knowable at add time. As there,
+# `predict_vars` variables win over group/facet pinning.
+slice_add_time_context <- function(plot, model, predict_vars = list()) {
+  raw_data <- slice_model_frame(model)
+  response_vars <- all.vars(formula(model)[[2]])
+  predictor_vars <- setdiff(all.vars(delete.response(terms(model))), response_vars)
+
+  x_vars <- if (!is.null(plot$mapping$x)) {
+    intersect(all.vars(rlang::quo_get_expr(plot$mapping$x)), predictor_vars)
+  } else {
+    character(0)
+  }
+
+  group_vars <- setdiff(slice_text_group_vars(plot$mapping, model),
+                        names(predict_vars))
+
+  facet_params <- plot$facet$params
+  facet_vars <- setdiff(
+    intersect(unique(c(names(facet_params$facets %||% list()),
+                       names(facet_params$rows %||% list()),
+                       names(facet_params$cols %||% list()))),
+              predictor_vars),
+    names(predict_vars)
+  )
+
+  list(raw_data = raw_data, predictor_vars = predictor_vars, x_vars = x_vars,
+       group_vars = group_vars, facet_vars = facet_vars)
+}
+
+# The band one geom_slice() layer will resolve to, computed at add time.
+# Returns NULL when the layer has no band or the band cannot be resolved:
+# complaining is build time's job (it resolves again there, unsilenced), so a
+# failure here just means the callers have nothing extra to say.
+# `context` defaults to this layer's own; pass one to share it across layers.
+slice_layer_band <- function(slice_layer, plot, context = NULL) {
+  band <- slice_layer$stat_params$band
+  if (is.null(band) || isFALSE(band)) return(NULL)
+  model <- slice_layer$stat_params$model
+  if (is.null(model)) return(NULL)
+  predict_vars <- slice_layer$stat_params$predict_vars %||% list()
+  context <- context %||% slice_add_time_context(plot, model, predict_vars)
+  tryCatch(
+    resolve_slice_band(band, predict_vars, context$predictor_vars,
+                       context$x_vars,
+                       c(context$group_vars, context$facet_vars),
+                       context$raw_data, quiet = TRUE),
+    error = function(e) NULL
+  )
+}
+
 # Error if the data on the plot is visibly different from the data the model
 # was fitted to (a slice through one model drawn over another dataset is
 # meaningless, but looks plausible). Only *positive* mismatches abort: when the
