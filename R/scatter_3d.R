@@ -112,14 +112,32 @@ scatter_3d <- function(model, n = 100, colors = c("blue", "yellow")) {
     c("x", "y", "z")
   )
 
+  # Colour the markers through marker$colorscale rather than plot_ly()'s
+  # `color`/`colors` arguments: those build a plot-level colour scale that plotly
+  # then tries to apply to *every* trace, and pushing a `marker` onto the surface
+  # trace (which has no such attribute) makes plotly_build() warn.
+  # A colorscale needs stops at both 0 and 1, so a single colour becomes a flat
+  # two-stop ramp.
+  ramp <- grDevices::rgb(t(grDevices::col2rgb(colors)), maxColorValue = 255)
+  if (length(ramp) == 1) ramp <- rep(ramp, 2)
+  colorscale <- Map(
+    function(stop, color) list(stop, color),
+    seq(0, 1, length.out = length(ramp)),
+    ramp
+  )
+
   plot_ly() |>
     add_markers(
       data = points,
       x = ~x, y = ~y, z = ~z,
-      color = ~z, colors = colors,
-      type = "scatter3d", mode = "markers"
+      type = "scatter3d", mode = "markers",
+      marker = list(
+        color = ~z, colorscale = colorscale,
+        showscale = TRUE, colorbar = list(title = response)
+      )
     ) |>
-    add_trace(x = x_axis, y = y_axis, z = z_grid, type = "surface", opacity = 0.6) |>
+    add_trace(x = x_axis, y = y_axis, z = z_grid, type = "surface",
+              opacity = 0.6, showscale = FALSE) |>
     layout(scene = list(
       xaxis = list(title = x_name),
       yaxis = list(title = y_name),
