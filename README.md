@@ -103,58 +103,21 @@ aesthetics such as `color`. Everything else in `...` is passed on to
 for a bare line.
 
 ``` r
-# Pass geom_slice() options through; the result is a normal ggplot
-autoplot(lm(mpg ~ disp + hp, data = mtcars),
-         predict_vars = list(hp = 110), interval = "prediction") +
-  labs(title = "Slice at hp = 110")
-#> 
-#> Call:
-#> lm(formula = mpg ~ disp + hp, data = mtcars)
-#> 
-#> Residuals:
-#>     Min      1Q  Median      3Q     Max 
-#> -4.7945 -2.3036 -0.8246  1.8582  6.9363 
-#> 
-#> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept) 30.735904   1.331566  23.083  < 2e-16 ***
-#> disp        -0.030346   0.007405  -4.098 0.000306 ***
-#> hp          -0.024840   0.013385  -1.856 0.073679 .  
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 3.127 on 29 degrees of freedom
-#> Multiple R-squared:  0.7482, Adjusted R-squared:  0.7309 
-#> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09
+model <- lm(hwy ~ displ + drv + cyl, data = mpg)
+
+# Change the defaults like a normal ggplot; it will still infer the rest
+autoplot(model, aes(color = factor(cyl))) + facet_wrap(~drv)
 ```
 
 <img src="man/figures/README-autoplot-mapping-1.png" alt="autoplot() with an x-axis override and a color mapping"  />
 
 ``` r
 
-autoplot(lm(mpg ~ disp + hp + factor(cyl), data = mtcars),
-         mapping = aes(x = hp, color = factor(cyl)))
-#> 
-#> Call:
-#> lm(formula = mpg ~ disp + hp + factor(cyl), data = mtcars)
-#> 
-#> Residuals:
-#>    Min     1Q Median     3Q    Max 
-#> -4.470 -1.773 -0.413  1.928  5.977 
-#> 
-#> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)  31.14773    1.76712  17.626 2.44e-16 ***
-#> disp         -0.02604    0.01042  -2.499   0.0189 *  
-#> hp           -0.02114    0.01419  -1.490   0.1479    
-#> factor(cyl)6 -4.04719    1.68944  -2.396   0.0238 *  
-#> factor(cyl)8 -2.43193    3.23978  -0.751   0.4594    
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 2.888 on 27 degrees of freedom
-#> Multiple R-squared:  0.8001, Adjusted R-squared:  0.7705 
-#> F-statistic: 27.01 on 4 and 27 DF,  p-value: 4.3e-09
+# Pass geom_slice() options through
+autoplot(model,
+         aes(x = cyl, color = factor(drv)),
+         interval = "none") +
+  labs(title = "The Same Model From a Different Angle")
 ```
 
 <img src="man/figures/README-autoplot-mapping-2.png" alt="autoplot() with an x-axis override and a color mapping"  />
@@ -166,26 +129,7 @@ Additional arguments pass to `scatter_3d`.
 
 ``` r
 # Two numeric predictors? Get the interactive 3-D surface instead
-autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
-#> 
-#> Call:
-#> lm(formula = mpg ~ disp + hp, data = mtcars)
-#> 
-#> Residuals:
-#>     Min      1Q  Median      3Q     Max 
-#> -4.7945 -2.3036 -0.8246  1.8582  6.9363 
-#> 
-#> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept) 30.735904   1.331566  23.083  < 2e-16 ***
-#> disp        -0.030346   0.007405  -4.098 0.000306 ***
-#> hp          -0.024840   0.013385  -1.856 0.073679 .  
-#> ---
-#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#> 
-#> Residual standard error: 3.127 on 29 degrees of freedom
-#> Multiple R-squared:  0.7482, Adjusted R-squared:  0.7309 
-#> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09
+autoplot(lm(mpg ~ wt + I(wt^2) + hp, data = mtcars), type = "3d")
 ```
 
 <img src="man/figures/README-autoplot-3d-1.png" alt="Interactive 3-D scatter with the fitted regression surface (static snapshot)"  />
@@ -195,34 +139,86 @@ for values)*
 
 ------------------------------------------------------------------------
 
-## `geom_slice()` — your model as a ggplot2 layer
+## `geom_slice()`: your model as a ggplot2 layer
 
 `geom_slice()` draws the prediction line of a fitted `lm()` across your
 plot (and its facets). It looks like `geom_smooth()`, but where
 `geom_smooth()` fits its own model to the plotted data, `geom_slice()`
-draws the model *you* fitted. The predictor on the x-axis varies along
-the line; every other predictor is fixed, creating a 2d “slice” of a
-high-dimensional model.
+draws the model *you* fitted. It is the main driver of `autoplot.lm`,
+but makes as few decisions as possible.
+
+As you move beyond a single predictor, `geom_slice()` creates a 2d
+“slice” (or slices) of a high-dimensional model. Other predictors are
+held at constants, showing what slice of the model you are looking at.
+If you don’t specify those values, `geom_slice()` will make a guess as
+follows:
 
 - Variables named in `predict_vars` are held at your chosen values.
-- Variables mapped to a grouping aesthetic (`aes(color = g)`) are pinned
-  to each group’s own value — one line per group.
-- Facet variables are pinned to each panel’s value.
+- Variables mapped to a grouping aesthetic (`aes(color = g)`) are held
+  at each group’s value - one line per group.
+- Facet variables are held at each panel’s value.
 - Anything left over is imputed (mean for numeric, most common value for
   factors), with a console message naming the value used.
 
-``` r
-library(ggplot2)
-model <- lm(mpg ~ disp + hp + cyl, data = mtcars)
+In everything, console messages and labeling helpers try to make the
+model as clear as possible - so you know exactly what you are looking
+at.
 
-ggplot(mtcars, aes(disp, mpg)) +
+In this example, the fitted model with 4 predictors can’t be plotted as
+a line without making multiple assumptions. The console messages clarify
+the decisions it HAD to make in order to plot the 2d slice.
+
+``` r
+set.seed(123)
+n <- 80
+x <- runif(n, 0.1, 10)
+x2 <- runif(n, 0.1, 10)
+x3 <- sample(c(1, 20, 40), n, replace = TRUE)
+x4 <- sample(c(1, 2), n, replace = TRUE)
+y <- log(5 + x + x2 + x3 + 1/5 * x * x3 + 80 * x4) # no random noise
+dat <- data.frame(x, x2, x3, x4, y)
+
+model <- lm(exp(y) ~ x*x3 + x2 + x4, data = dat)   # exact model fit
+
+# What geom_slice will do on its own (minimum inference)
+ggplot(dat, aes(x, y)) +
   geom_point() +
-  facet_wrap(~cyl) +
-  geom_slice(model, predict_vars = list(hp = 110),
-             color = "steelblue", linewidth = 1)
+  geom_slice(model) +
+  labs(title = "A Perfectly Fit Model 'Slice'")
+#> Value for `x3` not specified - Used mean: 19.36
+#>     To choose a slice, use 'predict_vars = list(x3 = 19.36)'.
+#> Value for `x2` not specified - Used mean: 4.981
+#>     To choose a slice, use 'predict_vars = list(x2 = 4.981)'.
+#> Value for `x4` not specified - Used mean: 1.412
+#>     To choose a slice, use 'predict_vars = list(x4 = 1.412)'.
+#> Predictions of `exp(y)` were back-transformed to match the `y` axis.
+#>     To turn this off, use 'back_transform = FALSE'.
+
+# Shows the model is an exact fit (and geom_slice can plot axis transforms)
+ggplot(dat, aes(x = log(5 + x + x2 + x3 + 1/5 * x * x3 + 80 * x4), y)) +
+  geom_point() +
+  geom_slice(model) +
+  labs(title = "Same Model, Different X-Axis")
+#> Predictions of `exp(y)` were back-transformed to match the `y` axis.
+#>     To turn this off, use 'back_transform = FALSE'.
 ```
 
-<img src="man/figures/README-facets-1.png" alt="geom_slice() drawing the model's line in every facet"  />
+<img src="man/figures/README-minimal-1.png" alt="geom_slice() base functionality with few assumptions made" width="49%" /><img src="man/figures/README-minimal-2.png" alt="geom_slice() base functionality with few assumptions made" width="49%" />
+
+Those assumptions had to be made, but you can make better ones. This
+plot shows the same model far clearer by utilizing several features
+`geom_slice()` offers.
+
+``` r
+ggplot(dat, aes(x, y, color = factor(x3))) +
+  geom_point() +
+  geom_slice(model, band = "x2", predict_vars = list(x2 = c(0, 10))) +
+  facet_wrap(~x4) +
+  geom_slice_text() +
+  geom_slice_subtitle()
+```
+
+<img src="man/figures/README-geom-slice-1.png" alt="geom_slice() drawing the model's line using color, facet, band, and predict_vars"  />
 
 ### Choosing slices with `predict_vars`
 
@@ -230,12 +226,16 @@ Give a variable several values to draw one line per value; several
 multi-value variables are crossed:
 
 ``` r
-model <- lm(mpg ~ disp + hp, data = mtcars)
+model <- lm(Sepal.Length ~ Sepal.Width + Petal.Length, iris)
 
-# Three slices of the same model
-ggplot(mtcars, aes(disp, mpg)) +
+ggplot(iris, aes(Petal.Length, Sepal.Length)) +
   geom_point() +
-  geom_slice(model, predict_vars = list(hp = c(66, 123, 335)))
+  geom_slice(
+    model, 
+    predict_vars = list(Sepal.Width = c(2, 3, 4)),
+    interval = "confidence"
+  ) +
+  geom_slice_text()
 ```
 
 <img src="man/figures/README-predict-vars-1.png" alt="Three slice lines of the same model, one per hp value"  />
@@ -246,33 +246,53 @@ ggplot(mtcars, aes(disp, mpg)) +
 `predict.lm()` ribbon around the line:
 
 ``` r
-model <- lm(mpg ~ disp + hp, data = mtcars)
+model <- lm(hwy ~ displ + I(displ^2) + displ, data = mpg)
 
-ggplot(mtcars, aes(disp, mpg)) +
+ggplot(mpg, aes(displ, hwy)) +
   geom_point() +
-  geom_slice(model, interval = "prediction")
+  geom_slice(model, interval = "confidence") +
+  labs(title = "Confidence Interval")
+
+ggplot(mpg, aes(displ, hwy)) +
+  geom_point() +
+  geom_slice(model, interval = "prediction") +
+  labs(title = "Prediction Interval")
 ```
 
-<img src="man/figures/README-interval-1.png" alt="Slice line with a prediction-interval ribbon"  />
+<img src="man/figures/README-interval-1.png" alt="Slice line with a prediction-interval ribbon" width="49%" /><img src="man/figures/README-interval-2.png" alt="Slice line with a prediction-interval ribbon" width="49%" />
 
 ### Projection bands
 
 Where an interval shows uncertainty, `band` shows the *reach of a
 predictor*: two edge slices with a translucent ribbon between them.
-`band = "variable"` spans that predictor — between the values you gave
-in `predict_vars`, or its observed data range when `predict_vars` leaves
-it out:
+`band = TRUE` will make a decision about what the band should project
+over. `band = "variable"` spans that predictor between the values you
+gave in `predict_vars`, or its observed data range when `predict_vars`
+leaves it out:
 
 ``` r
-model <- lm(mpg ~ disp + hp, data = mtcars)
+model <- lm(hwy ~ displ * drv + cyl, data = mpg)
 
-# The band spans hp from 66 to 335
-ggplot(mtcars, aes(disp, mpg)) +
+# Projection band infered using the min and max of an unused variable
+# In this case: cyl from 4 to 8
+ggplot(mpg, aes(displ, hwy, color = drv)) +
   geom_point() +
-  geom_slice(model, band = "hp", predict_vars = list(hp = c(66, 335)))
+  geom_slice(model, band = TRUE) +
+  geom_slice_text()
 ```
 
 <img src="man/figures/README-band-1.png" alt="Projection band spanning hp from 66 to 335"  />
+
+``` r
+
+# This band is specified spanning cyl from 5 to 7
+ggplot(mpg, aes(displ, hwy, color = drv)) +
+  geom_point() +
+  geom_slice(model, band = "cyl", predict_vars = list(cyl = c(5, 7))) +
+  geom_slice_text()
+```
+
+<img src="man/figures/README-band-2.png" alt="Projection band spanning hp from 66 to 335"  />
 
 `band = TRUE` infers the variable when there is only one sensible choice
 (the one multi-value `predict_vars` entry, or the single predictor the
@@ -292,34 +312,44 @@ model <- lm(log(mpg) ~ disp + hp, data = mtcars)
 
 ggplot(mtcars, aes(disp, mpg)) +
   geom_point() +
-  geom_slice(model)   # back-transformed onto the raw mpg axis
+  geom_slice(model) +   # back-transformed onto the raw mpg axis
+  labs(title = "normal y axis")
+
+ggplot(mtcars, aes(disp, log(mpg))) +
+  geom_point() +
+  geom_slice(model) +   # back-transformation adapts to axis
+  labs(title = "log() y axis")
+
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_slice(model) +
+  scale_y_log10() +     # resilient to other ggplot axis changes
+  labs(title = "scale_y_log10() axis")
 ```
 
-<img src="man/figures/README-back-transform-1.png" alt="Back-transformed slice of a log-response model on the raw mpg axis"  />
+<img src="man/figures/README-back-transform-1.png" alt="Back-transformed slice of a log-response model on the raw mpg axis" width="33%" /><img src="man/figures/README-back-transform-2.png" alt="Back-transformed slice of a log-response model on the raw mpg axis" width="33%" /><img src="man/figures/README-back-transform-3.png" alt="Back-transformed slice of a log-response model on the raw mpg axis" width="33%" />
 
 ### Grouping: one line per group
-
-``` r
-model <- lm(mpg ~ disp + factor(cyl), data = mtcars)
-
-ggplot(mtcars, aes(disp, mpg, color = factor(cyl))) +
-  geom_point() +
-  geom_slice(model)   # cyl pinned per group; the legend labels the lines
-```
-
-<img src="man/figures/README-grouping-1.png" alt="One slice line per cyl group, colored to match the points"  />
 
 Each group’s line normally stops at its own data range.
 `full_range = TRUE` extends every line to the edge of the panel instead
 (like `fullrange` in `geom_smooth()`):
 
 ``` r
-ggplot(mtcars, aes(disp, mpg, color = factor(cyl))) +
+model <- lm(hwy ~ displ + I(displ^2) + displ:drv, data = mpg)
+
+# One slice per drv group, capped at the end of each group
+ggplot(mpg, aes(displ, hwy, color = drv)) +
+  geom_point() +
+  geom_slice(model)
+
+# Slice lines extended across the full panel x range with full_range = TRUE
+ggplot(mpg, aes(displ, hwy, color = drv)) +
   geom_point() +
   geom_slice(model, full_range = TRUE)
 ```
 
-<img src="man/figures/README-full-range-1.png" alt="Slice lines extended across the full panel x range with full_range = TRUE"  />
+<img src="man/figures/README-grouping-1.png" alt="One slice line per drv group, colored to match the points" width="49%" /><img src="man/figures/README-grouping-2.png" alt="One slice line per drv group, colored to match the points" width="49%" />
 
 ## Labeling the slices
 
@@ -329,21 +359,55 @@ existing `geom_slice()` layers, so add them *after* those layers.
 
 ### `geom_slice_text()`
 
-Writes a label at the end of each slice line — multi-value
-`predict_vars` draw visually identical lines, and labels tell them apart
-(they also work as a legend replacement for grouping aesthetics):
+Writes a label at the end of each slice line; especially useful when
+`band` or multiple `predict_vars` are specified.
 
 ``` r
-library(ggplot2)
-model <- lm(mpg ~ disp + hp, data = mtcars)
+model <- lm(Sepal.Length ~ Sepal.Width + Petal.Length, iris)
 
-ggplot(mtcars, aes(disp, mpg)) +
+ggplot(iris, aes(Petal.Length, Sepal.Length)) +
   geom_point() +
-  geom_slice(model, predict_vars = list(hp = c(66, 123, 335))) +
+  geom_slice(model, band = TRUE) +
   geom_slice_text()
 ```
 
-<img src="man/figures/README-slice-text-1.png" alt="Slice lines labeled at their right ends with hp: 66, hp: 123, hp: 335"  />
+<img src="man/figures/README-slice-text-band-1.png" alt=""  />
+
+``` r
+set.seed(123)
+
+n <- 80
+x <- runif(n, -10, 10)
+x2 <- runif(n, 0, 4)
+g <- factor(sample(c("A", "B"), n, replace = TRUE))
+y <- x * ifelse(g == "A", 0.5, 2) + ifelse(g == "A", 5, -5) + 4 * x2 + rnorm(n)
+dat <- data.frame(x, g, y)
+model <- lm(y ~ x * g + x2, data = dat)
+
+# labels auto-color
+ggplot(dat, aes(x, y, color = g)) +
+  geom_point(alpha = 0.5) +
+  geom_slice(model, predict_vars = list(x2 = c(0, 2, 4))) +
+  geom_slice_text()
+```
+
+<img src="man/figures/README-slice-text-color-1.png" alt="Slice lines labeled at their right ends"  />
+
+``` r
+# Multiple predictors represent one line
+ggplot(dat, aes(x, y)) +
+  geom_point(alpha = 0.5) +
+  geom_slice(model, predict_vars = list(x2 = c(0, 2, 4), g = c("A", "B"))) +
+  geom_slice_text()
+
+# Identical, with `style = "legend"`
+ggplot(dat, aes(x, y)) +
+  geom_point(alpha = 0.5) +
+  geom_slice(model, predict_vars = list(x2 = c(0, 2, 4), g = c("A", "B"))) +
+  geom_slice_text(style = "legend")
+```
+
+<img src="man/figures/README-slice-text-multiple-1.png" alt="geom_slice_text plots different styles of labels" width="49%" /><img src="man/figures/README-slice-text-multiple-2.png" alt="geom_slice_text plots different styles of labels" width="49%" />
 
 Options: `style` (`"variable"` writes `"hp: 66"`, `"value"` writes bare
 values, `"legend"` adds a corner key), `location = "left"`/`"right"`,
@@ -356,22 +420,23 @@ values the plot does not otherwise show — values already labeled by the
 legend, facets, or `geom_slice_text()` are skipped:
 
 ``` r
-library(ggplot2)
-model <- lm(mpg ~ disp + hp, data = mtcars)
+model <- lm(Petal.Length ~ Sepal.Length + I(Sepal.Length^2):Species + Sepal.Width, iris)
 
-ggplot(mtcars, aes(disp, mpg)) +
+ggplot(iris, aes(Sepal.Length, Petal.Length)) +
   geom_point() +
-  geom_slice(model, predict_vars = list(hp = 110)) +
+  geom_slice(model) +
   geom_slice_subtitle()   # or geom_slice_caption()
 ```
 
 <img src="man/figures/README-slice-subtitle-1.png" alt="Plot whose subtitle shows the model equation and the held hp value"  />
 
+`geom_slice_subtitle()` will go to great lengths to keep the model
+readable. It adds indents where there is room, and compresses where
+space is tight. `style` changes based on how much space is available.
+
 Both take `model = FALSE` (drop the equation line) and
-`prepend`/`append` strings. Long equations are wrapped to the plot, and
-anything else you pass goes to `lm_equation()` — `style = "brackets"` to
-always label factor terms by level alone, for instance. Left alone, the
-style is chosen to fit the plot.
+`prepend`/`append` strings to give you more control. Pass-through
+arguments are sent to `lm_equation()`, including `style`.
 
 ------------------------------------------------------------------------
 
@@ -385,7 +450,7 @@ unspecified predictor values are held at sensible defaults (numeric →
 mean, factor → first level) and reported in the caption.
 
 ``` r
-model <- lm(mpg ~ disp + hp, data = mtcars)
+model <- lm(log(mpg) ~ disp + hp, data = mtcars)
 slice_2d(model)
 #--or--
 slice_2d(model, x_axis = "hp", disp = 250, n = 150, col = "blue", lwd = 2)
@@ -399,26 +464,17 @@ Add a 2-D slice line to an *existing* base-R plot. X and Y axis
 variables must match the plot it is being added to.
 
 ``` r
-model <- lm(mpg ~ disp + hp, data = mtcars)
+model <- lm(log(mpg) ~ disp + hp, data = mtcars)
 plot(mpg ~ disp, data = mtcars)
 add_slice_2d(model)
 
 # Multiple slices on one plot
-model <- lm(mpg ~ disp + hp, data = mtcars)
 plot(mpg ~ disp, data = mtcars)
 add_slice_2d(model, hp = min(mtcars$hp), col = "blue")
 add_slice_2d(model, hp = max(mtcars$hp), col = "red", lty = 2)
 ```
 
 <img src="man/figures/README-add-slice-2d-1.png" alt="Two slice lines added to an existing base-R plot"  />
-
-This example does not work because the Y axes do not match (y and 1/y):
-
-``` r
-model <- lm(1/mpg ~ disp + hp, data = mtcars)
-plot(mpg ~ disp, data = mtcars)
-add_slice_2d(model) # will not plot
-```
 
 ------------------------------------------------------------------------
 
@@ -433,16 +489,11 @@ the response along the `colors` gradient, and transformed terms such as
 `autoplot(model, type = "3d")`.
 
 ``` r
-model <- lm(mpg ~ disp + hp, data = mtcars)
-scatter_3d(model, colors = c("blue", "yellow"))
+model <- lm(mpg ~ wt + I(wt^2) + hp, data = mtcars)
+scatter_3d(model)
 ```
 
 <img src="man/figures/README-scatter-3d-1.png" alt="3-D scatter with fitted surface, points colored blue to yellow by mpg (static snapshot)"  />
-
-``` r
-# Transformed terms graph over their raw predictors
-scatter_3d(lm(mpg ~ wt + I(wt^2) + hp, data = mtcars))
-```
 
 *(static snapshot — the real plot is interactive: drag to rotate, hover
 for values)*
@@ -475,19 +526,6 @@ diagnose(model)
 ```
 
 <img src="man/figures/README-diagnose-1.png" alt="Three diagnostic plots: Residuals vs Fitted, Normal Q-Q, residuals in order"  />
-
-### `theme_lc()`
-
-A custom **ggplot2** theme plus default aesthetic tweaks.
-
-``` r
-library(ggplot2)
-ggplot(mtcars, aes(wt, mpg)) +
-  geom_point() +
-  theme_lc()
-```
-
-<img src="man/figures/README-theme-lc-1.png" alt="Scatter plot drawn with theme_lc()"  />
 
 ### Advanced: `StatSlice` and `GeomSlice`
 

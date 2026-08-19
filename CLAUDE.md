@@ -1,5 +1,7 @@
 # CLAUDE.md — Developer Guide for Claude Code
 
+When you write code comments, make sure they stand in context of the whole file and aren't overly verbose - they let the code speak for itself.
+
 ## Running Tests
 
 The test suite lives in `tests/` — full docs in `tests/README.md`. One

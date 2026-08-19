@@ -15,13 +15,28 @@ date: "2026-07-11"
 
 ## README 
 
-- [ ] Improve models - the models used are super unimpressive because they don't fit the data very well 
-- [ ] Readability for band (using geom_slice_text)
+- [x] Improve models - the models used are super unimpressive because they don't fit the data very well 
+  - [x] Edit first two geom_slice
+- [x] Readability for band (using geom_slice_text)
 - [ ] Show off the labeling functions
+- [ ] Fix folder generation on render
+- [x] Display grouping plots next to each other
+- [ ] Put messages/warnings where they belong
+- [x] Add ^2 to autoplot 3d
+
+## All
+
+- [ ] Consider a refactor that moves shared logic across all plotting functions to a common location
+  - [ ] This in connection with sliders, animations, and improved scatter_3d
 
 ## geom_slice_text
 
-- [ ] Label top and bottom of bands (not color)
+- [x] Label top and bottom of bands (not color)
+- [ ] Scale margin with plot width (shown with `lm(Sepal.Length ~ Sepal.Width + Petal.Length, iris)`)
+
+## geom_slice_subtitle
+
+- [ ] Render latex using `library(latex2exp)` and `subtitle = TeX(lm_latex)` (would require `lm_latex` update to use supported syntax - subtext instead of underbrace). I investigated keeping unsupported stuff - not worth it. `ggtext` is an alternative library, but doesn't fix this issue and requires different formatting entirely.
 
 ## autoplot
 
@@ -33,15 +48,20 @@ date: "2026-07-11"
 - [x] Remove the `x_axis`/`xaxis` arguments entirely (redundant with
   `mapping = aes(x = ...)`, never used in production for autoplot/geom_slice).
   `slice_2d` keeps its `x_axis` (and `xaxis` deprecation alias).
+- [ ] Route to scatter_3d automatically when two continuous variables.
+- [ ] `type = "model_x"` plots the rhs as the x axis
 
 ## lm_equation/lm_latex
 
 - [x] Change "clearer" to "prettier"; default to TRUE.
 - [ ] Remove "I()" when prettier=TRUE
-- [ ] Add "threshold" that sets very small numbers to 0; has a default, but can be specified or set to FALSE
-- [ ] Add a $\beta_x$ version
+- [ ] Add "threshold" or "round" that sets very small numbers to 0; has a default, but can be specified or set to FALSE
 - [ ] Can this display in a report without copy/paste?
-- [ ] Do they use the same engine? Should they?
+- [ ] Additional styles
+  - [ ] Add a $\beta_x$ version
+  - [ ] Subtext instead of underbrace (in connection with subtitle display)
+        Could be `placement = "underbrace"` or baked into `style` (though additional control would be nice)
+        Or maybe `style` is retrofitted to be how things are arranged, and a new argument is for factor style
 
 ## geom_slice
 
