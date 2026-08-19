@@ -160,23 +160,44 @@ panel_width_guess <- function(plot) {
   max((device_pt - 140) / facet_col_count(plot), 100)
 }
 
-# The drawn width of one panel, in POINTS. The expansion below reserves a
-# *fraction* of the panel, so an error here is multiplicative: guessing the
-# panel a third too small reserves half again as much space as the labels
-# need, and that dead band on the right grows with the label width.
+# The drawn width of one panel, in POINTS, read out of a laid-out gtable. The
+# expansion below reserves a *fraction* of the panel, so an error here is
+# multiplicative: guessing the panel a third too small reserves half again as
+# much space as the labels need, and that dead band on the right grows with
+# the label width.
 #
-# So measure rather than guess: build the plot as it stands and read the panel
-# column's real width out of the gtable, which accounts for the axis, its
-# title, the margins, a legend of whatever width, and facet columns alike. The
-# device open at add time still sets the overall size — nothing can know the
-# size of a device the plot has not reached yet — but everything inside it is
-# now known instead of assumed.
-panel_width_pt <- function(plot) {
-  measured <- tryCatch({
-    device_pt <- grDevices::dev.size("in")[1] * 72
-    # Build on a scratch device of the same size: laying out the gtable needs
-    # font metrics, and taking them from the real device would draw a page on
-    # it as a side effect of `+`.
+# So measure rather than guess: the panel column's real width accounts for the
+# axis, its title, the margins, a legend of whatever width, and facet columns
+# alike. The device open at add time still sets the overall size — nothing can
+# know the size of a device the plot has not reached yet — but everything
+# inside it is now known instead of assumed.
+panel_width_from_gtable <- function(gt, device_pt) {
+  widths <- gt$widths
+  spec <- vapply(seq_along(widths), function(i) as.character(widths[i]),
+                 character(1))
+  # The "null" columns share out whatever the fixed-width ones leave over.
+  flexible <- grepl("null$", spec)
+  panel_cols <- unique(gt$layout$l[grepl("^panel", gt$layout$name)])
+  panel_cols <- panel_cols[flexible[panel_cols]]
+  if (length(panel_cols) == 0) stop("no flexible panel column")
+  fixed_pt <- sum(vapply(which(!flexible), function(i) {
+    grid::convertWidth(widths[i], "pt", valueOnly = TRUE)
+  }, numeric(1)))
+  shares <- as.numeric(sub("null$", "", spec[flexible]))
+  (device_pt - fixed_pt) *
+    as.numeric(sub("null$", "", spec[panel_cols[1]])) / sum(shares)
+}
+
+# Everything the expansion needs to know about a plot that has not been drawn
+# yet: how wide one panel really is, and which scales ggplot2 will settle on
+# for x and y. Both come out of one build, because the build is the expensive
+# part and asking twice would pay for it twice.
+#
+# The build runs on a scratch device of the same size: laying out the gtable
+# needs font metrics, and taking them from the real device would draw a page
+# on it as a side effect of `+`.
+slice_text_probe <- function(plot) {
+  probe <- tryCatch({
     old <- grDevices::dev.cur()
     size <- grDevices::dev.size("in")
     grDevices::pdf(NULL, width = size[1], height = size[2])
@@ -184,23 +205,22 @@ panel_width_pt <- function(plot) {
       grDevices::dev.off()
       if (old != 1L) grDevices::dev.set(old)
     }, add = TRUE)
-    gt <- ggplot_gtable(suppressMessages(ggplot_build(plot)))
-    widths <- gt$widths
-    spec <- vapply(seq_along(widths), function(i) as.character(widths[i]),
-                   character(1))
-    # The "null" columns share out whatever the fixed-width ones leave over.
-    flexible <- grepl("null$", spec)
-    panel_cols <- unique(gt$layout$l[grepl("^panel", gt$layout$name)])
-    panel_cols <- panel_cols[flexible[panel_cols]]
-    if (length(panel_cols) == 0) stop("no flexible panel column")
-    fixed_pt <- sum(vapply(which(!flexible), function(i) {
-      grid::convertWidth(widths[i], "pt", valueOnly = TRUE)
-    }, numeric(1)))
-    shares <- as.numeric(sub("null$", "", spec[flexible]))
-    (device_pt - fixed_pt) *
-      as.numeric(sub("null$", "", spec[panel_cols[1]])) / sum(shares)
-  }, error = function(e) NA_real_)
-  if (is.na(measured) || measured <= 20) panel_width_guess(plot) else measured
+    built <- suppressMessages(ggplot_build(plot))
+    list(
+      # A failed layout still leaves the scales usable, so the width falls
+      # back on its own rather than taking the scales down with it.
+      panel_pt = tryCatch(
+        panel_width_from_gtable(ggplot_gtable(built), size[1] * 72),
+        error = function(e) NA_real_
+      ),
+      x = built$layout$panel_scales_x[[1]],
+      y = built$layout$panel_scales_y[[1]]
+    )
+  }, error = function(e) list(panel_pt = NA_real_, x = NULL, y = NULL))
+  if (is.na(probe$panel_pt) || probe$panel_pt <= 20) {
+    probe$panel_pt <- panel_width_guess(plot)
+  }
+  probe
 }
 
 # Blank space to add on the label side, IN MULTIPLES OF THE DATA RANGE — the
@@ -218,14 +238,14 @@ panel_width_pt <- function(plot) {
 # measured against the panel but expressed against the unexpanded data:
 #   panel = range * (1 + base + ex)  =>  ex = frac * (1 + base) / (1 - frac)
 # A 90pt label in a 400pt panel claims frac = 0.225 and returns ex = 0.305.
-x_expand_for_labels <- function(labels, offset_points, plot, base) {
+x_expand_for_labels <- function(labels, offset_points, panel_pt, base) {
   # Only the measured width takes the 3% of metric slop — label_width_pt()
   # measures on a pdf device, and a raster one draws the same string about 2%
   # wider, which would otherwise come out of the gap. The offset and the edge
   # gap are exact point values and need no allowance.
   needed <- abs(offset_points) + label_width_pt(labels) * 1.03 +
     SLICE_TEXT_EDGE_GAP
-  wanted <- needed / panel_width_pt(plot)
+  wanted <- needed / panel_pt
   # Past half the panel the labels cost more than the lines they name are worth,
   # so they clip instead and say so. No number in the message: it would be a
   # device-dependent figure the user can only act on qualitatively.
@@ -240,6 +260,59 @@ x_expand_for_labels <- function(labels, offset_points, plot, base) {
   }
   frac <- min(wanted, 0.5)
   frac * (1 + base) / (1 - frac)
+}
+
+# The expansion already on the side the labels do NOT claim, which they have
+# no business overriding: ggplot2's own 5% unless the user set their own.
+# expansion() returns c(mult_lower, add_lower, mult_upper, add_upper).
+scale_base_expand <- function(scale, side) {
+  ex <- if (is.null(scale)) NULL else scale$expand
+  if (is.null(ex) || inherits(ex, "waiver") || length(ex) < 4) return(0.05)
+  if (side == "lower") ex[1] else ex[3]
+}
+
+# `mult` on a scale, keeping whatever additive expansion it already carried.
+scale_expand_with <- function(scale, mult) {
+  ex <- if (is.null(scale)) NULL else scale$expand
+  add <- if (is.null(ex) || inherits(ex, "waiver") || length(ex) < 4) {
+    c(0, 0)
+  } else {
+    c(ex[2], ex[4])
+  }
+  expansion(mult = mult, add = add)
+}
+
+# Set an expansion WITHOUT replacing the scale the plot already has.
+# `plot + scale_x_continuous(expand = )` looks like the way to do this and is
+# not: it discards the user's limits, breaks, name and transform, turns a Date
+# or log axis into a plain numeric one, and announces itself with ggplot2's
+# "Scale for x is already present" message. So edit the scale in place —
+# cloning first, since ggproto objects are references and the scale may be
+# shared with another plot.
+#
+# A plot that never named a scale has none to edit: its default does not exist
+# until build time. `probe_scale` is the one the probe build settled on, added
+# whole (untrained again, so it takes its range from the real build) — which
+# is what keeps a defaulted Date or log axis intact too.
+set_scale_expand <- function(plot, aesthetic, expand, probe_scale) {
+  if (!is.null(plot$scales$get_scales(aesthetic))) {
+    plot$scales <- plot$scales$clone()
+    scale <- plot$scales$get_scales(aesthetic)
+    scale$expand <- expand
+    return(plot)
+  }
+  added <- tryCatch({
+    scale <- probe_scale$clone()
+    scale$reset()
+    scale$expand <- expand
+    plot + scale
+  }, error = function(e) NULL)
+  if (!is.null(added)) return(added)
+  if (aesthetic == "x") {
+    plot + scale_x_continuous(expand = expand)
+  } else {
+    plot + scale_y_continuous(expand = expand)
+  }
 }
 
 # The variable names the labels describe (for the "labels: x2; x3" corner key).
@@ -463,15 +536,20 @@ ggplot_add.slice_text_spec <- function(object, plot, ...) {
     labels <- unique(unlist(lapply(slice_layers, slice_text_labels,
                                    plot = plot, style = object$style)))
     if (length(labels) > 0) {
-      # ggplot2's own default expansion, kept on the side opposite the labels.
-      base <- 0.05
-      ex <- x_expand_for_labels(labels, offset_points, plot, base)
+      probe <- slice_text_probe(plot)
+      # Whatever is already expanding the side opposite the labels stays put.
+      base <- scale_base_expand(probe$x, if (right) "lower" else "upper")
+      ex <- x_expand_for_labels(labels, offset_points, probe$panel_pt, base)
       mult <- if (right) c(base, ex) else c(ex, base)
-      plot <- plot + scale_x_continuous(expand = expansion(mult = mult))
+      plot <- set_scale_expand(plot, "x", scale_expand_with(probe$x, mult),
+                               probe$x)
       # style = "legend" needs y-headroom too, so the corner key clears the
       # topmost line's label.
       if (object$style == "legend") {
-        plot <- plot + scale_y_continuous(expand = expansion(mult = c(base, 0.1)))
+        y_base <- scale_base_expand(probe$y, "lower")
+        plot <- set_scale_expand(plot, "y",
+                                 scale_expand_with(probe$y, c(y_base, 0.1)),
+                                 probe$y)
       }
     }
   }
@@ -513,7 +591,9 @@ ggplot_add.slice_text_spec <- function(object, plot, ...) {
 #' @param color Label color. Default `NULL` inherits each line's color.
 #' @param expand If `TRUE` (default), widen the x-range on the label side so
 #'   the labels fit (plus y-headroom for the `"legend"` key). `FALSE` leaves
-#'   the scales alone. The room reserved is the widest label's drawn width
+#'   the scales alone. Only the expansion is touched: a `scale_x_*()` you set
+#'   yourself keeps its limits, breaks, name and transform, and an expansion
+#'   you set on the side away from the labels is kept as well. The room reserved is the widest label's drawn width
 #'   measured against the panel's own width, taken from the graphics device
 #'   open when the layer is added; a plot re-sized much narrower afterwards
 #'   may still clip. Labels needing more than half the panel are clipped with

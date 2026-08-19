@@ -35,7 +35,9 @@ disables the automatic offset entirely.}
 
 \item{expand}{If \code{TRUE} (default), widen the x-range on the label side so
 the labels fit (plus y-headroom for the \code{"legend"} key). \code{FALSE} leaves
-the scales alone. The room reserved is the widest label's drawn width
+the scales alone. Only the expansion is touched: a \verb{scale_x_*()} you set
+yourself keeps its limits, breaks, name and transform, and an expansion
+you set on the side away from the labels is kept as well. The room reserved is the widest label's drawn width
 measured against the panel's own width, taken from the graphics device
 open when the layer is added; a plot re-sized much narrower afterwards
 may still clip. Labels needing more than half the panel are clipped with
