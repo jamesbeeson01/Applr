@@ -1,0 +1,2 @@
+Warning: geom_slice_text() cannot fit its labels: they need more than half the width of the panel, which is given over to the data instead, so the widest labels are clipped.
+    Draw the plot wider, or shorten the labels with 'style = "value"' or 'style = "legend"'. 

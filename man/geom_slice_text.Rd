@@ -35,10 +35,11 @@ disables the automatic offset entirely.}
 
 \item{expand}{If \code{TRUE} (default), widen the x-range on the label side so
 the labels fit (plus y-headroom for the \code{"legend"} key). \code{FALSE} leaves
-the scales alone. The room reserved is measured from the widest label's
-drawn width and the size of the graphics device open when the layer is
-added, so it errs on the generous side; a plot re-sized much narrower
-afterwards may still clip.}
+the scales alone. The room reserved is the widest label's drawn width
+measured against the panel's own width, taken from the graphics device
+open when the layer is added; a plot re-sized much narrower afterwards
+may still clip. Labels needing more than half the panel are clipped with
+a warning rather than crowding out the data.}
 }
 \value{
 An object that adds the label layers when added to a ggplot.
@@ -56,12 +57,6 @@ describe the \code{predict_vars} values (\code{"x2: 0"}, joined with \code{"; "}
 several variables are crossed); when the slice layer has no \code{predict_vars},
 labels describe the grouping aesthetic instead (\code{"g: A"}). Each label
 inherits its line's color.
-
-A \code{geom_slice(band = )} layer is labeled on its two \strong{edges} rather than as
-a whole: one label per edge, naming the banded variable's value that
-produced it (so the low value is not always on the lower edge — an
-increasing band and a decreasing one are labeled correctly). This takes
-precedence over the grouping aesthetic, which the legend already covers.
 }
 \examples{
 library(ggplot2)

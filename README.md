@@ -399,7 +399,11 @@ ggplot(dat, aes(x, y)) +
   geom_point(alpha = 0.5) +
   geom_slice(model, predict_vars = list(x2 = c(0, 2, 4), g = c("A", "B"))) +
   geom_slice_text()
+```
 
+<img src="man/figures/README-slice-text-multiple-1.png" alt="geom_slice_text plots labels with multiple predictors"  />
+
+``` r
 # Identical, with `style = "legend"`
 ggplot(dat, aes(x, y)) +
   geom_point(alpha = 0.5) +
@@ -407,7 +411,7 @@ ggplot(dat, aes(x, y)) +
   geom_slice_text(style = "legend")
 ```
 
-<img src="man/figures/README-slice-text-multiple-1.png" alt="geom_slice_text plots different styles of labels" width="49%" /><img src="man/figures/README-slice-text-multiple-2.png" alt="geom_slice_text plots different styles of labels" width="49%" />
+<img src="man/figures/README-slice-text-legend-1.png" alt="geom_slice_text labels multiple predictors with the 'legend' style"  />
 
 Options: `style` (`"variable"` writes `"hp: 66"`, `"value"` writes bare
 values, `"legend"` adds a corner key), `location = "left"`/`"right"`,

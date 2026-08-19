@@ -21,6 +21,9 @@
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
+# Padding between the outer-most label edge and the panel edge. Distinct
+# from `offset`, which is the gap between the line end and the text.
+SLICE_TEXT_EDGE_GAP <- 8
 
 # Format one held value for a label: bare numbers, bare strings (no quotes).
 label_value <- function(value) {
@@ -148,15 +151,95 @@ facet_col_count <- function(plot) {
   }, error = function(e) 1L)
 }
 
-# A pessimistic guess at the drawn width of one panel, in POINTS, from the
-# device open at add time (the drawing device in every workflow that opens one
-# first: the RStudio pane, a png()/pdf() script, a knitr chunk; 7x7 in when
-# there is none). The allowance covers the axis, its title, the plot margins
-# and a right-hand legend, and errs high — over-reserving only costs white
-# space, under-reserving clips.
-panel_width_pt <- function(plot) {
+# Last-resort guess at the drawn width of one panel, in POINTS, used only when
+# the measurement below fails. A fixed allowance can suit only one kind of
+# plot: the true chrome is about 25pt with no legend and about 190pt with a
+# wide one, so 140 sits between them and is wrong either way.
+panel_width_guess <- function(plot) {
   device_pt <- grDevices::dev.size("in")[1] * 72
   max((device_pt - 140) / facet_col_count(plot), 100)
+}
+
+# The drawn width of one panel, in POINTS. The expansion below reserves a
+# *fraction* of the panel, so an error here is multiplicative: guessing the
+# panel a third too small reserves half again as much space as the labels
+# need, and that dead band on the right grows with the label width.
+#
+# So measure rather than guess: build the plot as it stands and read the panel
+# column's real width out of the gtable, which accounts for the axis, its
+# title, the margins, a legend of whatever width, and facet columns alike. The
+# device open at add time still sets the overall size — nothing can know the
+# size of a device the plot has not reached yet — but everything inside it is
+# now known instead of assumed.
+panel_width_pt <- function(plot) {
+  measured <- tryCatch({
+    device_pt <- grDevices::dev.size("in")[1] * 72
+    # Build on a scratch device of the same size: laying out the gtable needs
+    # font metrics, and taking them from the real device would draw a page on
+    # it as a side effect of `+`.
+    old <- grDevices::dev.cur()
+    size <- grDevices::dev.size("in")
+    grDevices::pdf(NULL, width = size[1], height = size[2])
+    on.exit({
+      grDevices::dev.off()
+      if (old != 1L) grDevices::dev.set(old)
+    }, add = TRUE)
+    gt <- ggplot_gtable(suppressMessages(ggplot_build(plot)))
+    widths <- gt$widths
+    spec <- vapply(seq_along(widths), function(i) as.character(widths[i]),
+                   character(1))
+    # The "null" columns share out whatever the fixed-width ones leave over.
+    flexible <- grepl("null$", spec)
+    panel_cols <- unique(gt$layout$l[grepl("^panel", gt$layout$name)])
+    panel_cols <- panel_cols[flexible[panel_cols]]
+    if (length(panel_cols) == 0) stop("no flexible panel column")
+    fixed_pt <- sum(vapply(which(!flexible), function(i) {
+      grid::convertWidth(widths[i], "pt", valueOnly = TRUE)
+    }, numeric(1)))
+    shares <- as.numeric(sub("null$", "", spec[flexible]))
+    (device_pt - fixed_pt) *
+      as.numeric(sub("null$", "", spec[panel_cols[1]])) / sum(shares)
+  }, error = function(e) NA_real_)
+  if (is.na(measured) || measured <= 20) panel_width_guess(plot) else measured
+}
+
+# Blank space to add on the label side, IN MULTIPLES OF THE DATA RANGE — the
+# unit expansion(mult = ) takes, so 0.3 widens an x running 0-10 by 3 units.
+#
+# The label hangs off the line end by a fixed number of POINTS, so what it
+# costs is a width on the device, not a span of the data:
+#
+#   ----line----| offset | Sepal.Width: 4.4 | edge gap || panel edge
+#                 (5pt)         (81pt)          (8pt)
+#
+# Converting the one to the other is this function's whole job. The points
+# first become `frac`, the share of the drawn panel they claim; `frac` then
+# becomes a multiple of the range, which is larger, because the space is
+# measured against the panel but expressed against the unexpanded data:
+#   panel = range * (1 + base + ex)  =>  ex = frac * (1 + base) / (1 - frac)
+# A 90pt label in a 400pt panel claims frac = 0.225 and returns ex = 0.305.
+x_expand_for_labels <- function(labels, offset_points, plot, base) {
+  # Only the measured width takes the 3% of metric slop — label_width_pt()
+  # measures on a pdf device, and a raster one draws the same string about 2%
+  # wider, which would otherwise come out of the gap. The offset and the edge
+  # gap are exact point values and need no allowance.
+  needed <- abs(offset_points) + label_width_pt(labels) * 1.03 +
+    SLICE_TEXT_EDGE_GAP
+  wanted <- needed / panel_width_pt(plot)
+  # Past half the panel the labels cost more than the lines they name are worth,
+  # so they clip instead and say so. No number in the message: it would be a
+  # device-dependent figure the user can only act on qualitatively.
+  if (wanted > 0.5) {
+    slice_warn(
+      what = paste0("geom_slice_text() cannot fit its labels: they need ",
+                    "more than half the width of the panel, which is ",
+                    "given over to the data instead, so the widest ",
+                    "labels are clipped."),
+      hint = "Draw the plot wider, or shorten the labels with 'style = \"value\"' or 'style = \"legend\"'."
+    )
+  }
+  frac <- min(wanted, 0.5)
+  frac * (1 + base) / (1 - frac)
 }
 
 # The variable names the labels describe (for the "labels: x2; x3" corner key).
@@ -375,25 +458,20 @@ ggplot_add.slice_text_spec <- function(object, plot, ...) {
   }
 
   # The geom manages its own margin: widen the x-range on the label side,
-  # enough for the widest label; style = "legend" also adds y-headroom so the
-  # corner key clears the topmost line's label.
+  # enough for the widest label.
   if (isTRUE(object$expand)) {
     labels <- unique(unlist(lapply(slice_layers, slice_text_labels,
                                    plot = plot, style = object$style)))
     if (length(labels) > 0) {
-      # The labels need a fixed number of points: the widest one, the
-      # draw-time offset (which never trains the x-scale), and a gap.
-      needed <- label_width_pt(labels) + abs(offset_points) + 4
-      # `frac` is the share of the panel they claim, `ex` the same space as a
-      # multiple of the data range, which is what expansion() takes:
-      # panel = range * (1 + 0.05 + ex). The cap keeps a huge label on a tiny
-      # device from erasing the data.
-      frac <- min(needed / panel_width_pt(plot), 0.4)
-      ex <- frac * 1.05 / (1 - frac)
-      mult <- if (right) c(0.05, ex) else c(ex, 0.05)
+      # ggplot2's own default expansion, kept on the side opposite the labels.
+      base <- 0.05
+      ex <- x_expand_for_labels(labels, offset_points, plot, base)
+      mult <- if (right) c(base, ex) else c(ex, base)
       plot <- plot + scale_x_continuous(expand = expansion(mult = mult))
+      # style = "legend" needs y-headroom too, so the corner key clears the
+      # topmost line's label.
       if (object$style == "legend") {
-        plot <- plot + scale_y_continuous(expand = expansion(mult = c(0.05, 0.1)))
+        plot <- plot + scale_y_continuous(expand = expansion(mult = c(base, 0.1)))
       }
     }
   }
@@ -435,10 +513,11 @@ ggplot_add.slice_text_spec <- function(object, plot, ...) {
 #' @param color Label color. Default `NULL` inherits each line's color.
 #' @param expand If `TRUE` (default), widen the x-range on the label side so
 #'   the labels fit (plus y-headroom for the `"legend"` key). `FALSE` leaves
-#'   the scales alone. The room reserved is measured from the widest label's
-#'   drawn width and the size of the graphics device open when the layer is
-#'   added, so it errs on the generous side; a plot re-sized much narrower
-#'   afterwards may still clip.
+#'   the scales alone. The room reserved is the widest label's drawn width
+#'   measured against the panel's own width, taken from the graphics device
+#'   open when the layer is added; a plot re-sized much narrower afterwards
+#'   may still clip. Labels needing more than half the panel are clipped with
+#'   a warning rather than crowding out the data.
 #'
 #' @returns An object that adds the label layers when added to a ggplot.
 #'

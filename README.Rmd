@@ -332,7 +332,7 @@ ggplot(dat, aes(x, y, color = g)) +
   geom_slice_text()
 ```
 
-```{r slice-text-multiple, fig.show = "hold", out.width = "49%", fig.width = 4, fig.height = 3.2, fig.alt = "geom_slice_text plots labels with multiple predictors"}
+```{r slice-text-multiple, fig.width = 7.5, fig.alt = "geom_slice_text plots labels with multiple predictors"}
 # Multiple predictors represent one line
 ggplot(dat, aes(x, y)) +
   geom_point(alpha = 0.5) +
@@ -340,7 +340,7 @@ ggplot(dat, aes(x, y)) +
   geom_slice_text()
 ```
 
-```{r, slice-text-legend, fig.alt = "geom_slice_text labels multiple predictors with the 'legend' style"}
+```{r slice-text-legend, fig.width = 7.5, fig.alt = "geom_slice_text labels multiple predictors with the 'legend' style"}
 # Identical, with `style = "legend"`
 ggplot(dat, aes(x, y)) +
   geom_point(alpha = 0.5) +

@@ -12,27 +12,20 @@ date: "2026-07-11"
 - [ ] Fix remaining errors in `known_issues.Rmd`
 - [ ] Simplify context in CLAUDE.md - move to either skill or tests/README.md
 - [ ] Refactor test suite following `for_devs/testing_revisions.md`
+- [ ] Consider a refactor that moves shared logic across all plotting functions to a common location
+  - [ ] This in connection with sliders, animations, and improved scatter_3d
+- [ ] Fix folder generation on render
 
 ## README 
 
-- [x] Improve models - the models used are super unimpressive because they don't fit the data very well 
-  - [x] Edit first two geom_slice
-- [x] Readability for band (using geom_slice_text)
-- [ ] Show off the labeling functions
-- [ ] Fix folder generation on render
-- [x] Display grouping plots next to each other
-- [ ] Put messages/warnings where they belong
-- [x] Add ^2 to autoplot 3d
-
-## All
-
-- [ ] Consider a refactor that moves shared logic across all plotting functions to a common location
-  - [ ] This in connection with sliders, animations, and improved scatter_3d
+- [ ] Re-render after geom_slice_text fix
 
 ## geom_slice_text
 
-- [x] Label top and bottom of bands (not color)
-- [ ] Scale margin with plot width (shown with `lm(Sepal.Length ~ Sepal.Width + Petal.Length, iris)`)
+- [x] Scale margin with plot width (shown with `lm(Sepal.Length ~ Sepal.Width + Petal.Length, iris)`) - the panel width is now measured from the built gtable instead of guessed as `device - 140pt`, so the reserve no longer overshoots by up to 50% at common widths; labels needing over half the panel clip with a warning
+- [ ] Auto-switch to `style = "legend"` when sizing cap is met
+- [ ] Consider reading ggplot expansion rather than defining it (`base <- 0.05`) - my main concern is that formatting adjustments outside the function will break the padding
+- [ ] Consider matching padding (SLICE_TEXT_EDGE_GAP) to ggplot expansion
 
 ## geom_slice_subtitle
 
@@ -40,20 +33,11 @@ date: "2026-07-11"
 
 ## autoplot
 
-- [x] `mapping =` resolves against the model's full data, not just the formula
-  variables, so `autoplot(lm(mpg ~ log(disp), mtcars), mapping = aes(color = cyl))`
-  works (used to error with `cyl` not found) — case ap_14
-- [x] Move `...` to the last argument so `mapping` is second and positional
-  (`autoplot(model, aes(...))`), matching convention
-- [x] Remove the `x_axis`/`xaxis` arguments entirely (redundant with
-  `mapping = aes(x = ...)`, never used in production for autoplot/geom_slice).
-  `slice_2d` keeps its `x_axis` (and `xaxis` deprecation alias).
 - [ ] Route to scatter_3d automatically when two continuous variables.
 - [ ] `type = "model_x"` plots the rhs as the x axis
 
 ## lm_equation/lm_latex
 
-- [x] Change "clearer" to "prettier"; default to TRUE.
 - [ ] Remove "I()" when prettier=TRUE
 - [ ] Add "threshold" or "round" that sets very small numbers to 0; has a default, but can be specified or set to FALSE
 - [ ] Can this display in a report without copy/paste?
@@ -161,3 +145,20 @@ date: "2026-07-11"
 - [x] scatter_3d breaks on models with I() terms — DONE 2026-07-12 (axes now read from `all.vars(formula)` + `slice_model_frame()` for the raw predictors, not `model$model`'s columns, so transformed terms like `I(wt^2)` graph over their raw variables; predict() failures are caught with a `slice_abort`).
 - [x] scatter_3d's colors argument appears ineffective in practice — DONE 2026-07-12 (`add_markers(color = ~z, colors = colors)` now maps the response to the gradient so it shows).
 - [x] scatter_3d builds its plotly call via eval(parse(text = ...))) — DONE 2026-07-12 (rewritten with a safe-named `~x/~y/~z` frame and direct plotly calls; no `eval(parse())`, no unusual-name fragility).
+- [x] Improve models - the models used are super unimpressive because they don't fit the data very well 
+  - [x] Edit first two geom_slice
+- [x] Readability for band (using geom_slice_text)
+- [x] Show off the labeling functions
+- [x] Display grouping plots next to each other
+- [x] Put messages/warnings where they belong
+- [x] Add ^2 to autoplot 3d
+- [x] Change "clearer" to "prettier"; default to TRUE.
+- [x] `mapping =` resolves against the model's full data, not just the formula
+  variables, so `autoplot(lm(mpg ~ log(disp), mtcars), mapping = aes(color = cyl))`
+  works (used to error with `cyl` not found) — case ap_14
+- [x] Move `...` to the last argument so `mapping` is second and positional
+  (`autoplot(model, aes(...))`), matching convention
+- [x] Remove the `x_axis`/`xaxis` arguments entirely (redundant with
+  `mapping = aes(x = ...)`, never used in production for autoplot/geom_slice).
+  `slice_2d` keeps its `x_axis` (and `xaxis` deprecation alias).
+- [x] Label top and bottom of bands (not color)
