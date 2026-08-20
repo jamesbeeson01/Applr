@@ -426,9 +426,9 @@ legend, facets, or `geom_slice_text()` are skipped:
 ``` r
 model <- lm(Petal.Length ~ Sepal.Length + I(Sepal.Length^2):Species + Sepal.Width, iris)
 
-ggplot(iris, aes(Sepal.Length, Petal.Length)) +
+ggplot(iris, aes(Sepal.Length, Petal.Length, color = Species)) +
   geom_point() +
-  geom_slice(model) +
+  geom_slice(model, interval = "confidence") +
   geom_slice_subtitle()   # or geom_slice_caption()
 ```
 
