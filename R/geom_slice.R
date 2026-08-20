@@ -839,9 +839,9 @@ StatSlice <- ggproto(
                            slice_spec = NULL, na.rm = FALSE) {
     compute_slice_group(data, scales, slice_spec, n, interval, full_range)
   }
-)
+  )
 
-#' GeomSlice
+#'GeomSlice
 #'
 #' The geom behind [geom_slice()]: [ggplot2::GeomSmooth] with slice-flavored
 #' default aesthetics. Like `geom_smooth()`, it draws a line plus — when the
@@ -851,7 +851,7 @@ StatSlice <- ggproto(
 #'
 #' @format An object of class \code{ggproto}, inheriting from \code{GeomSmooth}.
 #'
-#' @export
+#'@export
 GeomSlice <- ggproto(
   "GeomSlice",
   GeomSmooth,
