@@ -14,15 +14,10 @@ date: "2026-07-11"
 - [ ] Refactor test suite following `for_devs/testing_revisions.md`
 - [ ] Consider a refactor that moves shared logic across all plotting functions to a common location
   - [ ] This in connection with sliders, animations, and improved scatter_3d
-- [ ] Fix folder generation on render
-
-## README 
-
-- [ ] Re-render after geom_slice_text fix
+- [ ] Fix folder generation on render README.Rmd
 
 ## geom_slice_text
 
-- [x] Scale margin with plot width (shown with `lm(Sepal.Length ~ Sepal.Width + Petal.Length, iris)`) - the panel width is now measured from the built gtable instead of guessed as `device - 140pt`, so the reserve no longer overshoots by up to 50% at common widths; labels needing over half the panel clip with a warning
 - [ ] Auto-switch to `style = "legend"` when sizing cap is met
 - [ ] Consider reading ggplot expansion rather than defining it (`base <- 0.05`) - my main concern is that formatting adjustments outside the function will break the padding
 - [ ] Consider matching padding (SLICE_TEXT_EDGE_GAP) to ggplot expansion
@@ -34,7 +29,8 @@ date: "2026-07-11"
 ## autoplot
 
 - [ ] Route to scatter_3d automatically when two continuous variables.
-- [ ] `type = "model_x"` plots the rhs as the x axis
+- [ ] Add a residual comparison plot (`ggbivariate` as inspiration).
+- [ ] Should autoplot change plot types (ggplot, plotly, etc) automatically? Or give a message suggesting the change? Maybe it shouldn't have different types at all... What does the user expect? Where does it bite?
 
 ## lm_equation/lm_latex
 
@@ -162,3 +158,5 @@ date: "2026-07-11"
   `mapping = aes(x = ...)`, never used in production for autoplot/geom_slice).
   `slice_2d` keeps its `x_axis` (and `xaxis` deprecation alias).
 - [x] Label top and bottom of bands (not color)
+- [x] Scale geom_slice_text margin with plot width (shown with `lm(Sepal.Length ~ Sepal.Width + Petal.Length, iris)`) - the panel width is now measured from the built gtable instead of guessed as `device - 140pt`, so the reserve no longer overshoots by up to 50% at common widths; labels needing over half the panel clip with a warning
+- [x] Re-render README after geom_slice_text fix
