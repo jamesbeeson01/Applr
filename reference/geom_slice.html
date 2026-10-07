@@ -68,9 +68,7 @@ model you are looking at:</p>
 <span>  band <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  full_range <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  <span class="va">...</span>,</span>
-<span>  fullrange <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  x_axis <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  xaxis <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  fullrange <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -110,7 +108,8 @@ one-argument function (e.g. <code>exp</code>) or a name (<code>"log"</code>, <co
 <dt id="arg-interval">interval<a class="anchor" aria-label="anchor" href="#arg-interval"></a></dt>
 <dd><p>Draw a ribbon around the line: <code>"none"</code> (default), or
 <code>"confidence"</code> / <code>"prediction"</code> for the corresponding <code><a href="https://rdrr.io/r/stats/predict.lm.html" class="external-link">predict.lm()</a></code>
-interval. Cannot be combined with <code>band</code>.</p></dd>
+interval. The ribbon follows its line's color unless you set <code>fill</code>.
+Cannot be combined with <code>band</code>.</p></dd>
 
 
 <dt id="arg-band">band<a class="anchor" aria-label="anchor" href="#arg-band"></a></dt>
@@ -136,12 +135,6 @@ are made at the data points, so the lines keep their data extent.</p></dd>
 <dd><p>Other arguments passed to the layer, such as fixed aesthetics
 (<code>color = "red"</code>, <code>linewidth = 1.2</code>).</p></dd>
 
-
-<dt id="arg-x-axis-xaxis">x_axis, xaxis<a class="anchor" aria-label="anchor" href="#arg-x-axis-xaxis"></a></dt>
-<dd><p>Not arguments of <code>geom_slice()</code> — the x-axis comes from
-the plot's <code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code>. Included only to give a helpful error to <code><a href="slice_2d.html">slice_2d()</a></code>
-users who try them here.</p></dd>
-
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -152,7 +145,8 @@ users who try them here.</p></dd>
 
 <ul><li><p>Variables named in <code>predict_vars</code> are held at your chosen values.</p></li>
 <li><p>Variables mapped to a grouping aesthetic (e.g. <code>aes(color = g)</code>) are
-pinned to each group's own value — one line per group.</p></li>
+pinned to each group's own value — one line per group. Any <code>interval</code> or
+<code>band</code> ribbon is drawn in its own line's color.</p></li>
 <li><p>Facet variables are pinned to each panel's value.</p></li>
 <li><p>Anything left over is <em>imputed</em> (mean for numeric, most common value for
 factor/character), with a console message naming the value used.</p></li>

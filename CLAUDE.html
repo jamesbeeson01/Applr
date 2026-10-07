@@ -35,6 +35,7 @@
 
 <div id="claudemd--developer-guide-for-claude-code" class="section level1">
 
+<p>When you write code comments, make sure they stand in context of the whole file and aren’t overly verbose - they let the code speak for itself.</p>
 <div class="section level2">
 <h2 id="running-tests">Running Tests<a class="anchor" aria-label="anchor" href="#running-tests"></a></h2>
 <p>The test suite lives in <code>tests/</code> — full docs in <code>tests/README.md</code>. One case = one <code>.R</code> file in <code>tests/cases/</code>; the terminal runner and the human HTML report (<code>tests/report.Rmd</code>) both execute those same files.</p>
@@ -42,6 +43,8 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">Rscript</span> tests/run.R            <span class="co"># all cases</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="ex">Rscript</span> tests/run.R gs_14      <span class="co"># one case (prefix is enough)</span></span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="ex">Rscript</span> tests/run.R gs         <span class="co"># all geom_slice cases</span></span></code></pre></div>
+<p>Rarely run all cases; only run cases where edited code touches (and downstream if relevant).</p>
+<p>Always run <code>Rscript -e "rmarkdown::render('tests/report.Rmd')"</code> at the end of your testing, for human review of your work</p>
 <ul><li>
 <strong>Visual cases</strong> (e.g. <code>gs_*</code>) save <code>tests/output/&lt;id&gt;.png</code>. Any console output they emit is also captured to <code>tests/output/&lt;id&gt;.txt</code> and diffed against <code>tests/expected/&lt;id&gt;.txt</code>; with no snapshot, the case must be silent.</li>
 <li>

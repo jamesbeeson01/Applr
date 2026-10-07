@@ -7,7 +7,8 @@ with slice-flavored default aesthetics. Like
 [`geom_smooth()`](https://ggplot2.tidyverse.org/reference/geom_smooth.html),
 it draws a line plus — when the stat supplies `ymin`/`ymax` (i.e.
 `interval = "confidence"` or `"prediction"`) — a ribbon; `alpha` styles
-the ribbon, not the line.
+the ribbon, not the line. The ribbon follows its line's colour unless
+`fill` is set explicitly.
 
 ## Usage
 

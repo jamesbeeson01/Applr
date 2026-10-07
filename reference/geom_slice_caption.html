@@ -55,7 +55,7 @@ or <code><a href="geom_slice_text.html">geom_slice_text()</a></code> already lab
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">geom_slice_caption</span><span class="op">(</span>model <span class="op">=</span> <span class="cn">TRUE</span>, prepend <span class="op">=</span> <span class="st">""</span>, append <span class="op">=</span> <span class="st">""</span>, format <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">geom_slice_caption</span><span class="op">(</span>model <span class="op">=</span> <span class="cn">TRUE</span>, prepend <span class="op">=</span> <span class="st">""</span>, append <span class="op">=</span> <span class="st">""</span>, <span class="va">...</span>, wrap <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -72,11 +72,32 @@ equation; <code>FALSE</code> drops it, leaving only the held-values line.</p></d
 the last line of the default subtitle.</p></dd>
 
 
-<dt id="arg-format">format<a class="anchor" aria-label="anchor" href="#arg-format"></a></dt>
-<dd><p>A function of <code>(equation, values)</code> — the ready-made equation
-string and the named list of unlabeled held values — returning the whole
-subtitle. When given, it fully replaces the default layout (<code>model</code>,
-<code>prepend</code>, and <code>append</code> are ignored).</p></dd>
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>Passed to <code><a href="lm_equation.html">lm_equation()</a></code> when the equation is written, under
+its own argument names — chiefly <code>style</code>, which controls how factor terms
+are labelled.</p>
+<p>Left unset, <code>style</code> is chosen to fit: with <code>wrap</code> on, the equation is
+tried spelled out (<code>4.09*(Species="setosa")</code>) and briefly
+(<code>4.09*[setosa]</code>), each with and without the hanging indent, preferring
+the spelled-out form and giving up the indent last. The first that fits
+wins, and a message says so if the brief form did. Because the indent
+goes last, a narrower plot can bring the full names <em>back</em>. The brief
+form is never offered when two terms would shorten to the same label — a
+bare <code>[High]</code> from two different factors no longer says which it meant.</p>
+<p>Naming <code>style</code> yourself pins it and switches all of that off. Pin it (or
+give <code>wrap</code> a width) when the annotation must come out the same whatever
+size device it is drawn on.</p></dd>
+
+
+<dt id="arg-wrap">wrap<a class="anchor" aria-label="anchor" href="#arg-wrap"></a></dt>
+<dd><p>Controls wrapping of lines too long to fit. <code>TRUE</code> (default)
+measures how much room the subtitle has in this plot on the current
+graphics device and breaks long lines to fit, between terms only, with
+continuation lines hanging under the right-hand side of the equal sign.
+<code>FALSE</code> leaves the text as one line per item, however far it runs off the
+plot. A number is a width in inches to wrap to instead of measuring —
+useful when the plot will be drawn at a size other than the current
+device, as with <code>ggsave(width = )</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

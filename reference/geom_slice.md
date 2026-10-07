@@ -24,9 +24,7 @@ geom_slice(
   band = FALSE,
   full_range = FALSE,
   ...,
-  fullrange = NULL,
-  x_axis = NULL,
-  xaxis = NULL
+  fullrange = NULL
 )
 ```
 
@@ -67,7 +65,8 @@ geom_slice(
   Draw a ribbon around the line: `"none"` (default), or `"confidence"` /
   `"prediction"` for the corresponding
   [`predict.lm()`](https://rdrr.io/r/stats/predict.lm.html) interval.
-  Cannot be combined with `band`.
+  The ribbon follows its line's color unless you set `fill`. Cannot be
+  combined with `band`.
 
 - band:
 
@@ -94,14 +93,6 @@ geom_slice(
   Other arguments passed to the layer, such as fixed aesthetics
   (`color = "red"`, `linewidth = 1.2`).
 
-- x_axis, xaxis:
-
-  Not arguments of `geom_slice()` — the x-axis comes from the plot's
-  [`aes()`](https://ggplot2.tidyverse.org/reference/aes.html). Included
-  only to give a helpful error to
-  [`slice_2d()`](https://saundersg.github.io/Applr/reference/slice_2d.md)
-  users who try them here.
-
 ## Value
 
 A ggplot2 layer that draws the slice.
@@ -111,7 +102,8 @@ A ggplot2 layer that draws the slice.
 - Variables named in `predict_vars` are held at your chosen values.
 
 - Variables mapped to a grouping aesthetic (e.g. `aes(color = g)`) are
-  pinned to each group's own value — one line per group.
+  pinned to each group's own value — one line per group. Any `interval`
+  or `band` ribbon is drawn in its own line's color.
 
 - Facet variables are pinned to each panel's value.
 

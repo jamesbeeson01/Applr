@@ -31,12 +31,31 @@ lm_equation(model)
 [`autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html) is
 the quickest way to see it. It rebuilds the scatterplot from the model’s
 own data, picks the first numeric predictor for the x-axis, and adds a
-slice line — with a subtitle recording which values the other predictors
-were held at:
+slice line with its confidence ribbon — plus a subtitle recording which
+values the other predictors were held at:
 
 ``` r
 
 autoplot(model)
+#> 
+#> Call:
+#> lm(formula = mpg ~ disp + hp, data = mtcars)
+#> 
+#> Residuals:
+#>     Min      1Q  Median      3Q     Max 
+#> -4.7945 -2.3036 -0.8246  1.8582  6.9363 
+#> 
+#> Coefficients:
+#>              Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept) 30.735904   1.331566  23.083  < 2e-16 ***
+#> disp        -0.030346   0.007405  -4.098 0.000306 ***
+#> hp          -0.024840   0.013385  -1.856 0.073679 .  
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 3.127 on 29 degrees of freedom
+#> Multiple R-squared:  0.7482, Adjusted R-squared:  0.7309 
+#> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09
 #> Value for `hp` not specified - Used mean: 146.7
 #>     To choose a slice, use 'predict_vars = list(hp = 146.7)'.
 ```
@@ -44,14 +63,33 @@ autoplot(model)
 ![](Applr_files/figure-html/unnamed-chunk-3-1.png)
 
 The message tells you what happened: `hp` was not on an axis, so the
-line holds it at its mean. Use `x_axis` to slice along a different
-predictor, and pass any
+line holds it at its mean. Use `mapping = aes(x = ...)` to slice along a
+different predictor, and pass any
 [`geom_slice()`](https://saundersg.github.io/Applr/reference/geom_slice.md)
 argument through `...`:
 
 ``` r
 
-autoplot(model, x_axis = "hp", interval = "confidence")
+autoplot(model, mapping = aes(x = hp), interval = "prediction")
+#> 
+#> Call:
+#> lm(formula = mpg ~ disp + hp, data = mtcars)
+#> 
+#> Residuals:
+#>     Min      1Q  Median      3Q     Max 
+#> -4.7945 -2.3036 -0.8246  1.8582  6.9363 
+#> 
+#> Coefficients:
+#>              Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept) 30.735904   1.331566  23.083  < 2e-16 ***
+#> disp        -0.030346   0.007405  -4.098 0.000306 ***
+#> hp          -0.024840   0.013385  -1.856 0.073679 .  
+#> ---
+#> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#> 
+#> Residual standard error: 3.127 on 29 degrees of freedom
+#> Multiple R-squared:  0.7482, Adjusted R-squared:  0.7309 
+#> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09
 #> Value for `disp` not specified - Used mean: 230.7
 #>     To choose a slice, use 'predict_vars = list(disp = 230.7)'.
 ```

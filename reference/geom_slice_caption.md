@@ -14,7 +14,7 @@ see its documentation for the details.
 ## Usage
 
 ``` r
-geom_slice_caption(model = TRUE, prepend = "", append = "", format = NULL)
+geom_slice_caption(model = TRUE, prepend = "", append = "", ..., wrap = TRUE)
 ```
 
 ## Arguments
@@ -29,12 +29,37 @@ geom_slice_caption(model = TRUE, prepend = "", append = "", format = NULL)
   Plain strings pasted before the first line and after the last line of
   the default subtitle.
 
-- format:
+- ...:
 
-  A function of `(equation, values)` — the ready-made equation string
-  and the named list of unlabeled held values — returning the whole
-  subtitle. When given, it fully replaces the default layout (`model`,
-  `prepend`, and `append` are ignored).
+  Passed to
+  [`lm_equation()`](https://saundersg.github.io/Applr/reference/lm_equation.md)
+  when the equation is written, under its own argument names — chiefly
+  `style`, which controls how factor terms are labelled.
+
+  Left unset, `style` is chosen to fit: with `wrap` on, the equation is
+  tried spelled out (`4.09*(Species="setosa")`) and briefly
+  (`4.09*[setosa]`), each with and without the hanging indent,
+  preferring the spelled-out form and giving up the indent last. The
+  first that fits wins, and a message says so if the brief form did.
+  Because the indent goes last, a narrower plot can bring the full names
+  *back*. The brief form is never offered when two terms would shorten
+  to the same label — a bare `[High]` from two different factors no
+  longer says which it meant.
+
+  Naming `style` yourself pins it and switches all of that off. Pin it
+  (or give `wrap` a width) when the annotation must come out the same
+  whatever size device it is drawn on.
+
+- wrap:
+
+  Controls wrapping of lines too long to fit. `TRUE` (default) measures
+  how much room the subtitle has in this plot on the current graphics
+  device and breaks long lines to fit, between terms only, with
+  continuation lines hanging under the right-hand side of the equal
+  sign. `FALSE` leaves the text as one line per item, however far it
+  runs off the plot. A number is a width in inches to wrap to instead of
+  measuring — useful when the plot will be drawn at a size other than
+  the current device, as with `ggsave(width = )`.
 
 ## Value
 

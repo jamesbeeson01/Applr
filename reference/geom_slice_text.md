@@ -54,7 +54,14 @@ geom_slice_text(
 
   If `TRUE` (default), widen the x-range on the label side so the labels
   fit (plus y-headroom for the `"legend"` key). `FALSE` leaves the
-  scales alone.
+  scales alone. Only the expansion is touched: a `scale_x_*()` you set
+  yourself keeps its limits, breaks, name and transform, and an
+  expansion you set on the side away from the labels is kept as well.
+  The room reserved is the widest label's drawn width measured against
+  the panel's own width, taken from the graphics device open when the
+  layer is added; a plot re-sized much narrower afterwards may still
+  clip. Labels needing more than half the panel are clipped with a
+  warning rather than crowding out the data.
 
 ## Value
 
@@ -91,5 +98,14 @@ ggplot(mtcars, aes(disp, mpg)) +
   geom_point() +
   geom_slice(model, predict_vars = list(hp = c(66, 335))) +
   geom_slice_text()
+
+
+# A projection band, labeled on each edge
+ggplot(mtcars, aes(disp, mpg)) +
+  geom_point() +
+  geom_slice(model, band = TRUE) +
+  geom_slice_text()
+#> Band range for `hp` not specified - used the min/max data range: 52 to 335.
+#>     To choose the range, use 'predict_vars = list(hp = c(52, 335))'.
 
 ```

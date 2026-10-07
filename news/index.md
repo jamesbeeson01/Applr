@@ -21,9 +21,10 @@ deprecation cycle.
   labels.
 - [`autoplot()`](https://ggplot2.tidyverse.org/reference/autoplot.html)
   method for `lm` objects — scatter +
-  [`geom_slice()`](https://saundersg.github.io/Applr/reference/geom_slice.md) +
-  [`theme_lc()`](https://saundersg.github.io/Applr/reference/theme_lc.md)
-  in one call.
+  `geom_slice(..., interval = "confidence")` +
+  [`geom_slice_subtitle()`](https://saundersg.github.io/Applr/reference/geom_slice_subtitle.md)
+  in one call, with model summary printed to console for easy
+  exploration and iteration.
 - [`lm_equation()`](https://saundersg.github.io/Applr/reference/lm_equation.md)
   /
   [`lm_latex()`](https://saundersg.github.io/Applr/reference/lm_latex.md)
