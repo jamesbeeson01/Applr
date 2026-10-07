@@ -1,13 +1,14 @@
 Package: Applr
 Title: Visualize and Explain Linear Models
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R: c(
     person("Cameron", "McClellan", , "cameron.m.mcclellan@gmail.com", role = "aut"),
     person("James", "Beeson", , "jamesbeeson01@gmail.com", role = c("aut", "cre")))
 Description: Tools for visualizing and explaining linear models fit with lm().
     Draws 2D slices of higher-dimensional models in base graphics and as a
-    ggplot2 layer, offers an interactive 3D scatter with a fitted surface for
-    two-predictor models, and renders model equations as plain text or LaTeX.
+    'ggplot2' layer, offers an interactive 'plotly' 3D scatter with a fitted
+    surface for two-predictor models, and renders model equations as plain
+    text or 'LaTeX'.
 License: MIT + file LICENSE
 URL: https://saundersg.github.io/Applr/, https://github.com/saundersg/Applr
 BugReports: https://github.com/saundersg/Applr/issues
@@ -15,6 +16,8 @@ Encoding: UTF-8
 Language: en-US
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
+Depends:
+    R (>= 4.1.0)
 Imports:
     ggplot2 (>= 3.5.0),
     plotly,

@@ -6,6 +6,12 @@ output: github_document
      with devtools::build_readme(). Do not edit README.md by hand. -->
 
 ```{r setup, include = FALSE}
+# knitr stages its htmlwidget screenshots (the plotly 3-D chunks) in a temp
+# directory it creates inside the working directory; on Windows the live Chrome
+# process keeps a handle on it, so the cleanup fails and an empty random-named
+# folder is left in the package root. Stage them in the session temp dir instead.
+options(knitr.html_screenshot.tmpdir = tempdir())
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",

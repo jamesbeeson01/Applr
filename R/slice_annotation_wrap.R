@@ -71,7 +71,10 @@ annotation_width <- function(strings, gp) {
 # whether a hanging indent even makes sense (it does not for a right-aligned
 # caption).
 annotation_style <- function(plot, element) {
-  theme <- tryCatch(ggplot2::complete_theme(plot$theme),
+  # complete_theme() only exists in ggplot2 >= 4.0
+  complete <- get0("complete_theme", envir = asNamespace("ggplot2"),
+                   mode = "function", inherits = FALSE)
+  theme <- tryCatch(complete(plot$theme),
                     error = function(e) ggplot2::theme_get())
   el <- tryCatch(ggplot2::calc_element(paste0("plot.", element), theme),
                  error = function(e) NULL)
@@ -123,7 +126,7 @@ annotation_avail_width <- function(plot, element) {
 # here, so the indent quietly degrades to whole spaces rather than emitting
 # characters the device would draw as a missing-glyph box.
 pad_glyphs <- function(gp) {
-  candidates <- c(" ", " ", " ", " ")
+  candidates <- c(" ", "\u2002", "\u2009", "\u200a")
   w <- annotation_width(candidates, gp)
   keep <- w > 0 & !duplicated(round(w, 4))
   list(glyph = candidates[keep], width = w[keep])

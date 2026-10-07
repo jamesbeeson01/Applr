@@ -53,12 +53,10 @@ to be the first predictor in the model and all other variable are imputed
 (mean for numeric, first level for factors).
 }
 \examples{
-\dontrun{
 model <- lm(mpg ~ disp, data = mtcars)
 slice_2d(model, x_axis = 'disp')
 
 # With a 95\% confidence band around the line
 slice_2d(model, x_axis = 'disp', interval = "confidence")
-}
 
 }
