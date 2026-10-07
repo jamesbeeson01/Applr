@@ -97,7 +97,7 @@ date: "2026-07-11"
 - [x] Add error to check if the data being plotted is the same as the data the lm was fit to
   - [x] `geom_slice` 
 - [x] Remove %>% in favor of |>
-- [x] `autoplot(lm)` (takes minimal arguments, feasts/ggtime is a good example) — DONE 2026-07-07 (`autoplot.lm(object, ..., x_axis =)`: scatter + geom_slice + theme_lc from the model's own data, first numeric predictor on x, `...` forwarded to geom_slice, `autoplot` generic re-exported; cases ap_01–ap_11)
+- [x] `autoplot(lm)` (takes minimal arguments, feasts/ggtime is a good example) — DONE 2026-07-07 (`autoplot.lm(object, ..., x_axis =)`: scatter + geom_slice from the model's own data, first numeric predictor on x, `...` forwarded to geom_slice, `autoplot` generic re-exported; cases ap_01–ap_11)
 - [x] Add confidence and prediction interval to `geom_slice` — DONE 2026-07-07 (`interval = "confidence"/"prediction"`, GeomSlice now inherits GeomSmooth; cases gs_33/gs_34)
 - [x] Add standards to `decisions.Rmd` (like error format)
 - [x] Make sure existing ground truth tests are accurate

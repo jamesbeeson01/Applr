@@ -29,7 +29,3 @@ test_that("slice_2d() errors on an x_axis not in the model", {
 test_that("scatter_3d() returns a plotly widget", {
   expect_s3_class(scatter_3d(m_two), "plotly")
 })
-
-test_that("theme_lc() returns a ggplot2 theme", {
-  expect_s3_class(theme_lc(), "theme")
-})

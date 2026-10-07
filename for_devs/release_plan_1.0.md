@@ -41,7 +41,7 @@ does and when to reach for it, and `@examples` that show the **range** of the
 function (not one minimal call). Examples must run unattended in seconds;
 wrap plotly/interactive ones in `if (interactive())`.
 
-- [x] **Prompt A** — utility docs pass: `theme_lc`, `lm_equation`/`lm_latex`,
+- [x] **Prompt A** — utility docs pass: `lm_equation`/`lm_latex`,
       `scatter_3d`, `diagnose`, `get_inverse_function` (internal → `@noRd`).
       Review note: two "Use it when…" paragraphs in `lm_equation.R` sat after
       `@param clearer` (would merge into that param's doc) — fixed on review.

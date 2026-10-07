@@ -29,7 +29,6 @@ Core capabilities:
 \item ggplot2 labeling: \code{\link{geom_slice_text}}, \code{\link{geom_slice_subtitle}}, \code{\link{geom_slice_caption}}
 \item 3D visualization: \code{\link{scatter_3d}}
 \item Equations: \code{\link{lm_equation}}, \code{\link{lm_latex}}
-\item Theme: \code{\link{theme_lc}}
 }
 }
 
@@ -55,7 +54,7 @@ ggplot(mtcars, aes(disp, mpg)) +
 
 \seealso{
 \itemize{
-\item Function help pages: \code{?slice_2d}, \code{?geom_slice}, \code{?scatter_3d}, \code{?lm_equation}, \code{?lm_latex}, \code{?theme_lc}
+\item Function help pages: \code{?slice_2d}, \code{?geom_slice}, \code{?scatter_3d}, \code{?lm_equation}, \code{?lm_latex}
 \item The package README for a brief tour
 }
 }
