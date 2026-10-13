@@ -19,11 +19,13 @@ check_equation_style <- function(style) {
 # so term labels and coefficients don't line up (or even match in length).
 # Coefficient names are the design-matrix column names and always align.
 # NA coefficients (rank-deficient fits) are dropped: they contribute nothing
-# to predictions and "NA*x" is not an equation.
+# to predictions and "NA*x" is not an equation. zapsmall() rounds
+# floating-point residue (an exact fit's 2e-15 intercept) to 0, which would
+# otherwise print as noise that differs between platforms.
 lm_equation_parts <- function(model, style = c("prettier", "brackets", "raw")) {
   style <- check_equation_style(style)
   co <- coef(model)
-  co <- co[!is.na(co)]
+  co <- zapsmall(co[!is.na(co)])
   has_intercept <- names(co)[1] == "(Intercept)"
   slopes <- signif(if (has_intercept) co[-1] else co, 3)
   if (style != "raw") {

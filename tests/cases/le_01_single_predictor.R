@@ -2,7 +2,7 @@
 # TYPE: console
 # FUNC: lm_equation
 # EXPECT: "y = <intercept> + 1*x" with coefficients to 3 significant figures
-#         (intercept ~0 in scientific notation is fine).
+#         (the exact fit's floating-point intercept is zapped to 0).
 
 source("tests/_setup.R")
 set.seed(123)
