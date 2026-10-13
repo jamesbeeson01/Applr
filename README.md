@@ -2,13 +2,12 @@
 <!-- README.md is generated from README.Rmd. Edit that file, then re-render
      with devtools::build_readme(). Do not edit README.md by hand. -->
 
-# Applr <img src="man/figures/applr-logo.svg" height="139" alt="Applr logo" />
+# Applr <img src="man/figures/applr-logo.svg" align="right" height="139" alt="Applr logo" />
 
 <!-- badges: start -->
 
 [![R-CMD-check](https://github.com/saundersg/Applr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/saundersg/Applr/actions/workflows/R-CMD-check.yaml)
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/Applr)](https://cran.r-project.org/package=Applr)
-<!-- [![Codecov test coverage](https://codecov.io/gh/tidyverse/ggplot2/graph/badge.svg)](https://app.codecov.io/gh/tidyverse/ggplot2) -->
 <!-- badges: end -->
 
 ## Overview
