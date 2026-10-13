@@ -242,10 +242,11 @@ autoplot.lm <- function(object, mapping = NULL, type = c("2d", "3d"),
 
   plot <- ggplot(model_data, plot_mapping) +
     geom_point() +
-    geom_slice(object, interval = interval, ...) +
-    geom_slice_subtitle()
+    geom_slice(object, interval = interval, ...)
+  # The facet must come before the subtitle, which only skips facet variables
+  # already on the plot when it is added
   if (!is.null(facet_var)) {
     plot <- plot + facet_wrap(vars(!!as.name(facet_var)))
   }
-  plot
+  plot + geom_slice_subtitle()
 }
