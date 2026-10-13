@@ -122,160 +122,69 @@ to annotate the result.
 ``` r
 library(ggplot2)
 
-# A complete plot from a model in one call
-autoplot(lm(mpg ~ disp, data = mtcars))
+# A complete plot from a model in one call; summary() prints to the console
+autoplot(lm(Petal.Length ~ Sepal.Length + I(Sepal.Length^2):Species, iris))
 #> 
 #> Call:
-#> lm(formula = mpg ~ disp, data = mtcars)
-#> 
-#> Residuals:
-#>     Min      1Q  Median      3Q     Max 
-#> -4.8922 -2.2022 -0.9631  1.6272  7.2305 
-#> 
-#> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept) 29.599855   1.229720  24.070  < 2e-16 ***
-#> disp        -0.041215   0.004712  -8.747 9.38e-10 ***
-#> ---
-#> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-#> 
-#> Residual standard error: 3.251 on 30 degrees of freedom
-#> Multiple R-squared:  0.7183, Adjusted R-squared:  0.709 
-#> F-statistic: 76.51 on 1 and 30 DF,  p-value: 9.38e-10
-#> 
-
-
-# Predictors not on the plot are imputed (a message says how)
-autoplot(lm(mpg ~ disp + hp, data = mtcars))
-#> 
-#> Call:
-#> lm(formula = mpg ~ disp + hp, data = mtcars)
-#> 
-#> Residuals:
-#>     Min      1Q  Median      3Q     Max 
-#> -4.7945 -2.3036 -0.8246  1.8582  6.9363 
-#> 
-#> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept) 30.735904   1.331566  23.083  < 2e-16 ***
-#> disp        -0.030346   0.007405  -4.098 0.000306 ***
-#> hp          -0.024840   0.013385  -1.856 0.073679 .  
-#> ---
-#> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-#> 
-#> Residual standard error: 3.127 on 29 degrees of freedom
-#> Multiple R-squared:  0.7482, Adjusted R-squared:  0.7309 
-#> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09
-#> 
-#> Value for `hp` not specified - Used mean: 146.7
-#>     To choose a slice, use 'predict_vars = list(hp = 146.7)'.
-
-
-# Choose which predictor goes on the x-axis
-autoplot(lm(mpg ~ disp + hp, data = mtcars), mapping = aes(x = hp))
-#> 
-#> Call:
-#> lm(formula = mpg ~ disp + hp, data = mtcars)
-#> 
-#> Residuals:
-#>     Min      1Q  Median      3Q     Max 
-#> -4.7945 -2.3036 -0.8246  1.8582  6.9363 
-#> 
-#> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept) 30.735904   1.331566  23.083  < 2e-16 ***
-#> disp        -0.030346   0.007405  -4.098 0.000306 ***
-#> hp          -0.024840   0.013385  -1.856 0.073679 .  
-#> ---
-#> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-#> 
-#> Residual standard error: 3.127 on 29 degrees of freedom
-#> Multiple R-squared:  0.7482, Adjusted R-squared:  0.7309 
-#> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09
-#> 
-#> Value for `disp` not specified - Used mean: 230.7
-#>     To choose a slice, use 'predict_vars = list(disp = 230.7)'.
-
-
-# Transformed response, back-transformed onto the raw mpg axis
-autoplot(lm(log(mpg) ~ disp, data = mtcars))
-#> 
-#> Call:
-#> lm(formula = log(mpg) ~ disp, data = mtcars)
+#> lm(formula = Petal.Length ~ Sepal.Length + I(Sepal.Length^2):Species, 
+#>     data = iris)
 #> 
 #> Residuals:
 #>      Min       1Q   Median       3Q      Max 
-#> -0.21183 -0.10837 -0.04732  0.08251  0.35546 
+#> -0.72665 -0.15039  0.00562  0.16639  0.76639 
 #> 
 #> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)  3.445548   0.054290   63.47  < 2e-16 ***
-#> disp        -0.002115   0.000208  -10.17  3.1e-11 ***
+#>                                     Estimate Std. Error t value Pr(>|t|)    
+#> (Intercept)                         -3.79412    1.09932  -3.451 0.000731 ***
+#> Sepal.Length                         2.04477    0.36389   5.619 9.51e-08 ***
+#> I(Sepal.Length^2):Speciessetosa     -0.19763    0.02958  -6.680 4.75e-10 ***
+#> I(Sepal.Length^2):Speciesversicolor -0.11503    0.03033  -3.793 0.000218 ***
+#> I(Sepal.Length^2):Speciesvirginica  -0.09427    0.02987  -3.156 0.001944 ** 
 #> ---
 #> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
 #> 
-#> Residual standard error: 0.1435 on 30 degrees of freedom
-#> Multiple R-squared:  0.7751, Adjusted R-squared:  0.7676 
-#> F-statistic: 103.4 on 1 and 30 DF,  p-value: 3.095e-11
+#> Residual standard error: 0.262 on 145 degrees of freedom
+#> Multiple R-squared:  0.9786, Adjusted R-squared:  0.978 
+#> F-statistic:  1655 on 4 and 145 DF,  p-value: < 2.2e-16
 #> 
+#> Coloured the plot by `Species` - one slice line per level.
+#>     To choose the colour, use 'mapping = aes(color = ...)'.
+
+
+# Predictors that group into a few values become color, then facets
+model <- lm(hwy ~ displ + drv + cyl, data = mpg)
+autoplot(model, summary = FALSE)
+#> Coloured the plot by `drv` - one slice line per level.
+#>     To choose the colour, use 'mapping = aes(color = ...)'.
+#> Faceted the plot by `cyl` - one panel per level.
+#>     For a single panel, drop `cyl` from the model.
+
+
+# Change the defaults like a normal ggplot; the rest is still inferred
+autoplot(model, aes(color = factor(cyl)), summary = FALSE) + facet_wrap(~drv)
+#> Faceted the plot by `drv` - one panel per level.
+#>     For a single panel, drop `drv` from the model.
+
+
+# Choose the x-axis and pass geom_slice() options through
+autoplot(model,
+         aes(x = cyl, color = factor(drv)),
+         interval = "none", summary = FALSE) +
+  labs(title = "The Same Model From a Different Angle")
+#> Value for `displ` not specified - Used mean: 3.472
+#>     To choose a slice, use 'predict_vars = list(displ = 3.472)'.
+
+
+# Transformed response, back-transformed onto the raw mpg axis
+autoplot(lm(log(mpg) ~ disp + hp, data = mtcars), summary = FALSE)
+#> Value for `hp` not specified - Used mean: 146.7
+#>     To choose a slice, use 'predict_vars = list(hp = 146.7)'.
 #> Predictions of `log(mpg)` were back-transformed to match the `mpg` axis.
 #>     To turn this off, use 'back_transform = FALSE'.
 
 
-# Options pass through to geom_slice(); the result is a normal ggplot
-autoplot(lm(mpg ~ disp + hp, data = mtcars),
-         predict_vars = list(hp = 110), interval = "prediction") +
-  labs(title = "Slice at hp = 110")
-#> 
-#> Call:
-#> lm(formula = mpg ~ disp + hp, data = mtcars)
-#> 
-#> Residuals:
-#>     Min      1Q  Median      3Q     Max 
-#> -4.7945 -2.3036 -0.8246  1.8582  6.9363 
-#> 
-#> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept) 30.735904   1.331566  23.083  < 2e-16 ***
-#> disp        -0.030346   0.007405  -4.098 0.000306 ***
-#> hp          -0.024840   0.013385  -1.856 0.073679 .  
-#> ---
-#> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-#> 
-#> Residual standard error: 3.127 on 29 degrees of freedom
-#> Multiple R-squared:  0.7482, Adjusted R-squared:  0.7309 
-#> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09
-#> 
-
-
-# Extra aesthetics for the scatter (mapping goes to ggplot())
-autoplot(lm(mpg ~ hp + factor(cyl), data = mtcars),
-         mapping = aes(color = factor(cyl)))
-#> 
-#> Call:
-#> lm(formula = mpg ~ hp + factor(cyl), data = mtcars)
-#> 
-#> Residuals:
-#>    Min     1Q Median     3Q    Max 
-#> -4.818 -1.959  0.080  1.627  6.812 
-#> 
-#> Coefficients:
-#>              Estimate Std. Error t value Pr(>|t|)    
-#> (Intercept)  28.65012    1.58779  18.044  < 2e-16 ***
-#> hp           -0.02404    0.01541  -1.560  0.12995    
-#> factor(cyl)6 -5.96766    1.63928  -3.640  0.00109 ** 
-#> factor(cyl)8 -8.52085    2.32607  -3.663  0.00103 ** 
-#> ---
-#> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
-#> 
-#> Residual standard error: 3.146 on 28 degrees of freedom
-#> Multiple R-squared:  0.7539, Adjusted R-squared:  0.7275 
-#> F-statistic: 28.59 on 3 and 28 DF,  p-value: 1.14e-08
-#> 
-
-
-# An interactive 3-D surface for a two-predictor model
+# An interactive 3-D surface for a model with two numeric predictors
 if (interactive()) {
-  autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
+  autoplot(lm(mpg ~ wt + I(wt^2) + hp, data = mtcars), type = "3d")
 }
 ```

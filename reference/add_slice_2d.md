@@ -74,8 +74,22 @@ an HD model
 ## Examples
 
 ``` r
-model <- lm(mpg ~ disp + hp, data = mtcars)
+model <- lm(log(mpg) ~ disp + hp, data = mtcars)
 plot(mpg ~ disp, data = mtcars)
-add_slice_2d(model, x_axis = 'disp', hp = 100)
+add_slice_2d(model)
+#> X-axis not specified - Used first x variable as x-axis
+#>     To specify, use 'x_axis = "var_name"' such as 'x_axis = "disp"'
+#> Value for `hp` not specified - Used mean: 146.7
+#>     To specify, use 'var_name = value', such as 'hp = 146.7'
+
+
+# Multiple slices on one plot
+plot(mpg ~ disp, data = mtcars)
+add_slice_2d(model, hp = min(mtcars$hp), col = "blue")
+#> X-axis not specified - Used first x variable as x-axis
+#>     To specify, use 'x_axis = "var_name"' such as 'x_axis = "disp"'
+add_slice_2d(model, hp = max(mtcars$hp), col = "red", lty = 2)
+#> X-axis not specified - Used first x variable as x-axis
+#>     To specify, use 'x_axis = "var_name"' such as 'x_axis = "disp"'
 
 ```

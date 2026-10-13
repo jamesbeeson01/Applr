@@ -47,22 +47,23 @@ Core capabilities:
 
 ## Quick start
 
-Fit a model and plot a slice:
+Fit a model, then see it in one call:
 
 
     library(Applr)
-    model <- lm(mpg ~ disp + hp, data = mtcars)
-    slice_2d(model, x_axis = "disp")
+    model <- lm(mpg ~ qsec + am, data = mtcars)
+    autoplot(model)
 
-ggplot2 layer with facets:
+Or build the plot yourself with a geom_slice() layer:
 
 
     library(ggplot2)
-    model <- lm(mpg ~ disp + hp + cyl, data = mtcars)
-    ggplot(mtcars, aes(disp, mpg)) +
+    model <- lm(hwy ~ displ * drv + cyl, data = mpg)
+    ggplot(mpg, aes(displ, hwy, color = drv)) +
       geom_point() +
-      facet_wrap(~cyl) +
-      geom_slice(model = model, predict_vars = list(hp = 110))
+      geom_slice(model, band = TRUE) +
+      geom_slice_text() +
+      geom_slice_subtitle()
 
 ## See also
 

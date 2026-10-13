@@ -5,7 +5,7 @@ than creating a new one. Useful for overlaying multiple model slices or adding
 model predictions to scatter plots."><meta property="og:description" content="Take a slice from a linear model and add the displayed graph to a preexisting R plot.
 This function is similar to slice_2d() but adds a line to an existing plot rather
 than creating a new one. Useful for overlaying multiple model slices or adding
-model predictions to scatter plots."></head><body>
+model predictions to scatter plots."><meta property="og:image" content="https://saundersg.github.io/Applr/logo.svg"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -34,8 +34,7 @@ model predictions to scatter plots."></head><body>
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>2D Slice to R Plot</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>2D Slice to R Plot</h1>
       <small class="dont-index">Source: <a href="https://github.com/saundersg/Applr/blob/main/R/slice_2d.R" class="external-link"><code>R/slice_2d.R</code></a></small>
       <div class="d-none name"><code>add_slice_2d.Rd</code></div>
     </div>
@@ -113,10 +112,24 @@ interval.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">disp</span> <span class="op">+</span> <span class="va">hp</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">mpg</span><span class="op">)</span> <span class="op">~</span> <span class="va">disp</span> <span class="op">+</span> <span class="va">hp</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">disp</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">add_slice_2d</span><span class="op">(</span><span class="va">model</span>, x_axis <span class="op">=</span> <span class="st">'disp'</span>, hp <span class="op">=</span> <span class="fl">100</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">add_slice_2d</span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> X-axis not specified - Used first x variable as x-axis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     To specify, use 'x_axis = "var_name"' such as 'x_axis = "disp"'</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Value for `hp` not specified - Used mean: 146.7</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     To specify, use 'var_name = value', such as 'hp = 146.7'</span>
 <span class="r-plt img"><img src="add_slice_2d-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Multiple slices on one plot</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">disp</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">add_slice_2d</span><span class="op">(</span><span class="va">model</span>, hp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">hp</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"blue"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> X-axis not specified - Used first x variable as x-axis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     To specify, use 'x_axis = "var_name"' such as 'x_axis = "disp"'</span>
+<span class="r-in"><span><span class="fu">add_slice_2d</span><span class="op">(</span><span class="va">model</span>, hp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">$</span><span class="va">hp</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"red"</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> X-axis not specified - Used first x variable as x-axis</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     To specify, use 'x_axis = "var_name"' such as 'x_axis = "disp"'</span>
+<span class="r-plt img"><img src="add_slice_2d-2.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

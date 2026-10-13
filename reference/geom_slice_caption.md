@@ -79,13 +79,15 @@ to label the lines themselves.
 ``` r
 library(ggplot2)
 
-# Caption reports the model equation and that hp is held at its mean
-model <- lm(mpg ~ disp + hp, data = mtcars)
-ggplot(mtcars, aes(disp, mpg)) +
+# Caption reports the model equation and the held Sepal.Width; Species
+# is already shown by the legend, so it is left out
+model <- lm(Petal.Length ~ Sepal.Length + I(Sepal.Length^2):Species +
+              Sepal.Width, data = iris)
+ggplot(iris, aes(Sepal.Length, Petal.Length, color = Species)) +
   geom_point() +
-  geom_slice(model) +
+  geom_slice(model, interval = "confidence") +
   geom_slice_caption()
-#> Value for `hp` not specified - Used mean: 146.7
-#>     To choose a slice, use 'predict_vars = list(hp = 146.7)'.
+#> Value for `Sepal.Width` not specified - Used mean: 3.057
+#>     To choose a slice, use 'predict_vars = list(Sepal.Width = 3.057)'.
 
 ```

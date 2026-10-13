@@ -7,7 +7,7 @@ more layers)."><meta property="og:description" content="autoplot() turns a fitte
 data the model was fitted to as a scatter, with a geom_slice() prediction
 line — and, by default, its confidence ribbon — through it. The result is a
 regular ggplot, so it can be extended with + as usual (labels, scales,
-more layers)."></head><body>
+more layers)."><meta property="og:image" content="https://saundersg.github.io/Applr/logo.svg"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -36,8 +36,7 @@ more layers)."></head><body>
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Automatically plot a linear model</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Automatically plot a linear model</h1>
       <small class="dont-index">Source: <a href="https://github.com/saundersg/Applr/blob/main/R/autoplot.lm.R" class="external-link"><code>R/autoplot.lm.R</code></a></small>
       <div class="d-none name"><code>autoplot.lm.Rd</code></div>
     </div>
@@ -140,161 +139,70 @@ slice-shaped; <code><a href="scatter_3d.html">scatter_3d()</a></code> for the in
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># A complete plot from a model in one call</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">disp</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># A complete plot from a model in one call; summary() prints to the console</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">Petal.Length</span> <span class="op">~</span> <span class="va">Sepal.Length</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">Sepal.Length</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">:</span><span class="va">Species</span>, <span class="va">iris</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> lm(formula = mpg ~ disp, data = mtcars)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residuals:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     Min      1Q  Median      3Q     Max </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -4.8922 -2.2022 -0.9631  1.6272  7.2305 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Coefficients:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              Estimate Std. Error t value Pr(&gt;|t|)    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 29.599855   1.229720  24.070  &lt; 2e-16 ***</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> disp        -0.041215   0.004712  -8.747 9.38e-10 ***</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 3.251 on 30 degrees of freedom</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Multiple R-squared:  0.7183,	Adjusted R-squared:  0.709 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> F-statistic: 76.51 on 1 and 30 DF,  p-value: 9.38e-10</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-plt img"><img src="autoplot.lm-1.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Predictors not on the plot are imputed (a message says how)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">disp</span> <span class="op">+</span> <span class="va">hp</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> lm(formula = mpg ~ disp + hp, data = mtcars)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residuals:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     Min      1Q  Median      3Q     Max </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -4.7945 -2.3036 -0.8246  1.8582  6.9363 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Coefficients:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              Estimate Std. Error t value Pr(&gt;|t|)    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 30.735904   1.331566  23.083  &lt; 2e-16 ***</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> disp        -0.030346   0.007405  -4.098 0.000306 ***</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> hp          -0.024840   0.013385  -1.856 0.073679 .  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 3.127 on 29 degrees of freedom</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Multiple R-squared:  0.7482,	Adjusted R-squared:  0.7309 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Value for `hp` not specified - Used mean: 146.7</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>     To choose a slice, use 'predict_vars = list(hp = 146.7)'.</span>
-<span class="r-plt img"><img src="autoplot.lm-2.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Choose which predictor goes on the x-axis</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">disp</span> <span class="op">+</span> <span class="va">hp</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span>, mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">hp</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> lm(formula = mpg ~ disp + hp, data = mtcars)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residuals:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     Min      1Q  Median      3Q     Max </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -4.7945 -2.3036 -0.8246  1.8582  6.9363 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Coefficients:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              Estimate Std. Error t value Pr(&gt;|t|)    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 30.735904   1.331566  23.083  &lt; 2e-16 ***</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> disp        -0.030346   0.007405  -4.098 0.000306 ***</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> hp          -0.024840   0.013385  -1.856 0.073679 .  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 3.127 on 29 degrees of freedom</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Multiple R-squared:  0.7482,	Adjusted R-squared:  0.7309 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Value for `disp` not specified - Used mean: 230.7</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>     To choose a slice, use 'predict_vars = list(disp = 230.7)'.</span>
-<span class="r-plt img"><img src="autoplot.lm-3.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Transformed response, back-transformed onto the raw mpg axis</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">mpg</span><span class="op">)</span> <span class="op">~</span> <span class="va">disp</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> lm(formula = log(mpg) ~ disp, data = mtcars)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> lm(formula = Petal.Length ~ Sepal.Length + I(Sepal.Length^2):Species, </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     data = iris)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Residuals:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>      Min       1Q   Median       3Q      Max </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -0.21183 -0.10837 -0.04732  0.08251  0.35546 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> -0.72665 -0.15039  0.00562  0.16639  0.76639 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Coefficients:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              Estimate Std. Error t value Pr(&gt;|t|)    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)  3.445548   0.054290   63.47  &lt; 2e-16 ***</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> disp        -0.002115   0.000208  -10.17  3.1e-11 ***</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                     Estimate Std. Error t value Pr(&gt;|t|)    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)                         -3.79412    1.09932  -3.451 0.000731 ***</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Sepal.Length                         2.04477    0.36389   5.619 9.51e-08 ***</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> I(Sepal.Length^2):Speciessetosa     -0.19763    0.02958  -6.680 4.75e-10 ***</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> I(Sepal.Length^2):Speciesversicolor -0.11503    0.03033  -3.793 0.000218 ***</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> I(Sepal.Length^2):Speciesvirginica  -0.09427    0.02987  -3.156 0.001944 ** </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 0.1435 on 30 degrees of freedom</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Multiple R-squared:  0.7751,	Adjusted R-squared:  0.7676 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> F-statistic: 103.4 on 1 and 30 DF,  p-value: 3.095e-11</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 0.262 on 145 degrees of freedom</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Multiple R-squared:  0.9786,	Adjusted R-squared:  0.978 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> F-statistic:  1655 on 4 and 145 DF,  p-value: &lt; 2.2e-16</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Predictions of `log(mpg)` were back-transformed to match the `mpg` axis.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>     To turn this off, use 'back_transform = FALSE'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Coloured the plot by `Species` - one slice line per level.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     To choose the colour, use 'mapping = aes(color = ...)'.</span>
+<span class="r-plt img"><img src="autoplot.lm-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Predictors that group into a few values become color, then facets</span></span></span>
+<span class="r-in"><span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">hwy</span> <span class="op">~</span> <span class="va">displ</span> <span class="op">+</span> <span class="va">drv</span> <span class="op">+</span> <span class="va">cyl</span>, data <span class="op">=</span> <span class="va">mpg</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">model</span>, summary <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Coloured the plot by `drv` - one slice line per level.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     To choose the colour, use 'mapping = aes(color = ...)'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Faceted the plot by `cyl` - one panel per level.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     For a single panel, drop `cyl` from the model.</span>
+<span class="r-plt img"><img src="autoplot.lm-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Change the defaults like a normal ggplot; the rest is still inferred</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">model</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span><span class="op">)</span>, summary <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">drv</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Faceted the plot by `drv` - one panel per level.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     For a single panel, drop `drv` from the model.</span>
+<span class="r-plt img"><img src="autoplot.lm-3.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Choose the x-axis and pass geom_slice() options through</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">model</span>,</span></span>
+<span class="r-in"><span>         <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">cyl</span>, color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">drv</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>         interval <span class="op">=</span> <span class="st">"none"</span>, summary <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"The Same Model From a Different Angle"</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Value for `displ` not specified - Used mean: 3.472</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     To choose a slice, use 'predict_vars = list(displ = 3.472)'.</span>
 <span class="r-plt img"><img src="autoplot.lm-4.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Options pass through to geom_slice(); the result is a normal ggplot</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">disp</span> <span class="op">+</span> <span class="va">hp</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>         predict_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>hp <span class="op">=</span> <span class="fl">110</span><span class="op">)</span>, interval <span class="op">=</span> <span class="st">"prediction"</span><span class="op">)</span> <span class="op">+</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Slice at hp = 110"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> lm(formula = mpg ~ disp + hp, data = mtcars)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residuals:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>     Min      1Q  Median      3Q     Max </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -4.7945 -2.3036 -0.8246  1.8582  6.9363 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Coefficients:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              Estimate Std. Error t value Pr(&gt;|t|)    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept) 30.735904   1.331566  23.083  &lt; 2e-16 ***</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> disp        -0.030346   0.007405  -4.098 0.000306 ***</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> hp          -0.024840   0.013385  -1.856 0.073679 .  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 3.127 on 29 degrees of freedom</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Multiple R-squared:  0.7482,	Adjusted R-squared:  0.7309 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> F-statistic: 43.09 on 2 and 29 DF,  p-value: 2.062e-09</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span><span class="co"># Transformed response, back-transformed onto the raw mpg axis</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">mpg</span><span class="op">)</span> <span class="op">~</span> <span class="va">disp</span> <span class="op">+</span> <span class="va">hp</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span>, summary <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Value for `hp` not specified - Used mean: 146.7</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     To choose a slice, use 'predict_vars = list(hp = 146.7)'.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Predictions of `log(mpg)` were back-transformed to match the `mpg` axis.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     To turn this off, use 'back_transform = FALSE'.</span>
 <span class="r-plt img"><img src="autoplot.lm-5.png" alt="" width="700" height="433"></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Extra aesthetics for the scatter (mapping goes to ggplot())</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">hp</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>         mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Call:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> lm(formula = mpg ~ hp + factor(cyl), data = mtcars)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residuals:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    Min     1Q Median     3Q    Max </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> -4.818 -1.959  0.080  1.627  6.812 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Coefficients:</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>              Estimate Std. Error t value Pr(&gt;|t|)    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> (Intercept)  28.65012    1.58779  18.044  &lt; 2e-16 ***</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> hp           -0.02404    0.01541  -1.560  0.12995    </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> factor(cyl)6 -5.96766    1.63928  -3.640  0.00109 ** </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> factor(cyl)8 -8.52085    2.32607  -3.663  0.00103 ** </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> ---</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Residual standard error: 3.146 on 28 degrees of freedom</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Multiple R-squared:  0.7539,	Adjusted R-squared:  0.7275 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> F-statistic: 28.59 on 3 and 28 DF,  p-value: 1.14e-08</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-plt img"><img src="autoplot.lm-6.png" alt="" width="700" height="433"></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># An interactive 3-D surface for a two-predictor model</span></span></span>
+<span class="r-in"><span><span class="co"># An interactive 3-D surface for a model with two numeric predictors</span></span></span>
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">disp</span> <span class="op">+</span> <span class="va">hp</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"3d"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">wt</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html" class="external-link">I</a></span><span class="op">(</span><span class="va">wt</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">hp</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"3d"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

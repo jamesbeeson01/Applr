@@ -1,4 +1,4 @@
-# Applr ![Applr logo](reference/figures/applr-logo.svg)
+# Applr
 
 ## Overview
 
@@ -56,8 +56,9 @@ ggplot(mtcars, aes(qsec, mpg, color = am)) +
   geom_slice_subtitle()
 ```
 
-![autoplot() of an lm: scatter plot with the fitted slice
-line](reference/figures/README-quickstart-autoplot-1.png)
+![autoplot() of lm(mpg ~ qsec + am): mpg against qsec, one slice line
+with a confidence ribbon per am
+value](reference/figures/README-quickstart-autoplot-1.png)
 
 Both report helpful messages to the console about what decisions it
 made, and how you can control those decisions.
@@ -107,8 +108,9 @@ autoplot(lm(Petal.Length ~ Sepal.Length + I(Sepal.Length^2):Species, iris))
 #> F-statistic:  1655 on 4 and 145 DF,  p-value: < 2.2e-16
 ```
 
-![autoplot() with a confidence interval and a custom
-title](reference/figures/README-autoplot-1.png)
+![autoplot() of an iris model: Petal.Length against Sepal.Length with a
+curved slice and confidence ribbon per Species, and the model equation
+as subtitle](reference/figures/README-autoplot-1.png)
 
 `autoplot` makes a few decisions for you, but lets you control them. The
 model’s first numeric predictor goes on the x-axis, and subsequent
@@ -133,8 +135,8 @@ model <- lm(hwy ~ displ + drv + cyl, data = mpg)
 autoplot(model, aes(color = factor(cyl))) + facet_wrap(~drv)
 ```
 
-![autoplot() with an x-axis override and a color
-mapping](reference/figures/README-autoplot-mapping-1.png)
+![autoplot() of hwy against displ, colored by cyl and faceted by
+drv](reference/figures/README-autoplot-mapping-1.png)
 
 ``` r
 
@@ -146,8 +148,8 @@ autoplot(model,
   labs(title = "The Same Model From a Different Angle")
 ```
 
-![autoplot() with an x-axis override and a color
-mapping](reference/figures/README-autoplot-mapping-2.png)
+![The same model with cyl on the x-axis, colored by drv, as bare lines
+without ribbons](reference/figures/README-autoplot-mapping-2.png)
 
 ### 3d
 
@@ -241,10 +243,11 @@ ggplot(dat, aes(x = log(5 + x + x2 + x3 + 1/5 * x * x3 + 80 * x4), y)) +
 #>     To turn this off, use 'back_transform = FALSE'.
 ```
 
-![geom_slice() base functionality with few assumptions
-made](reference/figures/README-minimal-1.png)![geom_slice() base
-functionality with few assumptions
-made](reference/figures/README-minimal-2.png)
+![A single slice of a four-predictor model through scattered points,
+with the other predictors
+imputed](reference/figures/README-minimal-1.png)![The same model plotted
+against its full linear predictor, with every point on the
+line](reference/figures/README-minimal-2.png)
 
 Those assumptions had to be made, but you can make better ones. This
 plot shows the same model far clearer by utilizing several features
@@ -261,8 +264,9 @@ ggplot(dat, aes(x, y, color = factor(x3))) +
   geom_slice_subtitle()
 ```
 
-![geom_slice() drawing the model's line using color, facet, band, and
-predict_vars](reference/figures/README-geom-slice-1.png)
+![The four-predictor model as projection bands over x2 from 0 to 10, one
+color per x3 value, faceted by x4, with every point inside its
+band](reference/figures/README-geom-slice-1.png)
 
 ### Choosing slices with `predict_vars`
 
@@ -283,8 +287,9 @@ ggplot(iris, aes(Petal.Length, Sepal.Length)) +
   geom_slice_text()
 ```
 
-![Three slice lines of the same model, one per hp
-value](reference/figures/README-predict-vars-1.png)
+![Three labeled slice lines of Sepal.Length against Petal.Length, one
+per Sepal.Width value of 2, 3, and 4, with confidence
+ribbons](reference/figures/README-predict-vars-1.png)
 
 ### Confidence and prediction intervals
 
@@ -307,9 +312,9 @@ ggplot(mpg, aes(displ, hwy)) +
   labs(title = "Prediction Interval")
 ```
 
-![Slice line with a prediction-interval
-ribbon](reference/figures/README-interval-1.png)![Slice line with a
-prediction-interval ribbon](reference/figures/README-interval-2.png)
+![Quadratic slice of hwy against displ with a confidence
+ribbon](reference/figures/README-interval-1.png)![The same slice with a
+wider prediction ribbon](reference/figures/README-interval-2.png)
 
 ### Projection bands
 
@@ -332,8 +337,8 @@ ggplot(mpg, aes(displ, hwy, color = drv)) +
   geom_slice_text()
 ```
 
-![Projection band spanning hp from 66 to
-335](reference/figures/README-band-1.png)
+![One projection band per drv spanning cyl from 4 to 8, labeled at each
+edge](reference/figures/README-band-1.png)
 
 ``` r
 
@@ -345,8 +350,8 @@ ggplot(mpg, aes(displ, hwy, color = drv)) +
   geom_slice_text()
 ```
 
-![Projection band spanning hp from 66 to
-335](reference/figures/README-band-2.png)
+![One projection band per drv spanning cyl from 5 to 7, labeled at each
+edge](reference/figures/README-band-2.png)
 
 `band = TRUE` infers the variable when there is only one sensible choice
 (the one multi-value `predict_vars` entry, or the single predictor the
@@ -382,11 +387,10 @@ ggplot(mtcars, aes(disp, mpg)) +
   labs(title = "scale_y_log10() axis")
 ```
 
-![Back-transformed slice of a log-response model on the raw mpg
-axis](reference/figures/README-back-transform-1.png)![Back-transformed
-slice of a log-response model on the raw mpg
-axis](reference/figures/README-back-transform-2.png)![Back-transformed
-slice of a log-response model on the raw mpg
+![A log(mpg) model back-transformed onto a raw mpg
+axis](reference/figures/README-back-transform-1.png)![The same model on
+a log(mpg) axis](reference/figures/README-back-transform-2.png)![The
+same model on a scale_y_log10()
 axis](reference/figures/README-back-transform-3.png)
 
 ### Grouping: one line per group
@@ -411,10 +415,10 @@ ggplot(mpg, aes(displ, hwy, color = drv)) +
   geom_slice(model, full_range = TRUE)
 ```
 
-![One slice line per drv group, colored to match the
-points](reference/figures/README-grouping-1.png)![One slice line per drv
-group, colored to match the
-points](reference/figures/README-grouping-2.png)
+![One curved slice per drv group, each ending at its group's data
+range](reference/figures/README-grouping-1.png)![The same slices
+extended across the full panel with full_range =
+TRUE](reference/figures/README-grouping-2.png)
 
 ## Labeling the slices
 
@@ -440,7 +444,8 @@ ggplot(iris, aes(Petal.Length, Sepal.Length)) +
   geom_slice_text()
 ```
 
-![](reference/figures/README-slice-text-band-1.png)
+![Projection band over Sepal.Width with each edge labeled by its
+value](reference/figures/README-slice-text-band-1.png)
 
 ``` r
 
@@ -461,8 +466,9 @@ ggplot(dat, aes(x, y, color = g)) +
   geom_slice_text()
 ```
 
-![Slice lines labeled at their right
-ends](reference/figures/README-slice-text-color-1.png)
+![Three slice lines per group g, labeled at their right ends with their
+x2 value in the group's
+color](reference/figures/README-slice-text-color-1.png)
 
 ``` r
 
@@ -473,8 +479,9 @@ ggplot(dat, aes(x, y)) +
   geom_slice_text()
 ```
 
-![geom_slice_text plots labels with multiple
-predictors](reference/figures/README-slice-text-multiple-1.png)
+![Six slice lines, one per combination of x2 and g, each labeled with
+both values at its right
+end](reference/figures/README-slice-text-multiple-1.png)
 
 ``` r
 
@@ -485,8 +492,8 @@ ggplot(dat, aes(x, y)) +
   geom_slice_text(style = "legend")
 ```
 
-![geom_slice_text labels multiple predictors with the 'legend'
-style](reference/figures/README-slice-text-legend-1.png)
+![The same six slice lines with bare-value labels and a corner key
+naming x2 and g](reference/figures/README-slice-text-legend-1.png)
 
 Options: `style` (`"variable"` writes `"hp: 66"`, `"value"` writes bare
 values, `"legend"` adds a corner key), `location = "left"`/`"right"`,
@@ -510,7 +517,8 @@ ggplot(iris, aes(Sepal.Length, Petal.Length, color = Species)) +
   geom_slice_subtitle()   # or geom_slice_caption()
 ```
 
-![Plot whose subtitle shows the model equation and the held hp
+![Curved slices per iris Species with confidence ribbons; the subtitle
+shows the model equation and the held Sepal.Width
 value](reference/figures/README-slice-subtitle-1.png)
 
 [`geom_slice_subtitle()`](https://saundersg.github.io/Applr/reference/geom_slice_subtitle.md)
@@ -543,7 +551,8 @@ slice_2d(model)
 slice_2d(model, x_axis = "hp", disp = 250, n = 150, col = "blue", lwd = 2)
 ```
 
-![Base-R slice plot with held values reported in the
+![Base-R plot of mpg against disp with the back-transformed slice line
+and the held hp value in the
 caption](reference/figures/README-slice-2d-1.png)
 
 ### `add_slice_2d()`
@@ -563,8 +572,9 @@ add_slice_2d(model, hp = min(mtcars$hp), col = "blue")
 add_slice_2d(model, hp = max(mtcars$hp), col = "red", lty = 2)
 ```
 
-![Two slice lines added to an existing base-R
-plot](reference/figures/README-add-slice-2d-1.png)
+![Base-R scatter of mpg against disp with added slices at the lowest hp
+(blue) and highest hp (red,
+dashed)](reference/figures/README-add-slice-2d-1.png)
 
 ------------------------------------------------------------------------
 

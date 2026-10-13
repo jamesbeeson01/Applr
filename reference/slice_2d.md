@@ -74,11 +74,23 @@ A 2D graph of a sliced model
 ## Examples
 
 ``` r
-model <- lm(mpg ~ disp, data = mtcars)
-slice_2d(model, x_axis = 'disp')
+model <- lm(log(mpg) ~ disp + hp, data = mtcars)
+slice_2d(model)
+#> X-axis not specified - Used first x variable as x-axis
+#>     To specify, use 'x_axis = "var_name"' such as 'x_axis = "disp"'
+#> Value for `hp` not specified - Used mean: 146.7
+#>     To specify, use 'var_name = value', such as 'hp = 146.7'
+
+
+# Choose the x-axis, hold disp at a value, and style the line
+slice_2d(model, x_axis = "hp", disp = 250, n = 150, col = "blue", lwd = 2)
 
 
 # With a 95% confidence band around the line
-slice_2d(model, x_axis = 'disp', interval = "confidence")
+slice_2d(model, interval = "confidence")
+#> X-axis not specified - Used first x variable as x-axis
+#>     To specify, use 'x_axis = "var_name"' such as 'x_axis = "disp"'
+#> Value for `hp` not specified - Used mean: 146.7
+#>     To specify, use 'var_name = value', such as 'hp = 146.7'
 
 ```

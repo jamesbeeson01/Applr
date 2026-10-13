@@ -5,7 +5,7 @@ It includes base R and ggplot2 helpers, plus an interactive 3D view for
 models with two predictors."><meta property="og:description" content="Applr is a small R package that makes it easy to visualize slices of
 higher-dimensional linear models and to present model equations clearly.
 It includes base R and ggplot2 helpers, plus an interactive 3D view for
-models with two predictors."></head><body>
+models with two predictors."><meta property="og:image" content="https://saundersg.github.io/Applr/logo.svg"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -34,8 +34,7 @@ models with two predictors."></head><body>
 </nav><div class="container template-reference-topic">
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Applr: Tools for Visualizing and Explaining Linear Models</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Applr: Tools for Visualizing and Explaining Linear Models</h1>
       <small class="dont-index">Source: <a href="https://github.com/saundersg/Applr/blob/main/R/Applr-package.R" class="external-link"><code>R/Applr-package.R</code></a></small>
       <div class="d-none name"><code>Applr-package.Rd</code></div>
     </div>
@@ -70,18 +69,19 @@ models with two predictors.</p>
     <h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a></h2>
 
 
-<p>Fit a model and plot a slice:</p><div class="sourceCode"><pre><code><span></span>
+<p>Fit a model, then see it in one call:</p><div class="sourceCode"><pre><code><span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://saundersg.github.io/Applr/">Applr</a></span><span class="op">)</span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">disp</span> <span class="op">+</span> <span class="va">hp</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/slice_2d.html">slice_2d</a></span><span class="op">(</span><span class="va">model</span>, x_axis <span class="op">=</span> <span class="st">"disp"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">qsec</span> <span class="op">+</span> <span class="va">am</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot</a></span><span class="op">(</span><span class="va">model</span><span class="op">)</span></span></code></pre></div>
 
-<p>ggplot2 layer with facets:</p><div class="sourceCode"><pre><code><span></span>
+<p>Or build the plot yourself with a geom_slice() layer:</p><div class="sourceCode"><pre><code><span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">disp</span> <span class="op">+</span> <span class="va">hp</span> <span class="op">+</span> <span class="va">cyl</span>, data <span class="op">=</span> <span class="va">mtcars</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">disp</span>, <span class="va">mpg</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm</a></span><span class="op">(</span><span class="va">hwy</span> <span class="op">~</span> <span class="va">displ</span> <span class="op">*</span> <span class="va">drv</span> <span class="op">+</span> <span class="va">cyl</span>, data <span class="op">=</span> <span class="va">mpg</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">mpg</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span><span class="va">displ</span>, <span class="va">hwy</span>, color <span class="op">=</span> <span class="va">drv</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">cyl</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_slice.html">geom_slice</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">model</span>, predict_vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>hp <span class="op">=</span> <span class="fl">110</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/geom_slice.html">geom_slice</a></span><span class="op">(</span><span class="va">model</span>, band <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/geom_slice_text.html">geom_slice_text</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/geom_slice_subtitle.html">geom_slice_subtitle</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 
     </div>
     <div class="section level2">
