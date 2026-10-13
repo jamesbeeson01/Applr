@@ -9,12 +9,16 @@
 * local: Windows 11, R 4.5.x
 * win-builder: R-devel, R-release
 * mac-builder: R-release
-* GitHub Actions: macOS-latest, windows-latest, ubuntu-latest (R-release, R-devel)
+* GitHub Actions: 
+  * R-release: macOS-latest, windows-latest, ubuntu-latest
+  * R-devel: ubuntu-latest
 
 ## Notes for reviewers
 
 * `autoplot.lm()` prints `summary()` of the model by default, since the
   function is designed for interactive model exploration. Users can
   suppress it with `summary = FALSE`.
+* `lm_latex()` exists to print a LaTeX equation (e.g. in `results = "asis"`
+  chunks), so it writes with `cat()`; the string is also returned invisibly.
 * Examples that create 'plotly' widgets are wrapped in `if (interactive())`.
 * Thanks for your work taking time to review this.

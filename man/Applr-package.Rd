@@ -66,4 +66,9 @@ Authors:
   \item Cameron McClellan \email{cameron.m.mcclellan@gmail.com}
 }
 
+Other contributors:
+\itemize{
+  \item Garrett Saunders \email{saundersg@byui.edu} [thesis advisor]
+}
+
 }

@@ -9,6 +9,9 @@ geom_fit(...)
 \arguments{
 \item{...}{Ignored; accepted only so old calls reach the error message.}
 }
+\value{
+None; always throws an error pointing to \code{\link[=geom_slice]{geom_slice()}}.
+}
 \description{
 \code{geom_fit()} was removed in favor of \code{\link[=geom_slice]{geom_slice()}}, which does everything
 it did (prediction lines from a fitted \code{lm()}, confidence/prediction

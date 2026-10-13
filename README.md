@@ -2,7 +2,16 @@
 <!-- README.md is generated from README.Rmd. Edit that file, then re-render
      with devtools::build_readme(). Do not edit README.md by hand. -->
 
-# Applr
+# Applr <img src="man/figures/applr-logo.svg" height="139" alt="Applr logo" />
+
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/saundersg/Applr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/saundersg/Applr/actions/workflows/R-CMD-check.yaml)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/Applr)](https://cran.r-project.org/package=Applr)
+<!-- [![Codecov test coverage](https://codecov.io/gh/tidyverse/ggplot2/graph/badge.svg)](https://app.codecov.io/gh/tidyverse/ggplot2) -->
+<!-- badges: end -->
+
+## Overview
 
 A small R package for visualizing linear models. Plots anything from
 simple lines to high-dimensional squiggles all with the same functions.
@@ -577,12 +586,12 @@ Enjoy clearer model visualizations with **Applr**!
 
 Thanks to **Cameron McClellan** for his vision and initiation, **James
 Beeson** for seeing it through, **Anthropic’s Claude** for solving the
-problems we couldn’t, and **Brother Saunders** - our teacher and
-inspiration to do great things.
+coding problems we couldn’t, and **Brother Garrett Saunders** - our
+teacher and inspiration to do great things.
 
 And of course, Brigham Young University Idaho - our alma mater; the
 school we love and cherish. And the God of Heaven and Earth, who gives
 us all.
 
-33 For God is not the author of *confusion*, but of *peace*, as in all
-churches of the saints. - 1 Corinthians 14:33
+> “For God is not the author of *confusion*, but of *peace*, as in all
+> churches of the saints.” - 1 Corinthians 14:33

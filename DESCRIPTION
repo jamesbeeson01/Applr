@@ -3,7 +3,8 @@ Title: Visualize and Explain Linear Models
 Version: 1.0.0
 Authors@R: c(
     person("Cameron", "McClellan", , "cameron.m.mcclellan@gmail.com", role = "aut"),
-    person("James", "Beeson", , "jamesbeeson01@gmail.com", role = c("aut", "cre")))
+    person("James", "Beeson", , "jamesbeeson01@gmail.com", role = c("aut", "cre")),
+    person("Garrett", "Saunders", , "saundersg@byui.edu", role = "ths"))
 Description: Tools for visualizing and explaining linear models fit with lm().
     Draws 2D slices of higher-dimensional models in base graphics and as a
     'ggplot2' layer, offers an interactive 'plotly' 3D scatter with a fitted
