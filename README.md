@@ -2,7 +2,7 @@
 <!-- README.md is generated from README.Rmd. Edit that file, then re-render
      with devtools::build_readme(). Do not edit README.md by hand. -->
 
-# Applr <img src="man/figures/applr-logo.svg" align="right" height="139" alt="Applr logo" />
+# Applr <img src="man/figures/logo.svg" align="right" height="139" alt="Applr logo" />
 
 <!-- badges: start -->
 

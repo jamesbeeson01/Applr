@@ -25,7 +25,7 @@ knitr::opts_chunk$set(
 set.seed(42)
 ```
 
-# Applr <img src="man/figures/applr-logo.svg" align="right" height="139" alt="Applr logo" />
+# Applr <img src="man/figures/logo.svg" align="right" height="139" alt="Applr logo" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/saundersg/Applr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/saundersg/Applr/actions/workflows/R-CMD-check.yaml)
