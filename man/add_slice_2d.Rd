@@ -51,10 +51,13 @@ than creating a new one. Useful for overlaying multiple model slices or adding
 model predictions to scatter plots.
 }
 \examples{
-\dontrun{
-model <- lm(mpg ~ disp + hp, data = mtcars)
+model <- lm(log(mpg) ~ disp + hp, data = mtcars)
 plot(mpg ~ disp, data = mtcars)
-add_slice_2d(model,x_axis='disp', hp=100)
-}
+add_slice_2d(model)
+
+# Multiple slices on one plot
+plot(mpg ~ disp, data = mtcars)
+add_slice_2d(model, hp = min(mtcars$hp), col = "blue")
+add_slice_2d(model, hp = max(mtcars$hp), col = "red", lty = 2)
 
 }

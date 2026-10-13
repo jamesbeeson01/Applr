@@ -26,3 +26,6 @@
 ^docs$
 ^pkgdown$
 ^\.github$
+^debug\.log$
+^cran-comments\.md$
+^scratch$

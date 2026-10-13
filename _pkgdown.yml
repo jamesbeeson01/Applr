@@ -26,9 +26,6 @@ reference:
   - lm_equation
   - lm_latex
   - diagnose
-- title: Theme
-  contents:
-  - theme_lc
 - title: ggproto objects
   desc: Extension points underlying geom_slice.
   contents:

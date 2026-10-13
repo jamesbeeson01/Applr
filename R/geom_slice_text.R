@@ -608,18 +608,31 @@ ggplot_add.slice_text_spec <- function(object, plot, ...) {
 #' @examples
 #' library(ggplot2)
 #'
-#' # Two visually identical lines, told apart by their labels
-#' model <- lm(mpg ~ disp + hp, data = mtcars)
-#' ggplot(mtcars, aes(disp, mpg)) +
+#' # One label per predict_vars value
+#' model <- lm(Sepal.Length ~ Sepal.Width + Petal.Length, data = iris)
+#' ggplot(iris, aes(Petal.Length, Sepal.Length)) +
 #'   geom_point() +
-#'   geom_slice(model, predict_vars = list(hp = c(66, 335))) +
+#'   geom_slice(model, predict_vars = list(Sepal.Width = c(2, 3, 4))) +
 #'   geom_slice_text()
 #'
 #' # A projection band, labeled on each edge
-#' ggplot(mtcars, aes(disp, mpg)) +
+#' ggplot(iris, aes(Petal.Length, Sepal.Length)) +
 #'   geom_point() +
 #'   geom_slice(model, band = TRUE) +
 #'   geom_slice_text()
+#'
+#' # Labels take the color of their group
+#' model2 <- lm(hwy ~ displ * drv + cyl, data = mpg)
+#' ggplot(mpg, aes(displ, hwy, color = drv)) +
+#'   geom_point() +
+#'   geom_slice(model2, predict_vars = list(cyl = c(4, 8))) +
+#'   geom_slice_text()
+#'
+#' # Lines defined by several variables read best with a corner key
+#' ggplot(mpg, aes(displ, hwy)) +
+#'   geom_point() +
+#'   geom_slice(model2, predict_vars = list(cyl = c(4, 8), drv = c("f", "r"))) +
+#'   geom_slice_text(style = "legend")
 #'
 #' @export
 geom_slice_text <- function(style = "variable",

@@ -18,28 +18,28 @@
 #' - ggplot2 labeling: \code{\link{geom_slice_text}}, \code{\link{geom_slice_subtitle}}, \code{\link{geom_slice_caption}}
 #' - 3D visualization: \code{\link{scatter_3d}}
 #' - Equations: \code{\link{lm_equation}}, \code{\link{lm_latex}}
-#' - Theme: \code{\link{theme_lc}}
 #'
 #' @section Quick start:
-#' Fit a model and plot a slice:
+#' Fit a model, then see it in one call:
 #' \preformatted{
 #' library(Applr)
-#' model <- lm(mpg ~ disp + hp, data = mtcars)
-#' slice_2d(model, x_axis = "disp")
+#' model <- lm(mpg ~ qsec + am, data = mtcars)
+#' autoplot(model)
 #' }
 #'
-#' ggplot2 layer with facets:
+#' Or build the plot yourself with a geom_slice() layer:
 #' \preformatted{
 #' library(ggplot2)
-#' model <- lm(mpg ~ disp + hp + cyl, data = mtcars)
-#' ggplot(mtcars, aes(disp, mpg)) +
+#' model <- lm(hwy ~ displ * drv + cyl, data = mpg)
+#' ggplot(mpg, aes(displ, hwy, color = drv)) +
 #'   geom_point() +
-#'   facet_wrap(~cyl) +
-#'   geom_slice(model = model, predict_vars = list(hp = 110))
+#'   geom_slice(model, band = TRUE) +
+#'   geom_slice_text() +
+#'   geom_slice_subtitle()
 #' }
 #'
 #' @seealso \itemize{
-#'   \item Function help pages: \code{?slice_2d}, \code{?geom_slice}, \code{?scatter_3d}, \code{?lm_equation}, \code{?lm_latex}, \code{?theme_lc}
+#'   \item Function help pages: \code{?slice_2d}, \code{?geom_slice}, \code{?scatter_3d}, \code{?lm_equation}, \code{?lm_latex}
 #'   \item The package README for a brief tour
 #' }
 #'

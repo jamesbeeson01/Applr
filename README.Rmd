@@ -6,6 +6,12 @@ output: github_document
      with devtools::build_readme(). Do not edit README.md by hand. -->
 
 ```{r setup, include = FALSE}
+# knitr stages its htmlwidget screenshots (the plotly 3-D chunks) in a temp
+# directory it creates inside the working directory; on Windows the live Chrome
+# process keeps a handle on it, so the cleanup fails and an empty random-named
+# folder is left in the package root. Stage them in the session temp dir instead.
+options(knitr.html_screenshot.tmpdir = tempdir())
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -19,7 +25,14 @@ knitr::opts_chunk$set(
 set.seed(42)
 ```
 
-# Applr
+# Applr <img src="man/figures/logo.svg" align="right" height="139" alt="Applr logo" />
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/saundersg/Applr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/saundersg/Applr/actions/workflows/R-CMD-check.yaml)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/Applr)](https://cran.r-project.org/package=Applr)
+<!-- badges: end -->
+
+## Overview
 
 A small R package for visualizing linear models. Plots anything from 
 simple lines to high-dimensional squiggles all with the same functions.
@@ -45,7 +58,7 @@ library(Applr)
 
 ## Quick start
 
-```{r quickstart-autoplot, results = "hide", fig.keep = "first", fig.show = "hold", fig.alt = "autoplot() of an lm: scatter plot with the fitted slice line"}
+```{r quickstart-autoplot, results = "hide", fig.keep = "first", fig.show = "hold", fig.alt = "autoplot() of lm(mpg ~ qsec + am): mpg against qsec, one slice line with a confidence ribbon per am value"}
 library(Applr)
 
 # One call: scatter + fitted line + label from any lm()
@@ -76,7 +89,7 @@ other statistics (override with `summary = FALSE`).
 
 The result is a regular ggplot you can extend with `mapping` and `+` as usual.
 
-```{r autoplot, fig.alt = "autoplot() with a confidence interval and a custom title"}
+```{r autoplot, fig.alt = "autoplot() of an iris model: Petal.Length against Sepal.Length with a curved slice and confidence ribbon per Species, and the model equation as subtitle"}
 autoplot(lm(Petal.Length ~ Sepal.Length + I(Sepal.Length^2):Species, iris))
 ```
 
@@ -89,7 +102,7 @@ aesthetics such as `color`. Everything else in `...` is passed on to
 `geom_slice()` or `geom_slice_subtitle()`. Pass `interval = "prediction"` 
 for the wider ribbon, or `interval = "none"` for a bare line.
 
-```{r autoplot-mapping, results = "hide", fig.alt = "autoplot() with an x-axis override and a color mapping"}
+```{r autoplot-mapping, results = "hide", fig.alt = c("autoplot() of hwy against displ, colored by cyl and faceted by drv", "The same model with cyl on the x-axis, colored by drv, as bare lines without ribbons")}
 model <- lm(hwy ~ displ + drv + cyl, data = mpg)
 
 # Change the defaults like a normal ggplot; it will still infer the rest
@@ -143,7 +156,7 @@ In this example, the fitted model with 4 predictors can't be plotted as a
 line without making multiple assumptions. The console messages clarify the 
 decisions it HAD to make in order to plot the 2d slice.
 
-```{r minimal, message = TRUE, fig.show = "hold", out.width = "49%", fig.width = 4, fig.height = 3.2, fig.alt = "geom_slice() base functionality with few assumptions made"}
+```{r minimal, message = TRUE, fig.show = "hold", out.width = "49%", fig.width = 4, fig.height = 3.2, fig.alt = c("A single slice of a four-predictor model through scattered points, with the other predictors imputed", "The same model plotted against its full linear predictor, with every point on the line")}
 set.seed(123)
 n <- 80
 x <- runif(n, 0.1, 10)
@@ -172,7 +185,7 @@ Those assumptions had to be made, but you can make better ones.
 This plot shows the same model far clearer by utilizing several features
 `geom_slice()` offers.
 
-```{r geom-slice, fig.alt = "geom_slice() drawing the model's line using color, facet, band, and predict_vars"}
+```{r geom-slice, fig.alt = "The four-predictor model as projection bands over x2 from 0 to 10, one color per x3 value, faceted by x4, with every point inside its band"}
 ggplot(dat, aes(x, y, color = factor(x3))) +
   geom_point() +
   geom_slice(model, band = "x2", predict_vars = list(x2 = c(0, 10))) +
@@ -186,7 +199,7 @@ ggplot(dat, aes(x, y, color = factor(x3))) +
 Give a variable several values to draw one line per value; several
 multi-value variables are crossed:
 
-```{r predict-vars, fig.alt = "Three slice lines of the same model, one per hp value"}
+```{r predict-vars, fig.alt = "Three labeled slice lines of Sepal.Length against Petal.Length, one per Sepal.Width value of 2, 3, and 4, with confidence ribbons"}
 model <- lm(Sepal.Length ~ Sepal.Width + Petal.Length, iris)
 
 ggplot(iris, aes(Petal.Length, Sepal.Length)) +
@@ -204,7 +217,7 @@ ggplot(iris, aes(Petal.Length, Sepal.Length)) +
 `interval = "confidence"` or `"prediction"` adds the corresponding
 `predict.lm()` ribbon around the line:
 
-```{r interval, fig.show = "hold", out.width = "49%", fig.width = 4, fig.height = 3.2, fig.alt = "Slice line with a prediction-interval ribbon"}
+```{r interval, fig.show = "hold", out.width = "49%", fig.width = 4, fig.height = 3.2, fig.alt = c("Quadratic slice of hwy against displ with a confidence ribbon", "The same slice with a wider prediction ribbon")}
 model <- lm(hwy ~ displ + I(displ^2) + displ, data = mpg)
 
 ggplot(mpg, aes(displ, hwy)) +
@@ -226,7 +239,7 @@ make a decision about what the band should project over. `band = "variable"`
 spans that predictor between the values you gave in `predict_vars`, or its
 observed data range when `predict_vars` leaves it out:
 
-```{r band, fig.alt = "Projection band spanning hp from 66 to 335"}
+```{r band, fig.alt = c("One projection band per drv spanning cyl from 4 to 8, labeled at each edge", "One projection band per drv spanning cyl from 5 to 7, labeled at each edge")}
 model <- lm(hwy ~ displ * drv + cyl, data = mpg)
 
 # Projection band infered using the min and max of an unused variable
@@ -254,7 +267,7 @@ shows raw `y`, predictions are back-transformed automatically to match the
 y-axis (a message says so). Use `back_transform = FALSE` to turn this off, or
 pass a function/name (`exp`, `"log10"`, ...) to override the auto-detection.
 
-```{r back-transform, fig.show = "hold", out.width = "33%", fig.width = 2.5, fig.height = 3.2, fig.alt = "Back-transformed slice of a log-response model on the raw mpg axis"}
+```{r back-transform, fig.show = "hold", out.width = "33%", fig.width = 2.5, fig.height = 3.2, fig.alt = c("A log(mpg) model back-transformed onto a raw mpg axis", "The same model on a log(mpg) axis", "The same model on a scale_y_log10() axis")}
 model <- lm(log(mpg) ~ disp + hp, data = mtcars)
 
 ggplot(mtcars, aes(disp, mpg)) +
@@ -280,7 +293,7 @@ Each group's line normally stops at its own data range. `full_range = TRUE`
 extends every line to the edge of the panel instead (like `fullrange` in
 `geom_smooth()`):
 
-```{r grouping, fig.show = "hold", out.width = "49%", fig.width = 4, fig.height = 3.2, fig.alt = "One slice line per drv group, colored to match the points"}
+```{r grouping, fig.show = "hold", out.width = "49%", fig.width = 4, fig.height = 3.2, fig.alt = c("One curved slice per drv group, each ending at its group's data range", "The same slices extended across the full panel with full_range = TRUE")}
 model <- lm(hwy ~ displ + I(displ^2) + displ:drv, data = mpg)
 
 # One slice per drv group, capped at the end of each group
@@ -305,7 +318,7 @@ no model or `predict_vars` — everything is borrowed from the plot's existing
 Writes a label at the end of each slice line; especially useful when `band` 
 or multiple `predict_vars` are specified.
 
-```{r slice-text-band, fig.alt = ""}
+```{r slice-text-band, fig.alt = "Projection band over Sepal.Width with each edge labeled by its value"}
 model <- lm(Sepal.Length ~ Sepal.Width + Petal.Length, iris)
 
 ggplot(iris, aes(Petal.Length, Sepal.Length)) +
@@ -314,7 +327,7 @@ ggplot(iris, aes(Petal.Length, Sepal.Length)) +
   geom_slice_text()
 ```
 
-```{r slice-text-color, fig.width = 7.5, fig.alt = "Slice lines labeled at their right ends"}
+```{r slice-text-color, fig.width = 7.5, fig.alt = "Three slice lines per group g, labeled at their right ends with their x2 value in the group's color"}
 set.seed(123)
 
 n <- 80
@@ -332,7 +345,7 @@ ggplot(dat, aes(x, y, color = g)) +
   geom_slice_text()
 ```
 
-```{r slice-text-multiple, fig.width = 7.5, fig.alt = "geom_slice_text plots labels with multiple predictors"}
+```{r slice-text-multiple, fig.width = 7.5, fig.alt = "Six slice lines, one per combination of x2 and g, each labeled with both values at its right end"}
 # Multiple predictors represent one line
 ggplot(dat, aes(x, y)) +
   geom_point(alpha = 0.5) +
@@ -340,7 +353,7 @@ ggplot(dat, aes(x, y)) +
   geom_slice_text()
 ```
 
-```{r slice-text-legend, fig.width = 7.5, fig.alt = "geom_slice_text labels multiple predictors with the 'legend' style"}
+```{r slice-text-legend, fig.width = 7.5, fig.alt = "The same six slice lines with bare-value labels and a corner key naming x2 and g"}
 # Identical, with `style = "legend"`
 ggplot(dat, aes(x, y)) +
   geom_point(alpha = 0.5) +
@@ -358,7 +371,7 @@ Fill the plot subtitle (or caption) with the model equation and the held
 values the plot does not otherwise show — values already labeled by the
 legend, facets, or `geom_slice_text()` are skipped:
 
-```{r slice-subtitle, fig.alt = "Plot whose subtitle shows the model equation and the held hp value"}
+```{r slice-subtitle, fig.alt = "Curved slices per iris Species with confidence ribbons; the subtitle shows the model equation and the held Sepal.Width value"}
 model <- lm(Petal.Length ~ Sepal.Length + I(Sepal.Length^2):Species + Sepal.Width, iris)
 
 ggplot(iris, aes(Sepal.Length, Petal.Length, color = Species)) +
@@ -386,7 +399,7 @@ Create a new base-R plot showing a 2-D slice of a linear model. Unspecified
 values are held at sensible defaults (numeric → mean, factor → first level)
 and reported in the caption.
 
-```{r slice-2d, fig.keep = "first", fig.show = "hold", fig.alt = "Base-R slice plot with held values reported in the caption"}
+```{r slice-2d, fig.keep = "first", fig.show = "hold", fig.alt = "Base-R plot of mpg against disp with the back-transformed slice line and the held hp value in the caption"}
 model <- lm(log(mpg) ~ disp + hp, data = mtcars)
 slice_2d(model)
 #--or--
@@ -398,7 +411,7 @@ slice_2d(model, x_axis = "hp", disp = 250, n = 150, col = "blue", lwd = 2)
 Add a 2-D slice line to an *existing* base-R plot. X and Y axis variables
 must match the plot it is being added to.
 
-```{r add-slice-2d, fig.keep = "last", fig.alt = "Two slice lines added to an existing base-R plot"}
+```{r add-slice-2d, fig.keep = "last", fig.alt = "Base-R scatter of mpg against disp with added slices at the lowest hp (blue) and highest hp (red, dashed)"}
 model <- lm(log(mpg) ~ disp + hp, data = mtcars)
 plot(mpg ~ disp, data = mtcars)
 add_slice_2d(model)
@@ -492,9 +505,9 @@ Enjoy clearer model visualizations with **Applr**!
 
 ## Attributions
 
-Thanks to **Cameron McClellan** for his vision and initiation, **James Beeson** for seeing it through, **Anthropic's Claude** for solving the problems we couldn't, and **Brother Saunders** - our teacher and inspiration to do great things.
+Thanks to **Cameron McClellan** for his vision and initiation, **James Beeson** for seeing it through, **Anthropic's Claude** for solving the coding problems we couldn't, and **Brother Garrett Saunders** - our teacher and inspiration to do great things.
 
 And of course, Brigham Young University Idaho - our alma mater; the school we love and cherish. And the God of Heaven and Earth, who gives us all.
 
-33 For God is not the author of *confusion*, but of *peace*, as in all churches of the saints.
-- 1 Corinthians 14:33
+> "For God is not the author of *confusion*, but of *peace*, as in all churches of the saints."
+> - 1 Corinthians 14:33

@@ -71,30 +71,28 @@ ggplot2::autoplot
 #' @examples
 #' library(ggplot2)
 #'
-#' # A complete plot from a model in one call
-#' autoplot(lm(mpg ~ disp, data = mtcars))
+#' # A complete plot from a model in one call; summary() prints to the console
+#' autoplot(lm(Petal.Length ~ Sepal.Length + I(Sepal.Length^2):Species, iris))
 #'
-#' # Predictors not on the plot are imputed (a message says how)
-#' autoplot(lm(mpg ~ disp + hp, data = mtcars))
+#' # Predictors that group into a few values become color, then facets
+#' model <- lm(hwy ~ displ + drv + cyl, data = mpg)
+#' autoplot(model, summary = FALSE)
 #'
-#' # Choose which predictor goes on the x-axis
-#' autoplot(lm(mpg ~ disp + hp, data = mtcars), mapping = aes(x = hp))
+#' # Change the defaults like a normal ggplot; the rest is still inferred
+#' autoplot(model, aes(color = factor(cyl)), summary = FALSE) + facet_wrap(~drv)
+#'
+#' # Choose the x-axis and pass geom_slice() options through
+#' autoplot(model,
+#'          aes(x = cyl, color = factor(drv)),
+#'          interval = "none", summary = FALSE) +
+#'   labs(title = "The Same Model From a Different Angle")
 #'
 #' # Transformed response, back-transformed onto the raw mpg axis
-#' autoplot(lm(log(mpg) ~ disp, data = mtcars))
+#' autoplot(lm(log(mpg) ~ disp + hp, data = mtcars), summary = FALSE)
 #'
-#' # Options pass through to geom_slice(); the result is a normal ggplot
-#' autoplot(lm(mpg ~ disp + hp, data = mtcars),
-#'          predict_vars = list(hp = 110), interval = "prediction") +
-#'   labs(title = "Slice at hp = 110")
-#'
-#' # Extra aesthetics for the scatter (mapping goes to ggplot())
-#' autoplot(lm(mpg ~ hp + factor(cyl), data = mtcars),
-#'          mapping = aes(color = factor(cyl)))
-#'
-#' # An interactive 3-D surface for a two-predictor model
+#' # An interactive 3-D surface for a model with two numeric predictors
 #' if (interactive()) {
-#'   autoplot(lm(mpg ~ disp + hp, data = mtcars), type = "3d")
+#'   autoplot(lm(mpg ~ wt + I(wt^2) + hp, data = mtcars), type = "3d")
 #' }
 #'
 #' @export
@@ -244,10 +242,11 @@ autoplot.lm <- function(object, mapping = NULL, type = c("2d", "3d"),
 
   plot <- ggplot(model_data, plot_mapping) +
     geom_point() +
-    geom_slice(object, interval = interval, ...) +
-    geom_slice_subtitle()
+    geom_slice(object, interval = interval, ...)
+  # The facet must come before the subtitle, which only skips facet variables
+  # already on the plot when it is added
   if (!is.null(facet_var)) {
     plot <- plot + facet_wrap(vars(!!as.name(facet_var)))
   }
-  plot
+  plot + geom_slice_subtitle()
 }

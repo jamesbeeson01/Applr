@@ -12,6 +12,10 @@ if (!"Applr" %in% loadedNamespaces()) {
 }
 suppressPackageStartupMessages(library(ggplot2))
 
+# Straight quotes keep console snapshots identical across locales (a UTF-8
+# locale prints summary()'s significance codes with curly quotes).
+options(useFancyQuotes = FALSE)
+
 # try_show(expr) — run one step of a console case. Prints the visible result,
 # or the error/warning/message it raises, then lets the rest of the file keep
 # running (a bare error would abort the script at the first failing call).

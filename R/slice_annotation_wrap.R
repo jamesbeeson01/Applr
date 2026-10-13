@@ -71,7 +71,10 @@ annotation_width <- function(strings, gp) {
 # whether a hanging indent even makes sense (it does not for a right-aligned
 # caption).
 annotation_style <- function(plot, element) {
-  theme <- tryCatch(ggplot2::complete_theme(plot$theme),
+  # complete_theme() only exists in ggplot2 >= 4.0
+  complete <- get0("complete_theme", envir = asNamespace("ggplot2"),
+                   mode = "function", inherits = FALSE)
+  theme <- tryCatch(complete(plot$theme),
                     error = function(e) ggplot2::theme_get())
   el <- tryCatch(ggplot2::calc_element(paste0("plot.", element), theme),
                  error = function(e) NULL)
@@ -121,11 +124,16 @@ annotation_avail_width <- function(plot, element) {
 # the thin and hair spaces land much closer. Fonts that have no separate
 # glyphs for them report the width of a plain space instead; those are dropped
 # here, so the indent quietly degrades to whole spaces rather than emitting
-# characters the device would draw as a missing-glyph box.
+# characters the device would draw as a missing-glyph box. So are glyphs the
+# device cannot encode at all: pdf() in a single-byte encoding errors on them
+# (Linux, macOS) where Windows substitutes a plain space.
 pad_glyphs <- function(gp) {
-  candidates <- c(" ", " ", " ", " ")
-  w <- annotation_width(candidates, gp)
-  keep <- w > 0 & !duplicated(round(w, 4))
+  candidates <- c(" ", "\u2002", "\u2009", "\u200a")
+  w <- vapply(candidates, function(s) {
+    tryCatch(annotation_width(s, gp), warning = function(w) NA_real_,
+             error = function(e) NA_real_)
+  }, numeric(1), USE.NAMES = FALSE)
+  keep <- !is.na(w) & w > 0 & !duplicated(round(w, 4))
   list(glyph = candidates[keep], width = w[keep])
 }
 

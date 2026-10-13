@@ -11,6 +11,9 @@
 #'
 #' @return None. The function is called for its side effect of producing plots.
 #'
+#' @importFrom graphics abline text
+#' @importFrom stats lowess
+#'
 #' @export
 #'
 #' @examples

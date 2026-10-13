@@ -9,6 +9,8 @@
 #' ribbons, back-transformation) plus grouping, faceting, and held-variable
 #' reporting. Calling it is an error that points to the replacement.
 #'
+#' @return None; always throws an error pointing to [geom_slice()].
+#' 
 #' @param ... Ignored; accepted only so old calls reach the error message.
 #'
 #' @seealso [geom_slice()]
