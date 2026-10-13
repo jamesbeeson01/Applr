@@ -19,6 +19,11 @@ geom_fit(...)
 
   Ignored; accepted only so old calls reach the error message.
 
+## Value
+
+None; always throws an error pointing to
+[`geom_slice()`](https://saundersg.github.io/Applr/reference/geom_slice.md).
+
 ## See also
 
 [`geom_slice()`](https://saundersg.github.io/Applr/reference/geom_slice.md)

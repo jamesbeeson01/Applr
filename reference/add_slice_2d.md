@@ -74,9 +74,8 @@ an HD model
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 model <- lm(mpg ~ disp + hp, data = mtcars)
 plot(mpg ~ disp, data = mtcars)
-add_slice_2d(model,x_axis='disp', hp=100)
-} # }
+add_slice_2d(model, x_axis = 'disp', hp = 100)
+
 ```

@@ -1,6 +1,6 @@
 # Changelog
 
-## Applr 1.0.0 (unreleased)
+## Applr 1.0.0
 
 First stable release. The public API documented here is covered by a
 stability promise: renames or removals after 1.0 go through a

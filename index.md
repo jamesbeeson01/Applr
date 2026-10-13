@@ -1,4 +1,6 @@
-# Applr
+# Applr ![Applr logo](reference/figures/applr-logo.svg)
+
+## Overview
 
 A small R package for visualizing linear models. Plots anything from
 simple lines to high-dimensional squiggles all with the same functions.
@@ -679,12 +681,12 @@ Enjoy clearer model visualizations with **Applr**!
 
 Thanks to **Cameron McClellan** for his vision and initiation, **James
 Beeson** for seeing it through, **Anthropic’s Claude** for solving the
-problems we couldn’t, and **Brother Saunders** - our teacher and
-inspiration to do great things.
+coding problems we couldn’t, and **Brother Garrett Saunders** - our
+teacher and inspiration to do great things.
 
 And of course, Brigham Young University Idaho - our alma mater; the
 school we love and cherish. And the God of Heaven and Earth, who gives
 us all.
 
-33 For God is not the author of *confusion*, but of *peace*, as in all
-churches of the saints. - 1 Corinthians 14:33
+> “For God is not the author of *confusion*, but of *peace*, as in all
+> churches of the saints.” - 1 Corinthians 14:33

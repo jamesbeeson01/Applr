@@ -43,11 +43,6 @@ autoplot.
 - [`diagnose()`](https://saundersg.github.io/Applr/reference/diagnose.md)
   : Diagnostic plots for linear models
 
-## Theme
-
-- [`theme_lc()`](https://saundersg.github.io/Applr/reference/theme_lc.md)
-  : Theme based off of Lauren Condie's work
-
 ## ggproto objects
 
 Extension points underlying geom_slice.

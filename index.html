@@ -11,8 +11,8 @@
 <script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Visualize and Explain Linear Models">
-<meta name="description" content="Tools for visualizing and explaining linear models fit with lm(). Draws 2D slices of higher-dimensional models in base graphics and as a ggplot2 layer, offers an interactive 3D scatter with a fitted surface for two-predictor models, and renders model equations as plain text or LaTeX.">
-<meta property="og:description" content="Tools for visualizing and explaining linear models fit with lm(). Draws 2D slices of higher-dimensional models in base graphics and as a ggplot2 layer, offers an interactive 3D scatter with a fitted surface for two-predictor models, and renders model equations as plain text or LaTeX.">
+<meta name="description" content="Tools for visualizing and explaining linear models fit with lm(). Draws 2D slices of higher-dimensional models in base graphics and as a ggplot2 layer, offers an interactive plotly 3D scatter with a fitted surface for two-predictor models, and renders model equations as plain text or LaTeX.">
+<meta property="og:description" content="Tools for visualizing and explaining linear models fit with lm(). Draws 2D slices of higher-dimensional models in base graphics and as a ggplot2 layer, offers an interactive plotly 3D scatter with a fitted surface for two-predictor models, and renders model equations as plain text or LaTeX.">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">Applr</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,12 +48,18 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="applr">Applr<a class="anchor" aria-label="anchor" href="#applr"></a>
+<div class="page-header"><h1 id="applr-">Applr <img src="reference/figures/applr-logo.svg" height="139" alt="Applr logo"><a class="anchor" aria-label="anchor" href="#applr-"></a>
 </h1></div>
+<!-- badges: start -->
+
+<div class="section level2">
+<h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
+</h2>
 <p>A small R package for visualizing linear models. Plots anything from simple lines to high-dimensional squiggles all with the same functions.</p>
 <p>Start by fitting an <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code>, then hand it to Applr. Explore it with <code><a href="https://ggplot2.tidyverse.org/reference/autoplot.html" class="external-link">autoplot()</a></code>, or present it with polish and fine-grained control using <code><a href="reference/geom_slice.html">geom_slice()</a></code>. Either way, you can trust the linear model, because you can see it and control it - something <code><a href="https://ggplot2.tidyverse.org/reference/geom_smooth.html" class="external-link">geom_smooth()</a></code> attempts, but can’t reach.</p>
 <p>Also includes label helpers (<code><a href="reference/geom_slice_subtitle.html">geom_slice_subtitle()</a></code>, <code><a href="reference/geom_slice_text.html">geom_slice_text()</a></code>), base-R plots (<code><a href="reference/slice_2d.html">slice_2d()</a></code>), interactive 3-D surfaces (<code><a href="reference/scatter_3d.html">scatter_3d()</a></code>), LaTeX generator (<code><a href="reference/lm_latex.html">lm_latex()</a></code>), and a simple diagnostic helper (<code><a href="reference/diagnose.html">diagnose()</a></code>).</p>
 <p>Perfect for any <strong>App</strong>lied <strong>l</strong>inear <strong>r</strong>egression.</p>
+</div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -476,9 +482,11 @@
 <div class="section level2">
 <h2 id="attributions">Attributions<a class="anchor" aria-label="anchor" href="#attributions"></a>
 </h2>
-<p>Thanks to <strong>Cameron McClellan</strong> for his vision and initiation, <strong>James Beeson</strong> for seeing it through, <strong>Anthropic’s Claude</strong> for solving the problems we couldn’t, and <strong>Brother Saunders</strong> - our teacher and inspiration to do great things.</p>
+<p>Thanks to <strong>Cameron McClellan</strong> for his vision and initiation, <strong>James Beeson</strong> for seeing it through, <strong>Anthropic’s Claude</strong> for solving the coding problems we couldn’t, and <strong>Brother Garrett Saunders</strong> - our teacher and inspiration to do great things.</p>
 <p>And of course, Brigham Young University Idaho - our alma mater; the school we love and cherish. And the God of Heaven and Earth, who gives us all.</p>
-<p>33 For God is not the author of <em>confusion</em>, but of <em>peace</em>, as in all churches of the saints. - 1 Corinthians 14:33</p>
+<blockquote>
+<p>“For God is not the author of <em>confusion</em>, but of <em>peace</em>, as in all churches of the saints.” - 1 Corinthians 14:33</p>
+</blockquote>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -510,10 +518,17 @@
 <ul class="list-unstyled">
 <li>Cameron McClellan <br><small class="roles"> Author </small>   </li>
 <li>James Beeson <br><small class="roles"> Author, maintainer </small>   </li>
+<li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/saundersg/Applr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/saundersg/Applr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://cran.r-project.org/package=Applr" class="external-link"><img src="https://www.r-pkg.org/badges/version/Applr" alt="CRAN_Status_Badge"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>

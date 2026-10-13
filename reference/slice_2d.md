@@ -74,11 +74,11 @@ A 2D graph of a sliced model
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
 model <- lm(mpg ~ disp, data = mtcars)
 slice_2d(model, x_axis = 'disp')
 
+
 # With a 95% confidence band around the line
 slice_2d(model, x_axis = 'disp', interval = "confidence")
-} # }
+
 ```

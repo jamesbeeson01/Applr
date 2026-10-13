@@ -45,9 +45,6 @@ Core capabilities:
   [`lm_equation`](https://saundersg.github.io/Applr/reference/lm_equation.md),
   [`lm_latex`](https://saundersg.github.io/Applr/reference/lm_latex.md)
 
-- Theme:
-  [`theme_lc`](https://saundersg.github.io/Applr/reference/theme_lc.md)
-
 ## Quick start
 
 Fit a model and plot a slice:
@@ -74,8 +71,7 @@ ggplot2 layer with facets:
   [`?geom_slice`](https://saundersg.github.io/Applr/reference/geom_slice.md),
   [`?scatter_3d`](https://saundersg.github.io/Applr/reference/scatter_3d.md),
   [`?lm_equation`](https://saundersg.github.io/Applr/reference/lm_equation.md),
-  [`?lm_latex`](https://saundersg.github.io/Applr/reference/lm_latex.md),
-  [`?theme_lc`](https://saundersg.github.io/Applr/reference/theme_lc.md)
+  [`?lm_latex`](https://saundersg.github.io/Applr/reference/lm_latex.md)
 
 - The package README for a brief tour
 
@@ -86,3 +82,7 @@ ggplot2 layer with facets:
 Authors:
 
 - Cameron McClellan <cameron.m.mcclellan@gmail.com>
+
+Other contributors:
+
+- Garrett Saunders <saundersg@byui.edu> \[thesis advisor\]
