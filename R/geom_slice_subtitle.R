@@ -245,11 +245,13 @@ ggplot_add.slice_subtitle_spec <- function(object, plot, ...) {
 #' @examples
 #' library(ggplot2)
 #'
-#' # Subtitle reports the model equation and that hp is held at its mean
-#' model <- lm(mpg ~ disp + hp, data = mtcars)
-#' ggplot(mtcars, aes(disp, mpg)) +
+#' # Subtitle reports the model equation and the held Sepal.Width; Species
+#' # is already shown by the legend, so it is left out
+#' model <- lm(Petal.Length ~ Sepal.Length + I(Sepal.Length^2):Species +
+#'               Sepal.Width, data = iris)
+#' ggplot(iris, aes(Sepal.Length, Petal.Length, color = Species)) +
 #'   geom_point() +
-#'   geom_slice(model) +
+#'   geom_slice(model, interval = "confidence") +
 #'   geom_slice_subtitle()
 #'
 #' @export

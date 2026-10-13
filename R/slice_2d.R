@@ -40,11 +40,14 @@
 #' @importFrom grDevices adjustcolor
 #'
 #' @examples
-#' model <- lm(mpg ~ disp, data = mtcars)
-#' slice_2d(model, x_axis = 'disp')
+#' model <- lm(log(mpg) ~ disp + hp, data = mtcars)
+#' slice_2d(model)
+#'
+#' # Choose the x-axis, hold disp at a value, and style the line
+#' slice_2d(model, x_axis = "hp", disp = 250, n = 150, col = "blue", lwd = 2)
 #'
 #' # With a 95% confidence band around the line
-#' slice_2d(model, x_axis = 'disp', interval = "confidence")
+#' slice_2d(model, interval = "confidence")
 #'
 #' @export
 slice_2d <- function(model, x_axis = NULL, n = 100, caption = TRUE,
@@ -123,9 +126,14 @@ slice_2d <- function(model, x_axis = NULL, n = 100, caption = TRUE,
 #' @returns A line added to a preexisting R plot displaying a 2D graphable slice of an HD model
 #'
 #' @examples
-#' model <- lm(mpg ~ disp + hp, data = mtcars)
+#' model <- lm(log(mpg) ~ disp + hp, data = mtcars)
 #' plot(mpg ~ disp, data = mtcars)
-#' add_slice_2d(model, x_axis = 'disp', hp = 100)
+#' add_slice_2d(model)
+#'
+#' # Multiple slices on one plot
+#' plot(mpg ~ disp, data = mtcars)
+#' add_slice_2d(model, hp = min(mtcars$hp), col = "blue")
+#' add_slice_2d(model, hp = max(mtcars$hp), col = "red", lty = 2)
 #'
 #' @export
 add_slice_2d <- function(model, x_axis = NA, n = 100, caption = FALSE,

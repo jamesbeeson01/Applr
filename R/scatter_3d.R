@@ -22,16 +22,12 @@
 #'
 #' @examples
 #' if (interactive()) {
-#'   # A flat regression plane over two predictors
-#'   model <- lm(mpg ~ disp + hp, data = mtcars)
+#'   # Transformed terms graph over their raw predictors
+#'   model <- lm(mpg ~ wt + I(wt^2) + hp, data = mtcars)
 #'   scatter_3d(model)
 #'
 #'   # Custom marker gradient and a finer surface grid
-#'   scatter_3d(model, n = 200, colors = c("blue", "yellow"))
-#'
-#'   # Transformed terms graph over their raw predictors
-#'   curved <- lm(mpg ~ wt + I(wt^2) + hp, data = mtcars)
-#'   scatter_3d(curved)
+#'   scatter_3d(model, n = 200, colors = c("purple", "orange"))
 #'
 #'   # Interaction models produce a twisted (non-planar) surface
 #'   twisted <- lm(Sepal.Length ~ Sepal.Width * Petal.Length, data = iris)
