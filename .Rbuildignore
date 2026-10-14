@@ -29,3 +29,4 @@
 ^debug\.log$
 ^cran-comments\.md$
 ^scratch$
+^CRAN-SUBMISSION$
