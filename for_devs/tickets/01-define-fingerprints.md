@@ -10,4 +10,4 @@
 - [x] Prior art is checked and cited: vdiffr's fixed-font SVG engine for ggplot and base graphics
 - [x] States for interactive outputs and animations are defined as data produced by a compute step, not by driving a browser
 - [x] Open risks for cross-platform matching are listed as hypotheses for ticket 03 to test
-- [x] The spec uses the glossary terms in CONTEXT.md; any new term is added there
+- [x] The spec uses the glossary terms in GLOSSARY.md; any new term is added there

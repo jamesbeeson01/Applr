@@ -1,7 +1,7 @@
 # Spec: Test suite revision
 
 Status: ready-for-agent
-Vocabulary: see `CONTEXT.md` (Case, Expectation, Judged output, State, Fingerprint, Serialised form, Compute step, Shell, Review status, Agent approved, Human approved, Rejected, Rejection note, Platform variant).
+Vocabulary: see `GLOSSARY.md` (Case, Expectation, Judged output, State, Fingerprint, Serialised form, Compute step, Shell, Review status, Agent approved, Human approved, Rejected, Rejection note, Platform variant).
 
 ## Problem Statement
 
