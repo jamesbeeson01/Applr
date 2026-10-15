@@ -1,7 +1,7 @@
 # Spec: Test suite revision
 
 Status: ready-for-agent
-Vocabulary: see `CONTEXT.md` (Case, Expectation, Judged output, State, Fingerprint, Review status, Agent approved, Human approved, Rejected, Rejection note, Platform variant).
+Vocabulary: see `CONTEXT.md` (Case, Expectation, Judged output, State, Fingerprint, Serialised form, Compute step, Shell, Review status, Agent approved, Human approved, Rejected, Rejection note, Platform variant).
 
 ## Problem Statement
 
@@ -85,13 +85,57 @@ How CI (GitHub Actions) treats each review status, and whether fingerprints can 
 
 | Output type | States | Expectations on | Judged as |
 |---|---|---|---|
-| Static ggplot / base graphics | 1 | built/prepared data | rendered SVG |
-| Condition (error/warning/message) | – | class, key fields, plot still built | message text |
+| Static ggplot / base graphics | 1 | built/prepared data | fixed-font SVG |
+| Condition (error/warning/message) | 1 (all conditions, in order) | class, key fields, plot still built | message text |
 | Slider widget | declared slider positions | state data | each state + live use |
 | plotly 3D | declared camera presets | trace data | each state + live use |
 | Animation | first, last, N evenly spaced frames | frame data | each frame + playback |
 
-**Fingerprints.** One fingerprint per state, computed from a serialised text form with noise removed (rounded coordinates, random widget IDs and timestamps stripped). Exactly what is serialised and stripped per output type is defined by the first ticket. PNGs and screenshots are never fingerprinted; they exist only for viewing.
+**Fingerprints.** One fingerprint per state: a SHA-256 hash (via `digest`), shortened to 12 hex characters, of the state's serialised form encoded as UTF-8. The serialised form is stored next to the review state, so an agent can diff it against the last approved version (story 37). PNGs and screenshots are never fingerprinted; they exist only for viewing.
+
+Every state comes from a compute step in R. For a static plot, that step is just building the plot. No browser, screenshot or GIF encoder is involved. Compute steps run under pinned options: `options(useFancyQuotes = FALSE, cli.unicode = FALSE, digits = 7, OutDec = ".", width = 80)`, plus the case's own `set.seed()`. The text they produce then goes through the **common normalisation** before it counts as the serialised form:
+
+1. Line endings become `\n`, and trailing whitespace is removed from each line.
+2. Absolute paths (`tempdir()`, the package root, the user's home folder) become `<tmp>`, `<pkg>` and `<home>`.
+3. A numeric token whose value is zero (`-0`, `-0.00`, but not `-0.5`) loses its minus sign. A value that rounds to zero must not change sign between platforms.
+
+Each output type then adds its own rules.
+
+**Static ggplot.** *State:* one, the plot as printed. *Serialised form:* fixed-font SVG from vdiffr's engine, `vdiffr::write_svg(function() print(p), file)`. The plot is wrapped in a function on purpose. Passed directly, a ggplot without a theme gets `theme_test()`, but the suite judges the theme users actually see. *Normalisation:* none beyond the common rules. The engine already rounds coordinates and builds clip IDs from those rounded coordinates, so they are deterministic. It writes no timestamps or random IDs.
+
+**Base graphics** (`slice_2d`, `add_slice_2d`). *State:* one, the device contents after the case's drawing code runs. *Serialised form:* the same engine, with the drawing code as a function: `vdiffr::write_svg(function() { slice_2d(m); add_slice_2d(m2) }, file)`. *Normalisation:* as for static ggplot.
+
+**Condition text.** *State:* one per case, holding every condition the call raises, in order. Conditions raised by dependencies (for example ggplot2 dropping rows) are included, because a user sees them too. *Serialised form:* one block per condition: a header line `<kind>` (`error`, `warning` or `message`), then `conditionMessage()` verbatim. Blocks are separated by a blank line. *Normalisation:* ANSI escape codes are removed, and curly quotes (`‘’“”`) become straight ones, as a safety net behind `useFancyQuotes`. Numbers in wording are not rounded, because a changed number in a message is a wording change. The condition's class and key fields are expectations, not part of this form.
+
+**Canonical JSON**, used by the remaining types: S3 classes are dropped recursively (plotly tags fields such as `zcolor`, which `jsonlite` refuses), numbers are rounded with `signif(x, 6)`, object keys are sorted recursively, and array order is kept. It is written with `jsonlite::toJSON(digits = I(6), auto_unbox = TRUE, null = "null", na = "null")`. plotly's own `to_JSON()` is not used: it writes 17 significant digits, and the extra digits are floating-point noise.
+
+**Slider widget.** *States:* the slider positions declared by the case. One position assigns a value to every slider, for example `list(hp = 100, cyl = 6)`. The case declares positions as data: at minimum the start position plus each slider's minimum and maximum, with the other sliders held at their start values. *Compute step:* the slider's recipe (`function(predict_vars) -> ggplot`, as the slider prototypes require) is called at that position. *Serialised form:* two parts joined by a `---` line:
+- the static ggplot form of the recipe's plot at that position, so labels, subtitle and line all count;
+- the **shell**: the widget's non-state configuration as canonical JSON (slider names, ranges, steps, labels, starting position), its htmlwidget dependencies by name and version, and the SHA-256 of each JS and CSS file Applr ships for it, keyed by file path.
+
+Because the shell is part of every state, a shell change resets the review status of every state of the widget.
+
+**plotly 3D** (`scatter_3d`). *States:* the camera presets declared by the case (for example `default`, `top`, `side`). One preset is a `layout.scene.camera` value. *Compute step:* `plotly::plotly_build()` on the widget, then the preset's camera written into `layout.scene.camera`. *Serialised form:* canonical JSON of only `x$data`, `x$layout` and `x$config` from the built object, followed by a shell of the widget's htmlwidget dependencies (including plotly.js) by name and version. *Normalisation:* every other top-level field is dropped. `visdat`, `cur_data` and `attrs` are keyed by IDs that change on every build, and `source`, `base_url`, `highlight` and `shinyEvents` don't affect appearance. Any `uid` or `elementId` is dropped too. On `scatter_3d(lm(mpg ~ wt + hp, mtcars))` this form is identical across two builds and is 83 KB, compared with 196 KB from `to_JSON()`.
+
+**Animation** (future). *States:* the first frame, the last frame, and N evenly spaced frames between them. N is declared by the case and defaults to 3. *Compute step:* the animation's frame step returns every frame as a ggplot (or as data a ggplot recipe draws), together with timing metadata, before any encoder runs. This is the same design rule as for sliders. *Serialised form:* the sampled frame's static ggplot form, plus a shell of the timing metadata (frame count, frames per second, duration, easing) as canonical JSON. Playback is judged live on the review page and is never fingerprinted.
+
+**Prior art.** vdiffr ([r-lib/vdiffr](https://github.com/r-lib/vdiffr)) solves this problem for ggplot and base graphics. The suite reuses vdiffr's engine as a dev-only dependency (not in `DESCRIPTION`; install it before running judged outputs) rather than building its own. The relevant history, from its NEWS and `src/devSVG.cpp`:
+- In 0.3.0 vdiffr embedded its own svglite "to protect against updates of the SVG generation engine". Plain svglite measures text with the system's fonts, so its output varies by operating system.
+- From 0.4.0, text extents come from precomputed glyph sizes instead of FreeType, and 1.0.0 slimmed the engine down. Text is written as `font-family: sans` with a fixed `textLength` taken from Liberation metrics, so text widths don't depend on installed fonts.
+- Clip IDs are base64 strings of the clip rectangle, rounded to two decimals. Text positions are written with `%0.2f`.
+- Each SVG records `data-engine-version`. The suite stores that version with each fingerprint. When a reset to Unreviewed coincides with a change of engine version, the cause can then be told apart from a code change.
+- 0.1.0 removed CR line endings before comparing, for Windows.
+
+Deliberately not taken from vdiffr: testthat snapshot storage and `snapshot_review()`. They have no review status, and snapshot failures are not reported on CRAN.
+
+**Open risks for cross-platform matching.** These are hypotheses for the cross-platform experiment to confirm or refute, per output type.
+- **H1, engine:** with identical R, ggplot2, plotly and vdiffr versions, a static ggplot or base graphics SVG is byte-identical on Windows, macOS and Linux.
+- **H2, floating point:** different BLAS, LAPACK or libm builds give last-bit differences in `lm()` and `predict()`. Rounding to two decimals (SVG) or 6 significant figures (JSON) hides these, except when a value sits on a rounding boundary. Expect rare single-coordinate mismatches, and record how often they happen.
+- **H3, negative zero:** `-0.00` against `0.00` is the main source of H2 boundary cases. It caused the old suite's "near-zero rounding" Linux fix, and the common normalisation covers it.
+- **H4, text:** `geom_slice_subtitle()` measures its wrap width from a `ggplotGrob`. Under vdiffr's fixed metrics the wrap should be identical. Under any other device it is not.
+- **H5, condition wording:** quote style and cli's bullet symbols (`ℹ`, `✖`) depend on locale and UTF-8 support, which caused the old suite's curly-quote Linux fix. Pinned options plus the curly-to-straight rule should make wording identical.
+- **H6, JSON:** canonical JSON (plotly forms, slider and animation shells) matches across platforms. The only risk is H2 at 6 significant figures.
+- **H7, versions not platforms:** most real mismatches will come from different package versions rather than operating systems. The experiment pins versions and records `sessionInfo()`, so each mismatch can be blamed on one or the other.
 
 **Review status rules.** Encodes the decisions above. Trimmed from the logic prototype and corrected to the final model.
 

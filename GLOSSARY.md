@@ -23,8 +23,20 @@ One sampled moment of a judged output: the single image of a static plot, one sl
 _Avoid_: Frame (except for animations), screenshot
 
 **Fingerprint**:
-A short hash of one output's exact rendered bytes after noise is removed. Identical bytes give an identical fingerprint. A fingerprint never decides correctness; it only tells whether an output is the same one that was last reviewed.
+A short hash of one state's serialised form. Identical text gives an identical fingerprint. A fingerprint never decides correctness; it only tells whether an output is the same one that was last reviewed.
 _Avoid_: Hash (in prose), snapshot, checksum
+
+**Serialised form**:
+The text a state becomes once noise is removed, and the input to its fingerprint: fixed-font SVG for plots, canonical JSON for plotly, message text for conditions.
+_Avoid_: Snapshot, dump
+
+**Compute step**:
+The R code that produces a state, as data or as a ggplot, without a browser. For a static plot it is just building the plot. Interactive outputs and animations must expose theirs separately from the code that draws them.
+_Avoid_: Render step
+
+**Shell**:
+The part of an interactive output's or animation's serialised form that is shared by all its states, such as slider ranges, widget dependencies or frame timing.
+_Avoid_: Wrapper, chrome
 
 **Review status**:
 How far a judged output has been approved: Unreviewed, Agent approved, Human approved, or Rejected. It belongs to one fingerprint; a new fingerprint resets it to Unreviewed.
