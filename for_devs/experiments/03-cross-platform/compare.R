@@ -13,7 +13,10 @@ fps <- lapply(setNames(platforms, platforms), function(p) read.csv(file.path(res
 base <- fps[[ref]]
 whole <- base[base$part == "(all)", ]
 
-form_lines <- function(p, output) readLines(file.path(res_dir, p, "forms", paste0(output, ".txt")), warn = FALSE)
+form_lines <- function(p, output) {
+  file <- file.path(res_dir, p, "forms", paste0(output, ".txt"))
+  if (file.exists(file)) readLines(file, warn = FALSE) else "<no such output>"
+}
 
 # First few differing lines between two forms, aligned by line number; enough
 # to name a cause, not a full diff.
