@@ -31,3 +31,4 @@
 ^scratch$
 ^CRAN-SUBMISSION$
 ^GLOSSARY\.md$
+^tests/suite$

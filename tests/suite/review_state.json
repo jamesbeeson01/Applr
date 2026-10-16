@@ -1,0 +1,14 @@
+{
+  "single_predictor_line/plot": {
+    "agent_note": "",
+    "rejection_note": "",
+    "who": "runner",
+    "when": "2026-10-15T21:51:34-0600",
+    "fingerprint": "cda9191215fe",
+    "parts": {
+      "main": "cda9191215fe"
+    },
+    "engine_version": "2.0",
+    "status": "Unreviewed"
+  }
+}
