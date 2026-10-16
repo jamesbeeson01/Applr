@@ -50,3 +50,25 @@ test_that("breaking the line fails the expectation and leaves review state untou
   expect_match(report[["single_predictor_line"]], "^FAIL")
   expect_equal(read_state(paths), before)
 })
+
+test_that("a case with no expectations does not count as passed", {
+  dir <- tempfile("case"); dir.create(dir)
+  file.copy(file.path(root, "tests/testthat/helper-judged.R"), dir)
+  writeLines("judged_output('plot', ggplot2::ggplot())", file.path(dir, "test-case_empty.R"))
+  paths <- temp_paths()
+  report <- run_suite(dir, paths)
+  expect_match(report[["empty"]], "^FAIL")
+  expect_false(file.exists(paths$state))
+})
+
+test_that("an error while fingerprinting one case leaves the others' results intact", {
+  dir <- mutated_case_dir()
+  writeLines(c("judged_output('bad', ggplot2::ggplot() + ggplot2::geom_point(ggplot2::aes(nope)))",
+               "test_that('ok', expect_true(TRUE))"),
+             file.path(dir, "test-case_zz_bad.R"))
+  paths <- temp_paths()
+  report <- run_suite(dir, paths)
+  expect_match(report[["zz_bad"]], "^ERROR")
+  expect_equal(report[["single_predictor_line/plot"]], "Unreviewed (new fingerprint)")
+  expect_named(read_state(paths), "single_predictor_line/plot")
+})

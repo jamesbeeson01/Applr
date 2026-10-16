@@ -1,6 +1,8 @@
 # Fingerprints for judged outputs (spec: "Fingerprints"). Dev-only: needs
 # vdiffr and digest, which are not package dependencies.
 
+`%||%` <- function(a, b) if (is.null(a)) b else a
+
 suite_options <- list(
   useFancyQuotes = FALSE, cli.unicode = FALSE,
   digits = 7, OutDec = ".", width = 80
@@ -13,12 +15,26 @@ with_pinned_options <- function(code) {
 }
 
 path_variants <- function(path) {
+  short <- if (.Platform$OS.type == "windows") {
+    tryCatch(utils::shortPathName(path), error = function(e) path)
+  } else path
   v <- unique(c(
-    path,
+    path, short, gsub("\\\\", "/", short),
     normalizePath(path, winslash = "/", mustWork = FALSE),
     normalizePath(path, winslash = "\\", mustWork = FALSE)
   ))
   v[order(-nchar(v))]
+}
+
+# Nearest ancestor of the working directory holding a DESCRIPTION file.
+package_root <- function(from = getwd()) {
+  dir <- normalizePath(from, winslash = "/")
+  while (!file.exists(file.path(dir, "DESCRIPTION"))) {
+    parent <- dirname(dir)
+    if (identical(parent, dir)) return(from)
+    dir <- parent
+  }
+  dir
 }
 
 # Order matters: the package root usually sits inside the home folder.
@@ -26,7 +42,7 @@ default_path_map <- function() {
   home <- Sys.getenv("USERPROFILE", Sys.getenv("HOME"))
   list(
     "<tmp>" = tempdir(),
-    "<pkg>" = getwd(),
+    "<pkg>" = package_root(),
     "<home>" = home
   )
 }
@@ -59,8 +75,6 @@ assemble_form <- function(parts) {
   )
 }
 
-`%||%` <- function(a, b) if (is.null(a)) b else a
-
 hash_text <- function(text) {
   substr(digest::digest(enc2utf8(paste0(text, "\n")), algo = "sha256",
                         serialize = FALSE), 1, 12)
@@ -75,6 +89,7 @@ serialise_static_plot <- function(plot) {
   lines <- readLines(file, warn = FALSE, encoding = "UTF-8")
   head <- paste(utils::head(lines, 5), collapse = " ")
   engine <- regmatches(head, regexpr("data-engine-version='[^']*'", head))
+  if (length(engine) != 1) stop("vdiffr SVG has no data-engine-version in its header.", call. = FALSE)
   list(
     parts = list(main = normalise_common(lines)),
     engine_version = sub("data-engine-version='([^']*)'", "\\1", engine)

@@ -49,7 +49,7 @@ run_case_file <- function(file) {
   res <- testthat::test_file(file, reporter = "silent", stop_on_failure = FALSE)
   df <- as.data.frame(res)
   list(case = case,
-       passed = !any(df$failed > 0 | df$error),
+       passed = nrow(df) > 0 && !any(df$failed > 0 | df$error),
        outputs = as.list(registry))
 }
 
@@ -58,7 +58,6 @@ now_stamp <- function() format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z")
 # Runs every case file in `dir`. A case whose expectations fail leaves the
 # review state untouched.
 run_suite <- function(dir = "tests/testthat", paths = suite_paths(), pattern = "^test-case_.*\\.R$") {
-  state <- read_state(paths)
   report <- list()
   for (file in list.files(dir, pattern = pattern, full.names = TRUE)) {
     r <- run_case_file(file)
@@ -66,8 +65,17 @@ run_suite <- function(dir = "tests/testthat", paths = suite_paths(), pattern = "
       report[[r$case]] <- "FAIL (expectations; review state untouched)"
       next
     }
-    for (id in names(r$outputs)) {
-      fp <- fingerprint_static_plot(r$outputs[[id]])
+    # Fingerprint the whole case before touching state, then write it, so an
+    # error in one case never loses or half-applies another's results.
+    fps <- tryCatch(lapply(r$outputs, fingerprint_static_plot),
+                    error = function(e) e)
+    if (inherits(fps, "error")) {
+      report[[r$case]] <- paste("ERROR fingerprinting:", conditionMessage(fps))
+      next
+    }
+    state <- read_state(paths)
+    for (id in names(fps)) {
+      fp <- fps[[id]]
       old <- state[[id]]
       tr <- review_transition(
         if (is.null(old)) NULL else list(status = old$status, fingerprint = old$fingerprint),
@@ -79,6 +87,7 @@ run_suite <- function(dir = "tests/testthat", paths = suite_paths(), pattern = "
         rec$rejection_note <- ""
         rec$who <- "runner"
         rec$when <- now_stamp()
+        save_png(r$outputs[[id]], id, paths)
       }
       rec$fingerprint <- tr$fingerprint
       rec$parts <- fp$part_hashes
@@ -86,11 +95,10 @@ run_suite <- function(dir = "tests/testthat", paths = suite_paths(), pattern = "
       rec$status <- tr$status
       state[[id]] <- rec
       write_form(paths$forms, id, fp$form)
-      save_png(r$outputs[[id]], id, paths)
       report[[id]] <- paste0(tr$status, if (tr$reset) " (new fingerprint)" else "")
     }
+    write_state(state, paths)
   }
-  write_state(state, paths)
   invisible(report)
 }
 
@@ -125,10 +133,12 @@ agent_decide <- function(id, decision = c("approve", "reject"), note, paths = su
   rec$when <- now_stamp()
   if (decision == "approve") {
     rec$agent_note <- note
+    rec$rejection_note <- ""
     write_form(paths$approved, id,
                readLines(file.path(paths$forms, paste0(file_id(id), ".txt")), warn = FALSE))
   } else {
     rec$rejection_note <- note
+    rec$agent_note <- ""
   }
   state[[id]] <- rec
   write_state(state, paths)
