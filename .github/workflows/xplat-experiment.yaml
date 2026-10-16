@@ -1,0 +1,49 @@
+# THROWAWAY (ticket 03): the cross-platform fingerprint experiment. Runs only
+# on the maintainer's fork, on pushes to the test-suite branch. Delete with
+# for_devs/experiments/03-cross-platform/.
+on:
+  push:
+    branches: [test-suite-revision]
+  workflow_dispatch:
+
+name: xplat-experiment
+
+permissions: read-all
+
+jobs:
+  fingerprint:
+    if: github.repository == 'jamesbeeson01/Applr'
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {os: windows-latest, platform: gha-windows}
+          - {os: macos-latest,   platform: gha-macos}
+          - {os: ubuntu-latest,  platform: gha-ubuntu}
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      PKG_SYSREQS: "true"
+      XPLAT_PLATFORM: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: '4.5.3'
+          use-public-rspm: true
+
+      - name: Install pinned packages
+        run: |
+          Rscript -e 'install.packages("pak")'
+          Rscript for_devs/experiments/03-cross-platform/install_pinned.R
+
+      - name: Fingerprint
+        run: Rscript for_devs/experiments/03-cross-platform/fingerprint_all.R
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: xplat-${{ matrix.platform }}
+          path: for_devs/experiments/03-cross-platform/results/${{ matrix.platform }}
