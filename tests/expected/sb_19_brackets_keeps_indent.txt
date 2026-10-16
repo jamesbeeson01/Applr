@@ -1,4 +1,0 @@
-Factor terms were shortened to fit the subtitle - wrote `[versicolor]` for `(Species="versicolor")`.
-    To keep the full names, use 'geom_slice_subtitle(style = "prettier")' - the subtitle may then run past the edge of the plot.
-Value for `Petal.Length` not specified - Used mean: 3.758
-    To choose a slice, use 'predict_vars = list(Petal.Length = 3.758)'.

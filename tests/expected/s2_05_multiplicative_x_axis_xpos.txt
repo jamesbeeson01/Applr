@@ -1,2 +1,0 @@
-Value for `x` not specified - Used mean: 0.4
-    To specify, use 'var_name = value', such as 'x = 0.4'

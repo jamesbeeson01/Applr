@@ -1,2 +1,0 @@
-Predictions of `sqrt(y)` were back-transformed to match the `y` axis.
-    To turn this off, use 'back_transform = FALSE'.

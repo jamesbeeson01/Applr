@@ -34,6 +34,11 @@ jobs:
           r-version: '4.5.3'
           use-public-rspm: true
 
+      # The project .Rprofile would shadow setup-r's, which sets the CRAN mirror.
+      - name: Drop project .Rprofile
+        shell: bash
+        run: rm .Rprofile
+
       - name: Install pinned packages
         run: |
           Rscript -e 'install.packages("pak")'
