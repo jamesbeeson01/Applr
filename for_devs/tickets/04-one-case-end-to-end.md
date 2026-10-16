@@ -8,6 +8,7 @@
 
 - [ ] The testthat layout for cases exists, and the expectation ships in the built package and runs under R CMD check
 - [ ] The judged output is fingerprinted as defined in 01; its rendered image is saved for viewing only
+- [ ] Static-plot fingerprints pass the trust tests from the spec's *Trusting a fingerprint*: the SVG that is hashed is rendered from the same plot object the case returns (completeness); changing one input at a time (a coefficient, a theme element, a label) changes the fingerprint (sensitivity); and two builds in different temp folders and R sessions give the same fingerprint (stability)
 - [ ] The review state file records fingerprint, review status, who, when, and notes per judged output
 - [ ] Review status rules follow the spec's transition table, unit-tested as a pure function
 - [ ] A command lists Unreviewed outputs, shows a text diff against the last approved version, and records agent approve/reject with a required note
