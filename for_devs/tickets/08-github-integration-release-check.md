@@ -2,6 +2,8 @@
 
 **What to build:** GitHub runs on the test-suite branch report each review status as the experiment (03) decided, platform variants flow through agent review, and a release check blocks a CRAN submission until everything is Human approved.
 
+**Done when:** GitHub runs report each review status as 03 decided, and a release check fails until every output is Human approved.
+
 **Blocked by:** 03, 04
 
 **Status:** ready-for-agent

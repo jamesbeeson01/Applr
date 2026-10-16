@@ -9,16 +9,6 @@
 ^README\.Rmd$
 ^for_devs$
 ^tests/README\.md$
-^tests/_helpers\.R$
-^tests/_setup\.R$
-^tests/archive$
-^tests/cases$
-^tests/expected$
-^tests/output$
-^tests/reference$
-^tests/report\.Rmd$
-^tests/report\.html$
-^tests/run\.R$
 ^scripts$
 ^chat_notes$
 ^Rplots\.pdf$

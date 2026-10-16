@@ -18,7 +18,7 @@ A fingerprint never decides correctness. It only decides whether an output keeps
 
 Agents take the first pass on every Unreviewed output (static plots, wording, and sampled states of interactive outputs and animations). Every agent approval carries a note and moves the output to the human queue. Only a person can grant Human approved, through a local review page: an inbox of queued cases, swipe or side-by-side comparison against the last approved render, live interactive widgets, a whole-suite overview, deep links to any one case, and rejection with a note for the agent.
 
-How CI (GitHub Actions) treats each review status, and whether fingerprints can match across operating systems, are decided by a cross-platform experiment that comes first. The new cases are written from scratch, not migrated. First, a salvage step mines the old suite for what's valuable: what each function needs to do, which edge cases come up, and any test code worth keeping. The result is a temporary, principle-based behaviour inventory. New cases are then written from that inventory, organised by test type rather than by function.
+How CI (GitHub Actions) treats each review status, and whether fingerprints can match across operating systems, are decided by a cross-platform experiment that comes first. The new cases are written from scratch, not migrated: write first, then salvage. A temporary, principle-based behaviour inventory of what each function must do and which edge cases come up is written from the docs and the source, without reading the old suite. New cases are written from that inventory, organised by test type rather than by function. The old suite is deleted from the branch before writing starts and kept only in a tag. Once the new cases are written, a salvage audit reads it from that tag, looking for the kinds of situation it tested that the new suite misses.
 
 ## User Stories
 
@@ -51,9 +51,9 @@ How CI (GitHub Actions) treats each review status, and whether fingerprints can 
 27. As the maintainer, I want expectations to ship in the built package, so that CRAN actually tests correctness.
 28. As the maintainer, I want slow outputs (browser screenshots, animations) rendered only when something is Unreviewed, so that they never slow the quick checks.
 29. As the maintainer, I want a release check that blocks a CRAN submission until everything is Human approved, so that nothing I haven't seen ships.
-30. As the maintainer, I want the new cases written from scratch, from a principle-based inventory of what each function must do, so that the old suite's wording and structure don't carry over.
-31. As the maintainer, I want the edge cases the old suite discovered preserved as principles with workable options, so that hard-won coverage isn't lost in the rewrite.
-32. As the maintainer, I want useful old test code (data generators, models, oracle builders, helpers) salvaged, so that the rewrite doesn't redo solved work.
+30. As the maintainer, I want the new cases written from scratch, from a principle-based inventory of what each function must do, written from the docs and source rather than the old suite, so that the old suite's wording and structure don't carry over.
+31. As the maintainer, I want the old suite audited only after the new one is written, for the kinds of situation it tested that the new suite misses, so that hard-won coverage isn't lost and the new suite isn't shaped by the old one.
+32. As the maintainer, I want the old suite deleted from the branch before new cases are written, kept only in a tag for the audit, so that it can't shape the new suite.
 33. As the maintainer, I want new cases organised by test type (numeric, condition, static appearance, interactive), so that one behaviour shared by several functions is tested once, consistently.
 34. As the maintainer, I want a clear guide for adding a new feature or output type to the suite, so that future agents extend it consistently.
 35. As a coding agent, I want to run only the expectations for the code I touched, so that my loop is fast.
@@ -187,20 +187,17 @@ The human never sees an Unreviewed output before an agent pass. This applies to 
 
 **CI.** A workflow runs on pushes to the test-suite branch only. It's used first by the cross-platform experiment. How CI maps review statuses to ✓/✗, and whether local fingerprints are authoritative across platforms, are **deferred to the experiment's result**. The working proposal: Rejected and Unreviewed fail, Agent approved warns, and a separate release check requires everything to be Human approved.
 
-**Salvage, then write from scratch.** The new suite is a reinvention, not a migration. It happens in two phases.
+**Write, then salvage.** The new suite is a reinvention, not a migration. The old suite was deleted from the test suite branch before any new cases were written, and is kept only in the `old-suite` tag (the last `main` commit before the rewrite). It is read once, at the end, to check the new one, and is never used as a starting point. The work happens in four phases.
 
-1. **Salvage (one dedicated session).** Mine the old suite for what's valuable and record it in a temporary **behaviour inventory** next to this spec. Sources:
-   - the old cases' `# EXPECT:` headers and test code;
-   - the reference-image build scripts;
-   - the maintainer's notes on testing revisions in the dev docs.
+1. **Inventory.** A temporary **behaviour inventory** next to this spec records what each function must do, written from what the package says and does:
+   - the roxygen docs, vignettes, README and glossary, for what each function is for and the plots that show it;
+   - the dev docs, for decisions and known edge cases;
+   - the source, where every condition raised and every branch on the kind of input is a candidate edge case.
 
-   The inventory is principle-based, not wording-specific. For each function it records:
+   The `old-suite` tag is not read. For each function the inventory records:
    - **what the function must do**: its behaviours, stated as principles;
-   - **the edge cases that come up**: each with the principle at stake and workable options for testing it, not the old case's exact assertion;
-   - **shared behaviours** that cut across functions (input validation, back-transforms, imputation, facet/group slicing), so each is tested once;
-   - **salvageable test code**: data generators, models, oracle builders and helpers worth carrying over, each with a note on why.
-
-   Individual `# EXPECT:` statements are not carried over verbatim. The inventory is the only bridge from the old suite. Writing tickets never read old cases directly.
+   - **the edge cases that come up**: each with the principle at stake, where it comes from, and workable options for testing it;
+   - **shared behaviours** that cut across functions (input validation, back-transforms, imputation, facet/group slicing), so each is tested once.
 
 2. **Write by test type.** New cases are written from scratch from the inventory, split by test type, not by function:
    - **numeric** expectations;
@@ -208,9 +205,13 @@ The human never sees an Unreviewed output before an agent pass. This applies to 
    - **static appearance** judged outputs;
    - **interactive** states.
 
-   Each writing ticket covers its type across every function the inventory lists.
+   Each writing ticket covers its type across every function the inventory lists, and none reads the old suite.
 
-The inventory is deleted when the last writing ticket lands. Infrastructure tickets don't depend on it.
+3. **Salvage audit.** With the new suite written, one session reads the `old-suite` tag (without restoring it to the branch) and goes through every old case and asks what kind of situation it put the function in: model shapes, argument forms, plot contexts, numeric boundaries, text and layout, conditions from dependencies, and platform fixes, plus the real student models in the archive. Each old case is logged as covered (by a named new case), added, or discarded with a reason. Old infrastructure, reference-image details and old wording are discarded by default. A gap goes into the inventory as a principle first and is then written as a new case by its test type's rules. No old code or wording is copied.
+
+4. **Clean up.** The inventory and the audit log are deleted, and the maintainer decides whether to keep the tag.
+
+Infrastructure tickets don't depend on any of this.
 
 **Documentation.** The tests README is rewritten as the guide for adding features and output types to the suite. The test-suite iteration loop in `CLAUDE.md` is replaced by a short pointer to that guide. It may become a skill later.
 
@@ -219,7 +220,6 @@ The inventory is deleted when the last writing ticket lands. Infrastructure tick
 - A good test asserts external behaviour at the highest seam: what data a plot will draw, what condition a user sees. Never private helpers or drawing internals.
 - The suite's own infrastructure (fingerprint normalisation, review status transitions, the review server's write rules) gets ordinary unit tests, because it is deterministic. Each output type also gets the completeness, sensitivity and stability tests from *Trusting a fingerprint*.
 - The review status rules are tested as a pure function of (recorded state, new fingerprint, action) → new state, mirroring the logic prototype's reducer shape.
-- Prior art: the existing testthat files are already the expectation style at a smaller scale, and the current runner's blank-PNG detection is the precedent for "a plot was still built".
 - Expectations must finish in about a minute in total and use two threads or fewer. Anything needing a browser or network is skipped on CRAN.
 
 ## Out of Scope
@@ -233,5 +233,5 @@ The inventory is deleted when the last writing ticket lands. Infrastructure tick
 ## Further Notes
 
 - Prototypes: `scratch/test_suite_prototype/logic_ladder.html` (superseded tier model, kept for history) and `review_page_v2.html` (the accepted layout). `scratch/` is gitignored, so commit them to a throwaway branch if they're to be kept as a source.
-- Decided locations: this spec and the temporary behaviour inventory live in `for_devs/`; tickets live in `for_devs/tickets/`, because issues are disabled on the repository.
-- The old runner may keep working until the new suite replaces it; the work happens on a dedicated branch.
+- Decided locations: this spec, the temporary behaviour inventory and the salvage audit log live in `for_devs/`; tickets live in `for_devs/tickets/`, because issues are disabled on the repository.
+- The work happens on a dedicated branch. Until the writing tickets land, R CMD check on it covers little, so package code changes belong on `main`.

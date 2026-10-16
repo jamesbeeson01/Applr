@@ -2,6 +2,8 @@
 
 **What to build:** A local review page, started from R, where the maintainer works through the queue and grants Human approved or Rejected with a note. Layout follows the accepted v2 prototype.
 
+**Done when:** the maintainer can start the page from R, work through the queue by keyboard, and approve or reject with a note, written through the server only.
+
 **Blocked by:** 04
 
 **Status:** ready-for-agent

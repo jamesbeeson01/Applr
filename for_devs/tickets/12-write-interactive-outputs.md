@@ -2,6 +2,8 @@
 
 **What to build:** From the behaviour inventory, write from scratch the slider cases (and plotly cases with camera presets) with declared states, the expectations on their state data, and agent first-pass review of sampled states.
 
+**Done when:** every interactive behaviour in the inventory has declared states, payload expectations that match predictions, and agent notes on its sampled states.
+
 **Blocked by:** 02, 07
 
 **Status:** ready-for-agent

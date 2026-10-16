@@ -2,6 +2,8 @@
 
 **What to build:** Support for judged outputs with several states. A case declares an interactive output's states (slider positions, camera presets). The output gets one fingerprint from its serialised parts (payload, background, shell), and deterministic screenshots of its states are captured only when it is Unreviewed, so agents can take a first pass. The review page shows sampled states side by side plus the live widget.
 
+**Done when:** the slider prototype from 03 has declared states and one trusted fingerprint, and the review page shows its sampled states beside the live widget.
+
 **Blocked by:** 03, 05
 
 **Status:** ready-for-agent

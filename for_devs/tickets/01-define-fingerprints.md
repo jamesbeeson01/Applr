@@ -2,6 +2,8 @@
 
 **What to build:** A section of the test suite spec stating, for every output type, what its fingerprint is taken from, what its states are, and what noise is removed first. Output types: static ggplot, base graphics, condition text, slider widget, plotly 3D, animation. Anyone (agent or human) can then fingerprint any output the same way, and extend the rules to a new output type.
 
+**Done when:** the spec tells anyone how to fingerprint every output type, and how to trust that fingerprint, from one general principle.
+
 **Blocked by:** None (can start immediately)
 
 **Status:** done

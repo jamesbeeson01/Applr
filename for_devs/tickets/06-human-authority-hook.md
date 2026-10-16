@@ -2,6 +2,8 @@
 
 **What to build:** Make "only a person grants Human approved" real. A Claude Code hook stops agents writing the human part of the review state; the review server stays its only writer.
 
+**Done when:** a test shows an agent's attempt to set Human approved being blocked while its normal approve/reject still works.
+
 **Blocked by:** 04
 
 **Status:** ready-for-agent

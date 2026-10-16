@@ -2,6 +2,8 @@
 
 **What to build:** The first working path through the whole model, with one new case written from scratch: a single-predictor model whose plotted line is checked against the model's predictions (an expectation), plus one judged output (the plot). Running the suite evaluates the expectation, fingerprints the plot, and records it as Unreviewed. An agent can list Unreviewed outputs and approve or reject them with a required note.
 
+**Done when:** running the suite on one new case checks its line against the model's predictions, records its plot as Unreviewed, and lets an agent approve or reject it with a note.
+
 **Blocked by:** 01
 
 **Status:** ready-for-agent

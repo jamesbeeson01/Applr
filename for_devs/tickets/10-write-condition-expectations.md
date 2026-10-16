@@ -2,6 +2,8 @@
 
 **What to build:** From the behaviour inventory, write from scratch the condition cases: errors, warnings and messages checked by class and key fields, plus "a plot is still built" wherever the behaviour calls for it. Message wording becomes a judged output that goes through agent review.
 
+**Done when:** every condition behaviour in the inventory is checked by class, and every message's wording is a fingerprinted, agent-reviewed output.
+
 **Blocked by:** 02, 04
 
 **Status:** ready-for-agent
