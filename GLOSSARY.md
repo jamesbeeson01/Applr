@@ -15,28 +15,32 @@ A deterministic pass/fail statement about a case, such as "the line equals the m
 _Avoid_: Check (collides with R CMD check), tier 0, assertion
 
 **Judged output**:
-Any output whose correctness needs a reviewer's judgment: plot appearance, message wording, or the states of an interactive output or animation. Every judged output has a fingerprint and a review status.
+Any output whose correctness needs a reviewer's judgment: plot appearance, message wording, an interactive output or an animation. Every judged output has one fingerprint and one review status, and is judged as a whole.
 _Avoid_: Visual case, console case, snapshot
 
 **State**:
-One sampled moment of a judged output: the single image of a static plot, one slider position, one camera angle, or one animation frame. Each state is fingerprinted.
+One sampled view of a judged output: the single image of a static plot, one slider position, one camera angle, or one animation frame. States decide what a reviewer sees; they are never fingerprinted on their own.
 _Avoid_: Frame (except for animations), screenshot
 
 **Fingerprint**:
-A short hash of one state's serialised form. Identical text gives an identical fingerprint. A fingerprint never decides correctness; it only tells whether an output is the same one that was last reviewed.
+A short hash of a judged output's serialised form, taken from the inputs of its renderer, so one fingerprint covers every state. Identical text gives an identical fingerprint. A fingerprint never decides correctness; it only tells whether an output is the same one that was last reviewed.
 _Avoid_: Hash (in prose), snapshot, checksum
 
 **Serialised form**:
-The text a state becomes once noise is removed, and the input to its fingerprint: fixed-font SVG for plots, canonical JSON for plotly, message text for conditions.
+The text a judged output becomes once noise is removed, and the input to its fingerprint: fixed-font SVG for plots, message text for conditions, and named parts such as a payload, a background and a shell for interactive outputs.
 _Avoid_: Snapshot, dump
 
 **Compute step**:
-The R code that produces a state, as data or as a ggplot, without a browser. For a static plot it is just building the plot. Interactive outputs and animations must expose theirs separately from the code that draws them.
+The R code that produces a judged output's serialised form, as data or as a ggplot, without a browser. For a static plot it is just building the plot. Interactive outputs and animations must expose theirs separately from the code that draws them.
 _Avoid_: Render step
 
 **Shell**:
-The part of an interactive output's or animation's serialised form that is shared by all its states, such as slider ranges, widget dependencies or frame timing.
+The part of an interactive output's or animation's serialised form that holds configuration and code rather than data: slider ranges, widget dependencies, hashes of the JS and CSS Applr ships, or frame timing.
 _Avoid_: Wrapper, chrome
+
+**Payload**:
+The data an interactive output's page computes every state from, such as a slider's per-line designs, slider tables and coefficients. It is one part of the serialised form, and is the same object the widget embeds.
+_Avoid_: Bundle, state data
 
 **Review status**:
 How far a judged output has been approved: Unreviewed, Agent approved, Human approved, or Rejected. It belongs to one fingerprint; a new fingerprint resets it to Unreviewed.

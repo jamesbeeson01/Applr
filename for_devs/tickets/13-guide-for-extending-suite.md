@@ -6,7 +6,7 @@
 
 **Status:** ready-for-agent
 
-- [ ] Covers: writing a case (expectations plus judged outputs), choosing the highest seam, declaring states for a new output type (including animation, which doesn't exist yet), running, agent review, the review page, and the human-authority hook
+- [ ] Covers: writing a case (expectations plus judged outputs), choosing the highest seam, applying the fingerprint principle to a new output type (its renderer's inputs, serialised parts, states and trust tests, including animation, which doesn't exist yet), running, agent review, the review page, and the human-authority hook
 - [ ] Uses the glossary vocabulary consistently
 - [ ] CLAUDE.md's testing section is reduced to a pointer, and stale instructions are removed
 - [ ] Notes that it may become a skill later

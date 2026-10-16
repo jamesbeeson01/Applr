@@ -7,5 +7,5 @@
 **Status:** ready-for-agent
 
 - [ ] Every interactive behaviour in the inventory is covered, or explicitly deferred with a reason
-- [ ] State data has numeric expectations (state count, each state's line against predictions)
+- [ ] The payload has numeric expectations: evaluated as the page does it, it matches predictions at the declared states and at random reachable positions
 - [ ] Each output declares its states, and agent notes cover the sampled states

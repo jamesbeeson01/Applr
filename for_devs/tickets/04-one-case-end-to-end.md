@@ -8,7 +8,7 @@
 
 - [ ] The testthat layout for cases exists, and the expectation ships in the built package and runs under R CMD check
 - [ ] The judged output is fingerprinted as defined in 01; its rendered image is saved for viewing only
-- [ ] The review state file records fingerprint, review status, who, when, and notes per case and state
+- [ ] The review state file records fingerprint, review status, who, when, and notes per judged output
 - [ ] Review status rules follow the spec's transition table, unit-tested as a pure function
 - [ ] A command lists Unreviewed outputs, shows a text diff against the last approved version, and records agent approve/reject with a required note
 - [ ] Changing the plot's appearance resets its status to Unreviewed; re-running unchanged keeps it

@@ -1,7 +1,7 @@
 # Spec: Test suite revision
 
 Status: ready-for-agent
-Vocabulary: see `GLOSSARY.md` (Case, Expectation, Judged output, State, Fingerprint, Serialised form, Compute step, Shell, Review status, Agent approved, Human approved, Rejected, Rejection note, Platform variant).
+Vocabulary: see `GLOSSARY.md` (Case, Expectation, Judged output, State, Fingerprint, Serialised form, Compute step, Shell, Payload, Review status, Agent approved, Human approved, Rejected, Rejection note, Platform variant).
 
 ## Problem Statement
 
@@ -12,7 +12,7 @@ The current suite runs 181 cases and reports "OK" when a case runs and its conso
 Every case is made of two kinds of thing.
 
 - **Expectations** are deterministic pass/fail statements: numbers computed from the model, which conditions are raised, the structure of an output. Expectations never need review. They are what CRAN runs, within its time and two-thread limits.
-- **Judged outputs** are anything needing judgment: plot appearance, message wording, the states of interactive outputs and animations. Each state of a judged output gets a fingerprint and carries a review status: Unreviewed → Agent approved → Human approved, or Rejected with a rejection note.
+- **Judged outputs** are anything needing judgment: plot appearance, message wording, interactive outputs and animations. Each judged output gets one fingerprint and carries one review status: Unreviewed → Agent approved → Human approved, or Rejected with a rejection note. An interactive output or animation is judged as a whole; its states are views a reviewer samples, not separately approved pieces.
 
 A fingerprint never decides correctness. It only decides whether an output keeps its review status: same fingerprint, status kept; new fingerprint, back to Unreviewed. A change appears in a reviewer's queue only when it actually changed something.
 
@@ -62,8 +62,8 @@ How CI (GitHub Actions) treats each review status, and whether fingerprints can 
 38. As a coding agent, I want to record an approval or rejection with a required note, so that the human understands my reasoning.
 39. As a coding agent, I want to read the human's rejection note on a case, so that I know what to fix.
 40. As a coding agent, I want sampled states of interactive outputs and animations rendered as images, so that I can take a first pass on outputs I can't operate.
-41. As a coding agent, I want to declare the states of a new output type in one place, so that fingerprinting, screenshots and review all follow.
-42. As a coding agent, I want expectations to read computed data at the highest available seam (built layer data, prepared slice data, built plotly traces, computed slider states), so that tests don't depend on drawing.
+41. As a coding agent, I want to declare a new output type's fingerprint inputs and review states in one place, so that fingerprinting, screenshots and review all follow.
+42. As a coding agent, I want expectations to read computed data at the highest available seam (built layer data, prepared slice data, built plotly traces, computed slider payloads), so that tests don't depend on drawing.
 43. As a future contributor, I want terms like fingerprint and review status defined in a glossary, so that the vocabulary is unambiguous.
 44. As the maintainer, I want the GitHub runs on the test-suite branch kept separate from `main`, so that the experiment doesn't disturb anything else.
 
@@ -77,23 +77,29 @@ How CI (GitHub Actions) treats each review status, and whether fingerprints can 
 - `geom_slice` and the other `geom_slice_*` layers: ggplot2's built layer data and built plot labels.
 - `slice_2d` / `add_slice_2d`: the existing internal prepare step, which returns line data before drawing.
 - `scatter_3d`: the built plotly object's trace data.
-- Sliders and animations (future): a compute step that returns all states as data, with a thin renderer on top. This is a design rule for new features, not a retrofit.
+- Sliders and animations (future): a compute step that returns, as data, everything their states are drawn from, with a thin renderer on top. This is a design rule for new features, not a retrofit.
 
 **Numeric oracle.** Expectations compare plotted data against the model's predictions on an expected grid that the test builds independently. The prediction function itself is trusted, not tested. This replaces eyeballing reference images for line shape, slope and position.
 
-**Output types and states.** Each output type defines its states.
+**Output types and states.** Each output type defines what its fingerprint is taken from, and which states a reviewer sees.
 
-| Output type | States | Expectations on | Judged as |
-|---|---|---|---|
-| Static ggplot / base graphics | 1 | built/prepared data | fixed-font SVG |
-| Condition (error/warning/message) | 1 (all conditions, in order) | class, key fields, plot still built | message text |
-| Slider widget | declared slider positions | state data | each state + live use |
-| plotly 3D | declared camera presets | trace data | each state + live use |
-| Animation | first, last, N evenly spaced frames | frame data | each frame + playback |
+| Output type | Fingerprinted from | States (views for review) | Expectations on | Judged as |
+|---|---|---|---|---|
+| Static ggplot / base graphics | fixed-font SVG | 1 | built/prepared data | the plot |
+| Condition (error/warning/message) | message text | 1 (all conditions, in order) | class, key fields, plot still built | the wording |
+| Slider widget | payload, background SVG, shell | declared slider positions | payload evaluated against predictions | sampled states + live use |
+| plotly 3D | figure JSON, presets, shell | declared camera presets | trace data | sampled states + live use |
+| Animation | every frame's data, style SVG, shell | first, last, N evenly spaced frames | frame data | sampled frames + playback |
 
-**Fingerprints.** One fingerprint per state: a SHA-256 hash (via `digest`), shortened to 12 hex characters, of the state's serialised form encoded as UTF-8. The serialised form is stored next to the review state, so an agent can diff it against the last approved version (story 37). PNGs and screenshots are never fingerprinted; they exist only for viewing.
+**Fingerprints.** One fingerprint per judged output. Every output type, including future ones, follows one principle:
 
-Every state comes from a compute step in R. For a static plot, that step is just building the plot. No browser, screenshot or GIF encoder is involved. Compute steps run under pinned options: `options(useFancyQuotes = FALSE, cli.unicode = FALSE, digits = 7, OutDec = ".", width = 80)`, plus the case's own `set.seed()`. The text they produce then goes through the **common normalisation** before it counts as the serialised form:
+> Fingerprint the inputs of the deterministic renderer, at the last point before code Applr doesn't control. Hash everything Applr controls that reaches the viewer; record by version what it doesn't.
+
+For a static plot that point is the SVG, since whatever displays it is outside Applr. For a widget it is the data the page is built from plus Applr's own JS: the browser turns those into every reachable state, so hashing them covers every state, not a sample, and costs one build however many states there are. States are therefore never fingerprinted one by one. They are views, rendered only for Unreviewed outputs so an agent can review what it can't operate (see Screenshots).
+
+The fingerprint is a SHA-256 hash (via `digest`), shortened to 12 hex characters, of the output's serialised form encoded as UTF-8. The serialised form is a list of named **parts** (such as `payload`, `background` and `shell`), each normalised on its own and joined in a fixed order, each under a `--- <name>` header line. A single-part output (a static plot, condition text) has no header. The serialised form is stored next to the review state, so an agent can diff it against the last approved version and see which part changed (story 37). PNGs and screenshots are never fingerprinted; they exist only for viewing.
+
+Every part comes from a compute step in R. For a static plot, that step is just building the plot. No browser, screenshot or GIF encoder is involved. Compute steps run under pinned options: `options(useFancyQuotes = FALSE, cli.unicode = FALSE, digits = 7, OutDec = ".", width = 80)`, plus the case's own `set.seed()`. The text they produce then goes through the **common normalisation** before it counts as the serialised form:
 
 1. Line endings become `\n`, and trailing whitespace is removed from each line.
 2. Absolute paths (`tempdir()`, the package root, the user's home folder) become `<tmp>`, `<pkg>` and `<home>`.
@@ -109,15 +115,24 @@ Each output type then adds its own rules.
 
 **Canonical JSON**, used by the remaining types: S3 classes are dropped recursively (plotly tags fields such as `zcolor`, which `jsonlite` refuses), numbers are rounded with `signif(x, 6)`, object keys are sorted recursively, and array order is kept. It is written with `jsonlite::toJSON(digits = I(6), auto_unbox = TRUE, null = "null", na = "null")`. plotly's own `to_JSON()` is not used: it writes 17 significant digits, and the extra digits are floating-point noise.
 
-**Slider widget.** *States:* the slider positions declared by the case. One position assigns a value to every slider, for example `list(hp = 100, cyl = 6)`. The case declares positions as data: at minimum the start position plus each slider's minimum and maximum, with the other sliders held at their start values. *Compute step:* the slider's recipe (`function(predict_vars) -> ggplot`, as the slider prototypes require) is called at that position. *Serialised form:* two parts joined by a `---` line:
-- the static ggplot form of the recipe's plot at that position, so labels, subtitle and line all count;
-- the **shell**: the widget's non-state configuration as canonical JSON (slider names, ranges, steps, labels, starting position), its htmlwidget dependencies by name and version, and the SHA-256 of each JS and CSS file Applr ships for it, keyed by file path.
+**Slider widget.** The page computes every curve from a small payload that all slider positions borrow from, rather than from stored states. *Compute step:* building the payload and the background plot, once. *Serialised form:* three parts:
+- `payload`: canonical JSON of the object embedded in the widget, not a copy of it: the per-line x-side designs, the slider tables (or their low-rank factors for coupled sliders), the coefficients, covariance and interval constants, the post-map spec, and the line and ribbon styling read from the built layer;
+- `background`: the static ggplot form of the plot the curves are drawn over. It goes through vdiffr's engine, not the SVG the widget ships, because svglite writes that with system font metrics; svglite's version goes in the shell instead;
+- `shell`: the widget's configuration as canonical JSON (slider names, ranges, steps, labels, starting position), its htmlwidget dependencies by name and version, and the SHA-256 of each JS and CSS file Applr ships for it, keyed by file path.
 
-Because the shell is part of every state, a shell change resets the review status of every state of the widget.
+*States:* the slider positions declared by the case, as data. One position assigns a value to every slider, for example `list(hp = 100, cyl = 6)`. At minimum: the start position plus each slider's minimum and maximum, with the other sliders held at their start values. States only choose which screenshots a reviewer sees. *Expectations:* the payload's arithmetic, evaluated in R as the page does it, matches `predict()` at the declared positions and at random reachable ones. This is the slider's build-time self-test, run as a case.
 
-**plotly 3D** (`scatter_3d`). *States:* the camera presets declared by the case (for example `default`, `top`, `side`). One preset is a `layout.scene.camera` value. *Compute step:* `plotly::plotly_build()` on the widget, then the preset's camera written into `layout.scene.camera`. *Serialised form:* canonical JSON of only `x$data`, `x$layout` and `x$config` from the built object, followed by a shell of the widget's htmlwidget dependencies (including plotly.js) by name and version. *Normalisation:* every other top-level field is dropped. `visdat`, `cur_data` and `attrs` are keyed by IDs that change on every build, and `source`, `base_url`, `highlight` and `shinyEvents` don't affect appearance. Any `uid` or `elementId` is dropped too. On `scatter_3d(lm(mpg ~ wt + hp, mtcars))` this form is identical across two builds and is 83 KB, compared with 196 KB from `to_JSON()`.
+**plotly 3D** (`scatter_3d`). *Compute step:* `plotly::plotly_build()` on the widget, once. *Serialised form:* three parts: `figure`, canonical JSON of only `x$data`, `x$layout` and `x$config` from the built object; `presets`, the case's camera presets as canonical JSON; and `shell`, the widget's htmlwidget dependencies (including plotly.js) by name and version. *States:* the camera presets (for example `default`, `top`, `side`). One preset is a `layout.scene.camera` value, written into the figure only when its screenshot is taken. *Normalisation:* every other top-level field is dropped. `visdat`, `cur_data` and `attrs` are keyed by IDs that change on every build, and `source`, `base_url`, `highlight` and `shinyEvents` don't affect appearance. Any `uid` or `elementId` is dropped too. On `scatter_3d(lm(mpg ~ wt + hp, mtcars))` this form is identical across two builds and is 83 KB, compared with 196 KB from `to_JSON()`.
 
-**Animation** (future). *States:* the first frame, the last frame, and N evenly spaced frames between them. N is declared by the case and defaults to 3. *Compute step:* the animation's frame step returns every frame as a ggplot (or as data a ggplot recipe draws), together with timing metadata, before any encoder runs. This is the same design rule as for sliders. *Serialised form:* the sampled frame's static ggplot form, plus a shell of the timing metadata (frame count, frames per second, duration, easing) as canonical JSON. Playback is judged live on the review page and is never fingerprinted.
+**Animation** (future). *Compute step:* the animation's frame step returns every frame as data a ggplot recipe draws, together with timing metadata, before any encoder runs. This is the same design rule as for sliders. *Serialised form:* three parts: `frames`, every frame's data as canonical JSON, including anything that varies by frame such as a title; `style`, the static ggplot form of the first frame, which carries the theme, scales and labels; and `shell`, the timing metadata (frame count, frames per second, duration, easing) as canonical JSON. *States:* the first frame, the last frame, and N evenly spaced frames between them. N is declared by the case and defaults to 3. Playback is judged live on the review page.
+
+**Trusting a fingerprint.** A fingerprint can go wrong in two directions. Keeping a status after a visible change is the failure that matters, and the design must rule it out. Resetting a status when nothing visible changed only costs review time, so it is allowed but should be rare. Four rules keep it that way:
+1. **Completeness by construction.** The output is built from the object that is hashed, never from a parallel copy. A unit test per output type asserts this, for example that a widget's `x` equals its hashed payload.
+2. **Sensitivity tests.** Per output type, unit tests change one input at a time (a coefficient, a slider range, a theme element, one byte of a shipped JS file) and assert the fingerprint changes.
+3. **Stability tests.** Two builds in different temp folders and R sessions give the same fingerprint. Ticket 03 checks the same across platforms.
+4. **Release audit.** The release check re-renders every state and compares it with the screenshot taken at approval on the same machine. A changed screenshot under an unchanged fingerprint means an input is missing from the serialised form, and is a suite bug.
+
+A known false reset: rebuilding the slider payload from different reference rows can draw the same curves from different numbers. If this becomes common, a carry-over can be added later: R evaluates the old and new payloads at every reachable position (a random sample for three or more sliders), and keeps the status with an automated note when they agree within 1e-8. It is not built now.
 
 **Prior art.** vdiffr ([r-lib/vdiffr](https://github.com/r-lib/vdiffr)) solves this problem for ggplot and base graphics. The suite reuses vdiffr's engine as a dev-only dependency (not in `DESCRIPTION`; install it before running judged outputs) rather than building its own. The relevant history, from its NEWS and `src/devSVG.cpp`:
 - In 0.3.0 vdiffr embedded its own svglite "to protect against updates of the SVG generation engine". Plain svglite measures text with the system's fonts, so its output varies by operating system.
@@ -134,7 +149,7 @@ Deliberately not taken from vdiffr: testthat snapshot storage and `snapshot_revi
 - **H3, negative zero:** `-0.00` against `0.00` is the main source of H2 boundary cases. It caused the old suite's "near-zero rounding" Linux fix, and the common normalisation covers it.
 - **H4, text:** `geom_slice_subtitle()` measures its wrap width from a `ggplotGrob`. Under vdiffr's fixed metrics the wrap should be identical. Under any other device it is not.
 - **H5, condition wording:** quote style and cli's bullet symbols (`ℹ`, `✖`) depend on locale and UTF-8 support, which caused the old suite's curly-quote Linux fix. Pinned options plus the curly-to-straight rule should make wording identical.
-- **H6, JSON:** canonical JSON (plotly forms, slider and animation shells) matches across platforms. The only risk is H2 at 6 significant figures.
+- **H6, JSON:** canonical JSON (plotly figures, slider payloads, animation frames and every shell) matches across platforms. The only risk is H2 at 6 significant figures.
 - **H7, versions not platforms:** most real mismatches will come from different package versions rather than operating systems. The experiment pins versions and records `sessionInfo()`, so each mismatch can be blamed on one or the other.
 
 **Review status rules.** Encodes the decisions above. Trimmed from the logic prototype and corrected to the final model.
@@ -142,8 +157,8 @@ Deliberately not taken from vdiffr: testthat snapshot storage and `snapshot_revi
 ```
 on run:
   expectations fail                 -> case fails; review untouched
-  state fingerprint == recorded     -> keep review status
-  state fingerprint != recorded     -> Unreviewed
+  output fingerprint == recorded    -> keep review status
+  output fingerprint != recorded    -> Unreviewed
 
 Unreviewed       --agent approve (note required)--> Agent approved
 Unreviewed       --agent reject  (note required)--> Rejected
@@ -155,7 +170,7 @@ Platform variant of Human approved --agent approve (note)--> Human approved for 
 
 The human never sees an Unreviewed output before an agent pass. This applies to interactive outputs too: agents review their sampled states.
 
-**Review state storage.** A dev-only review state file records, per case and state: fingerprint, review status, who set it, when, the agent note, and any rejection note. The human part of this file is written only by the review server.
+**Review state storage.** A dev-only review state file records, per judged output: fingerprint, the hash of each serialised part, review status, who set it, when, the agent note, and any rejection note. The screenshots of its states at the last approval are kept beside it. The human part of this file is written only by the review server.
 
 **Human authority.** A Claude Code hook blocks agent writes to the human part of the review state. The review server is the only writer of Human approved.
 
@@ -168,7 +183,7 @@ The human never sees an Unreviewed output before an agent pass. This applies to 
 - keyboard: j/k, a, r, s, o, [, and Ctrl+Enter;
 - the URL deep-links to a case or to the overview.
 
-**Screenshots.** Interactive states are captured with headless Chrome via chromote (dev-only), driven by a hook in the widget that sets a given state, so captures are deterministic. They are captured only for Unreviewed states.
+**Screenshots.** Interactive states are captured with headless Chrome via chromote (dev-only), driven by a hook in the widget that sets a given state, so captures are deterministic. They are captured only for the states of Unreviewed outputs, never to compute a fingerprint. A state whose new screenshot is pixel-identical to the one kept from the last approval, on the same machine, is marked unchanged, so a reviewer can skip it; the changed parts of the serialised form say what to look for in the rest.
 
 **CI.** A workflow runs on pushes to the test-suite branch only. It's used first by the cross-platform experiment. How CI maps review statuses to ✓/✗, and whether local fingerprints are authoritative across platforms, are **deferred to the experiment's result**. The working proposal: Rejected and Unreviewed fail, Agent approved warns, and a separate release check requires everything to be Human approved.
 
@@ -202,7 +217,7 @@ The inventory is deleted when the last writing ticket lands. Infrastructure tick
 ## Testing Decisions
 
 - A good test asserts external behaviour at the highest seam: what data a plot will draw, what condition a user sees. Never private helpers or drawing internals.
-- The suite's own infrastructure (fingerprint normalisation, review status transitions, the review server's write rules) gets ordinary unit tests, because it is deterministic.
+- The suite's own infrastructure (fingerprint normalisation, review status transitions, the review server's write rules) gets ordinary unit tests, because it is deterministic. Each output type also gets the completeness, sensitivity and stability tests from *Trusting a fingerprint*.
 - The review status rules are tested as a pure function of (recorded state, new fingerprint, action) → new state, mirroring the logic prototype's reducer shape.
 - Prior art: the existing testthat files are already the expectation style at a smaller scale, and the current runner's blank-PNG detection is the precedent for "a plot was still built".
 - Expectations must finish in about a minute in total and use two threads or fewer. Anything needing a browser or network is skipped on CRAN.
