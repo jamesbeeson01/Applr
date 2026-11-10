@@ -1,6 +1,12 @@
 # Handoff: ticket 1, paused at the Part A review
 
-**Status (2026-11-09):** Part A (backend) is built and waiting for the maintainer's approval. Part B (review page) has not started and must not start until the maintainer approves. Nothing is committed: all of this is uncommitted work on `test-suite-revision`, in this checkout.
+**Status (2026-11-09):** Part A (backend) is committed (`5c8be94`) and **approved by the maintainer**. Part B (review page) is ready to start. On re-check, `tests/suite/test.R` passed in full.
+
+**Decisions from the Part A review** (now in the spec and ticket):
+- **Human decisions get their own file.** The server writes `tests/suite/human_decisions.json`, and `review_state.json` no longer holds human statuses. Status is derived from both files (spec: *Review state storage*). This lets the human-authority hook block agent writes by path, rather than inspecting what each edit changes. It is the one change Part B makes to Part A's store.
+- **Unreviewed fails CI**, as the spec's working proposal says (ticket 3 builds it).
+- **Suite guide pages** were added to Part B: principles, a structure diagram, and the latest test and mutation runs with date and commit. `test.R` and `mutate.R` need to record the commit, which `mutation_report.json` doesn't yet. The README and spec each carry a note to update these pages when they change.
+- The six judgment calls below were accepted. The numeric-string rule stays provisional until ticket 3's Ubuntu check.
 
 Read first: `1-backend-and-interface.md` (the ticket), `tests/suite/README.md` (the contract, written for the review), and the spec's *One contract per output type* and *Trusting a fingerprint* sections.
 
@@ -59,12 +65,13 @@ Judgment calls the maintainer should confirm:
 - `mutate.R` writes the generated runner scripts with forward-slash paths. Backslash paths broke R strings (`'\U' used without hex digits`).
 - testthat's own options hide gaps in pinned options. Any test of an option must set the opposite value first.
 
-## Next: Part B, after approval
+## Next: Part B (approved to start)
 
 Follow the ticket's Part B list. Starting points:
 
-- `review_page_data(paths)` in `store.R` already gives everything per output: view kind, states with current and approved files, live page, form paths, notes, status. Serve it from httpuv, and add a server-only write path for `human_approve`/`human_reject` that goes through `review_transition()`.
+- Start with the separate decisions file. Add `human_decisions.json` and one function in `store.R` that derives each output's status from both files, then switch `list`, the agent commands and `review_page_data()` to it. The page, the server and the hook all build on this.
+- `review_page_data(paths)` in `store.R` already gives everything per output: view kind, states with current and approved files, live page, form paths, notes, status. Serve it from httpuv, and add a server-only write path for `human_approve`/`human_reject` that checks the move with `review_transition()` and appends to `human_decisions.json`.
 - The accepted layout is `for_devs/prototypes/review_page_v2.html`.
 - The mutation report and unit test results for the suite health view: `mutation_report.json`, plus a JSON of the latest `test.R` run (not written yet).
 - Add a break to `mutate.R` for each new server rule, such as "the server accepts a human reject without a note".
-- The human-authority hook goes in `.claude/settings.json`, which today only allows commands for the old suite (`tests/run.R`, `tests/report.Rmd`) that no longer exist. Those entries are stale.
+- The human-authority hook goes in `.claude/settings.json`, which today only allows commands for the old suite (`tests/run.R`, `tests/report.Rmd`) that no longer exist. Those entries are stale. The hook blocks agent writes to `human_decisions.json` by path, through file-edit tools and shell commands that name it. The hook is a guardrail, not a lock (spec: *Human authority*).

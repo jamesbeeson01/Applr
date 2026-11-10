@@ -11,7 +11,7 @@
 ## Starting point
 
 `tests/suite/` already has a working, tested core. Keep it and refactor it; don't start over.
-- Keep as they are: `review_transition()` (`status.R`), the common normalisation, `assemble_form()` and `fingerprint_output()` (`fingerprint.R`), the review state layout and the agent commands (`store.R`, `suite.R`).
+- Keep as they are: `review_transition()` (`status.R`), the common normalisation, `assemble_form()` and `fingerprint_output()` (`fingerprint.R`), the review state layout and the agent commands (`store.R`, `suite.R`). Part B changes one thing: human decisions move to their own file.
 - Replace: everything that assumes a static ggplot. Today `run_suite()` calls `fingerprint_static_plot()` on every output, `save_png()` calls `print()`, and `judged_output(name, plot)` takes no type. These become the static plot's registration under the contract.
 - The case `single_predictor_line` stays as the static plot's demo case. Its trust tests move onto the shared contract tests.
 
@@ -62,9 +62,16 @@ The accepted layout is `for_devs/prototypes/review_page_v2.html`.
   - show which cases cover each behaviour, and which behaviours are deferred, with their reasons;
   - show a case's expected behaviour taken from the inventory entries it cites.
 - [ ] **Suite health view.** Shows the latest mutation report and the unit-test results, so the maintainer can check the backend's tests without reading them.
-- [ ] Approve and reject write to the review state through the server only. Reject requires a note and offers quick starter phrases. Outputs reach the human only after Agent approved.
+- [ ] **Suite guide pages** (one or two, from the sidebar). Written for the maintainer: simple and clear, but complete enough to understand the whole suite without reading it.
+  - **Principles:** the two halves of a case, what a fingerprint does and doesn't decide, the review statuses and who can set each, how the suite's own tests are tested, and what CI and CRAN each run.
+  - **Structure:** a diagram of the pieces (cases, output types, runner, review state, review server, review page, CI) and how an output flows from run to Human approved.
+  - **Latest status:** the most recent unit-test run and mutation check, each with the date and the commit it ran on. `test.R` and `mutate.R` record both in their JSON output.
+
+  The pages restate `tests/suite/README.md` and the spec in plain language, so they go stale when those change. Both files carry a note saying so.
+- [ ] **Separate human decisions** (decided at the Part A review; spec: *Review state storage*, *Human authority*). The server writes the human's approvals and rejections to `tests/suite/human_decisions.json`, keyed by output ID and fingerprint. `review_state.json` stops holding human statuses. Review status is derived from both files in one place in `store.R`, and the agent commands, `list` and `review_page_data()` all use it. Add mutation breaks: "a human decision for an old fingerprint still counts", and "an agent command writes the decisions file".
+- [ ] Approve and reject write to `human_decisions.json` through the server only, after checking the move with `review_transition()`. Reject requires a note and offers quick starter phrases. Outputs reach the human only after Agent approved.
 - [ ] Keyboard: j/k, a, r, s, o, [, Ctrl+Enter, Esc. Queue progress is shown.
-- [ ] **Human-authority hook.** A Claude Code hook, committed in the project settings, blocks agent writes that would set or change Human approved, through file-edit and shell tools alike. A test shows a blocked attempt and an allowed agent action.
+- [ ] **Human-authority hook.** A Claude Code hook, committed in the project settings, blocks any agent write to `human_decisions.json` by path: file-edit and write tools whose target is that file, and shell commands that name it. Agent commands never touch it, so nothing legitimate is blocked. A test shows a blocked edit, a blocked shell write, and an allowed `suite.R approve`. Replace the stale old-suite entries in `.claude/settings.json` while there.
 - [ ] `tests/suite/README.md` covers running the suite, the review page, the hook, and how to add an output type. Ticket 4 polishes it into the full guide.
 
 ## Out of scope

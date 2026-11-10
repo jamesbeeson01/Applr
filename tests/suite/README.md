@@ -4,6 +4,10 @@ Not shipped in the package (`.Rbuildignore`). Needs `vdiffr`, `digest`,
 `processx` and, for screenshots of interactive states, `chromote` with Chrome.
 Vocabulary: `GLOSSARY.md`; design: `for_devs/test_suite_spec.md`.
 
+> When you change this file, update the review page's suite guide pages
+> (principles and structure) to match. They are the maintainer's plain-language
+> version of it.
+
 A case is `tests/testthat/test-case_<name>.R`: ordinary testthat expectations
 (shipped, run by CRAN) plus `judged_output()` calls that declare what a
 reviewer judges. From the package root:
@@ -20,8 +24,13 @@ Rscript tests/suite/mutate.R                    # mutation check of those tests
 
 `review_state.json`, `forms/` and `mutation_report.json` are committed. Views
 (PNGs, HTML, screenshots, live widget pages) go to the gitignored
-`tests/output/` and are for viewing only. Only the review server (future)
-writes Human approved.
+`tests/output/` and are for viewing only.
+
+Human decisions live in their own file, `human_decisions.json`, which only
+the review server (Part B, not built yet) writes. An output is Human approved
+only while that file approves its current fingerprint. Because no agent
+command ever writes the file, a Claude Code hook blocks every agent write to
+it by path.
 
 ## Output types
 

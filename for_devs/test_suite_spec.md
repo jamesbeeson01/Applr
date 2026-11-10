@@ -3,6 +3,8 @@
 Status: ready-for-agent
 Vocabulary: see `GLOSSARY.md` (Case, Expectation, Judged output, State, Fingerprint, Serialised form, Compute step, Shell, Payload, Review status, Agent approved, Human approved, Rejected, Rejection note, Platform variant).
 
+> When you change a principle or the structure here, update the review page's suite guide pages to match. They are the maintainer's plain-language version of this spec and `tests/suite/README.md`.
+
 ## Problem Statement
 
 The current suite runs 181 cases and reports "OK" when a case runs and its console output matches a snapshot. Nothing requires anyone to look at the plots, so a visual regression can pass forever unnoticed. There is no difference between what a script verified, what an agent looked at, and what a human approved. Cases are split into "console" and "visual" types, even though most behaviour is both (a warning case that produces no plot should fail). Reviewing means scrolling one long report to find the one case that matters, and the same plots must be re-checked every run whether or not they changed. Correctness of plotted lines is judged by eye against reference images, when it could be computed. The suite can't handle the outputs Applr is about to produce: JavaScript sliders, interactive plotly 3D charts and animations. It is also excluded from the built package, so CRAN effectively tests almost nothing.
@@ -172,9 +174,13 @@ Platform variant of Human approved --agent approve (note)--> Human approved for 
 
 The human never sees an Unreviewed output before an agent pass. This applies to interactive outputs too: agents review their sampled states.
 
-**Review state storage.** A dev-only review state file records, per judged output: fingerprint, the hash of each serialised part, review status, who set it, when, the agent note, and any rejection note. The screenshots of its states at the last approval are kept beside it. The human part of this file is written only by the review server.
+**Review state storage.** Two dev-only files, both committed.
+- `review_state.json` is written by the runner and the agent commands. Per judged output, it records the fingerprint, the hash of each serialised part, the runner's or agent's status, who set it, when, the agent note, and any agent rejection note. The screenshots of its states at the last approval are kept beside it.
+- `human_decisions.json` is written only by the review server. Each entry is one human decision: output ID, the fingerprint judged, approve or reject, the note, and the date.
 
-**Human authority.** A Claude Code hook blocks agent writes to the human part of the review state. The review server is the only writer of Human approved.
+An output's review status is derived from both files. A human approval for the current fingerprint makes it Human approved. A human rejection for the current fingerprint makes it Rejected. Otherwise its status comes from `review_state.json`. A decision for an older fingerprint has no effect, so a changed output is Unreviewed again without anyone editing the decisions. A platform variant is likewise derived, from a human approval of the original fingerprint plus an agent approval of the variant, so agents never write the decisions file. `git log` on that file is the history of every human decision.
+
+**Human authority.** Agents have no reason to write `human_decisions.json`, so a Claude Code hook can block every agent write to it by path, through file-edit and shell tools alike. This is a simple rule, with no need to inspect what an edit changes. One shared file couldn't be protected this way, because agents write it legitimately and a shell command's effect can't be seen in advance. The hook is a guardrail against careless or overeager agents, not a lock against a determined one. A forged decision would still show as a diff to that one file. If agents are ever run outside Claude Code, add a CI check on who changed it.
 
 **Review page.** A small local server started from R (httpuv) serves the review page and records decisions. Layout from the review page prototype (v2):
 - the inbox is the default view;
@@ -187,7 +193,7 @@ The human never sees an Unreviewed output before an agent pass. This applies to 
 
 **Screenshots.** Interactive states are captured with headless Chrome via chromote (dev-only), driven by a hook in the widget that sets a given state, so captures are deterministic. They are captured only for the states of Unreviewed outputs, never to compute a fingerprint. A state whose new screenshot is pixel-identical to the one kept from the last approval, on the same machine, is marked unchanged, so a reviewer can skip it; the changed parts of the serialised form say what to look for in the rest.
 
-**CI.** A workflow runs on pushes to the test-suite branch only. It's used first by the cross-platform experiment. How CI maps review statuses to ✓/✗, and whether local fingerprints are authoritative across platforms, are **deferred to the experiment's result**. The working proposal: Rejected and Unreviewed fail, Agent approved warns, and a separate release check requires everything to be Human approved.
+**CI.** A workflow runs on pushes to the test-suite branch only. It's used first by the cross-platform experiment. How CI maps review statuses to ✓/✗, and whether local fingerprints are authoritative across platforms, are **deferred to the experiment's result**. The working proposal: Rejected and Unreviewed fail, Agent approved warns, and a separate release check requires everything to be Human approved. The maintainer confirmed that Unreviewed fails (2026-11-09): an Unreviewed output reaching `main` is a failure, even if it means CI stays red until a review is done.
 
 Partial results (October 2026, R 4.5.3, identical package versions on every machine). For plotly JSON, slider payloads, slider backgrounds and animation frames, GitHub's Windows and macOS runners matched the maintainer's machine exactly. Ubuntu (OpenBLAS) differed only where normalisation had a gap:
 - plotly stores colorscale stops as strings, which `signif()` never reaches;

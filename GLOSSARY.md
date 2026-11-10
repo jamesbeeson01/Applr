@@ -54,7 +54,10 @@ _Avoid_: Tier, level, approval level
 A review status meaning a coding agent has judged the output acceptable and it now waits for a human. It is never a final state, except for a platform variant.
 
 **Human approved**:
-The only final review status. Only a person can grant it.
+The only final review status. Only a person can grant it. An output is Human approved only while a human decision approves its current fingerprint.
+
+**Human decision**:
+A person's approval or rejection of one judged output at one fingerprint, with its note and date. Human decisions are kept apart from everything agents and the runner record, so no agent action can create one.
 
 **Rejected**:
 A review status meaning a reviewer (agent or human) sent the output back. It carries a rejection note and holds until the code changes the fingerprint.
