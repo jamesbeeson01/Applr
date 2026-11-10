@@ -1,4 +1,58 @@
 {
+  "base_slice_2d/plot": {
+    "agent_note": "",
+    "rejection_note": "",
+    "who": "runner",
+    "when": "2026-11-09T19:36:31-0700",
+    "case": "base_slice_2d",
+    "type": "base_graphics",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "a0a963d29981",
+    "parts": {
+      "main": "a0a963d29981"
+    },
+    "engine_version": "2.0",
+    "status": "Unreviewed"
+  },
+  "condition_imputed_values/wording": {
+    "agent_note": "",
+    "rejection_note": "",
+    "who": "runner",
+    "when": "2026-11-09T19:36:32-0700",
+    "case": "condition_imputed_values",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "51d10577f115",
+    "parts": {
+      "main": "51d10577f115"
+    },
+    "engine_version": "",
+    "status": "Unreviewed"
+  },
+  "scatter_3d_two_predictors/widget": {
+    "agent_note": "",
+    "rejection_note": "",
+    "who": "runner",
+    "when": "2026-11-09T19:36:33-0700",
+    "case": "scatter_3d_two_predictors",
+    "type": "plotly_3d",
+    "view": "states",
+    "states": [
+      "default",
+      "top",
+      "side"
+    ],
+    "fingerprint": "929bf6d0e5f6",
+    "parts": {
+      "figure": "40a26a277e02",
+      "presets": "4d0746003d0e",
+      "shell": "3634b05d2a92"
+    },
+    "engine_version": "",
+    "status": "Unreviewed"
+  },
   "single_predictor_line/plot": {
     "agent_note": "",
     "rejection_note": "",
@@ -9,6 +63,10 @@
       "main": "cda9191215fe"
     },
     "engine_version": "2.0",
-    "status": "Unreviewed"
+    "status": "Unreviewed",
+    "case": "single_predictor_line",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot"
   }
 }

@@ -1,0 +1,7 @@
+message
+Value for `hp` not specified - Used mean: 146.7
+    To choose a slice, use 'predict_vars = list(hp = 146.7)'.
+
+message
+Value for `qsec` not specified - Used mean: 17.85
+    To choose a slice, use 'predict_vars = list(qsec = 17.85)'.

@@ -1,0 +1,217 @@
+{
+  "when": "2026-11-09T21:04:03-0700",
+  "tests": 40,
+  "caught": 21,
+  "breaks": [
+    {
+      "name": "A changed fingerprint keeps its status",
+      "file": "status.R",
+      "caught": true,
+      "caught_by": [
+        "test-runner.R: running records Unreviewed, unchanged re-runs keep status, changes reset it",
+        "test-runner.R: list and diff work; approval requires a note and rejection stores it",
+        "test-status.R: every row of the transition table holds",
+        "test-status.R: a run resets exactly when the fingerprint is new, and records it"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "A part is dropped from the serialised form (core)",
+      "file": "fingerprint.R",
+      "caught": true,
+      "caught_by": [
+        "test-contract.R: plotly_3d: sensitivity",
+        "test-fake-type.R: an unforeseen type goes from run to the review page's data",
+        "test-fake-type.R: the unforeseen type gets the shared trust tests",
+        "test-normalise.R: a single-part output has no header; every part of a multi-part one is hashed",
+        "test-types.R: every part goes through the common normalisation"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "A part is dropped from the serialised form (plotly_3d presets)",
+      "file": "types/plotly_3d.R",
+      "caught": true,
+      "caught_by": [
+        "test-contract.R: plotly_3d: sensitivity"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "Negative-zero normalisation is skipped",
+      "file": "fingerprint.R",
+      "caught": true,
+      "caught_by": [
+        "test-normalise.R: negative zero loses its sign but real negatives do not",
+        "test-types.R: every part goes through the common normalisation"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "An agent's approval with no note is accepted",
+      "file": "status.R",
+      "caught": true,
+      "caught_by": [
+        "test-runner.R: list and diff work; approval requires a note and rejection stores it",
+        "test-status.R: every row of the transition table holds"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "An agent's rejection with no note is accepted",
+      "file": "status.R",
+      "caught": true,
+      "caught_by": [
+        "test-status.R: every row of the transition table holds"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "An agent writes Human approved",
+      "file": "store.R",
+      "caught": true,
+      "caught_by": [
+        "test-fake-type.R: an unforeseen type goes from run to the review page's data",
+        "test-runner.R: running records Unreviewed, unchanged re-runs keep status, changes reset it",
+        "test-runner.R: an agent's decisions never write Human approved"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "A view is rendered from another output than the one hashed",
+      "file": "store.R",
+      "caught": true,
+      "caught_by": [
+        "test-contract.R: base_graphics: completeness",
+        "test-contract.R: conditions: completeness",
+        "test-contract.R: plotly_3d: completeness",
+        "test-contract.R: static_plot: completeness",
+        "test-fake-type.R: the unforeseen type gets the shared trust tests"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "A view is rendered from the declared object, not the hashed build",
+      "file": "store.R",
+      "caught": true,
+      "caught_by": [
+        "test-contract.R: base_graphics: completeness",
+        "test-contract.R: conditions: completeness",
+        "test-contract.R: plotly_3d: completeness",
+        "test-contract.R: static_plot: completeness",
+        "test-fake-type.R: the unforeseen type gets the shared trust tests"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "Views are rendered for outputs that are not Unreviewed",
+      "file": "store.R",
+      "caught": true,
+      "caught_by": [
+        "test-runner.R: views are rendered for Unreviewed outputs only"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "Approved views are not kept for comparison",
+      "file": "store.R",
+      "caught": true,
+      "caught_by": [
+        "test-fake-type.R: an unforeseen type goes from run to the review page's data",
+        "test-runner.R: views are rendered for Unreviewed outputs only"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "A new fingerprint keeps the old agent note",
+      "file": "store.R",
+      "caught": true,
+      "caught_by": [
+        "test-runner.R: running records Unreviewed, unchanged re-runs keep status, changes reset it"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "A case whose expectations fail still updates the review state",
+      "file": "store.R",
+      "caught": true,
+      "caught_by": [
+        "test-runner.R: breaking the line fails the expectation and leaves review state untouched",
+        "test-runner.R: a case with no expectations does not count as passed"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "A case with no expectations counts as passed",
+      "file": "store.R",
+      "caught": true,
+      "caught_by": [
+        "test-runner.R: a case with no expectations does not count as passed"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "A part skips the common normalisation",
+      "file": "types.R",
+      "caught": true,
+      "caught_by": [
+        "test-types.R: every part goes through the common normalisation"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "Absolute paths are not tokenised",
+      "file": "fingerprint.R",
+      "caught": true,
+      "caught_by": [
+        "test-normalise.R: absolute paths become tokens"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "Compute steps run without the pinned options",
+      "file": "fingerprint.R",
+      "caught": true,
+      "caught_by": [
+        "test-normalise.R: compute steps run under the pinned options, whatever the session's"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "Canonical JSON keeps key order",
+      "file": "fingerprint.R",
+      "caught": true,
+      "caught_by": [
+        "test-normalise.R: canonical JSON drops classes, sorts keys, rounds numbers and keeps array order"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "Canonical JSON leaves numeric strings unrounded",
+      "file": "fingerprint.R",
+      "caught": true,
+      "caught_by": [
+        "test-normalise.R: canonical JSON rounds decimal strings like numbers and leaves other strings alone"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "Condition text keeps curly quotes",
+      "file": "types/conditions.R",
+      "caught": true,
+      "caught_by": [
+        "test-type-conditions.R: ANSI codes are removed and curly quotes become straight"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "Conditions raised while drawing are missed",
+      "file": "types/conditions.R",
+      "caught": true,
+      "caught_by": [
+        "test-type-conditions.R: every condition is captured in order, including those raised while drawing"
+      ],
+      "crashed": false
+    }
+  ]
+}

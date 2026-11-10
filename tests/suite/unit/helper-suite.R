@@ -1,34 +1,35 @@
-# testthat runs these files from tests/suite/unit, so anchor on the package root.
-root <- normalizePath(file.path(getwd(), "..", "..", ".."), winslash = "/")
+# testthat runs these files from tests/suite/unit. The suite under test is
+# the one these files sit in, so a mutated copy tests itself; the package
+# and its cases come from APPLR_PKG_ROOT when the copy lives elsewhere.
+suite_dir <- normalizePath("..", winslash = "/")
+root <- Sys.getenv("APPLR_PKG_ROOT", normalizePath(file.path(suite_dir, "..", ".."), winslash = "/"))
 suppressMessages(pkgload::load_all(root, quiet = TRUE))
-for (f in c("fingerprint", "status", "store")) {
-  source(file.path(root, "tests/suite", paste0(f, ".R")))
-}
+source(file.path(suite_dir, "load.R"))
+load_suite(suite_dir)
 
-case_file <- file.path(root, "tests/testthat/test-case_single_predictor_line.R")
+case_dir <- file.path(root, "tests/testthat")
+case_path <- function(case) file.path(case_dir, paste0("test-case_", case, ".R"))
 
-# Copies the case and its helper into a fresh folder, applying a text edit,
-# so a test can change one input of the case at a time.
-mutated_case_dir <- function(from = NULL, to = NULL, extra = NULL) {
+# Copies case files and the judged_output() helper into a fresh folder. `edit`
+# is c(from, to), a text edit to the first case, so a test can change one
+# input of a case at a time; `extra` lines are appended to it.
+case_copy <- function(cases = "single_predictor_line", edit = NULL, extra = NULL) {
   dir <- tempfile("case")
   dir.create(dir)
-  file.copy(file.path(root, "tests/testthat/helper-judged.R"), dir)
-  txt <- readLines(case_file)
-  if (!is.null(from)) {
-    stopifnot(any(grepl(from, txt, fixed = TRUE)))
-    txt <- sub(from, to, txt, fixed = TRUE)
+  file.copy(file.path(case_dir, "helper-judged.R"), dir)
+  for (i in seq_along(cases)) {
+    txt <- readLines(case_path(cases[i]))
+    if (i == 1 && !is.null(edit)) {
+      stopifnot(any(grepl(edit[1], txt, fixed = TRUE)))
+      txt <- sub(edit[1], edit[2], txt, fixed = TRUE)
+    }
+    if (i == 1) txt <- c(txt, extra)
+    writeLines(txt, file.path(dir, basename(case_path(cases[i]))))
   }
-  writeLines(c(txt, extra), file.path(dir, basename(case_file)))
   dir
-}
-
-case_fingerprint <- function(from = NULL, to = NULL, extra = NULL) {
-  dir <- mutated_case_dir(from, to, extra)
-  r <- run_case_file(file.path(dir, basename(case_file)))
-  fingerprint_static_plot(r$outputs[[1]])$fingerprint
 }
 
 temp_paths <- function() {
   root <- tempfile("suite")
-  suite_paths(root, file.path(root, "png"))
+  suite_paths(root, file.path(root, "views"))
 }

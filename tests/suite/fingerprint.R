@@ -80,20 +80,46 @@ hash_text <- function(text) {
                         serialize = FALSE), 1, 12)
 }
 
-# Static ggplot: fixed-font SVG from vdiffr's engine. The plot is wrapped in
-# a function so it keeps the theme users see, not theme_test().
-serialise_static_plot <- function(plot) {
+# Fixed-font SVG of whatever `draw()` puts on vdiffr's device. Returns the
+# lines and the engine version from the SVG header.
+svg_form <- function(draw) {
   file <- tempfile(fileext = ".svg")
   on.exit(unlink(file))
-  with_pinned_options(vdiffr::write_svg(function() print(plot), file))
+  with_pinned_options(vdiffr::write_svg(draw, file))
   lines <- readLines(file, warn = FALSE, encoding = "UTF-8")
   head <- paste(utils::head(lines, 5), collapse = " ")
   engine <- regmatches(head, regexpr("data-engine-version='[^']*'", head))
   if (length(engine) != 1) stop("vdiffr SVG has no data-engine-version in its header.", call. = FALSE)
-  list(
-    parts = list(main = normalise_common(lines)),
-    engine_version = sub("data-engine-version='([^']*)'", "\\1", engine)
-  )
+  list(lines = lines, engine_version = sub("data-engine-version='([^']*)'", "\\1", engine))
+}
+
+# Canonical JSON (spec: "Canonical JSON"). A string that is a decimal number
+# with a fractional part or an exponent is rounded like a number and stays a
+# string: plotly stores colorscale stops this way. Integer-looking strings
+# are left alone, since they are more likely IDs or labels than measurements.
+numeric_string <- "^[-+]?([0-9]+\\.[0-9]*|\\.[0-9]+|[0-9]+(?=[eE]))([eE][-+]?[0-9]+)?$"
+
+canonical_value <- function(x) {
+  if (is.list(x)) {
+    nms <- names(x)
+    x <- lapply(unclass(x), canonical_value)
+    if (!is.null(nms)) x <- x[order(nms, method = "radix")]
+    return(x)
+  }
+  if (is.factor(x)) x <- as.character(x)
+  if (is.numeric(x) && !is.integer(x)) x <- signif(x, 6)
+  if (is.character(x)) {
+    hit <- !is.na(x) & grepl(numeric_string, x, perl = TRUE)
+    x[hit] <- as.character(signif(as.numeric(x[hit]), 6))
+  }
+  attributes(x) <- if (!is.null(names(x))) list(names = names(x))
+  x
+}
+
+canonical_json <- function(x) {
+  json <- jsonlite::toJSON(canonical_value(x), digits = I(6), auto_unbox = TRUE,
+                           null = "null", na = "null", pretty = TRUE)
+  strsplit(as.character(json), "\n", fixed = TRUE)[[1]]
 }
 
 # One fingerprint for the whole output, plus the hash of each part.
@@ -109,4 +135,3 @@ fingerprint_output <- function(serialised) {
   )
 }
 
-fingerprint_static_plot <- function(plot) fingerprint_output(serialise_static_plot(plot))

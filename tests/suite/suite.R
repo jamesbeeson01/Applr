@@ -6,7 +6,8 @@
 #   Rscript tests/suite/suite.R reject  <id> "<note>"
 
 suppressMessages(pkgload::load_all(".", quiet = TRUE))
-for (f in c("fingerprint", "status", "store")) source(file.path("tests/suite", paste0(f, ".R")))
+source("tests/suite/load.R")
+load_suite("tests/suite")
 
 args <- commandArgs(trailingOnly = TRUE)
 cmd <- if (length(args)) args[[1]] else "list"
