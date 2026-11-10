@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Review Page Prototype</title>
+<!-- PROTOTYPE v2: inbox layout (was variant A) with a collapsible sidebar, the suite overview
+     (was variant C) as a sidebar destination, B's swipe compare + queue progress, and a note
+     for the agent on reject. Images are real suite outputs; "approved" for gs_08/gt_14/sb_15
+     is the reference image standing in for a previously approved render. In-memory only. -->
+<style>
+  :root { --bg:#f7f7f5; --panel:#fff; --ink:#1d1d1b; --muted:#6b6b66; --line:#e2e1dc; --accent:#2f5bd3; --accentbg:#e6ecfb;
+          --ok:#1f7a4a; --okbg:#e3f3ea; --warn:#a86400; --warnbg:#fdf0dc; --bad:#b3261e; --badbg:#fbe4e2; --soft:#efeee9; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { background: var(--bg); color: var(--ink); font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  img { max-width: 100%; display: block; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+  button { font: inherit; font-size: 13px; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); cursor: pointer; color: var(--ink); }
+  button:hover { border-color: var(--accent); }
+  button.approve { background: var(--ok); color: #fff; border-color: var(--ok); }
+  button.reject { color: var(--bad); border-color: var(--bad); }
+  button.reject.solid { background: var(--bad); color: #fff; }
+  button.ghost { border-color: transparent; background: none; }
+  button.on { background: var(--accentbg); border-color: var(--accent); }
+  input[type=search], textarea { font: inherit; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; width: 100%; background: #fff; }
+  textarea { min-height: 84px; resize: vertical; }
+  .pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .s-you { background: var(--warnbg); color: var(--warn); } .s-agent { background: var(--soft); color: var(--muted); }
+  .s-approved { background: var(--okbg); color: var(--ok); } .s-rejected { background: var(--badbg); color: var(--bad); }
+  .muted { color: var(--muted); } .small { font-size: 12px; }
+  kbd { font: 11px ui-monospace, Consolas, monospace; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 0 4px; background: #fff; color: var(--muted); }
+  h4 { margin: 0 0 4px; font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+
+  .shell { display: grid; grid-template-columns: 300px 1fr; height: 100vh; }
+  .shell.collapsed { grid-template-columns: 52px 1fr; }
+
+  /* sidebar */
+  aside { border-right: 1px solid var(--line); background: var(--panel); overflow: auto; display: flex; flex-direction: column; }
+  .side-top { display: flex; align-items: center; gap: 6px; padding: 10px 10px 6px; }
+  .side-top b { flex: 1; }
+  .side-body { padding: 0 10px 16px; }
+  .nav { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  .nav:hover { background: var(--soft); } .nav.sel { background: var(--accentbg); }
+  .group-h { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 14px 0 4px; display: flex; justify-content: space-between; cursor: pointer; padding: 0 2px; }
+  .item { padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 13px; display: flex; justify-content: space-between; gap: 6px; }
+  .item:hover { background: var(--soft); } .item.sel { background: var(--accentbg); }
+  .item .tag { color: var(--muted); font-size: 11px; }
+  .rail { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 10px 0; }
+  .rail button { width: 36px; height: 36px; padding: 0; position: relative; }
+  .rail .badge { position: absolute; top: -5px; right: -6px; background: var(--warn); color: #fff; font-size: 10px; border-radius: 999px; padding: 0 5px; line-height: 16px; }
+
+  /* main */
+  main { overflow: auto; padding: 18px 24px 60px; }
+  main > * + * { margin-top: 14px; }
+  .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .head h2 { margin: 0; font-size: 20px; }
+  .progress { height: 4px; background: var(--soft); border-radius: 2px; overflow: hidden; }
+  .progress div { height: 100%; background: var(--accent); transition: width .2s; }
+  .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .expect { background: var(--soft); border-radius: 6px; padding: 8px 10px; font-size: 13px; white-space: pre-wrap; }
+  .agentnote { border-left: 3px solid var(--accent); padding: 4px 10px; font-size: 13px; }
+  .yournote { border-left: 3px solid var(--bad); padding: 4px 10px; font-size: 13px; background: var(--badbg); border-radius: 0 6px 6px 0; }
+  .console { font: 12px/1.45 ui-monospace, Consolas, monospace; white-space: pre-wrap; border-radius: 6px; padding: 8px 10px; margin: 0; }
+  .del { background: var(--badbg); } .add { background: var(--okbg); }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .states { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  iframe { width: 100%; height: 460px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+  .swipe { position: relative; max-width: 900px; user-select: none; cursor: ew-resize; }
+  .swipe .newer { position: absolute; inset: 0; overflow: hidden; }
+  .swipe .newer img { width: 100%; }
+  .swipe .bar { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--accent); pointer-events: none; }
+  .swipe .lbl { position: absolute; top: 6px; font-size: 11px; background: rgba(0,0,0,.65); color: #fff; padding: 1px 6px; border-radius: 4px; }
+  .rejectbox { border: 1px solid var(--bad); border-radius: 8px; padding: 12px; background: #fff; }
+  .rejectbox > * + * { margin-top: 8px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chips button { font-size: 12px; padding: 2px 8px; border-radius: 999px; }
+  .empty { text-align: center; padding: 80px 0; }
+
+  /* overview */
+  .legend span { margin-right: 12px; }
+  .fam { display: grid; grid-template-columns: 170px 1fr; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); align-items: start; }
+  .fam b { font-size: 13px; } .fam .muted { display: block; font-size: 12px; }
+  .tiles { display: flex; flex-wrap: wrap; gap: 3px; }
+  .tile { width: 22px; height: 22px; border-radius: 4px; cursor: pointer; border: 1px solid transparent; }
+  .t-approved { background: #cfe9da; } .t-you { background: #f4b45c; } .t-agent { background: #c9c8c2; } .t-rejected { background: #e46c63; }
+  .tile.dim { opacity: .15; } .tile:hover { border-color: var(--ink); }
+  .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+
+  @media (max-width: 800px) {
+    .shell, .shell.collapsed { grid-template-columns: 1fr; height: auto; }
+    aside { border-right: none; border-bottom: 1px solid var(--line); }
+    .rail { flex-direction: row; justify-content: flex-start; padding: 8px; }
+    .pair, .states { grid-template-columns: 1fr; } .fam { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const OUT = "../../tests/output/", REF = "../../tests/reference/", SL = "../sliders/out/";
+const ALL_IDS = "ap_01_single_predictor,ap_02_additive_imputed,ap_03_ytransform_log,ap_04_transformed_predictor,ap_05_factor_colored,ap_06_err_non_lm,ap_07_err_no_data_argument,ap_08_local_data,ap_09_factor_first_predictor,ap_10_err_dollar_names,ap_11_passthrough_args,ap_12_mapping,ap_13_summary_console,ap_14_mapping_nonmodel_var,ap_15_auto_color_facet,as_01_single_predictor,as_02_additive_default,as_03_multiplicative,as_04_multiplicative_x_axis_x,as_05_interaction_three_slices,as_06_quadratic,as_07_ytransform_inverse,as_08_ytransform_sqrt,as_09_ytransform_log,as_10_ytransform_exp,as_11_ytransform_square,as_12_err_non_lm,as_13_err_nonexistent_x_axis,as_14_err_factor_x_axis,as_15_err_dollar_names,as_16_err_character_variable,as_17_err_no_plot_open,as_18_err_wrong_data_plot,as_19_err_mismatched_x_axis,as_20_err_transformed_y_plot,as_21_err_back_transform_invalid,as_22_err_back_transform_extra_args,as_23_interval_confidence,cp_01_default_imputed,cp_02_band_and_held,cp_03_long_equation_wraps,gs_01_single_predictor,gs_02_additive_default_held,gs_03_additive_predict_vars,gs_04_additive_two_slices,gs_05_quadratic,gs_06_interaction_manual_slices,gs_07_interaction_grouped,gs_08_interaction_faceted,gs_09_ytransform_log,gs_10_ytransform_sqrt,gs_11_ytransform_inverse,gs_12_real_data_two_predictors,gs_13_real_data_predict_vars,gs_14_real_data_faceted,gs_15_many_predictors,gs_16_factor_predictor,gs_17_all_features,gs_18_impute_types,gs_19_x_axis_product,gs_20_x_axis_log,gs_21_x_axis_square,gs_22_x_axis_inverse,gs_23_x_axis_composite_product,gs_24_scale_x_log10,gs_25_scale_y_log10,gs_26_inline_log_y,gs_27_err_non_lm,gs_29_err_dollar_names,gs_30_character_variable,gs_31_err_back_transform_invalid,gs_32_err_back_transform_extra_args,gs_33_interval_confidence,gs_34_interval_prediction,gs_35_multi_value_single_var,gs_36_multi_value_crossed,gs_37_err_data_mismatch,gs_38_multi_value_cross_colored,gs_39_color_facet,gs_40_back_transform_fn,gs_41_back_transform_string,gs_42_back_transform_false,gs_43_ytransform_inverse_axis,gs_44_ytransform_exp,gs_45_ytransform_square,gs_46_both_intervals,gs_47_real_data_interaction_grouped,gs_48_err_discrete_x_axis,gs_49_band_two_values,gs_50_band_imputed_range,gs_51_band_grouped_faceted,gs_52_band_true_no_predict_vars,gs_53_warn_band_nothing_to_band,gs_54_warn_band_var_not_in_model,gs_55_warn_band_var_on_x_axis,gs_56_warn_band_var_pinned,gs_57_full_range,gs_58_interval_grouped_color,gs_59_band_true_grouped_color,gt_01_default_two_lines,gt_02_crossed_vars,gt_03_style_value,gt_04_style_legend,gt_05_location_left,gt_06_offset_hjust_vjust,gt_07_color_grouped,gt_08_manual_color,gt_09_legend_replacement,gt_10_multiple_slice_layers,gt_11_warn_no_slice_layer,gt_12_warn_multiple_models,gt_13_offset_scaled_axis,gt_14_narrow_panel_labels_fit,gt_15_band_edges_labeled,gt_16_band_edges_grouped,gt_17_warn_labels_too_wide,gt_18_user_scale_preserved,gt_19_log_axis_preserved,la_01_factor_default,la_02_factor_raw,la_03_factor_brackets,le_01_single_predictor,le_02_additive,le_03_multiplicative,le_04_interaction,le_05_quadratic,le_06_ytransform_inverse,le_07_ytransform_sqrt,le_08_ytransform_log,le_09_ytransform_exp,le_10_ytransform_square,le_11_mtcars_log,le_12_factor_default,le_13_factor_raw,le_14_factor_brackets,le_15_warn_bad_style,s2_01_single_predictor,s2_02_additive_default,s2_03_additive_x_axis_xpos,s2_04_multiplicative,s2_05_multiplicative_x_axis_xpos,s2_06_multiplicative_x_axis_product,s2_07_interaction,s2_08_quadratic,s2_09_ytransform_inverse,s2_10_ytransform_sqrt,s2_11_ytransform_log,s2_12_ytransform_exp,s2_13_ytransform_square,s2_14_mtcars_log,s2_15_err_non_lm,s2_16_err_nonexistent_x_axis,s2_17_err_factor_x_axis,s2_18_err_dollar_names,s2_19_err_character_variable,s2_20_err_back_transform_invalid,s2_21_err_back_transform_extra_args,s2_22_deprecated_xaxis_alias,s2_23_interval_confidence,s2_24_interval_prediction,s2_25_err_stale_data,s2_26_back_transform_string,sb_01_default_imputed,sb_02_predict_vars,sb_03_text_labeled_excluded,sb_04_model_off,sb_05_prepend_append,sb_07_grouped_legend_excluded,sb_08_nothing_held,sb_09_multi_value_factor,sb_10_warn_no_slice_layer,sb_11_warn_multiple_models,sb_12_band_spanning,sb_13_band_and_held,sb_14_long_equation_wraps,sb_15_narrow_plot_wraps,sb_16_ambiguous_levels_no_fallback,sb_17_style_pinned,sb_18_warn_bad_style,sb_19_brackets_keeps_indent,sb_20_indent_lost_names_return".split(",").filter(Boolean);
+
+const FAMILY = { ap: "autoplot", as: "add_slice_2d", cp: "geom_slice_caption", gs: "geom_slice", gt: "geom_slice_text",
+  la: "label styles", le: "lm_equation", s2: "slice_2d", sb: "geom_slice_subtitle", se: "slice_explore (sliders)" };
+
+const ITEMS = {
+  gs_08_interaction_faceted: { kind: "static", status: "you",
+    why: "Fingerprint changed; tier-0 numbers pass",
+    expect: "Three facet panels (x_switch = 0, 1, 2) ...\nPanel 0: flat line. Panel 1: slope~1. Panel 2: slope~2.",
+    agent: "Lines identical to the numeric oracle in all three panels. Visible change: facet strip theme and point alpha. Looks intentional and consistent with gs_14.",
+    approved: REF + "gs_08_interaction_faceted.png", latest: OUT + "gs_08_interaction_faceted.png" },
+  gt_14_narrow_panel_labels_fit: { kind: "static", status: "you",
+    why: "Fingerprint changed; tier-0 numbers pass",
+    expect: "Every label must sit COMPLETELY inside the panel, with a visible gap between the label's right edge and the panel border.",
+    agent: "All four labels inside the panel. Gap on the widest label (x2: 0.25) is ~4pt. That's tight; worth a human look at whether it reads as 'visible'.",
+    approved: REF + "gt_14_narrow_panel_labels_fit.png", latest: OUT + "gt_14_narrow_panel_labels_fit.png" },
+  gs_53_warn_band_nothing_to_band: { kind: "static", status: "you",
+    why: "Warning text changed; plot fingerprint unchanged",
+    expect: "A clear, student-readable warning ... should name the problem, say no band is drawn, and hint that a band needs a second predictor.",
+    agent: "Plot unchanged. The new wording names the band type and gives a concrete lm() example. Reads better for students.",
+    latest: OUT + "gs_53_warn_band_nothing_to_band.png",
+    consoleOld: "Warning: band = TRUE, but the model has no variable to span - every predictor is already shown on the plot. No band is drawn.\n    A band spans a second predictor besides the x-axis variable; add one to the model.",
+    consoleNew: "Warning: band = TRUE, but no variable is available - every model predictor is already shown on the plot. No band is drawn.\n    A projection band spans a predictor not represented on the plot; add another predictor to the model, such as `lm(y ~ x + new_predictor, ...)`" },
+  se_01_default_sliders: { kind: "interactive", status: "you",
+    why: "Interactive: state data changed (agent skipped)",
+    expect: "One slider per held predictor. Moving a slider moves the slice line smoothly; the subtitle updates to the held value.",
+    states: [["start", SL + "shots/p5_svg_js_a_start.png"], ["between", SL + "shots/p5_svg_js_a_between.png"], ["moved", SL + "shots/p5_svg_js_a_moved.png"]],
+    live: SL + "p5_svg_js_a.html" },
+  sb_15_narrow_plot_wraps: { kind: "static", status: "agent",
+    why: "Changed; waiting for agent pass",
+    expect: "The fallback fires and factor terms are abbreviated ...",
+    latest: OUT + "sb_15_narrow_plot_wraps.png", approved: REF + "sb_15_narrow_plot_wraps.png" },
+};
+ALL_IDS.forEach(id => { if (!ITEMS[id]) ITEMS[id] = { kind: id.startsWith("se_") ? "interactive" : "static", status: "approved",
+  why: "Fingerprint matches what you approved", latest: OUT + id + ".png" }; });
+
+const STATUS_LABEL = { you: "your turn", agent: "agent queue", rejected: "sent back to agent", approved: "approved" };
+const QUICK_NOTES = ["Labels clipped", "Spacing too tight", "Wrong line / slope", "Message wording unclear", "Legend wrong", "Doesn't match EXPECT"];
+const pill = s => `<span class="pill s-${s}">${STATUS_LABEL[s]}</span>`;
+const fam = id => id.slice(0, 2);
+const yourQueue = () => Object.keys(ITEMS).filter(id => ITEMS[id].status === "you");
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+// ---- view state (deep-linkable: ?case=<id> or ?view=overview) ----
+const params = new URLSearchParams(location.search);
+const ui = {
+  view: params.get("view") === "overview" ? "overview" : "case",
+  sel: params.get("case") && ITEMS[params.get("case")] ? params.get("case") : yourQueue()[0],
+  collapsed: false, compare: "swipe", filter: "", rejecting: false, draft: "",
+  open: { you: true, agent: true, rejected: true, approved: false },
+  sessionTotal: yourQueue().length,
+};
+function syncUrl() {
+  const u = new URL(location); u.search = "";
+  if (ui.view === "overview") u.searchParams.set("view", "overview"); else if (ui.sel) u.searchParams.set("case", ui.sel);
+  history.replaceState(null, "", u);
+}
+function go(view, sel) { ui.view = view; if (sel) ui.sel = sel; ui.rejecting = false; ui.draft = ""; syncUrl(); render(); }
+
+function approve(id) { Object.assign(ITEMS[id], { status: "approved", why: "Approved by you just now" }); advance(); }
+function reject(id, note) {
+  Object.assign(ITEMS[id], { status: "rejected", why: "Rejected by you just now; the agent picks it up next run", note: note.trim() || null });
+  advance();
+}
+function advance() { ui.rejecting = false; ui.draft = ""; const n = yourQueue()[0]; if (n) ui.sel = n; syncUrl(); render(); }
+
+// ---- sidebar ----
+function sidebar() {
+  const q = yourQueue().length;
+  if (ui.collapsed) return `<aside><div class="rail">
+      <button title="Expand sidebar ( [ )" data-act="toggle">☰</button>
+      <button title="Your queue" data-act="case" class="${ui.view === "case" ? "on" : ""}">✓${q ? `<span class="badge">${q}</span>` : ""}</button>
+      <button title="Suite overview (o)" data-act="overview" class="${ui.view === "overview" ? "on" : ""}">▦</button></div></aside>`;
+  const ids = Object.keys(ITEMS).filter(id => id.includes(ui.filter));
+  const groups = ["you", "rejected", "agent", "approved"].map(g => {
+    const gi = ids.filter(id => ITEMS[id].status === g);
+    if (!gi.length) return "";
+    const open = ui.open[g] || ui.filter;
+    return `<div class="group-h" data-group="${g}"><span>${STATUS_LABEL[g]} (${gi.length})</span><span>${open ? "−" : "+"}</span></div>` +
+      (open ? gi.map(id => `<div class="item ${ui.view === "case" && id === ui.sel ? "sel" : ""}" data-pick="${id}"><span>${id}</span>
+        <span class="tag">${ITEMS[id].note ? "✎ " : ""}${ITEMS[id].kind === "interactive" ? "live" : ""}</span></div>`).join("") : "");
+  }).join("");
+  return `<aside><div class="side-top"><b>Applr review</b><button class="ghost" title="Collapse sidebar ( [ )" data-act="toggle">«</button></div>
+    <div class="side-body">
+      <div class="nav ${ui.view === "overview" ? "sel" : ""}" data-act="overview"><span>▦ Suite overview</span><kbd>o</kbd></div>
+      <div style="margin:8px 0"><input type="search" id="find" placeholder="Find a case… (e.g. gt_14)" value="${esc(ui.filter)}"></div>
+      ${groups}
+      <p class="muted small" style="margin-top:16px"><kbd>j</kbd>/<kbd>k</kbd> next/prev in queue · <kbd>a</kbd> approve · <kbd>r</kbd> reject with note · <kbd>s</kbd> swipe/side-by-side · <kbd>[</kbd> sidebar</p>
+    </div></aside>`;
+}
+
+// ---- case detail ----
+function visual(it) {
+  if (it.states) return `<div class="states">${it.states.map(([l, src]) => `<div><h4>state: ${l}</h4><img src="${src}" alt=""></div>`).join("")}</div>
+    <details open><summary>Live widget: try it before approving</summary><iframe src="${it.live}"></iframe></details>`;
+  if (it.approved && it.status !== "approved") {
+    const toggle = `<div class="actions"><h4 style="margin:0">Compare</h4>
+      <button class="${ui.compare === "swipe" ? "on" : ""}" data-compare="swipe">Swipe</button>
+      <button class="${ui.compare === "pair" ? "on" : ""}" data-compare="pair">Side by side</button><kbd>s</kbd></div>`;
+    return toggle + (ui.compare === "swipe"
+      ? `<div class="swipe" data-swipe><img src="${it.approved}" alt=""><div class="newer" style="clip-path: inset(0 0 0 50%)"><img src="${it.latest}" alt=""></div>
+          <div class="bar" style="left:50%"></div><span class="lbl" style="left:6px">approved</span><span class="lbl" style="right:6px">new</span></div>`
+      : `<div class="pair"><div><h4>Approved</h4><img src="${it.approved}" alt=""></div><div><h4>New</h4><img src="${it.latest}" alt=""></div></div>`);
+  }
+  return it.latest ? `<img src="${it.latest}" alt="" style="max-width:720px">` : "";
+}
+
+function decisionBar(id) {
+  const it = ITEMS[id];
+  if (it.status === "agent") return `<p class="muted small">Waiting for an agent pass. Static outputs come to you once the agent approves.</p>`;
+  if (it.status !== "you") return "";
+  if (!ui.rejecting) return `<div class="actions"><button class="approve" data-act="approve">Approve <kbd style="background:none;color:#fff;border-color:#fff8">a</kbd></button>
+      <button class="reject" data-act="reject">Reject… <kbd>r</kbd></button></div>`;
+  return `<div class="rejectbox"><b>Send back to the agent</b>
+    <div class="muted small">The note goes with the rejection; the agent reads it before its next attempt.</div>
+    <div class="chips">${QUICK_NOTES.map(n => `<button data-chip="${esc(n)}">${n}</button>`).join("")}</div>
+    <textarea id="note" placeholder="What's wrong, and what would right look like? e.g. 'x2: 0.25 still touches the border at 5x5; want ≥ 1 char of gap.'">${esc(ui.draft)}</textarea>
+    <div class="actions"><button class="reject solid" data-act="confirm-reject">Reject and send <kbd style="background:none;color:#fff;border-color:#fff8">Ctrl+Enter</kbd></button>
+      <button class="ghost" data-act="cancel-reject">Cancel <kbd>Esc</kbd></button></div></div>`;
+}
+
+function caseView() {
+  const id = ui.sel;
+  if (!id) return `<div class="empty"><h2>Nothing selected</h2></div>`;
+  const it = ITEMS[id], q = yourQueue(), done = ui.sessionTotal - q.length;
+  const prog = ui.sessionTotal ? `<div class="small muted">Your queue: ${done} of ${ui.sessionTotal} done${q.length ? "" : " ✓ — the pre-release check would now pass"}</div>
+    <div class="progress"><div style="width:${done / ui.sessionTotal * 100}%"></div></div>` : "";
+  const consoleDiff = it.consoleOld ? `<div><h4>Console</h4><pre class="console del">− ${esc(it.consoleOld)}</pre><pre class="console add" style="margin-top:4px">+ ${esc(it.consoleNew)}</pre></div>` : "";
+  return `${prog}
+    <div class="head"><h2>${id}</h2>${pill(it.status)}</div>
+    <div class="muted">${FAMILY[fam(id)] || ""} · ${it.kind} · ${it.why}</div>
+    ${decisionBar(id)}
+    ${it.note ? `<div class="yournote"><b>Your note to the agent:</b> ${esc(it.note)}</div>` : ""}
+    ${it.expect ? `<div class="expect"><b>Expected:</b> ${esc(it.expect)}</div>` : ""}
+    ${it.agent ? `<div class="agentnote"><b>Agent:</b> ${esc(it.agent)}</div>` : ""}
+    ${consoleDiff}${visual(it)}`;
+}
+
+// ---- overview ----
+function overview() {
+  const fams = [...new Set(Object.keys(ITEMS).map(fam))].sort();
+  const count = s => Object.values(ITEMS).filter(i => i.status === s).length;
+  const rows = fams.map(f => {
+    const ids = Object.keys(ITEMS).filter(id => fam(id) === f).sort();
+    return `<div class="fam"><div><b>${FAMILY[f] || f}</b><span class="muted">${ids.length} cases</span></div><div class="tiles">${ids.map(id =>
+      `<div class="tile t-${ITEMS[id].status} ${ui.filter && !id.includes(ui.filter) ? "dim" : ""}" title="${id}: ${STATUS_LABEL[ITEMS[id].status]}" data-pick="${id}"></div>`).join("")}</div></div>`;
+  }).join("");
+  return `<div class="head"><h2>Suite overview</h2><button data-act="next">Next needing me →</button></div>
+    <div class="legend small muted">
+      <span><i class="sw t-you"></i>your turn: ${count("you")}</span><span><i class="sw t-rejected"></i>sent back: ${count("rejected")}</span>
+      <span><i class="sw t-agent"></i>agent queue: ${count("agent")}</span><span><i class="sw t-approved"></i>approved: ${count("approved")}</span></div>
+    <div>${rows}</div>
+    <p class="muted small">Click any tile to open that case. The sidebar search also dims non-matching tiles here.</p>`;
+}
+
+// ---- render + events ----
+function render() {
+  const app = document.getElementById("app");
+  const focusFind = document.activeElement?.id === "find";
+  app.innerHTML = `<div class="shell ${ui.collapsed ? "collapsed" : ""}">${sidebar()}<main>${ui.view === "overview" ? overview() : caseView()}</main></div>`;
+
+  const find = app.querySelector("#find");
+  if (find) {
+    find.addEventListener("input", e => { ui.filter = e.target.value; render(); });
+    find.addEventListener("keydown", e => { if (e.key === "Enter") { const m = Object.keys(ITEMS).find(id => id.includes(ui.filter)); if (m) go("case", m); } });
+    if (focusFind) { find.focus(); find.setSelectionRange(find.value.length, find.value.length); }
+  }
+  const note = app.querySelector("#note");
+  if (note) {
+    note.addEventListener("input", e => ui.draft = e.target.value);
+    note.addEventListener("keydown", e => {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) reject(ui.sel, ui.draft);
+      if (e.key === "Escape") { ui.rejecting = false; render(); }
+    });
+    if (!focusFind) { note.focus(); note.setSelectionRange(note.value.length, note.value.length); }
+  }
+  app.querySelectorAll("[data-chip]").forEach(b => b.addEventListener("click", () => {
+    ui.draft = (ui.draft ? ui.draft.replace(/\s*$/, "") + " " : "") + b.dataset.chip + ". "; render();
+  }));
+  app.querySelectorAll("[data-group]").forEach(h => h.addEventListener("click", () => { ui.open[h.dataset.group] = !ui.open[h.dataset.group]; render(); }));
+  app.querySelectorAll("[data-pick]").forEach(d => d.addEventListener("click", () => go("case", d.dataset.pick)));
+  app.querySelectorAll("[data-compare]").forEach(b => b.addEventListener("click", () => { ui.compare = b.dataset.compare; render(); }));
+  app.querySelectorAll("[data-act]").forEach(b => b.addEventListener("click", () => action(b.dataset.act)));
+  app.querySelectorAll("[data-swipe]").forEach(el => el.addEventListener("mousemove", e => {
+    const r = el.getBoundingClientRect(), p = Math.max(0, Math.min(100, (e.clientX - r.left) / r.width * 100));
+    el.querySelector(".newer").style.clipPath = `inset(0 0 0 ${p}%)`; el.querySelector(".bar").style.left = p + "%";
+  }));
+}
+
+function action(a) {
+  if (a === "toggle") { ui.collapsed = !ui.collapsed; render(); }
+  if (a === "overview") go("overview");
+  if (a === "case") go("case", ui.sel || yourQueue()[0]);
+  if (a === "next") { const n = yourQueue()[0]; if (n) go("case", n); }
+  if (a === "approve" && ITEMS[ui.sel]?.status === "you") approve(ui.sel);
+  if (a === "reject" && ITEMS[ui.sel]?.status === "you") { ui.rejecting = true; render(); }
+  if (a === "confirm-reject") reject(ui.sel, ui.draft);
+  if (a === "cancel-reject") { ui.rejecting = false; render(); }
+}
+
+document.addEventListener("keydown", e => {
+  if (e.target.matches("input, textarea, [contenteditable]")) return;
+  const q = yourQueue(), i = q.indexOf(ui.sel);
+  if (e.key === "j" && q.length) go("case", q[Math.min(q.length - 1, i + 1)]);
+  else if (e.key === "k" && q.length) go("case", q[Math.max(0, i - 1)]);
+  else if (e.key === "a" && ui.view === "case") action("approve");
+  else if (e.key === "r" && ui.view === "case") { e.preventDefault(); action("reject"); }
+  else if (e.key === "s" && ui.view === "case") { ui.compare = ui.compare === "swipe" ? "pair" : "swipe"; render(); }
+  else if (e.key === "o") go(ui.view === "overview" ? "case" : "overview");
+  else if (e.key === "[") action("toggle");
+  else if (e.key === "Escape" && ui.rejecting) action("cancel-reject");
+});
+
+syncUrl();
+render();
+</script>
+</body>
+</html>

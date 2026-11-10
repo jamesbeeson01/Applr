@@ -91,6 +91,8 @@ How CI (GitHub Actions) treats each review status, and whether fingerprints can 
 | plotly 3D | figure JSON, presets, shell | declared camera presets | trace data | sampled states + live use |
 | Animation | every frame's data, style SVG, shell | first, last, N evenly spaced frames | frame data | sampled frames + playback |
 
+**One contract per output type.** Each row above is one registration, in its own file. It gives how to serialise an object into named parts, the output's states, how to render a state for viewing, and the view kind the review page draws (image, text diff, or states plus a live widget). The runner, the review state and the review page know only the contract and never name a type. A new kind of output, including ones not foreseen here, is added by registering a type. A unit test proves this: a deliberately odd fake type, defined only in that test, goes from run to the review page with no edits to the core.
+
 **Fingerprints.** One fingerprint per judged output. Every output type, including future ones, follows one principle:
 
 > Fingerprint the inputs of the deterministic renderer, at the last point before code Applr doesn't control. Hash everything Applr controls that reaches the viewer; record by version what it doesn't.
@@ -129,7 +131,7 @@ Each output type then adds its own rules.
 **Trusting a fingerprint.** A fingerprint can go wrong in two directions. Keeping a status after a visible change is the failure that matters, and the design must rule it out. Resetting a status when nothing visible changed only costs review time, so it is allowed but should be rare. Four rules keep it that way:
 1. **Completeness by construction.** The output is built from the object that is hashed, never from a parallel copy. A unit test per output type asserts this, for example that a widget's `x` equals its hashed payload.
 2. **Sensitivity tests.** Per output type, unit tests change one input at a time (a coefficient, a slider range, a theme element, one byte of a shipped JS file) and assert the fingerprint changes.
-3. **Stability tests.** Two builds in different temp folders and R sessions give the same fingerprint. Ticket 03 checks the same across platforms.
+3. **Stability tests.** Two builds in different temp folders and R sessions give the same fingerprint. Ticket 3 checks the same across platforms.
 4. **Release audit.** The release check re-renders every state and compares it with the screenshot taken at approval on the same machine. A changed screenshot under an unchanged fingerprint means an input is missing from the serialised form, and is a suite bug.
 
 A known false reset: rebuilding the slider payload from different reference rows can draw the same curves from different numbers. If this becomes common, a carry-over can be added later: R evaluates the old and new payloads at every reachable position (a random sample for three or more sliders), and keeps the status with an automated note when they agree within 1e-8. It is not built now.
@@ -187,6 +189,12 @@ The human never sees an Unreviewed output before an agent pass. This applies to 
 
 **CI.** A workflow runs on pushes to the test-suite branch only. It's used first by the cross-platform experiment. How CI maps review statuses to ✓/✗, and whether local fingerprints are authoritative across platforms, are **deferred to the experiment's result**. The working proposal: Rejected and Unreviewed fail, Agent approved warns, and a separate release check requires everything to be Human approved.
 
+Partial results (October 2026, R 4.5.3, identical package versions on every machine). For plotly JSON, slider payloads, slider backgrounds and animation frames, GitHub's Windows and macOS runners matched the maintainer's machine exactly. Ubuntu (OpenBLAS) differed only where normalisation had a gap:
+- plotly stores colorscale stops as strings, which `signif()` never reaches;
+- the prototype slider's payload held device coordinates measured with system fonts, which the spec's data-unit payload already avoids.
+
+Static plots, base graphics and condition text were not yet tested. The provisional reading: local fingerprints are authoritative on every platform once those gaps are closed. Ticket 3 confirms it on the new cases.
+
 **Write, then salvage.** The new suite is a reinvention, not a migration. The old suite was deleted from the test suite branch before any new cases were written, and is kept only in the `old-suite` tag (the last `main` commit before the rewrite). It is read once, at the end, to check the new one, and is never used as a starting point. The work happens in four phases.
 
 1. **Inventory.** A temporary **behaviour inventory** next to this spec records what each function must do, written from what the package says and does:
@@ -194,7 +202,7 @@ The human never sees an Unreviewed output before an agent pass. This applies to 
    - the dev docs, for decisions and known edge cases;
    - the source, where every condition raised and every branch on the kind of input is a candidate edge case.
 
-   The `old-suite` tag is not read. For each function the inventory records:
+   The `old-suite` tag is not read. The inventory uses a file format the review page reads, with a stable ID per behaviour. Cases cite the IDs they cover, so the page can show coverage, deferrals and each case's expected behaviour. For each function the inventory records:
    - **what the function must do**: its behaviours, stated as principles;
    - **the edge cases that come up**: each with the principle at stake, where it comes from, and workable options for testing it;
    - **shared behaviours** that cut across functions (input validation, back-transforms, imputation, facet/group slicing), so each is tested once.
@@ -205,13 +213,13 @@ The human never sees an Unreviewed output before an agent pass. This applies to 
    - **static appearance** judged outputs;
    - **interactive** states.
 
-   Each writing ticket covers its type across every function the inventory lists, and none reads the old suite.
+   Each test type is written across every function the inventory lists, and nothing written in this phase reads the old suite.
 
 3. **Salvage audit.** With the new suite written, one session reads the `old-suite` tag (without restoring it to the branch) and goes through every old case and asks what kind of situation it put the function in: model shapes, argument forms, plot contexts, numeric boundaries, text and layout, conditions from dependencies, and platform fixes, plus the real student models in the archive. Each old case is logged as covered (by a named new case), added, or discarded with a reason. Old infrastructure, reference-image details and old wording are discarded by default. A gap goes into the inventory as a principle first and is then written as a new case by its test type's rules. No old code or wording is copied.
 
 4. **Clean up.** The inventory and the audit log are deleted, and the maintainer decides whether to keep the tag.
 
-Infrastructure tickets don't depend on any of this.
+The backend and the review page come before all four phases, so the maintainer reads the inventory and the cases in the review page. Tickets: `for_devs/tickets/README.md`.
 
 **Documentation.** The tests README is rewritten as the guide for adding features and output types to the suite. The test-suite iteration loop in `CLAUDE.md` is replaced by a short pointer to that guide. It may become a skill later.
 
@@ -219,7 +227,9 @@ Infrastructure tickets don't depend on any of this.
 
 - A good test asserts external behaviour at the highest seam: what data a plot will draw, what condition a user sees. Never private helpers or drawing internals.
 - The suite's own infrastructure (fingerprint normalisation, review status transitions, the review server's write rules) gets ordinary unit tests, because it is deterministic. Each output type also gets the completeness, sensitivity and stability tests from *Trusting a fingerprint*.
-- The review status rules are tested as a pure function of (recorded state, new fingerprint, action) → new state, mirroring the logic prototype's reducer shape.
+- The review status rules are tested as a pure function of (recorded state, new fingerprint, action) → new state, laid out row for row against the transition table above.
+- Completeness, sensitivity and stability tests are written once against the output-type contract. Each type supplies its own "change one input" mutations.
+- **Testing the tests.** A mutation check applies known breaks to a temporary copy of the suite, one at a time, and reports which ones the unit tests catch. For example: a changed fingerprint keeps its status, a part is dropped, normalisation is skipped, or an agent writes Human approved. Every break must be caught. The review page shows the latest report, so the maintainer can trust the backend without reading its tests.
 - Expectations must finish in about a minute in total and use two threads or fewer. Anything needing a browser or network is skipped on CRAN.
 
 ## Out of Scope
@@ -227,11 +237,11 @@ Infrastructure tickets don't depend on any of this.
 - Migrating old cases one-for-one, or preserving any old `# EXPECT:` wording.
 - Vignette figures as judged outputs (later ticket).
 - Turning the guide into a skill.
-- Building the slider, plotly-preset and animation features themselves; only prototype outputs of them are used by the experiment.
+- Building the slider, plotly-preset and animation features themselves; only prototype outputs of them are used by the experiment. Their cases are added once the features exist, each by registering an output type.
 - Changes to the CRAN R CMD check workflow on `main`.
 
 ## Further Notes
 
-- Prototypes: `scratch/test_suite_prototype/logic_ladder.html` (superseded tier model, kept for history) and `review_page_v2.html` (the accepted layout). `scratch/` is gitignored, so commit them to a throwaway branch if they're to be kept as a source.
+- Prototype: `for_devs/prototypes/review_page_v2.html`, the accepted review page layout. The superseded logic-ladder prototype was not kept.
 - Decided locations: this spec, the temporary behaviour inventory and the salvage audit log live in `for_devs/`; tickets live in `for_devs/tickets/`, because issues are disabled on the repository.
-- The work happens on a dedicated branch. Until the writing tickets land, R CMD check on it covers little, so package code changes belong on `main`.
+- The work happens on a dedicated branch. Until ticket 2 lands, R CMD check on it covers little, so package code changes belong on `main`.

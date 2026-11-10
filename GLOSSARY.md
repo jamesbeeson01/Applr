@@ -26,6 +26,10 @@ _Avoid_: Frame (except for animations), screenshot
 A short hash of a judged output's serialised form, taken from the inputs of its renderer, so one fingerprint covers every state. Identical text gives an identical fingerprint. A fingerprint never decides correctness; it only tells whether an output is the same one that was last reviewed.
 _Avoid_: Hash (in prose), snapshot, checksum
 
+**Output type**:
+A kind of judged output, such as a static plot, condition text or a plotly 3D chart, defined by one registration: how it is serialised into parts, its states, how a state is rendered for viewing, and how the review page shows it. The rest of the suite knows only that registration.
+_Avoid_: Case type, kind
+
 **Serialised form**:
 The text a judged output becomes once noise is removed, and the input to its fingerprint: fixed-font SVG for plots, message text for conditions, and named parts such as a payload, a background and a shell for interactive outputs.
 _Avoid_: Snapshot, dump
@@ -56,7 +60,7 @@ The only final review status. Only a person can grant it.
 A review status meaning a reviewer (agent or human) sent the output back. It carries a rejection note and holds until the code changes the fingerprint.
 
 **Platform variant**:
-A state of a Human approved output that renders with a different fingerprint on another operating system. Agent approval alone is enough for it, because a human has already judged the design.
+A Human approved output whose fingerprint differs on another operating system. Agent approval alone is enough for it, because a human has already judged the design.
 
 **Rejection note**:
 The reviewer's explanation attached to a rejection, written for the agent who will fix the code.

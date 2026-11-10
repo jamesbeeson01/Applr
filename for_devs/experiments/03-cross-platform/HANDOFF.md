@@ -1,3 +1,5 @@
+> **Superseded (2026-11-09):** the rest of this work is now part of `for_devs/tickets/3-ci-and-release-check.md`, run on the new cases. The plotly string fix is in ticket 1. Do not restore the old cases.
+
 # Handoff: ticket 03 cross-platform experiment (2026-10-16)
 
 Stopped mid-ticket on request: another session deleted the old suite, including the `tests/cases/` files 13 of the experiment's outputs come from. Status: **in progress**.
