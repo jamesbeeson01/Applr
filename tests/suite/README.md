@@ -82,12 +82,14 @@ files only from `page/` and the view folder.
 
 ## The human-authority hook
 
-`.claude/hooks/protect_human_decisions.R`, registered in `.claude/settings.json`
-as a PreToolUse hook, blocks any agent write to `human_decisions.json` by path:
-`Edit`, `MultiEdit`, `Write` and `NotebookEdit` whose target is that file, and
-`Bash` or `PowerShell` commands that name it (even to read it; the Read tool
-is fine). Agent commands never touch the file, so nothing legitimate is
-blocked. It's a guardrail against careless agents, not a lock (spec: *Human
+Two entries in `.claude/settings.json` block any agent write to
+`human_decisions.json` by path. A permission deny rule,
+`Edit(tests/suite/human_decisions.json)`, covers the file-edit tools.
+`.claude/hooks/protect_human_decisions.R`, a PreToolUse hook on `Bash` and
+`PowerShell`, blocks commands that name the file (even to read it; the Read
+tool is fine). Agent commands never touch the file, so nothing legitimate is
+blocked. The project `.Rprofile` attaches devtools only in interactive
+sessions, so the hook's `Rscript` starts quickly. It's a guardrail against careless agents, not a lock (spec: *Human
 authority*). `unit/test-hook.R` shows a blocked edit, a blocked shell write
 and an allowed `suite.R approve`.
 

@@ -1,5 +1,6 @@
-# The human-authority hook (spec: "Human authority"): agent writes to the
-# decisions file are blocked by path, and the agent commands are not.
+# Human authority (spec: "Human authority"): agent writes to the decisions
+# file are blocked, by a deny rule for file-edit tools and by the hook for
+# shell tools, and the agent commands are not.
 
 hook_script <- file.path(root, ".claude", "hooks", "protect_human_decisions.R")
 
@@ -9,13 +10,14 @@ run_hook <- function(tool, input) {
   processx::run(file.path(R.home("bin"), "Rscript"), hook_script, stdin = f, error_on_status = FALSE)$status
 }
 
-test_that("the project settings run the hook before every file-edit and shell tool", {
+test_that("the project settings deny file edits to the decisions file and hook every shell tool", {
   settings <- jsonlite::read_json(file.path(root, ".claude", "settings.json"))
+  expect_true("Edit(tests/suite/human_decisions.json)" %in% unlist(settings$permissions$deny))
   hooks <- Filter(function(h) any(grepl("protect_human_decisions.R", unlist(h$hooks), fixed = TRUE)),
                   settings$hooks$PreToolUse)
   expect_length(hooks, 1)
   tools <- strsplit(hooks[[1]]$matcher, "|", fixed = TRUE)[[1]]
-  expect_true(all(c("Edit", "MultiEdit", "Write", "NotebookEdit", "Bash", "PowerShell") %in% tools))
+  expect_true(all(c("Bash", "PowerShell") %in% tools))
 })
 
 test_that("an edit or a shell write to the decisions file is blocked", {

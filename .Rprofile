@@ -1,1 +1,1 @@
-require(devtools)
+if (interactive()) require(devtools)
