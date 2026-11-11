@@ -12,6 +12,7 @@ p <- ggplot2::ggplot(df, ggplot2::aes(x, y)) +
   geom_slice(model) +
   ggplot2::labs(title = "Single predictor")
 
+covers("geom_slice.line-is-prediction", "geom_slice.user-theme")
 judged_output("plot", p)
 
 test_that("the plotted line equals the model's prediction on the expected grid", {

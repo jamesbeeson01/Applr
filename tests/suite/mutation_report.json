@@ -1,13 +1,16 @@
 {
-  "when": "2026-11-09T21:04:03-0700",
-  "tests": 40,
-  "caught": 21,
+  "when": "2026-11-10T22:50:48-0700",
+  "commit": "6943094 + uncommitted changes",
+  "tests": 60,
+  "caught": 34,
   "breaks": [
     {
       "name": "A changed fingerprint keeps its status",
       "file": "status.R",
       "caught": true,
       "caught_by": [
+        "test-decisions.R: a human decision for an old fingerprint has no effect",
+        "test-decisions.R: no agent command writes the decisions file",
         "test-runner.R: running records Unreviewed, unchanged re-runs keep status, changes reset it",
         "test-runner.R: list and diff work; approval requires a note and rejection stores it",
         "test-status.R: every row of the transition table holds",
@@ -71,9 +74,16 @@
       "file": "store.R",
       "caught": true,
       "caught_by": [
+        "test-decisions.R: a human approval of the current fingerprint makes it Human approved, in the decisions file only",
+        "test-decisions.R: a human decision for an old fingerprint has no effect",
+        "test-decisions.R: a human rejection needs a note, sets Rejected and holds against the agent",
+        "test-decisions.R: a human approval keeps that version's form and views for comparison",
         "test-fake-type.R: an unforeseen type goes from run to the review page's data",
         "test-runner.R: running records Unreviewed, unchanged re-runs keep status, changes reset it",
-        "test-runner.R: an agent's decisions never write Human approved"
+        "test-runner.R: an agent's decisions never write Human approved",
+        "test-server.R: the page, its data and the views are served",
+        "test-server.R: a decision from the page is checked and written to the decisions file",
+        "test-server.R: a rejection without a note, or on a stale page, is refused"
       ],
       "crashed": false
     },
@@ -117,8 +127,8 @@
       "file": "store.R",
       "caught": true,
       "caught_by": [
-        "test-fake-type.R: an unforeseen type goes from run to the review page's data",
-        "test-runner.R: views are rendered for Unreviewed outputs only"
+        "test-decisions.R: a human approval keeps that version's form and views for comparison",
+        "test-fake-type.R: an unforeseen type goes from run to the review page's data"
       ],
       "crashed": false
     },
@@ -210,6 +220,137 @@
       "caught": true,
       "caught_by": [
         "test-type-conditions.R: every condition is captured in order, including those raised while drawing"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "A human decision for an old fingerprint still counts",
+      "file": "store.R",
+      "caught": true,
+      "caught_by": [
+        "test-decisions.R: a human decision for an old fingerprint has no effect"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "Review status ignores human decisions",
+      "file": "store.R",
+      "caught": true,
+      "caught_by": [
+        "test-decisions.R: a human approval of the current fingerprint makes it Human approved, in the decisions file only",
+        "test-decisions.R: a human rejection needs a note, sets Rejected and holds against the agent",
+        "test-fake-type.R: an unforeseen type goes from run to the review page's data",
+        "test-server.R: a decision from the page is checked and written to the decisions file",
+        "test-server.R: a rejection without a note, or on a stale page, is refused"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "An agent command writes the decisions file",
+      "file": "store.R",
+      "caught": true,
+      "caught_by": [
+        "test-decisions.R: a human rejection needs a note, sets Rejected and holds against the agent",
+        "test-decisions.R: the human can't decide on an output no agent has approved, or on a stale page",
+        "test-decisions.R: no agent command writes the decisions file",
+        "test-server.R: a rejection without a note, or on a stale page, is refused",
+        "test-server.R: only JSON from the page's own origin is accepted"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "A human approval writes Human approved into review_state.json",
+      "file": "server.R",
+      "caught": true,
+      "caught_by": [
+        "test-decisions.R: a human approval of the current fingerprint makes it Human approved, in the decisions file only"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "The server accepts a human rejection without a note",
+      "file": "server.R",
+      "caught": true,
+      "caught_by": [
+        "test-contract.R: plotly_3d: completeness",
+        "test-decisions.R: a human rejection needs a note, sets Rejected and holds against the agent",
+        "test-server.R: a rejection without a note, or on a stale page, is refused"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "The server accepts a decision on an output no agent has approved",
+      "file": "server.R",
+      "caught": true,
+      "caught_by": [
+        "test-decisions.R: a human rejection needs a note, sets Rejected and holds against the agent",
+        "test-decisions.R: the human can't decide on an output no agent has approved, or on a stale page",
+        "test-server.R: a decision from the page is checked and written to the decisions file"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "The server accepts a decision made on a stale page",
+      "file": "server.R",
+      "caught": true,
+      "caught_by": [
+        "test-decisions.R: the human can't decide on an output no agent has approved, or on a stale page",
+        "test-server.R: a rejection without a note, or on a stale page, is refused"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "A human approval doesn't keep the approved version for comparison",
+      "file": "server.R",
+      "caught": true,
+      "caught_by": [
+        "test-decisions.R: a human approval keeps that version's form and views for comparison",
+        "test-fake-type.R: an unforeseen type goes from run to the review page's data"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "The server accepts a decision that isn't JSON",
+      "file": "server.R",
+      "caught": true,
+      "caught_by": [
+        "test-server.R: only JSON from the page's own origin is accepted"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "The server accepts a decision from another origin",
+      "file": "server.R",
+      "caught": true,
+      "caught_by": [
+        "test-server.R: only JSON from the page's own origin is accepted"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "The server serves files outside its folders",
+      "file": "server.R",
+      "caught": true,
+      "caught_by": [
+        "test-server.R: nothing outside the page and view folders is served"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "An inventory ID used twice is accepted",
+      "file": "inventory.R",
+      "caught": true,
+      "caught_by": [
+        "test-inventory.R: an inventory with a reused ID, a missing principle or a bad ID is refused"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "covers() inside a test block is missed",
+      "file": "inventory.R",
+      "caught": true,
+      "caught_by": [
+        "test-inventory.R: covers() is read from anywhere in a case file, without running it"
       ],
       "crashed": false
     }

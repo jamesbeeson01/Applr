@@ -6,6 +6,7 @@
 model <- lm(mpg ~ wt + hp, data = mtcars)
 widget <- scatter_3d(model, n = 20)
 
+covers("scatter_3d.surface-is-prediction", "scatter_3d.readable-from-any-angle")
 judged_output("widget", widget, states = list(
   default = list(eye = list(x = 1.25, y = 1.25, z = 1.25)),
   top = list(eye = list(x = 0, y = 0, z = 2.5)),

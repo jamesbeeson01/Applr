@@ -1,14 +1,18 @@
 # Review state, case runner and agent commands. Dev-only.
 #
 # Layout under `root` (default tests/suite):
-#   review_state.json         one record per judged output
+#   review_state.json         one record per judged output: the runner's or
+#                             agent's status, never a human's
+#   human_decisions.json      every human decision; written only by the
+#                             review server (server.R)
 #   forms/<id>.txt            current serialised form
-#   forms/approved/<id>.txt   form at the last approval, for diffs
+#   forms/approved/<id>.txt   form at the last human approval, for diffs
 # Views go to `view_dir` (gitignored) and are for viewing only:
 #   <id>/<state>.<ext>, <id>/live.html, approved/<id>/, lib/
 
 suite_paths <- function(root = "tests/suite", view_dir = "tests/output") {
   list(state = file.path(root, "review_state.json"),
+       decisions = file.path(root, "human_decisions.json"),
        forms = file.path(root, "forms"),
        approved = file.path(root, "forms", "approved"),
        views = view_dir)
@@ -27,6 +31,35 @@ write_state <- function(state, paths) {
   jsonlite::write_json(state, paths$state, pretty = TRUE, auto_unbox = TRUE)
 }
 
+read_decisions <- function(paths) {
+  if (!file.exists(paths$decisions)) return(list())
+  jsonlite::read_json(paths$decisions)
+}
+
+# The one place an output's review status is worked out (spec: "Review state
+# storage"). The latest human decision for the current fingerprint wins;
+# otherwise the status is the runner's or agent's. A decision for an older
+# fingerprint has no effect.
+review_records <- function(paths = suite_paths()) {
+  state <- read_state(paths)
+  decisions <- read_decisions(paths)
+  lapply(stats::setNames(names(state), names(state)), function(id) {
+    rec <- state[[id]]
+    rec$human_note <- ""
+    mine <- Filter(function(d) identical(d$id, id) && identical(d$fingerprint, rec$fingerprint),
+                   decisions)
+    if (length(mine)) {
+      d <- mine[[length(mine)]]
+      rec$status <- if (identical(d$decision, "approve")) "Human approved" else "Rejected"
+      rec$who <- "human"
+      rec$when <- d$when
+      rec$human_note <- d$note %||% ""
+      if (rec$status == "Rejected") rec$rejection_note <- rec$human_note
+    }
+    rec
+  })
+}
+
 write_form <- function(dir, id, form) {
   dir.create(dir, showWarnings = FALSE, recursive = TRUE)
   writeLines(form, file.path(dir, paste0(file_id(id), ".txt")), useBytes = TRUE)
@@ -34,9 +67,11 @@ write_form <- function(dir, id, form) {
 
 # Runs one case file under testthat. Returns whether every expectation
 # passed, plus the judged outputs it declared.
+case_name <- function(file) sub("^test-case_?", "", sub("\\.R$", "", basename(file)))
+
 run_case_file <- function(file) {
   registry <- new.env()
-  case <- sub("^test-case_?", "", sub("\\.R$", "", basename(file)))
+  case <- case_name(file)
   old <- options(applr.judged_registry = registry, applr.judged_case = case)
   on.exit(options(old))
   res <- testthat::test_file(file, reporter = "silent", stop_on_failure = FALSE)
@@ -46,7 +81,6 @@ run_case_file <- function(file) {
        outputs = as.list(registry))
 }
 
-now_stamp <- function() format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z")
 
 # Runs every case file in `dir` and applies each to the review state.
 run_suite <- function(dir = "tests/testthat", paths = suite_paths(), pattern = "^test-case_.*\\.R$") {
@@ -108,11 +142,10 @@ apply_case <- function(r, paths) {
 }
 
 list_unreviewed <- function(paths = suite_paths()) {
-  state <- read_state(paths)
-  names(Filter(function(r) identical(r$status, "Unreviewed"), state))
+  names(Filter(function(r) identical(r$status, "Unreviewed"), review_records(paths)))
 }
 
-# Text diff of the current form against the last approved one.
+# Text diff of the current form against the last human-approved one.
 diff_output <- function(id, paths = suite_paths()) {
   now <- file.path(paths$forms, paste0(file_id(id), ".txt"))
   before <- file.path(paths$approved, paste0(file_id(id), ".txt"))
@@ -124,24 +157,22 @@ diff_output <- function(id, paths = suite_paths()) {
   if (length(out) == 0) "(identical to last approved version)" else out
 }
 
-# Agent decision. Only the agent events exist here; Human approved is never
-# written by this code path.
+# Agent decision. Only the agent events exist here: it writes review_state.json
+# and never the human decisions, so Human approved can't come from it.
 agent_decide <- function(id, decision = c("approve", "reject"), note, paths = suite_paths()) {
   decision <- match.arg(decision)
+  current <- review_records(paths)[[id]]
+  if (is.null(current)) stop("No such judged output: ", id, call. = FALSE)
+  tr <- review_transition(list(status = current$status, fingerprint = current$fingerprint),
+                          list(type = paste0("agent_", decision), note = note))
   state <- read_state(paths)
   rec <- state[[id]]
-  if (is.null(rec)) stop("No such judged output: ", id, call. = FALSE)
-  tr <- review_transition(list(status = rec$status, fingerprint = rec$fingerprint),
-                          list(type = paste0("agent_", decision), note = note))
   rec$status <- tr$status
   rec$who <- "agent"
   rec$when <- now_stamp()
   if (decision == "approve") {
     rec$agent_note <- note
     rec$rejection_note <- ""
-    write_form(paths$approved, id,
-               readLines(file.path(paths$forms, paste0(file_id(id), ".txt")), warn = FALSE))
-    keep_approved_views(id, paths)
   } else {
     rec$rejection_note <- note
     rec$agent_note <- ""
@@ -151,8 +182,14 @@ agent_decide <- function(id, decision = c("approve", "reject"), note, paths = su
   invisible(rec)
 }
 
-# Copies an output's current views to approved/, for the review page's
-# comparison against the last approved render.
+# Keeps an output's current form and views as the last approved version, for
+# diffs and the review page's comparison. Called on a human approval.
+keep_approved <- function(id, paths) {
+  write_form(paths$approved, id,
+             readLines(file.path(paths$forms, paste0(file_id(id), ".txt")), warn = FALSE))
+  keep_approved_views(id, paths)
+}
+
 keep_approved_views <- function(id, paths) {
   from <- view_dir(id, paths)
   to <- view_dir(id, paths, approved = TRUE)
@@ -163,11 +200,11 @@ keep_approved_views <- function(id, paths) {
   invisible(to)
 }
 
-# What the review page shows for each output, from the review state alone.
+# What the review page shows for each output.
 review_page_data <- function(paths = suite_paths()) {
-  state <- read_state(paths)
-  lapply(stats::setNames(names(state), names(state)), function(id) {
-    rec <- state[[id]]
+  records <- review_records(paths)
+  lapply(stats::setNames(names(records), names(records)), function(id) {
+    rec <- records[[id]]
     ext <- if (is.null(rec$type)) "png" else output_type(rec$type)$format
     files <- function(approved) {
       f <- file.path(view_dir(id, paths, approved), paste0(unlist(rec$states), ".", ext))
@@ -178,6 +215,7 @@ review_page_data <- function(paths = suite_paths()) {
       id = id, case = rec$case, type = rec$type, view = rec$view,
       status = rec$status, who = rec$who, when = rec$when,
       agent_note = rec$agent_note, rejection_note = rec$rejection_note,
+      human_note = rec$human_note,
       fingerprint = rec$fingerprint, parts = names(rec$parts),
       states = data.frame(name = unlist(rec$states), file = files(FALSE),
                           approved_file = files(TRUE)),

@@ -1,0 +1,148 @@
+<!-- The suite guide pages, written for the maintainer. They restate
+     tests/suite/README.md and for_devs/test_suite_spec.md in plain language,
+     so update them whenever either of those changes. -->
+
+<template id="principles">
+<h2>How the suite works: principles</h2>
+
+<h3>The two halves of a case</h3>
+<p>A <b>case</b> is one file, <code>tests/testthat/test-case_&lt;name&gt;.R</code>, about one scenario. It holds two kinds of thing:</p>
+<ul>
+  <li><b>Expectations</b> are ordinary testthat checks that pass or fail on their own: the plotted line equals the model's prediction, this warning is raised, the plot still builds. They never need review. They ship with the package, so CRAN runs them.</li>
+  <li><b>Judged outputs</b> are anything that needs a reviewer's eye: how a plot looks, how a message is worded, how a widget feels to use. A case declares each one with <code>judged_output()</code>, which does nothing under R CMD check.</li>
+</ul>
+<p>If a case's expectations fail, its judged outputs aren't looked at at all: the review state stays exactly as it was.</p>
+
+<h3>What a fingerprint decides, and what it doesn't</h3>
+<p>Each judged output is turned into text that leaves out noise (fixed-font SVG for a plot, the message text for conditions, the figure and its settings for a widget). Its <b>fingerprint</b> is a short hash of that text.</p>
+<ul>
+  <li>A fingerprint <b>never decides whether an output is right</b>. Only an expectation or a reviewer does that.</li>
+  <li>It only decides whether an output <b>keeps its review status</b>: same fingerprint, status kept; new fingerprint, back to Unreviewed. So you only see things that actually changed.</li>
+  <li>An interactive output has one fingerprint for the whole thing, taken from what its page is built from. Its states (camera angles, slider positions) are only pictures for review.</li>
+</ul>
+
+<h3>Review statuses, and who can set each</h3>
+<table>
+  <tr><th>Status</th><th>Meaning</th><th>Set by</th></tr>
+  <tr><td><span class="pill s-agent">Unreviewed</span></td><td>New or changed; nobody has looked yet.</td><td>The runner, whenever a fingerprint is new.</td></tr>
+  <tr><td><span class="pill s-you">Agent approved</span></td><td>An agent looked and wrote a note. Now waiting for you.</td><td>An agent, with <code>suite.R approve</code>. A note is required.</td></tr>
+  <tr><td><span class="pill s-approved">Human approved</span></td><td>You approved this exact fingerprint. The only final status.</td><td>Only you, on this page.</td></tr>
+  <tr><td><span class="pill s-rejected">Rejected</span></td><td>Sent back with a note, until the code changes the fingerprint.</td><td>An agent (from Unreviewed) or you (from Agent approved). A note is required.</td></tr>
+</table>
+<p>You never see an output before an agent has approved it. Your decisions are kept in their own file, <code>human_decisions.json</code>, which only this page's server writes. A Claude Code hook stops agents from writing to it. A decision counts only for the fingerprint you judged: if the output changes, it's Unreviewed again, with nothing to undo.</p>
+
+<h3>How the suite's own tests are tested</h3>
+<ul>
+  <li><b>Unit tests</b> (<code>Rscript tests/suite/test.R</code>) cover the suite's machinery: the status rules, laid out row by row against the spec's table; text normalisation; the runner; the review server's rules; and the hook.</li>
+  <li><b>Trust tests</b>, written once for every output type: the views are drawn from exactly what was hashed (completeness), changing any one input changes the fingerprint (sensitivity), and two fresh builds agree (stability). A made-up output type defined only in a test file goes all the way to this page, to prove new kinds of output fit without changes to the core.</li>
+  <li>The <b>mutation check</b> (<code>Rscript tests/suite/mutate.R</code>) breaks the suite on purpose, one rule at a time, in a copy, and checks that the unit tests notice. Every break must be caught. The <a href="?view=health" data-go="health">suite health</a> page shows the latest result.</li>
+</ul>
+
+<h3>What CI and CRAN run</h3>
+<ul>
+  <li><b>CRAN</b> runs only the expectations, within its time and two-thread limits. Judged outputs do nothing there.</li>
+  <li><b>CI</b> (GitHub Actions, on the test-suite branch) is being set up in ticket 3. The plan: Rejected and Unreviewed fail, Agent approved warns, and a separate release check blocks a CRAN submission until everything is Human approved.</li>
+</ul>
+
+<h3>Latest status</h3>
+<div data-latest-status></div>
+</template>
+
+<template id="structure">
+<h2>How the suite works: structure</h2>
+<p>The pieces, and how one output travels from a case to Human approved.</p>
+
+<svg viewBox="0 0 780 470" role="img" aria-label="Diagram of the suite's pieces" font-family="system-ui, sans-serif" font-size="12">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" style="fill: var(--muted)"/>
+    </marker>
+    <style>
+      .guide svg .box { fill: var(--panel); stroke: var(--line); rx: 8; }
+      .guide svg .file { fill: var(--soft); stroke: var(--line); rx: 8; }
+      .guide svg .you { fill: var(--warnbg); stroke: var(--warn); rx: 8; }
+      .guide svg .t { fill: var(--ink); font-weight: 600; }
+      .guide svg .s { fill: var(--muted); font-size: 11px; }
+      .guide svg .a { stroke: var(--muted); stroke-width: 1.4; fill: none; marker-end: url(#arr); }
+      .guide svg .al { fill: var(--muted); font-size: 11px; }
+    </style>
+  </defs>
+
+  <rect class="box" x="20" y="20" width="200" height="62"/>
+  <text class="t" x="34" y="44">Cases</text>
+  <text class="s" x="34" y="62">tests/testthat/test-case_*.R</text>
+  <text class="s" x="34" y="76">expectations + judged_output()</text>
+
+  <rect class="box" x="290" y="20" width="200" height="62"/>
+  <text class="t" x="304" y="44">Runner</text>
+  <text class="s" x="304" y="62">suite.R run (store.R)</text>
+  <text class="s" x="304" y="76">runs cases, fingerprints outputs</text>
+
+  <rect class="box" x="560" y="20" width="200" height="62"/>
+  <text class="t" x="574" y="44">Output types</text>
+  <text class="s" x="574" y="62">types/*.R, one per kind</text>
+  <text class="s" x="574" y="76">serialise, states, render, view</text>
+
+  <rect class="file" x="290" y="140" width="200" height="62"/>
+  <text class="t" x="304" y="164">review_state.json + forms/</text>
+  <text class="s" x="304" y="182">fingerprints, agent statuses,</text>
+  <text class="s" x="304" y="196">notes, serialised forms</text>
+
+  <rect class="box" x="20" y="140" width="200" height="62"/>
+  <text class="t" x="34" y="164">Agent commands</text>
+  <text class="s" x="34" y="182">suite.R list / diff /</text>
+  <text class="s" x="34" y="196">approve / reject (with a note)</text>
+
+  <rect class="file" x="560" y="140" width="200" height="62"/>
+  <text class="t" x="574" y="164">Views (tests/output/)</text>
+  <text class="s" x="574" y="182">PNGs, screenshots, live pages;</text>
+  <text class="s" x="574" y="196">for looking only, never hashed</text>
+
+  <rect class="box" x="290" y="262" width="200" height="62"/>
+  <text class="t" x="304" y="286">Review server</text>
+  <text class="s" x="304" y="304">review.R (server.R, httpuv)</text>
+  <text class="s" x="304" y="318">checks every decision</text>
+
+  <rect class="file" x="20" y="262" width="200" height="62"/>
+  <text class="t" x="34" y="286">human_decisions.json</text>
+  <text class="s" x="34" y="304">your decisions only; agents</text>
+  <text class="s" x="34" y="318">blocked by a hook</text>
+
+  <rect class="you" x="290" y="384" width="200" height="62"/>
+  <text class="t" x="304" y="408">Review page (you)</text>
+  <text class="s" x="304" y="426">this page: inbox, compare,</text>
+  <text class="s" x="304" y="440">approve or reject</text>
+
+  <rect class="box" x="560" y="262" width="200" height="62"/>
+  <text class="t" x="574" y="286">CI and release check</text>
+  <text class="s" x="574" y="304">read both files (ticket 3)</text>
+  <text class="s" x="574" y="318">CRAN runs expectations only</text>
+
+  <path class="a" d="M220,51 H286"/><text class="al" x="232" y="44">run</text>
+  <path class="a" d="M490,51 H556"/><text class="al" x="500" y="44">serialise</text>
+  <path class="a" d="M390,82 V136"/><text class="al" x="396" y="114">fingerprint</text>
+  <path class="a" d="M660,82 V136"/><text class="al" x="666" y="114">render (Unreviewed only)</text>
+  <path class="a" d="M220,171 H286"/><text class="al" x="226" y="164">agent status</text>
+  <path class="a" d="M390,202 V258"/><text class="al" x="396" y="234">read</text>
+  <path class="a" d="M560,190 C520,230 500,260 494,276"/>
+  <path class="a" d="M290,300 H224"/><text class="al" x="232" y="294">write</text>
+  <path class="a" d="M372,328 V380"/><path class="a" d="M408,380 V328"/>
+  <text class="al" x="296" y="360">data, views</text><text class="al" x="414" y="360">decisions</text>
+  <path class="a" d="M490,293 H556"/>
+</svg>
+
+<h3>From run to Human approved</h3>
+<ol>
+  <li><b>Run.</b> <code>Rscript tests/suite/suite.R run</code> runs every case. If its expectations pass, each judged output goes through its output type: it's serialised, normalised and fingerprinted, and the form is saved under <code>forms/</code>.</li>
+  <li><b>Compare.</b> Same fingerprint as recorded: the status is kept and nothing else happens. New fingerprint: the output becomes <b>Unreviewed</b> and its views are rendered, so an agent can look at what it can't operate.</li>
+  <li><b>Agent pass.</b> An agent runs <code>suite.R list</code>, reads <code>suite.R diff &lt;id&gt;</code> and the views, then approves or rejects with a note. Approval makes it <b>Agent approved</b> and puts it in your queue.</li>
+  <li><b>You.</b> This page shows it with its expected behaviour, the agent's note, and a comparison with the last version you approved. Approve, or reject with a note for the agent. The server checks the move is allowed and records it in <code>human_decisions.json</code>; an approval also keeps this version's form and views as the new comparison point.</li>
+  <li><b>Next run.</b> Unchanged: still <b>Human approved</b>. Changed: <b>Unreviewed</b> again, and the cycle repeats.</li>
+</ol>
+
+<h3>Output types</h3>
+<p>Every kind of judged output is one registration in its own file under <code>tests/suite/types/</code>: how to turn the object into text parts, which states a reviewer sees, how to draw each state, and how this page shows it (an image with comparison, a text diff, or states side by side plus the live widget). The runner, the review state and this page never name a type, so a new kind of output (sliders, animations) is added by writing one file. Registered now: static ggplot, base graphics, condition text, and plotly 3D.</p>
+
+<h3>The behaviour inventory</h3>
+<p><code>for_devs/behaviour_inventory.yml</code> lists what each function must do and the edge cases that come up, each with a stable ID. Cases cite the IDs they cover with <code>covers()</code>. The <a href="?view=inventory" data-go="inventory">inventory page</a> shows which cases cover each entry, what's deferred and why, and what's not covered yet; each case shows its expected behaviour from the entries it cites. The inventory is temporary: it's deleted at the end of the test-suite revision.</p>
+</template>

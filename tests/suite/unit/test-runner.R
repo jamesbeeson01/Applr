@@ -1,6 +1,3 @@
-renamed <- function() case_copy(edit = c('title = "Single predictor"', 'title = "Renamed"'))
-id <- "single_predictor_line/plot"
-view_file <- function(paths) file.path(paths$views, "single_predictor_line__plot", "plot.png")
 
 test_that("running records Unreviewed, unchanged re-runs keep status, changes reset it", {
   paths <- temp_paths()
@@ -32,7 +29,6 @@ test_that("views are rendered for Unreviewed outputs only", {
   expect_true(file.exists(view_file(paths)))
 
   agent_decide(id, "approve", "ok", paths)
-  expect_true(file.exists(file.path(paths$views, "approved", "single_predictor_line__plot", "plot.png")))
   unlink(view_file(paths))
   run_suite(dir, paths)
   expect_false(file.exists(view_file(paths)))
@@ -49,9 +45,9 @@ test_that("list and diff work; approval requires a note and rejection stores it"
   agent_decide(id, "approve", "ok", paths)
   expect_equal(list_unreviewed(paths), character())
 
+  # Only a human approval sets the version diffs are taken against.
   run_suite(renamed(), paths)
-  d <- diff_output(id, paths)
-  expect_true(any(grepl("^-.*Single predictor", d)) && any(grepl("^\\+.*Renamed", d)))
+  expect_match(diff_output(id, paths)[1], "no approved version")
 
   agent_decide(id, "reject", "Title wrong.", paths)
   rec <- read_state(paths)[[id]]

@@ -5,6 +5,7 @@
 model <- lm(mpg ~ wt + hp, data = mtcars)
 draw <- function() slice_2d(model, x_axis = "wt", hp = 150)
 
+covers("slice_2d.line-is-prediction")
 judged_output("plot", draw, type = "base_graphics")
 
 test_that("the prepared line equals the model's prediction with hp held at 150", {

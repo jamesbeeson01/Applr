@@ -77,9 +77,25 @@ test_that("an unforeseen type goes from run to the review page's data", {
   expect_equal(page$parts, c("title", "stops", "legend", "budget"))
   expect_equal(page$states$name, paste0("day", 1:5))
   expect_true(all(file.exists(page$states$file)))
-  expect_true(all(file.exists(page$states$approved_file)))
   expect_match(readLines(page$states$file[3]), "Coast, day 3", all = FALSE)
   expect_true(is.na(page$live))
+
+  # The review page reads it from the server, and the human approves it there.
+  app <- test_app(paths, dir)
+  data <- json_body(call_app(app, "/api/data"))
+  out <- Filter(function(o) o$id == id, data$outputs)[[1]]
+  expect_equal(vapply(out$states, `[[`, "", "name"), paste0("day", 1:5))
+  day3 <- call_app(app, out$states[[3]]$url)
+  expect_equal(day3$status, 200L)
+  expect_match(rawToChar(day3$body), "Coast, day 3")
+
+  res <- call_app(app, "/api/decide", method = "POST",
+                  body = jsonlite::toJSON(list(id = id, decision = "approve", fingerprint = out$fingerprint),
+                                          auto_unbox = TRUE))
+  expect_equal(res$status, 200L)
+  out <- Filter(function(o) o$id == id, json_body(call_app(app, "/api/data"))$outputs)[[1]]
+  expect_equal(out$status, "Human approved")
+  expect_false(any(vapply(out$states, function(s) is.null(s$approved_url), TRUE)))
 })
 
 test_that("the unforeseen type gets the shared trust tests", {

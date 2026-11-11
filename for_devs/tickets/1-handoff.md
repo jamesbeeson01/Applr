@@ -1,77 +1,51 @@
-# Handoff: ticket 1, paused at the Part A review
+# Handoff: ticket 1, done
 
-**Status (2026-11-09):** Part A (backend) is committed (`5c8be94`) and **approved by the maintainer**. Part B (review page) is ready to start. On re-check, `tests/suite/test.R` passed in full.
+**Status (2026-11-10):** Ticket 1 is done. Part A was approved; Part B (the review page) is built, and the maintainer accepted its judgment calls (below). The maintainer applied the hook settings to `.claude/settings.json` themselves, because auto mode won't let an agent edit its own project settings. Ticket 2 is next.
 
-**Decisions from the Part A review** (now in the spec and ticket):
-- **Human decisions get their own file.** The server writes `tests/suite/human_decisions.json`, and `review_state.json` no longer holds human statuses. Status is derived from both files (spec: *Review state storage*). This lets the human-authority hook block agent writes by path, rather than inspecting what each edit changes. It is the one change Part B makes to Part A's store.
-- **Unreviewed fails CI**, as the spec's working proposal says (ticket 3 builds it).
-- **Suite guide pages** were added to Part B: principles, a structure diagram, and the latest test and mutation runs with date and commit. `test.R` and `mutate.R` need to record the commit, which `mutation_report.json` doesn't yet. The README and spec each carry a note to update these pages when they change.
-- The six judgment calls below were accepted. The numeric-string rule stays provisional until ticket 3's Ubuntu check.
+After the Part B review, the maintainer asked for three page changes, now made: the page follows the system's light or dark setting, the suite overview is the default view (the spec is updated), and the guide links sit at the bottom of the sidebar.
 
-Read first: `1-backend-and-interface.md` (the ticket), `tests/suite/README.md` (the contract, written for the review), and the spec's *One contract per output type* and *Trusting a fingerprint* sections.
-
-## What the maintainer reviews
-
-The ticket's pause asks for three things:
-
-1. **The contract:** the *Output types* section of `tests/suite/README.md`.
-2. **The fake-type test:** `tests/suite/unit/test-fake-type.R`. It defines a travel itinerary type (four parts, five states, an HTML view per state) in that file only, and takes it through run → fingerprint → states → agent approval → `review_page_data()`. It then runs the shared completeness, sensitivity and stability tests on it.
-3. **The mutation report:** `tests/suite/mutation_report.json`, or the table printed by `Rscript tests/suite/mutate.R`. **21 of 21 breaks caught**, and the unbroken suite passes all 40 test blocks. One earlier run missed "compute steps run without the pinned options": testthat already sets most of those options, so the old test passed regardless. The test now sets the opposite values first, and the final run caught that break.
-
-Judgment calls the maintainer should confirm:
-
-- **The numeric-string rule** (spec, *Canonical JSON*, now updated). A string that is entirely a decimal number with a fractional part or an exponent is rounded to 6 significant figures and stays a string. Integer-looking strings are left alone. It lives in canonical JSON rather than in the plotly type, so future types get it too. It hasn't yet been re-checked on Ubuntu; ticket 3 does that.
-- **A function needs `type =`.** Detection only claims ggplots (`static_plot`) and plotly widgets (`plotly_3d`). A function could be base-graphics drawing code or a call whose conditions are judged, so the case must say which.
-- **Views come from the hashed build.** `serialise()` returns a `view`, and `render()`/`live()` draw only from it. Completeness is tested by tagging each view with its output's fingerprint and checking that every rendered file carries the right tag.
-- **The core runs the common normalisation on every part**, so no type can skip it. Types add only their own rules.
-- **Each plotly live page has its own `lib/` folder**, so plotly.js (~3.5 MB) is copied once per widget, in the gitignored `tests/output/`. `htmlwidgets::saveWidget()` refuses a shared lib folder outside the page's own folder.
-- **The fake type doesn't hash its states**, since for it they are only views. plotly does hash its camera presets, as the spec says.
+Read first: `1-backend-and-interface.md` (the ticket), `tests/suite/README.md` (it now covers status, the page, the hook and the inventory format).
 
 ## What was built
 
 | File | What it is |
 |---|---|
-| `tests/suite/types.R` | The contract: `register_output_type()`, `output_type()`, `resolve_output_type()` (the one place a type is worked out), `serialise_output()` |
-| `tests/suite/types/*.R` | One registration per type: `static_plot`, `base_graphics`, `conditions`, `plotly_3d` |
-| `tests/suite/views.R` | PNG device, live widget pages, chromote screenshots through `window.applrSetState`, `render_views()` |
-| `tests/suite/store.R` | `run_suite()` → `apply_case()` (generic over types); `keep_approved_views()`; `review_page_data()`, the data Part B's page reads |
-| `tests/suite/fingerprint.R` | Added `svg_form()` and `canonical_json()` with the numeric-string rule; removed the static-plot serialiser |
-| `tests/suite/load.R` | `load_suite(dir)` sources the core and every type; a copy of the suite loads its own files |
-| `tests/suite/mutate.R` | The mutation check: 21 breaks, each applied to a temp copy, with the unit tests run 4 copies at a time |
-| `tests/testthat/helper-judged.R` | `judged_output(name, object, type = NULL, states = NULL)`, still a no-op under R CMD check |
-| `tests/testthat/test-case_*.R` | Demo cases: `single_predictor_line` (static, fingerprint unchanged at `cda9191215fe`), `base_slice_2d`, `condition_imputed_values`, `scatter_3d_two_predictors` |
-| `tests/suite/unit/helper-contract.R` | `expect_complete()`, `expect_sensitive()`, `expect_stable()`, written once against the contract |
-| `tests/suite/unit/test-contract.R` | Runs those three on every registered type |
-| `tests/suite/unit/test-status.R` | Transition tests as a table, one block of rows per row of the spec's table |
-| `tests/suite/unit/test-types.R` | Type resolution, state names, normalisation of every part, and "the core never names a type" |
+| `tests/suite/store.R` | `review_records()`: the one place status is derived from `review_state.json` and `human_decisions.json`. `list_unreviewed()`, `agent_decide()` and `review_page_data()` use it. `keep_approved()` keeps a version's form and views. |
+| `tests/suite/server.R` | `human_decide()` (the only writer of the decisions file), `review_app()` (httpuv app: page, `/api/data`, `/api/form`, `/api/decide`, `/views/`), `start_review_server()`, `review_url()` |
+| `tests/suite/review.R` | The one command: `Rscript tests/suite/review.R [port]`, or `source()` it from R |
+| `tests/suite/inventory.R` | `read_inventory()`, `case_covers()` (reads `covers()` from case files without running them), `case_index()` |
+| `tests/suite/stamp.R` | `now_stamp()` and `git_commit()`, so `test.R` and `mutate.R` record the date and commit |
+| `tests/suite/page/` | `index.html`, `app.js`, `style.css`, and `guide.html` (the principles and structure pages, with a diagram) |
+| `for_devs/behaviour_inventory.yml` | The format, plus seed entries for the four demo cases only. Ticket 2 writes the rest. |
+| `.claude/hooks/protect_human_decisions.R` | The human-authority hook |
+| `tests/testthat/helper-judged.R` | Adds `covers()`, a no-op the page reads from the file |
+| `tests/suite/unit/` | New `test-decisions.R`, `test-server.R`, `test-inventory.R`, `test-hook.R`; the fake-type test now goes through the server, through to a human approval |
+| `tests/suite/mutate.R` | 13 new breaks (34 in all), for the decisions file, the server's rules and the inventory |
 
-`test-static-trust.R` was deleted; its tests moved onto the shared contract tests. `review_state.json` and `forms/` now hold all four demo outputs, all Unreviewed. Rendered views are in `tests/output/` (gitignored).
+## Judgment calls (accepted by the maintainer)
+
+- **The comparison baseline moved from agent approval to human approval.** In Part A, an agent approval copied the form and views to `approved/`. That made the page compare a new render with itself, since by the time an output reaches the human, the agent has just overwritten the baseline. Now only a human approval (through the server) keeps them, so `suite.R diff` and the page both show what changed since the maintainer last signed off. Before any human approval, there's nothing to compare against.
+- **The page's unit is the judged output, not the case.** The queue, deep links (`?output=<id>`) and overview tiles are per output; `?case=<name>` opens a case's first output. Expected behaviour and family come from the case's `covers()`.
+- **The inventory is YAML**, read with the `yaml` package (dev-only, like `httpuv`). Cases cite IDs with `covers()`, read statically, so a case with no judged outputs still shows coverage.
+- **The server refuses decisions that aren't JSON from its own origin** (and a foreign Host), so another web page can't post one. The page sends the fingerprint it showed, and a decision on a changed output is refused.
+- **The hook blocks shell commands that name the file even to read it**, as the ticket says; the Read tool is unaffected.
+- **`test_report.json` and `human_decisions.json` are committed**, like `mutation_report.json`.
 
 ## Results
 
-- `Rscript tests/suite/test.R`: all pass (40 test blocks), in about 2 minutes. Most of that time goes to the stability tests (fresh R sessions) and the plotly screenshots.
-- `Rscript tests/suite/mutate.R`: about 20 minutes, because each break needs a full unit test run. The maintainer was told it could be made faster by stopping each run at its first failing test; they haven't asked for that.
-- The screenshots were checked by eye: the plotly `top`/`side`/`default` states show the surface from different cameras, and the base graphics PNG shows the slice.
+- `Rscript tests/suite/test.R`: all pass, including the hook tests. `test_report.json` records the run.
+- `Rscript tests/suite/mutate.R`: **34 of 34 breaks caught**; the unbroken suite passes all 60 tests. Took about 30 minutes with 4 workers.
+- Browser check on a temp copy, with all four outputs agent approved: rejecting with a starter phrase and Ctrl+Enter, and approving with `a`, both went through the server and advanced the queue. The states view showed the three plotly cameras plus the live widget. The overview, inventory, structure and health pages rendered. `/views/../review_state.json` and its `%2e%2e` form return 404.
+- `/api/data` takes about 2 seconds on this machine, mostly the two `git` calls for the commit line. Fine for now.
 
-## Problems found along the way
+## Not done
 
-- **Chrome timeouts under load.** With several R processes running, Chrome took longer than chromote's 10-second default to load the widget page, and the plotly completeness test failed. `views.R` now sets `options(chromote.timeout = 60)` when it creates the session, and uses 60 seconds for the page-load and evaluate waits. 20 of 20 renders passed with 5 running at once.
-- **A possible package bug, not fixed (outside this ticket):** `geom_slice(lm(mpg ~ wt + hp + factor(cyl), mtcars))` imputes `cyl` with its *mean* (6.188), because `all.vars()` sees the raw numeric `cyl`. `predict()` then fails: `factor factor(cyl) has new level 6.1875`. The conditions demo now uses `qsec` to avoid it. This should go to the maintainer as a package issue on `main`.
+- No real human decisions yet: `human_decisions.json` doesn't exist until the maintainer makes one on the page.
+- Platform variants aren't wired into the agent commands (`agent_approve_variant` exists only in `review_transition()`); ticket 3 decides whether it's needed.
+- Still open from Part A: the `factor(cyl)` imputation bug on `main` (now a deferred inventory entry).
 
-## Gotchas for the next session
+## Gotchas
 
-- Never pass multi-line R through `Rscript -e` on Windows. Write a script file instead.
-- Avoid writing R regexes through Python or bash heredocs: backslashes got mangled several times. Use the file-edit tool.
-- `mutate.R` writes the generated runner scripts with forward-slash paths. Backslash paths broke R strings (`'\U' used without hex digits`).
-- testthat's own options hide gaps in pinned options. Any test of an option must set the opposite value first.
-
-## Next: Part B (approved to start)
-
-Follow the ticket's Part B list. Starting points:
-
-- Start with the separate decisions file. Add `human_decisions.json` and one function in `store.R` that derives each output's status from both files, then switch `list`, the agent commands and `review_page_data()` to it. The page, the server and the hook all build on this.
-- `review_page_data(paths)` in `store.R` already gives everything per output: view kind, states with current and approved files, live page, form paths, notes, status. Serve it from httpuv, and add a server-only write path for `human_approve`/`human_reject` that checks the move with `review_transition()` and appends to `human_decisions.json`.
-- The accepted layout is `for_devs/prototypes/review_page_v2.html`.
-- The mutation report and unit test results for the suite health view: `mutation_report.json`, plus a JSON of the latest `test.R` run (not written yet).
-- Add a break to `mutate.R` for each new server rule, such as "the server accepts a human reject without a note".
-- The human-authority hook goes in `.claude/settings.json`, which today only allows commands for the old suite (`tests/run.R`, `tests/report.Rmd`) that no longer exist. Those entries are stale. The hook blocks agent writes to `human_decisions.json` by path, through file-edit tools and shell commands that name it. The hook is a guardrail, not a lock (spec: *Human authority*).
+- Never pass multi-line R through `Rscript -e` on Windows, and don't write R regexes through bash heredocs. Use the file-edit tool.
+- Once the hook is on, agent shell commands can't name the decisions file at all, so use the Grep and Read tools for it.
+- `curl` collapses `..` in URLs unless given `--path-as-is`.

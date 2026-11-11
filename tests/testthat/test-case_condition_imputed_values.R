@@ -10,6 +10,7 @@ call <- function() {
     geom_slice(model)
 }
 
+covers("shared.imputation.message")
 judged_output("wording", call, type = "conditions")
 
 test_that("each unheld predictor is imputed with a message and the plot still builds", {

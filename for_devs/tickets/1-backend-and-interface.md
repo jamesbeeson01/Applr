@@ -6,7 +6,7 @@
 
 **Blocked by:** None
 
-**Status:** ready-for-agent
+**Status:** done
 
 ## Starting point
 
@@ -17,24 +17,24 @@
 
 ## Part A: backend. Pause for the maintainer at the end.
 
-- [ ] **One output-type contract** (spec: *Output types and states*, *One contract per output type*). One registration per type gives:
+- [x] **One output-type contract** (spec: *Output types and states*, *One contract per output type*). One registration per type gives:
   - how to serialise an object into named parts;
   - its states;
   - how to render a state for viewing (PNG or HTML);
   - the view kind the review page draws.
 
   Every type lives in its own file, and the runner, store and review page never name a specific type.
-- [ ] `judged_output()` takes the type and the states, or works the type out in one place. It stays a no-op under R CMD check.
-- [ ] Types built against the contract, each with one demo case:
+- [x] `judged_output()` takes the type and the states, or works the type out in one place. It stays a no-op under R CMD check.
+- [x] Types built against the contract, each with one demo case:
   - static ggplot;
   - base graphics (drawing code as a function);
   - condition text: every condition the call raises, in order, as the spec's form;
   - plotly 3D, from `scatter_3d`, with camera presets as states.
-- [ ] Canonical JSON gets a rule for numbers plotly stores as strings, such as colorscale stops (from the cross-platform experiment: they differed in the last bit on Ubuntu). Choose the narrowest rule that will still cover future types, and record it in the spec.
-- [ ] Completeness, sensitivity and stability tests are written once against the contract. Each type supplies its own "change one input" mutations, so a new type gets the tests by filling in a list.
-- [ ] **Fake-type test.** A deliberately odd output type is defined only inside a unit test file. For example: four parts, five states, an HTML view, nothing like a plot. It goes through run → fingerprint → states → agent approve → the review page's data with no edits to the core files. This is the proof that future content fits without special cases.
-- [ ] The transition tests are laid out as a table, one row per row of the spec's transition table, so the two can be compared side by side.
-- [ ] **Mutation check.** A dev script applies known breaks one at a time to a temporary copy of the suite, runs the unit tests, and reports which breaks were caught. Breaks to include:
+- [x] Canonical JSON gets a rule for numbers plotly stores as strings, such as colorscale stops (from the cross-platform experiment: they differed in the last bit on Ubuntu). Choose the narrowest rule that will still cover future types, and record it in the spec.
+- [x] Completeness, sensitivity and stability tests are written once against the contract. Each type supplies its own "change one input" mutations, so a new type gets the tests by filling in a list.
+- [x] **Fake-type test.** A deliberately odd output type is defined only inside a unit test file. For example: four parts, five states, an HTML view, nothing like a plot. It goes through run → fingerprint → states → agent approve → the review page's data with no edits to the core files. This is the proof that future content fits without special cases.
+- [x] The transition tests are laid out as a table, one row per row of the spec's transition table, so the two can be compared side by side.
+- [x] **Mutation check.** A dev script applies known breaks one at a time to a temporary copy of the suite, runs the unit tests, and reports which breaks were caught. Breaks to include:
   - a changed fingerprint keeps its status;
   - a part is dropped from the serialised form;
   - negative-zero normalisation is skipped;
@@ -43,36 +43,36 @@
   - an output's view is rendered from a different object than the one hashed.
 
   Add any others you find. Every break must be caught. A break that isn't caught means a new test is needed.
-- [ ] Screenshots of states (headless Chrome via chromote, dev-only) are taken only for Unreviewed outputs. The widget gets a hook that sets a given state, so captures are deterministic.
-- [ ] **Pause.** Show the maintainer the contract (a short section in `tests/suite/README.md`), the fake-type test and the mutation report, then wait for approval before Part B.
+- [x] Screenshots of states (headless Chrome via chromote, dev-only) are taken only for Unreviewed outputs. The widget gets a hook that sets a given state, so captures are deterministic.
+- [x] **Pause.** Show the maintainer the contract (a short section in `tests/suite/README.md`), the fake-type test and the mutation report, then wait for approval before Part B.
 
 ## Part B: interface
 
 The accepted layout is `for_devs/prototypes/review_page_v2.html`.
 
-- [ ] One command starts a small local server (httpuv) and opens the page.
-- [ ] The inbox is the default view. The collapsible sidebar groups cases by review status, with search. The suite overview (tiles by function family, coloured by status) opens from the sidebar.
-- [ ] The URL deep-links to a single case or to the overview, and the agent command prints these links.
-- [ ] Each case shows its expected behaviour, the agent note, and its view kind:
+- [x] One command starts a small local server (httpuv) and opens the page.
+- [x] The inbox is the default view. The collapsible sidebar groups cases by review status, with search. The suite overview (tiles by function family, coloured by status) opens from the sidebar.
+- [x] The URL deep-links to a single case or to the overview, and the agent command prints these links.
+- [x] Each case shows its expected behaviour, the agent note, and its view kind:
   - an image, with swipe or side-by-side comparison against the last approved render;
   - a text diff (condition wording);
   - sampled states side by side, plus the live widget.
-- [ ] **Inventory view.** Ticket 2 writes the behaviour inventory. Define its file format here, with a stable ID per behaviour, so the page can:
+- [x] **Inventory view.** Ticket 2 writes the behaviour inventory. Define its file format here, with a stable ID per behaviour, so the page can:
   - show the inventory;
   - show which cases cover each behaviour, and which behaviours are deferred, with their reasons;
   - show a case's expected behaviour taken from the inventory entries it cites.
-- [ ] **Suite health view.** Shows the latest mutation report and the unit-test results, so the maintainer can check the backend's tests without reading them.
-- [ ] **Suite guide pages** (one or two, from the sidebar). Written for the maintainer: simple and clear, but complete enough to understand the whole suite without reading it.
+- [x] **Suite health view.** Shows the latest mutation report and the unit-test results, so the maintainer can check the backend's tests without reading them.
+- [x] **Suite guide pages** (one or two, from the sidebar). Written for the maintainer: simple and clear, but complete enough to understand the whole suite without reading it.
   - **Principles:** the two halves of a case, what a fingerprint does and doesn't decide, the review statuses and who can set each, how the suite's own tests are tested, and what CI and CRAN each run.
   - **Structure:** a diagram of the pieces (cases, output types, runner, review state, review server, review page, CI) and how an output flows from run to Human approved.
   - **Latest status:** the most recent unit-test run and mutation check, each with the date and the commit it ran on. `test.R` and `mutate.R` record both in their JSON output.
 
   The pages restate `tests/suite/README.md` and the spec in plain language, so they go stale when those change. Both files carry a note saying so.
-- [ ] **Separate human decisions** (decided at the Part A review; spec: *Review state storage*, *Human authority*). The server writes the human's approvals and rejections to `tests/suite/human_decisions.json`, keyed by output ID and fingerprint. `review_state.json` stops holding human statuses. Review status is derived from both files in one place in `store.R`, and the agent commands, `list` and `review_page_data()` all use it. Add mutation breaks: "a human decision for an old fingerprint still counts", and "an agent command writes the decisions file".
-- [ ] Approve and reject write to `human_decisions.json` through the server only, after checking the move with `review_transition()`. Reject requires a note and offers quick starter phrases. Outputs reach the human only after Agent approved.
-- [ ] Keyboard: j/k, a, r, s, o, [, Ctrl+Enter, Esc. Queue progress is shown.
-- [ ] **Human-authority hook.** A Claude Code hook, committed in the project settings, blocks any agent write to `human_decisions.json` by path: file-edit and write tools whose target is that file, and shell commands that name it. Agent commands never touch it, so nothing legitimate is blocked. A test shows a blocked edit, a blocked shell write, and an allowed `suite.R approve`. Replace the stale old-suite entries in `.claude/settings.json` while there.
-- [ ] `tests/suite/README.md` covers running the suite, the review page, the hook, and how to add an output type. Ticket 4 polishes it into the full guide.
+- [x] **Separate human decisions** (decided at the Part A review; spec: *Review state storage*, *Human authority*). The server writes the human's approvals and rejections to `tests/suite/human_decisions.json`, keyed by output ID and fingerprint. `review_state.json` stops holding human statuses. Review status is derived from both files in one place in `store.R`, and the agent commands, `list` and `review_page_data()` all use it. Add mutation breaks: "a human decision for an old fingerprint still counts", and "an agent command writes the decisions file".
+- [x] Approve and reject write to `human_decisions.json` through the server only, after checking the move with `review_transition()`. Reject requires a note and offers quick starter phrases. Outputs reach the human only after Agent approved.
+- [x] Keyboard: j/k, a, r, s, o, [, Ctrl+Enter, Esc. Queue progress is shown.
+- [x] **Human-authority hook.** A Claude Code hook, committed in the project settings, blocks any agent write to `human_decisions.json` by path: file-edit and write tools whose target is that file, and shell commands that name it. Agent commands never touch it, so nothing legitimate is blocked. A test shows a blocked edit, a blocked shell write, and an allowed `suite.R approve`. Replace the stale old-suite entries in `.claude/settings.json` while there.
+- [x] `tests/suite/README.md` covers running the suite, the review page, the hook, and how to add an output type. Ticket 4 polishes it into the full guide.
 
 ## Out of scope
 

@@ -1,9 +1,23 @@
 {
   "permissions": {
     "allow": [
-      "Bash(Rscript tests/run.R)",
-      "Bash(Rscript tests/run.R *)",
-      "Bash(Rscript -e \"rmarkdown::render('tests/report.Rmd')\")"
+      "Bash(Rscript tests/suite/suite.R *)",
+      "Bash(Rscript tests/suite/test.R)",
+      "Bash(Rscript tests/suite/mutate.R)",
+      "Bash(Rscript tests/suite/mutate.R *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|MultiEdit|Write|NotebookEdit|Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "Rscript \"$CLAUDE_PROJECT_DIR/.claude/hooks/protect_human_decisions.R\""
+          }
+        ]
+      }
     ]
   }
 }

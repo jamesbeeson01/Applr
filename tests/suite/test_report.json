@@ -1,0 +1,490 @@
+{
+  "when": "2026-11-10T22:52:46-0700",
+  "commit": "6943094 + uncommitted changes",
+  "tests": 60,
+  "failed": 0,
+  "skipped": 0,
+  "seconds": 97,
+  "results": [
+    {
+      "file": "test-contract.R",
+      "test": "base_graphics: completeness",
+      "expectations": 11,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.05
+    },
+    {
+      "file": "test-contract.R",
+      "test": "base_graphics: sensitivity",
+      "expectations": 4,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.31
+    },
+    {
+      "file": "test-contract.R",
+      "test": "base_graphics: stability",
+      "expectations": 3,
+      "passed": true,
+      "skipped": false,
+      "seconds": 6.55
+    },
+    {
+      "file": "test-contract.R",
+      "test": "conditions: completeness",
+      "expectations": 11,
+      "passed": true,
+      "skipped": false,
+      "seconds": 2.49
+    },
+    {
+      "file": "test-contract.R",
+      "test": "conditions: sensitivity",
+      "expectations": 4,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.54
+    },
+    {
+      "file": "test-contract.R",
+      "test": "conditions: stability",
+      "expectations": 3,
+      "passed": true,
+      "skipped": false,
+      "seconds": 9.9
+    },
+    {
+      "file": "test-contract.R",
+      "test": "plotly_3d: completeness",
+      "expectations": 17,
+      "passed": true,
+      "skipped": false,
+      "seconds": 24.67
+    },
+    {
+      "file": "test-contract.R",
+      "test": "plotly_3d: sensitivity",
+      "expectations": 5,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.53
+    },
+    {
+      "file": "test-contract.R",
+      "test": "plotly_3d: stability",
+      "expectations": 3,
+      "passed": true,
+      "skipped": false,
+      "seconds": 8.23
+    },
+    {
+      "file": "test-contract.R",
+      "test": "static_plot: completeness",
+      "expectations": 11,
+      "passed": true,
+      "skipped": false,
+      "seconds": 2.87
+    },
+    {
+      "file": "test-contract.R",
+      "test": "static_plot: sensitivity",
+      "expectations": 5,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.08
+    },
+    {
+      "file": "test-contract.R",
+      "test": "static_plot: stability",
+      "expectations": 3,
+      "passed": true,
+      "skipped": false,
+      "seconds": 7.73
+    },
+    {
+      "file": "test-contract.R",
+      "test": "each type registered under types/ has a demo case and mutations",
+      "expectations": 8,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.04
+    },
+    {
+      "file": "test-decisions.R",
+      "test": "a human approval of the current fingerprint makes it Human approved, in the decisions file only",
+      "expectations": 7,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.12
+    },
+    {
+      "file": "test-decisions.R",
+      "test": "a human decision for an old fingerprint has no effect",
+      "expectations": 3,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.16
+    },
+    {
+      "file": "test-decisions.R",
+      "test": "a human rejection needs a note, sets Rejected and holds against the agent",
+      "expectations": 6,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.65
+    },
+    {
+      "file": "test-decisions.R",
+      "test": "the human can't decide on an output no agent has approved, or on a stale page",
+      "expectations": 3,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.53
+    },
+    {
+      "file": "test-decisions.R",
+      "test": "a human approval keeps that version's form and views for comparison",
+      "expectations": 5,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.36
+    },
+    {
+      "file": "test-decisions.R",
+      "test": "no agent command writes the decisions file",
+      "expectations": 1,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.06
+    },
+    {
+      "file": "test-fake-type.R",
+      "test": "an unforeseen type goes from run to the review page's data",
+      "expectations": 20,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.53
+    },
+    {
+      "file": "test-fake-type.R",
+      "test": "the unforeseen type gets the shared trust tests",
+      "expectations": 26,
+      "passed": true,
+      "skipped": false,
+      "seconds": 6.82
+    },
+    {
+      "file": "test-hook.R",
+      "test": "the project settings run the hook before every file-edit and shell tool",
+      "expectations": 2,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.03
+    },
+    {
+      "file": "test-hook.R",
+      "test": "an edit or a shell write to the decisions file is blocked",
+      "expectations": 4,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.19
+    },
+    {
+      "file": "test-hook.R",
+      "test": "the agent commands, and files that only mention the decisions file, are allowed",
+      "expectations": 3,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.42
+    },
+    {
+      "file": "test-inventory.R",
+      "test": "the inventory flattens to one entry per behaviour, with its group and family",
+      "expectations": 5,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.07
+    },
+    {
+      "file": "test-inventory.R",
+      "test": "an inventory with a reused ID, a missing principle or a bad ID is refused",
+      "expectations": 3,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.06
+    },
+    {
+      "file": "test-inventory.R",
+      "test": "covers() is read from anywhere in a case file, without running it",
+      "expectations": 1,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.04
+    },
+    {
+      "file": "test-inventory.R",
+      "test": "each case gets its family from the first function entry it cites, and unknown IDs are flagged",
+      "expectations": 2,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.05
+    },
+    {
+      "file": "test-inventory.R",
+      "test": "the real inventory parses and every case cites only entries it has",
+      "expectations": 4,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.02
+    },
+    {
+      "file": "test-normalise.R",
+      "test": "line endings and trailing whitespace are removed",
+      "expectations": 1,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.02
+    },
+    {
+      "file": "test-normalise.R",
+      "test": "absolute paths become tokens",
+      "expectations": 1,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.03
+    },
+    {
+      "file": "test-normalise.R",
+      "test": "negative zero loses its sign but real negatives do not",
+      "expectations": 1,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.02
+    },
+    {
+      "file": "test-normalise.R",
+      "test": "multi-part forms get headers; a lone unnamed part does not",
+      "expectations": 3,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.04
+    },
+    {
+      "file": "test-normalise.R",
+      "test": "a fingerprint is 12 hex characters and depends on the text",
+      "expectations": 2,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.02
+    },
+    {
+      "file": "test-normalise.R",
+      "test": "a single-part output has no header; every part of a multi-part one is hashed",
+      "expectations": 3,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.05
+    },
+    {
+      "file": "test-normalise.R",
+      "test": "compute steps run under the pinned options, whatever the session's",
+      "expectations": 1,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.05
+    },
+    {
+      "file": "test-normalise.R",
+      "test": "canonical JSON drops classes, sorts keys, rounds numbers and keeps array order",
+      "expectations": 3,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.05
+    },
+    {
+      "file": "test-normalise.R",
+      "test": "canonical JSON rounds decimal strings like numbers and leaves other strings alone",
+      "expectations": 1,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.02
+    },
+    {
+      "file": "test-runner.R",
+      "test": "running records Unreviewed, unchanged re-runs keep status, changes reset it",
+      "expectations": 8,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.47
+    },
+    {
+      "file": "test-runner.R",
+      "test": "views are rendered for Unreviewed outputs only",
+      "expectations": 2,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.47
+    },
+    {
+      "file": "test-runner.R",
+      "test": "list and diff work; approval requires a note and rejection stores it",
+      "expectations": 7,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.2
+    },
+    {
+      "file": "test-runner.R",
+      "test": "an agent's decisions never write Human approved",
+      "expectations": 3,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.59
+    },
+    {
+      "file": "test-runner.R",
+      "test": "breaking the line fails the expectation and leaves review state untouched",
+      "expectations": 2,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.69
+    },
+    {
+      "file": "test-runner.R",
+      "test": "a case with no expectations does not count as passed",
+      "expectations": 2,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.08
+    },
+    {
+      "file": "test-runner.R",
+      "test": "an error while serialising one case leaves the others' results intact",
+      "expectations": 3,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.67
+    },
+    {
+      "file": "test-server.R",
+      "test": "the page, its data and the views are served",
+      "expectations": 11,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.13
+    },
+    {
+      "file": "test-server.R",
+      "test": "a decision from the page is checked and written to the decisions file",
+      "expectations": 5,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.06
+    },
+    {
+      "file": "test-server.R",
+      "test": "a rejection without a note, or on a stale page, is refused",
+      "expectations": 4,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.98
+    },
+    {
+      "file": "test-server.R",
+      "test": "only JSON from the page's own origin is accepted",
+      "expectations": 5,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.66
+    },
+    {
+      "file": "test-server.R",
+      "test": "nothing outside the page and view folders is served",
+      "expectations": 5,
+      "passed": true,
+      "skipped": false,
+      "seconds": 1.17
+    },
+    {
+      "file": "test-server.R",
+      "test": "deep links name one output or one page",
+      "expectations": 2,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.05
+    },
+    {
+      "file": "test-status.R",
+      "test": "every row of the transition table holds",
+      "expectations": 46,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.53
+    },
+    {
+      "file": "test-status.R",
+      "test": "a run resets exactly when the fingerprint is new, and records it",
+      "expectations": 20,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.28
+    },
+    {
+      "file": "test-type-conditions.R",
+      "test": "every condition is captured in order, including those raised while drawing",
+      "expectations": 3,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.3
+    },
+    {
+      "file": "test-type-conditions.R",
+      "test": "an error ends the capture and is recorded",
+      "expectations": 1,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.03
+    },
+    {
+      "file": "test-type-conditions.R",
+      "test": "ANSI codes are removed and curly quotes become straight",
+      "expectations": 1,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.02
+    },
+    {
+      "file": "test-types.R",
+      "test": "an undeclared type is worked out from the object, or must be declared",
+      "expectations": 4,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.06
+    },
+    {
+      "file": "test-types.R",
+      "test": "a type's states must be a named list with file-safe names",
+      "expectations": 4,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.07
+    },
+    {
+      "file": "test-types.R",
+      "test": "every part goes through the common normalisation",
+      "expectations": 1,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.03
+    },
+    {
+      "file": "test-types.R",
+      "test": "the core never names an output type",
+      "expectations": 4,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.09
+    }
+  ]
+}

@@ -28,7 +28,8 @@ test_that("every part goes through the common normalisation", {
 })
 
 test_that("the core never names an output type", {
-  core <- file.path(suite_dir, c("fingerprint.R", "types.R", "status.R", "store.R", "views.R", "suite.R"))
+  core <- file.path(suite_dir, c("stamp.R", "fingerprint.R", "types.R", "status.R", "store.R", "views.R",
+                                "inventory.R", "server.R", "suite.R", "review.R", "page/app.js"))
   text <- unlist(lapply(core, readLines))
   for (type in ls(output_types)) {
     expect_false(any(grepl(type, text, fixed = TRUE)), label = paste("core mentions", type))

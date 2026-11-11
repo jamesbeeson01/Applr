@@ -1,0 +1,70 @@
+# Behaviour inventory (spec: "Write, then salvage"). Temporary: ticket 4
+# deletes it. Ticket 2 writes it in full; the entries below only cover the
+# demo cases, so the review page has something to show.
+#
+# Format (tests/suite/README.md, "Behaviour inventory"):
+#   functions:            one group per exported function
+#     <function>:
+#       family:           overview row; defaults to the function name
+#       purpose:          one line on what the function is for
+#       behaviours:       what it must do, as principles
+#         - id:           stable, unique, lower case: <group>.<short-name>
+#           principle:    the rule, in plain language (required)
+#           source:       where it comes from (docs, source file, dev notes)
+#       edge_cases:       situations that come up; same fields, plus
+#           options:      workable ways to test it (a list)
+#           deferred:     why it isn't covered yet, if it isn't
+#   shared:               behaviours that cut across functions, tested once
+#     <topic>:
+#       purpose:
+#       functions:        the functions it applies to (a list)
+#       behaviours / edge_cases: as above
+# Cases cite IDs with covers("<id>", ...).
+
+functions:
+  geom_slice:
+    family: geom_slice
+    purpose: A ggplot layer that draws the model's prediction along the x-axis variable.
+    behaviours:
+      - id: geom_slice.line-is-prediction
+        principle: The drawn line is the model's prediction over an evenly spaced grid spanning the x-axis variable's data range.
+        source: "?geom_slice; R/geom_slice.R"
+      - id: geom_slice.user-theme
+        principle: The layer draws inside the user's plot and theme; it adds no theme of its own.
+        source: "?geom_slice"
+
+  slice_2d:
+    family: slice_2d
+    purpose: Base graphics plot of a model's slice along one predictor.
+    behaviours:
+      - id: slice_2d.line-is-prediction
+        principle: The drawn line is the model's prediction along x_axis, with every predictor named in ... held at the value given.
+        source: "?slice_2d; R/slice_2d.R (prepare_slice_data)"
+
+  scatter_3d:
+    family: scatter_3d
+    purpose: Interactive plotly 3D scatter of the data with the model's fitted surface.
+    behaviours:
+      - id: scatter_3d.surface-is-prediction
+        principle: The surface is the model's prediction over an n-by-n grid of the two predictors' ranges.
+        source: "?scatter_3d; R/scatter_3d.R"
+      - id: scatter_3d.readable-from-any-angle
+        principle: Points, surface and axis titles stay readable from the default, top and side cameras.
+        source: "?scatter_3d"
+
+shared:
+  imputation:
+    purpose: Predictors that aren't on the x-axis and aren't held are imputed, and the user is told.
+    functions: [geom_slice, slice_2d, geom_slice_subtitle]
+    behaviours:
+      - id: shared.imputation.message
+        principle: Each imputed predictor gets one message naming it and the value used, and the plot is still built.
+        source: "R/geom_slice.R; R/conditions.R; ?geom_slice (Details)"
+    edge_cases:
+      - id: shared.imputation.factor-in-formula
+        principle: A predictor converted inside the formula, such as factor(cyl), is imputed as a level, never as a mean.
+        source: "for_devs/tickets/1-handoff.md (package bug found while writing the conditions demo)"
+        options:
+          - "Expectation: geom_slice(lm(mpg ~ wt + factor(cyl), mtcars)) builds, and the imputed cyl is one of 4, 6, 8."
+          - "Judged output: the imputation message's wording names a level."
+        deferred: "Package bug on main: factor(cyl) is imputed with its mean and predict() fails. Write the case once that's fixed."

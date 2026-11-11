@@ -12,3 +12,7 @@ judged_output <- function(name, object, type = NULL, states = NULL) {
   }
   invisible(object)
 }
+
+# Names the behaviour inventory entries a case covers, as string literals.
+# The review page reads them from the case file; running the case does nothing.
+covers <- function(...) invisible(NULL)

@@ -183,9 +183,9 @@ An output's review status is derived from both files. A human approval for the c
 **Human authority.** Agents have no reason to write `human_decisions.json`, so a Claude Code hook can block every agent write to it by path, through file-edit and shell tools alike. This is a simple rule, with no need to inspect what an edit changes. One shared file couldn't be protected this way, because agents write it legitimately and a shell command's effect can't be seen in advance. The hook is a guardrail against careless or overeager agents, not a lock against a determined one. A forged decision would still show as a diff to that one file. If agents are ever run outside Claude Code, add a CI check on who changed it.
 
 **Review page.** A small local server started from R (httpuv) serves the review page and records decisions. Layout from the review page prototype (v2):
-- the inbox is the default view;
-- a collapsible sidebar groups cases by review status, with search;
-- the suite overview (tiles by function family) is a sidebar destination;
+- the suite overview (tiles by function family) is the default view (changed from the inbox at the Part B review, 2026-11-10);
+- a collapsible sidebar groups cases by review status, with search, and the inbox of Agent approved outputs heads it;
+- the page follows the system's light or dark setting;
 - each case shows its expected behaviour, the agent note, any console diff, and a swipe or side-by-side comparison, or sampled states plus the live widget for interactive outputs;
 - reject opens a note box with quick starter phrases;
 - keyboard: j/k, a, r, s, o, [, and Ctrl+Enter;

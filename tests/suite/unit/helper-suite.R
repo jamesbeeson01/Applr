@@ -33,3 +33,22 @@ temp_paths <- function() {
   root <- tempfile("suite")
   suite_paths(root, file.path(root, "views"))
 }
+
+# The demo static case, and a copy of it with one visible change.
+renamed <- function() case_copy(edit = c('title = "Single predictor"', 'title = "Renamed"'))
+id <- "single_predictor_line/plot"
+view_file <- function(paths) file.path(paths$views, "single_predictor_line__plot", "plot.png")
+
+# The review server's app, with a request built as httpuv hands it over.
+test_app <- function(paths, case_dir = case_copy(), inventory_file = inventory_path(root)) {
+  review_app(paths, page_dir = file.path(suite_dir, "page"), inventory_file = inventory_file,
+             case_dir = case_dir)
+}
+call_app <- function(app, path, method = "GET", body = NULL, query = "", type = "application/json",
+                     host = "127.0.0.1:7654", origin = NULL) {
+  req <- list(PATH_INFO = path, REQUEST_METHOD = method, QUERY_STRING = query, HTTP_HOST = host,
+              HTTP_CONTENT_TYPE = type, rook.input = list(read = function(...) charToRaw(body %||% "")))
+  if (!is.null(origin)) req$HTTP_ORIGIN <- origin
+  app$call(req)
+}
+json_body <- function(res) jsonlite::fromJSON(res$body, simplifyVector = FALSE)

@@ -6,6 +6,8 @@
 # Writes tests/suite/mutation_report.json, which the review page shows.
 # Every break must be caught; one that isn't needs a new test.
 
+source("tests/suite/stamp.R")
+
 # `line` is a fixed substring naming exactly one line of `file` (or the
 # `nth` line containing it); that whole line becomes `to`.
 breaks <- list(
@@ -61,7 +63,39 @@ breaks <- list(
        file = "types/conditions.R", line = "chartr(", to = "  lines"),
   list(name = "Conditions raised while drawing are missed",
        file = "types/conditions.R", line = "tryCatch(draw_call(call)()",
-       to = "    tryCatch(call(), error = function(e) record(\"error\", e)),")
+       to = "    tryCatch(call(), error = function(e) record(\"error\", e)),"),
+  list(name = "A human decision for an old fingerprint still counts",
+       file = "store.R", line = "identical(d$id, id) && identical(d$fingerprint, rec$fingerprint)",
+       to = "    mine <- Filter(function(d) identical(d$id, id),"),
+  list(name = "Review status ignores human decisions",
+       file = "store.R", line = "if (length(mine)) {", to = "    if (FALSE) {"),
+  list(name = "An agent command writes the decisions file",
+       file = "store.R", line = "write_state(state, paths)", nth = 2,
+       to = "  write_state(state, paths); jsonlite::write_json(list(), paths$decisions)"),
+  list(name = "A human approval writes Human approved into review_state.json",
+       file = "server.R", line = "write_decisions(decisions, paths)",
+       to = paste("  write_decisions(decisions, paths); s <- read_state(paths);",
+                  "s[[id]]$status <- \"Human approved\"; write_state(s, paths)")),
+  list(name = "The server accepts a human rejection without a note",
+       file = "server.R", line = "list(type = paste0(\"human_\", decision), note = note))",
+       to = "                    list(type = paste0(\"human_\", decision), note = \"-\"))"),
+  list(name = "The server accepts a decision on an output no agent has approved",
+       file = "server.R", line = "review_transition(list(status = rec$status",
+       to = "  review_transition(list(status = \"Agent approved\", fingerprint = rec$fingerprint),"),
+  list(name = "The server accepts a decision made on a stale page",
+       file = "server.R", line = "if (!identical(fingerprint, rec$fingerprint)) {", to = "  if (FALSE) {"),
+  list(name = "A human approval doesn't keep the approved version for comparison",
+       file = "server.R", line = "if (decision == \"approve\") keep_approved(id, paths)", to = ""),
+  list(name = "The server accepts a decision that isn't JSON",
+       file = "server.R", line = "if (!grepl(\"^application/json\", type)) {", to = "  if (FALSE) {"),
+  list(name = "The server accepts a decision from another origin",
+       file = "server.R", line = "origin != paste0(\"http://\", host)) {", to = "  if (FALSE) {"),
+  list(name = "The server serves files outside its folders",
+       file = "server.R", line = "if (!startsWith(f, paste0(root, \"/\"))) return(not_found())", to = ""),
+  list(name = "An inventory ID used twice is accepted",
+       file = "inventory.R", line = "is used more than once", to = "    character()"),
+  list(name = "covers() inside a test block is missed",
+       file = "inventory.R", line = "for (i in seq_along(args)) {", to = "    for (i in integer()) {")
 )
 
 apply_break <- function(dir, b) {
@@ -83,7 +117,8 @@ suite_copy <- function() {
   dir <- tempfile("suite")
   dir.create(dir)
   file.copy(list.files("tests/suite", full.names = TRUE, all.files = FALSE), dir, recursive = TRUE)
-  unlink(file.path(dir, c("mutation_report.json", "review_state.json", "forms")), recursive = TRUE)
+  unlink(file.path(dir, c("mutation_report.json", "test_report.json", "review_state.json",
+                         "human_decisions.json", "forms")), recursive = TRUE)
   normalizePath(dir, winslash = "/")
 }
 
@@ -145,7 +180,7 @@ rows <- Map(function(job, res) {
   list(name = job$name, file = job$file, caught = length(res$failed) > 0,
        caught_by = as.list(res$failed), crashed = !is.null(res$crash) && res$n == 0)
 }, jobs[-1], results[-1])
-report <- list(when = format(Sys.time(), "%Y-%m-%dT%H:%M:%S%z"), tests = baseline$n,
+report <- list(when = now_stamp(), commit = git_commit(), tests = baseline$n,
                caught = sum(vapply(rows, `[[`, TRUE, "caught")), breaks = rows)
 jsonlite::write_json(report, "tests/suite/mutation_report.json", pretty = TRUE, auto_unbox = TRUE)
 

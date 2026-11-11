@@ -4,6 +4,8 @@
 #   Rscript tests/suite/suite.R diff <id>
 #   Rscript tests/suite/suite.R approve <id> "<note>"
 #   Rscript tests/suite/suite.R reject  <id> "<note>"
+# Each prints the review page link for the outputs it names; the page itself
+# is started with tests/suite/review.R.
 
 suppressMessages(pkgload::load_all(".", quiet = TRUE))
 source("tests/suite/load.R")
@@ -15,16 +17,22 @@ switch(cmd,
   run = {
     r <- run_suite()
     for (id in names(r)) cat(sprintf("%-40s %s\n", id, r[[id]]))
+    cat("\nReview page:", review_url(), "\n")
   },
   list = {
     ids <- list_unreviewed()
-    if (length(ids)) cat("Unreviewed:", ids, sep = "\n  ") else cat("No Unreviewed outputs.\n")
+    if (length(ids)) {
+      cat("Unreviewed:\n")
+      cat(sprintf("  %-40s %s\n", ids, vapply(ids, review_url, "")), sep = "")
+    } else {
+      cat("No Unreviewed outputs.\n")
+    }
   },
   diff = cat(diff_output(args[[2]]), sep = "\n"),
   approve = , reject = {
     note <- if (length(args) >= 3) args[[3]] else ""
     agent_decide(args[[2]], cmd, note)
-    cat(args[[2]], "->", read_state(suite_paths())[[args[[2]]]]$status, "\n")
+    cat(args[[2]], "->", review_records()[[args[[2]]]]$status, "\n  ", review_url(args[[2]]), "\n")
   },
   stop("Unknown command: ", cmd, call. = FALSE)
 )
