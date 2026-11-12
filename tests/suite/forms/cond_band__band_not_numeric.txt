@@ -1,0 +1,7 @@
+warning
+`band` variable `drv` is not numeric, so it has no range to span. No band is drawn.
+    Bands span a numeric predictor; for a factor, map it to a grouping aesthetic for one line per level instead.
+
+message
+Value for `drv` not specified - Used most common: "f"
+    To choose a slice, use 'predict_vars = list(drv = "f")'.

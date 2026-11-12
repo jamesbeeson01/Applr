@@ -1,0 +1,3 @@
+warning
+geom_slice_caption() found no geom_slice() layer to describe, so no caption was added.
+    Add the slice first, such as 'geom_slice(model) + geom_slice_caption()'.

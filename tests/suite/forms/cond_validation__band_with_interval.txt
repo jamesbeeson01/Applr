@@ -1,0 +1,3 @@
+error
+`band` and `interval` cannot be combined in one geom_slice() layer.
+    Drop 'interval =' to draw the band, or 'band =' to draw the interval ribbon.

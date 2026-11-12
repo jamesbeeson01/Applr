@@ -1,0 +1,32 @@
+[imputed]
+hwy = -259 - 1.33*displ + 7.31*(drv="f") - 0.554*(drv="r") - 1.26*cyl + 0.146*year - 0.843*displ:(drv="f") + 1.04*displ:(drv="r")
+held at: cyl = 5.889; year = 2004
+
+[held_values]
+hwy = -259 - 1.33*displ + 7.31*(drv="f") - 0.554*(drv="r") - 1.26*cyl + 0.146*year - 0.843*displ:(drv="f") + 1.04*displ:(drv="r")
+held at: cyl = 4, 8; year = 2008
+
+[band]
+hwy = -259 - 1.33*displ + 7.31*(drv="f") - 0.554*(drv="r") - 1.26*cyl + 0.146*year - 0.843*displ:(drv="f") + 1.04*displ:(drv="r")
+held at: year = 1999
+projection band: cyl spanning from 4 to 8
+
+[no_equation]
+held at: cyl = 5.889; year = 2004
+
+[prepend_append]
+Fitted: hwy = -259 - 1.33*displ + 7.31*(drv="f") - 0.554*(drv="r") - 1.26*cyl + 0.146*year - 0.843*displ:(drv="f") + 1.04*displ:(drv="r")
+held at: cyl = 5.889; year = 2004 (mpg data)
+
+[style_brackets]
+hwy = -259 - 1.33*displ + 7.31*[f] - 0.554*[r] - 1.26*cyl + 0.146*year - 0.843*displ:[f] + 1.04*displ:[r]
+held at: cyl = 5.889; year = 2004
+
+[string_value]
+hwy = 30.8 - 2.91*displ + 4.79*(drv="f") + 5.26*(drv="r")
+held at: drv = "r"
+
+[slice_2d_caption]
+drv: f; cyl: 5.9; year: 2003.5
+
+[slice_2d_caption_empty]

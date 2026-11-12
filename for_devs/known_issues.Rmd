@@ -29,6 +29,7 @@ output: html_document
   - `lm_equation(lm(mpg ~ 1))` returns `"mpg = 20.1 + *"`: an intercept-only model leaves an empty term (`test-case_text_equations.R`).
   - `lm_latex()` puts names into `\text{}` unescaped, so `wt_lb` breaks the typeset equation (`test-case_text_equations.R`).
   - A wrapped subtitle with a single held value can break between the name and its value (`held at: Sepal.Width` / `= 3.057`): `annotation_line_parts()` splits that line at every space when there's no `"; "` (`test-case_text_wrapping.R`).
+  - Every `scatter_3d()` widget shows a stray "trace 0" legend entry over the colour bar's title, and the surface uses plotly's default colourscale rather than anything tied to `colors` (`test-case_widget_scatter_3d.R`).
   - A layer error raised inside the stat (a discrete x-axis, a `predict()` failure such as the `factor(cyl)` one) reaches the user as ggplot2's "Computation failed in `stat_slice()`" warning, and the plot is drawn without the line, rather than as Applr's own error.
 
 ## Resolved

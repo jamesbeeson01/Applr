@@ -1,0 +1,7 @@
+warning
+`drawit()` is deprecated; use `slice_2d()` instead.
+    Call it as 'slice_2d(model, x_axis = "wt")'. Unlike `drawit()`, `slice_2d()` imputes any predictors you do not name rather than requiring them.
+
+message
+X-axis not specified - Used first x variable as x-axis
+    To specify, use 'x_axis = "var_name"' such as 'x_axis = "disp"'

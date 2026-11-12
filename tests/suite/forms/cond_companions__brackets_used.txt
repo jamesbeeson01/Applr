@@ -1,0 +1,7 @@
+message
+Factor terms were shortened to fit the subtitle - wrote `[versicolor]` for `(Species="versicolor")`.
+    To keep the full names, use 'geom_slice_subtitle(style = "prettier")' - the subtitle may then run past the edge of the plot.
+
+message
+Value for `Sepal.Width` not specified - Used mean: 3.057
+    To choose a slice, use 'predict_vars = list(Sepal.Width = 3.057)'.

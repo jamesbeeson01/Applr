@@ -1,0 +1,5 @@
+warning
+Computation failed in `stat_slice()`.
+Caused by error:
+! geom_slice() needs a continuous x-axis, but the x scale is discrete.
+    Map a numeric variable or expression to this axis.

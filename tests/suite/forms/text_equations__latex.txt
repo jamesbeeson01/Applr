@@ -1,0 +1,23 @@
+[simple]
+$$\underbrace{\hat{Y_i}}_{\text{Pred. mpg}} = 37.3 - 5.34\underbrace{X_{1i}}_{\text{wt}}$$
+
+[multiple]
+$$\underbrace{\hat{Y_i}}_{\text{Pred. mpg}} = 30.7 - 0.0303\underbrace{X_{1i}}_{\text{disp}} - 0.0248\underbrace{X_{2i}}_{\text{hp}}$$
+
+[transformed]
+$$\underbrace{\hat{Y_i}}_{\text{Pred. log(mpg)}} = 4.13 - 0.464\underbrace{X_{1i}}_{\text{wt}} + 0.028\underbrace{X_{2i}}_{\text{I(wt^2)}}$$
+
+[no_intercept]
+$$\underbrace{\hat{Y_i}}_{\text{Pred. mpg}} = 5.29\underbrace{X_{1i}}_{\text{wt}}$$
+
+[rank_deficient]
+$$\underbrace{\hat{Y_i}}_{\text{Pred. mpg}} = 37.3 - 5.34\underbrace{X_{1i}}_{\text{wt}}$$
+
+[exact_fit]
+$$\underbrace{\hat{Y_i}}_{\text{Pred. y}} = 0 + 2\underbrace{X_{1i}}_{\text{x}}$$
+
+[intercept_only]
+$$\underbrace{\hat{Y_i}}_{\text{Pred. mpg}} = 20.1 + \underbrace{X_{i}}_{\text{}}$$
+
+[underscore_name]
+$$\underbrace{\hat{Y_i}}_{\text{Pred. mpg}} = 37.3 - 0.00534\underbrace{X_{1i}}_{\text{wt_lb}}$$

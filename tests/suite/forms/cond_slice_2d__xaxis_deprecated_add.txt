@@ -1,0 +1,3 @@
+warning
+The `xaxis` argument of `add_slice_2d()` is deprecated.
+    Use `x_axis` instead.

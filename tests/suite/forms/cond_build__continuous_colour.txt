@@ -1,0 +1,7 @@
+warning
+`color = hp` is on a continuous scale, so it cannot pin `hp` per group; it will be held constant instead.
+    For one line per value, use 'aes(color = factor(hp))'.
+
+message
+Value for `hp` not specified - Used mean: 146.7
+    To choose a slice, use 'predict_vars = list(hp = 146.7)'.

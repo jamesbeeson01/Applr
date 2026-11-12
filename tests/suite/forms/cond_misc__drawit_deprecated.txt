@@ -1,0 +1,3 @@
+warning
+`drawit()` is deprecated; use `slice_2d()` instead.
+    Call it as 'slice_2d(model, x_axis = "hp")'. Unlike `drawit()`, `slice_2d()` imputes any predictors you do not name rather than requiring them.

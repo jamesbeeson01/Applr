@@ -1,0 +1,7 @@
+warning
+The x-axis `drat` uses none of the model's predictors, so the slice will be a flat line.
+    The model's predictors are `wt`.
+
+message
+Value for `wt` not specified - Used mean: 3.217
+    To choose a slice, use 'predict_vars = list(wt = 3.217)'.

@@ -1,0 +1,6 @@
+error
+Problem while computing stat.
+i Error occurred in the 1st layer.
+Caused by error:
+! Value "fast" for the numeric variable `hp` is not a number.
+    Use a number, such as 'hp = 146.7'.

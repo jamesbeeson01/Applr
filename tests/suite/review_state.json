@@ -1,9 +1,9 @@
 {
   "base_slice_2d/plot": {
-    "agent_note": "",
+    "agent_note": "Demo: slice_2d(mpg ~ wt + hp) with hp held at 150: points, black line, formula title, 'hp: 150' caption.",
     "rejection_note": "",
-    "who": "runner",
-    "when": "2026-11-09T19:36:31-0700",
+    "who": "agent",
+    "when": "2026-11-11T20:10:30-0700",
     "case": "base_slice_2d",
     "type": "base_graphics",
     "view": "image",
@@ -13,13 +13,1565 @@
       "main": "a0a963d29981"
     },
     "engine_version": "2.0",
-    "status": "Unreviewed"
+    "status": "Agent approved"
+  },
+  "cond_autoplot/announces_choices": {
+    "agent_note": "Four messages, in the order autoplot() decides: the x-axis (drv isn't numeric, so displ), colour by drv, facet by cyl, then year imputed. Each names the value and has a copy-pasteable hint. The facet hint ('drop `cyl` from the model') is advice rather than syntax; your call whether that fits the format.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:07-0700",
+    "case": "cond_autoplot",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "bb88636ec7f2",
+    "parts": {
+      "main": "bb88636ec7f2"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_autoplot/mapping_not_aes": {
+    "agent_note": "One error naming `mapping` with an aes() example to copy. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:07-0700",
+    "case": "cond_autoplot",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "d924b560a380",
+    "parts": {
+      "main": "d924b560a380"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_autoplot/no_data_argument": {
+    "agent_note": "One error saying why autoplot() can't proceed and showing lm(..., data =) to refit. 'Refit model with' is missing a 'the'.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:07-0700",
+    "case": "cond_autoplot",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "84157c48f887",
+    "parts": {
+      "main": "84157c48f887"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_autoplot/no_numeric_predictor": {
+    "agent_note": "One error: no numeric predictor for the x-axis, with two ways out (refit, or aes(x = ...)). Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:07-0700",
+    "case": "cond_autoplot",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "d7e5fd6c6a69",
+    "parts": {
+      "main": "d7e5fd6c6a69"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_autoplot/no_predictors": {
+    "agent_note": "One error for lm(mpg ~ 1), with a one-predictor example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:07-0700",
+    "case": "cond_autoplot",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "499368e024e7",
+    "parts": {
+      "main": "499368e024e7"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_autoplot/two_response_variables": {
+    "agent_note": "One error naming the response `I(mpg/hp)`. The hint ('Build the plot yourself with ggplot() + geom_slice()') isn't copy-pasteable syntax; acceptable since there's no one-line fix.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:08-0700",
+    "case": "cond_autoplot",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "6f3847c2590a",
+    "parts": {
+      "main": "6f3847c2590a"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_back_transform/back_transform_off": {
+    "agent_note": "No conditions: with back_transform = FALSE nothing is announced, as expected.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:08-0700",
+    "case": "cond_back_transform",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "bc562390ec41",
+    "parts": {
+      "main": "bc562390ec41"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_back_transform/back_transformed": {
+    "agent_note": "One message naming the response and the axis, with the off switch. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:08-0700",
+    "case": "cond_back_transform",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "8552c1b140b5",
+    "parts": {
+      "main": "8552c1b140b5"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_back_transform/identity_wrapper": {
+    "agent_note": "KNOWN ISSUE: I(1/mpg) isn't inverted, so this warns. The wording is fine for an unknown inverse, but the hint suggests 'back_transform = exp', which is wrong for 1/y. Approving the wording as shown; the bug is in known_issues.Rmd.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:08-0700",
+    "case": "cond_back_transform",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "c1456f4a58d6",
+    "parts": {
+      "main": "c1456f4a58d6"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_back_transform/no_inverse": {
+    "agent_note": "One warning naming `abs(mpg)`. The hint's example 'back_transform = exp' is a fixed example rather than one for this response; fine as a pointer, though a reader might paste it literally.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:08-0700",
+    "case": "cond_back_transform",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "57cd8feb776c",
+    "parts": {
+      "main": "57cd8feb776c"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_back_transform/slice_2d_back_transform_silent": {
+    "agent_note": "slice_2d() announces only its x-axis choice; the log(mpg) back-transformation is silent, unlike geom_slice() (the engines differ, known_issues.Rmd). The message lacks a final period and its hint repeats 'x_axis = \"var_name\"' before the real example.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:08-0700",
+    "case": "cond_back_transform",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "bf07e29e53fe",
+    "parts": {
+      "main": "bf07e29e53fe"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_back_transform/slice_2d_no_inverse": {
+    "agent_note": "FORMAT VIOLATION: slice_2d() lets get_inverse_function()'s raw 'Error creating inverse: ...' message through. It's a message, says 'Error', has no hint and doesn't follow decisions.Rmd. Approving so you see it; it likely wants rejecting.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:08-0700",
+    "case": "cond_back_transform",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "e16a6a29804d",
+    "parts": {
+      "main": "e16a6a29804d"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_back_transform/y_axis_not_response": {
+    "agent_note": "One warning naming the axis and the response. The hint ends at 'back_transform =' with no value, so it isn't quite copy-pasteable.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:09-0700",
+    "case": "cond_back_transform",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "1913668d0a23",
+    "parts": {
+      "main": "1913668d0a23"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_band/band_not_numeric": {
+    "agent_note": "A warning that drv can't band, with a hint to group instead, then drv's imputation message. Reads well; the hint is advice rather than syntax.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:09-0700",
+    "case": "cond_band",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "c9dbad39bcd2",
+    "parts": {
+      "main": "c9dbad39bcd2"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_band/band_not_predictor": {
+    "agent_note": "A warning naming \"cty\" and listing the predictors that could band, then two imputation messages. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:09-0700",
+    "case": "cond_band",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "5f56f9d681bb",
+    "parts": {
+      "main": "5f56f9d681bb"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_band/band_on_x": {
+    "agent_note": "A warning that displ already varies along the line, with the bandable predictors, then two imputation messages. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:09-0700",
+    "case": "cond_band",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "9c791c26df04",
+    "parts": {
+      "main": "9c791c26df04"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_band/band_pinned": {
+    "agent_note": "A warning that drv is pinned by the colour grouping, with the bandable predictors, then two imputation messages. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:10-0700",
+    "case": "cond_band",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "4dc25e7d3e2b",
+    "parts": {
+      "main": "4dc25e7d3e2b"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_band/band_range_message": {
+    "agent_note": "One message giving the data range used (4 to 8) and the predict_vars to choose another. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:10-0700",
+    "case": "cond_band",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "4540c835ce4f",
+    "parts": {
+      "main": "4540c835ce4f"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_band/band_true_no_candidate": {
+    "agent_note": "One warning. Typography slips: the hint wraps code in backticks instead of single quotes, and has no final period.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:10-0700",
+    "case": "cond_band",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "e1086efdc5a0",
+    "parts": {
+      "main": "e1086efdc5a0"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_band/band_true_several_candidates": {
+    "agent_note": "A warning listing the candidates (cyl, year) with a band = example, then two imputation messages. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:10-0700",
+    "case": "cond_band",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "98dd1be3578d",
+    "parts": {
+      "main": "98dd1be3578d"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_band/band_true_several_multi": {
+    "agent_note": "One warning naming the multi-value predict_vars entries, with a band = example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:10-0700",
+    "case": "cond_band",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "f50dfadb3172",
+    "parts": {
+      "main": "f50dfadb3172"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_build/axis_unmapped": {
+    "agent_note": "One error, arriving inside ggplot2's 'Problem while computing stat' chain, so it reads three lines down. Applr's own text is fine.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:10-0700",
+    "case": "cond_build",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "4fa7ce724ae1",
+    "parts": {
+      "main": "4fa7ce724ae1"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_build/bare_group": {
+    "agent_note": "A warning that group = cyl can't pin cyl, suggesting colour, then cyl's imputation message. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:11-0700",
+    "case": "cond_build",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "6cdaffd070d5",
+    "parts": {
+      "main": "6cdaffd070d5"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_build/continuous_colour": {
+    "agent_note": "A warning that color = hp is continuous, suggesting factor(hp), then hp's imputation message. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:11-0700",
+    "case": "cond_build",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "6ccd99dcfc89",
+    "parts": {
+      "main": "6ccd99dcfc89"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_build/discrete_x": {
+    "agent_note": "ggplot2 downgrades this error to a 'Computation failed in stat_slice()' warning and the plot draws without the line (known_issues.Rmd). Applr's wording inside is fine; how it reaches the user is the question.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:11-0700",
+    "case": "cond_build",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "2703ff7a7005",
+    "parts": {
+      "main": "2703ff7a7005"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_build/inherit_aes_false": {
+    "agent_note": "Same error as axis_unmapped, through ggplot2's chain. It doesn't say inherit.aes = FALSE is the cause, which would help here.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:11-0700",
+    "case": "cond_build",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "4fa7ce724ae1",
+    "parts": {
+      "main": "4fa7ce724ae1"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_build/model_data_gone": {
+    "agent_note": "One error through ggplot2's chain: the model's data can't be found, with a refit hint. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:11-0700",
+    "case": "cond_build",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "5f9139611d33",
+    "parts": {
+      "main": "5f9139611d33"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_build/no_data_argument_recovered": {
+    "agent_note": "No conditions: a model fitted without data is recovered from its environment and drawn. As expected.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:11-0700",
+    "case": "cond_build",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "bc562390ec41",
+    "parts": {
+      "main": "bc562390ec41"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_build/plot_data_mismatch": {
+    "agent_note": "One error naming `model`, with two ways out. Reads well; the hint is long.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:11-0700",
+    "case": "cond_build",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "20b235de6e49",
+    "parts": {
+      "main": "20b235de6e49"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_build/plot_data_reordered": {
+    "agent_note": "No conditions: the same rows in another order are accepted. As expected.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:11-0700",
+    "case": "cond_build",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "bc562390ec41",
+    "parts": {
+      "main": "bc562390ec41"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_build/predict_vars_on_x": {
+    "agent_note": "One warning that wt's held value is ignored. The hint explains rather than shows syntax; acceptable.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:12-0700",
+    "case": "cond_build",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "99c88545e229",
+    "parts": {
+      "main": "99c88545e229"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_build/raw_layer_no_mapping": {
+    "agent_note": "A raw layer() without mapping gets geom_slice()'s 'needs both x and y mapped' error, though the user called layer() and has x and y mapped; the real fix is 'mapping = aes(...)' in params. Misleading for this caller.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:12-0700",
+    "case": "cond_build",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "4fa7ce724ae1",
+    "parts": {
+      "main": "4fa7ce724ae1"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_build/unsupported_class": {
+    "agent_note": "One error naming `flag` and \"logical\", with what is supported. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:12-0700",
+    "case": "cond_build",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "2da8a0914bfb",
+    "parts": {
+      "main": "2da8a0914bfb"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_build/x_uses_no_predictor": {
+    "agent_note": "A warning that drat isn't a predictor (flat line), listing the predictors, then wt's imputation message. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:12-0700",
+    "case": "cond_build",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "a040155eca9f",
+    "parts": {
+      "main": "a040155eca9f"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/brackets_used": {
+    "agent_note": "A message showing one shortened term both ways and how to keep the full names, then the imputation message. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:12-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "8d427c15472f",
+    "parts": {
+      "main": "8d427c15472f"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/caption_no_slice": {
+    "agent_note": "One warning with a copy-pasteable fix. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:12-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "874b7fb376aa",
+    "parts": {
+      "main": "874b7fb376aa"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/subtitle_append": {
+    "agent_note": "One error with an example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:12-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "7cbb44cd8bd2",
+    "parts": {
+      "main": "7cbb44cd8bd2"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/subtitle_bad_style": {
+    "agent_note": "One warning from lm_equation() naming the choices and the fallback. It doesn't say it came through geom_slice_subtitle(), and (known_issues.Rmd) the fallback has already disabled the brackets wrap.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:13-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "17d9905ede2f",
+    "parts": {
+      "main": "17d9905ede2f"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/subtitle_model": {
+    "agent_note": "One error with an example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:13-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "603e4c6ae533",
+    "parts": {
+      "main": "603e4c6ae533"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/subtitle_no_slice": {
+    "agent_note": "One warning with a copy-pasteable fix. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:13-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "c05e7ccff5ed",
+    "parts": {
+      "main": "c05e7ccff5ed"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/subtitle_prepend": {
+    "agent_note": "One error with an example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:13-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "8ffa991f391e",
+    "parts": {
+      "main": "8ffa991f391e"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/subtitle_two_models": {
+    "agent_note": "One warning naming both models. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:13-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "ce7ccbfddfd2",
+    "parts": {
+      "main": "ce7ccbfddfd2"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/subtitle_wrap": {
+    "agent_note": "One error with an example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:13-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "6a569828065d",
+    "parts": {
+      "main": "6a569828065d"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/text_expand": {
+    "agent_note": "One error with an example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:13-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "23667b58fa74",
+    "parts": {
+      "main": "23667b58fa74"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/text_location": {
+    "agent_note": "One error with an example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:13-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "1207f3720eec",
+    "parts": {
+      "main": "1207f3720eec"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/text_no_slice": {
+    "agent_note": "One warning with a copy-pasteable fix. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:14-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "42c8efe444b5",
+    "parts": {
+      "main": "42c8efe444b5"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/text_offset": {
+    "agent_note": "One error with an example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:14-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "eddbd6ca2c2e",
+    "parts": {
+      "main": "eddbd6ca2c2e"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/text_style": {
+    "agent_note": "One error with an example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:14-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "1af49f0ae5a1",
+    "parts": {
+      "main": "1af49f0ae5a1"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/text_too_wide": {
+    "agent_note": "One warning, no number by design, with two ways out. Long first line, but clear.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:14-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "a3691e6b83ab",
+    "parts": {
+      "main": "a3691e6b83ab"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_companions/text_two_models": {
+    "agent_note": "One warning naming both models. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:14-0700",
+    "case": "cond_companions",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "6a002ff31e13",
+    "parts": {
+      "main": "6a002ff31e13"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_imputation/companions_stay_quiet": {
+    "agent_note": "Only geom_slice()'s own message for cyl; the text, subtitle and caption layers add nothing. As expected.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:14-0700",
+    "case": "cond_imputation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "b40cfbc9d3e2",
+    "parts": {
+      "main": "b40cfbc9d3e2"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_imputation/factor_and_character": {
+    "agent_note": "Two messages, most common level for a factor and for a character, quoted, with copy-pasteable hints. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:14-0700",
+    "case": "cond_imputation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "1358cd4ec94f",
+    "parts": {
+      "main": "1358cd4ec94f"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_imputation/once_per_layer": {
+    "agent_note": "Two messages, once each, despite three colour groups and seven facets. As expected.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:14-0700",
+    "case": "cond_imputation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "28b39d680ac9",
+    "parts": {
+      "main": "28b39d680ac9"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_imputation/slice_2d_character": {
+    "agent_note": "slice_2d() refuses a character predictor that geom_slice() would impute (engines differ, known_issues.Rmd). The wording is fine.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:15-0700",
+    "case": "cond_imputation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "59444a042f17",
+    "parts": {
+      "main": "59444a042f17"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_imputation/slice_2d_wording": {
+    "agent_note": "slice_2d()'s imputation message for a factor: the first level, not the most common (engines differ). Wording differs from geom_slice()'s: 'Used first value: a' has no quotes, and the hint 'f = a' isn't copy-pasteable (needs \"a\"); no final period.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:15-0700",
+    "case": "cond_imputation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "cb91cfecbd8c",
+    "parts": {
+      "main": "cb91cfecbd8c"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_misc/diagnose_not_lm": {
+    "agent_note": "FORMAT VIOLATION: a bare stop() with no backticks, no hint and no 'received a ...'. Approving so you see it; it likely wants rejecting.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:15-0700",
+    "case": "cond_misc",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "47e950a363af",
+    "parts": {
+      "main": "47e950a363af"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_misc/diagnose_three_rows": {
+    "agent_note": "No conditions: diagnose() copes with a three-row model. As expected.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:15-0700",
+    "case": "cond_misc",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "bc562390ec41",
+    "parts": {
+      "main": "bc562390ec41"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_misc/drawit_deprecated": {
+    "agent_note": "One warning with the slice_2d() call to copy. Reads well (drawit is going away).",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:15-0700",
+    "case": "cond_misc",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "c0eaec71adc4",
+    "parts": {
+      "main": "c0eaec71adc4"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_misc/drawit_no_xaxis": {
+    "agent_note": "The hint names x_axis = \"wt\" for a model whose predictor is disp: a hard-coded example. Low priority, since drawit is going away.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:15-0700",
+    "case": "cond_misc",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "e47ceebe1538",
+    "parts": {
+      "main": "e47ceebe1538"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_misc/equation_bad_style": {
+    "agent_note": "One warning naming the choices and the fallback. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:15-0700",
+    "case": "cond_misc",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "17d9905ede2f",
+    "parts": {
+      "main": "17d9905ede2f"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_misc/geom_fit_defunct": {
+    "agent_note": "One error with how the old arguments map to geom_slice(). Reads well; the hint is three sentences.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:15-0700",
+    "case": "cond_misc",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "ed05e050d27a",
+    "parts": {
+      "main": "ed05e050d27a"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_scatter_3d/builds_quietly": {
+    "agent_note": "No conditions: a good model builds with no plotly warnings. As expected.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:16-0700",
+    "case": "cond_scatter_3d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "bc562390ec41",
+    "parts": {
+      "main": "bc562390ec41"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_scatter_3d/factor_in_formula": {
+    "agent_note": "One error naming both predictors and the likely cause. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:16-0700",
+    "case": "cond_scatter_3d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "2af493c2e3cd",
+    "parts": {
+      "main": "2af493c2e3cd"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_scatter_3d/factor_predictor": {
+    "agent_note": "One error naming `Species` and \"factor\", pointing to geom_slice(). Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:16-0700",
+    "case": "cond_scatter_3d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "0979f3ed98ab",
+    "parts": {
+      "main": "0979f3ed98ab"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_scatter_3d/not_a_model": {
+    "agent_note": "WRONG FUNCTION NAME: scatter_3d(NULL) says 'geom_slice() needs a fitted model' and suggests calling geom_slice(model). check_slice_model() isn't told the caller's name. Approving so you see it; likely wants rejecting.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:16-0700",
+    "case": "cond_scatter_3d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "71999743c790",
+    "parts": {
+      "main": "71999743c790"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_scatter_3d/one_predictor": {
+    "agent_note": "One error with the count and an example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:16-0700",
+    "case": "cond_scatter_3d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "affb5f568286",
+    "parts": {
+      "main": "affb5f568286"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_scatter_3d/three_predictors": {
+    "agent_note": "One error with the count and an example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:16-0700",
+    "case": "cond_scatter_3d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "c8da4413de51",
+    "parts": {
+      "main": "c8da4413de51"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_scatter_3d/two_response_variables": {
+    "agent_note": "One error naming `I(mpg + hp)` and the count. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:16-0700",
+    "case": "cond_scatter_3d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "7e78d7be199b",
+    "parts": {
+      "main": "7e78d7be199b"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_slice_2d/data_changed": {
+    "agent_note": "One error naming `m` with a refit example using the model's own name. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:16-0700",
+    "case": "cond_slice_2d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "0389fb448660",
+    "parts": {
+      "main": "0389fb448660"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_slice_2d/no_plot_open": {
+    "agent_note": "add_slice_2d() with no plot: first Applr's 'outside the plot range' warning (the blank device's range), then base R's 'plot.new has not been called yet'. Neither says to draw a plot first.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:17-0700",
+    "case": "cond_slice_2d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "44cbe8f4fa46",
+    "parts": {
+      "main": "44cbe8f4fa46"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_slice_2d/outside_plot": {
+    "agent_note": "One warning, no hint. Clear, though it could suggest checking x_axis matches the plot.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:17-0700",
+    "case": "cond_slice_2d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "dae6c5c51b79",
+    "parts": {
+      "main": "dae6c5c51b79"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_slice_2d/x_axis_default": {
+    "agent_note": "One message. No final period, and the hint repeats 'x_axis = \"var_name\"' before the real example.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:17-0700",
+    "case": "cond_slice_2d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "dc5cf9e8463c",
+    "parts": {
+      "main": "dc5cf9e8463c"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_slice_2d/x_axis_not_found": {
+    "agent_note": "One error naming \"disp\" and listing the predictors. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:17-0700",
+    "case": "cond_slice_2d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "f6f63f8e6c79",
+    "parts": {
+      "main": "f6f63f8e6c79"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_slice_2d/x_axis_not_numeric": {
+    "agent_note": "One error naming the class. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:17-0700",
+    "case": "cond_slice_2d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "e551245301aa",
+    "parts": {
+      "main": "e551245301aa"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_slice_2d/x_axis_not_string": {
+    "agent_note": "One error with an example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:17-0700",
+    "case": "cond_slice_2d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "f088e65661de",
+    "parts": {
+      "main": "f088e65661de"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_slice_2d/xaxis_deprecated": {
+    "agent_note": "One warning naming the function and the replacement. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:17-0700",
+    "case": "cond_slice_2d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "2eec3ef5311b",
+    "parts": {
+      "main": "2eec3ef5311b"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_slice_2d/xaxis_deprecated_add": {
+    "agent_note": "One warning naming add_slice_2d() and the replacement. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:18-0700",
+    "case": "cond_slice_2d",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "0f2744dcb175",
+    "parts": {
+      "main": "0f2744dcb175"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/back_transform_arity": {
+    "agent_note": "One error with a one-argument example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:18-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "003d41a3dc6e",
+    "parts": {
+      "main": "003d41a3dc6e"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/back_transform_class": {
+    "agent_note": "One error naming the class received, with two examples. Reads well; 'TRUE/FALSE' is a little terse.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:18-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "aeecb6558214",
+    "parts": {
+      "main": "aeecb6558214"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/back_transform_name": {
+    "agent_note": "One error naming \"ln\" and listing every known name. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:19-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "e667a40d1fa3",
+    "parts": {
+      "main": "e667a40d1fa3"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/band_with_interval": {
+    "agent_note": "One error with both ways out. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:19-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "0f45d98f7f65",
+    "parts": {
+      "main": "0f45d98f7f65"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/band_wrong_type": {
+    "agent_note": "One error with two examples; \"x2\" is a placeholder rather than this model's predictor.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:19-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "351361d8b93d",
+    "parts": {
+      "main": "351361d8b93d"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/dollar_names": {
+    "agent_note": "One error naming `cars$mpg`, with a refit example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:20-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "44f4c07e7eca",
+    "parts": {
+      "main": "44f4c07e7eca"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/full_range_not_logical": {
+    "agent_note": "One error with an example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:20-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "61d9d3345f15",
+    "parts": {
+      "main": "61d9d3345f15"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/full_range_twice": {
+    "agent_note": "One error naming both spellings. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:21-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "8e0793961852",
+    "parts": {
+      "main": "8e0793961852"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/interval_unknown": {
+    "agent_note": "One error listing the choices. It doesn't echo the value given (\"ci\"), which the format asks for.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:21-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "04f61100e3e7",
+    "parts": {
+      "main": "04f61100e3e7"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/n_too_small": {
+    "agent_note": "One error with an example. It doesn't echo the value given (1).",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:21-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "fc05d52cf004",
+    "parts": {
+      "main": "fc05d52cf004"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/no_model": {
+    "agent_note": "One error with a fit-then-call example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:21-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "71999743c790",
+    "parts": {
+      "main": "71999743c790"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/not_lm": {
+    "agent_note": "One error naming the class received (\"data.frame\"). Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:22-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "e2c9b8e346d6",
+    "parts": {
+      "main": "e2c9b8e346d6"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/predict_vars_bad_level": {
+    "agent_note": "Through ggplot2's chain: \"rose\" isn't a level of `Species`, listing the levels. Applr's text reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:22-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "4c3d374f0a74",
+    "parts": {
+      "main": "4c3d374f0a74"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/predict_vars_empty": {
+    "agent_note": "One error naming `hp`, with single- and multi-value examples. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:22-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "b12611428e8f",
+    "parts": {
+      "main": "b12611428e8f"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/predict_vars_not_number": {
+    "agent_note": "Through ggplot2's chain: \"fast\" isn't a number for `hp`. The hint 'hp = 146.7' isn't valid as written; it should be 'predict_vars = list(hp = 146.7)'.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:22-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "62673ad1f4bc",
+    "parts": {
+      "main": "62673ad1f4bc"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/predict_vars_response": {
+    "agent_note": "One error naming `mpg` as the response. The hint explains rather than shows syntax; fine.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:22-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "20d9b1eff811",
+    "parts": {
+      "main": "20d9b1eff811"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/predict_vars_unknown": {
+    "agent_note": "One error naming \"cyl\" and listing the predictors. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:23-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "e55bdbee3869",
+    "parts": {
+      "main": "e55bdbee3869"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/predict_vars_unknown_character": {
+    "agent_note": "A bad value for a character predictor only fails in predict(), so ggplot2 turns it into a 'Computation failed' warning and the plot draws with no line (known_issues.Rmd). A factor gets the clear 'not a level' error instead; a character could too.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:23-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "b43bc9efba69",
+    "parts": {
+      "main": "b43bc9efba69"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/predict_vars_unnamed": {
+    "agent_note": "One error with an example. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:23-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "2f358d456eb0",
+    "parts": {
+      "main": "2f358d456eb0"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "cond_validation/stray_aes": {
+    "agent_note": "One error with where the mapping goes instead. Reads well.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:23-0700",
+    "case": "cond_validation",
+    "type": "conditions",
+    "view": "text",
+    "states": "conditions",
+    "fingerprint": "4cdbad9cb041",
+    "parts": {
+      "main": "4cdbad9cb041"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
   },
   "condition_imputed_values/wording": {
-    "agent_note": "",
+    "agent_note": "Two messages, one per imputed predictor, each with the mean and a copy-pasteable predict_vars. Reads well.",
     "rejection_note": "",
-    "who": "runner",
-    "when": "2026-11-09T19:36:32-0700",
+    "who": "agent",
+    "when": "2026-11-11T20:10:23-0700",
     "case": "condition_imputed_values",
     "type": "conditions",
     "view": "text",
@@ -29,13 +1581,541 @@
       "main": "51d10577f115"
     },
     "engine_version": "",
-    "status": "Unreviewed"
+    "status": "Agent approved"
+  },
+  "look_autoplot/chosen": {
+    "agent_note": "autoplot() chose colour = drv and facets by cyl: four panels, lines and ribbons per drv. The cyl = 5 panel has two points at one displ, so no visible line. The subtitle is the equation only.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:28-0700",
+    "case": "look_autoplot",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "d4024c9af907",
+    "parts": {
+      "main": "d4024c9af907"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_autoplot/exact_composite": {
+    "agent_note": "The exact fit against its full linear predictor: every point on the skyblue line. Matches the README's second minimal plot.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:29-0700",
+    "case": "look_autoplot",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "a78629397e7e",
+    "parts": {
+      "main": "a78629397e7e"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_autoplot/iris_quick": {
+    "agent_note": "autoplot()'s iris quick look: points, curved slices with ribbons per Species, legend, and the equation wrapped with a hanging indent. No held line, since nothing is held. Matches the README.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:28-0700",
+    "case": "look_autoplot",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "aec7433201b0",
+    "parts": {
+      "main": "aec7433201b0"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_autoplot/mapped": {
+    "agent_note": "aes(colour = factor(cyl)) + facet_wrap(~drv): three panels, one line per cyl in each, pinned to the panel's drv. Matches the README.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:28-0700",
+    "case": "look_autoplot",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "4128a1e046ac",
+    "parts": {
+      "main": "4128a1e046ac"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_autoplot/other_axis": {
+    "agent_note": "cyl on the x-axis, colour by drv, bare lines: f and r lines nearly coincide (their coefficients differ by 0.15), r spanning only its 6 to 8 range. Subtitle holds displ at 3.472; title from labs(). Matches the README.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:28-0700",
+    "case": "look_autoplot",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "1d0c7a71d115",
+    "parts": {
+      "main": "1d0c7a71d115"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_autoplot/zigzag": {
+    "agent_note": "A composite x-axis whose predictions aren't a function of x * x2: the line zigzags through the data points (known_issues.Rmd calls this the honest picture). Judge whether it reads as intended or as a bug.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:29-0700",
+    "case": "look_autoplot",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "8de724065bfd",
+    "parts": {
+      "main": "8de724065bfd"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_base/add_slice_2d_overlay": {
+    "agent_note": "Two slices added to plot(mpg ~ disp): blue at the lowest hp, red dashed with a pink confidence band at the highest. No caption, as designed. The red band runs off the bottom of the plot, because the plot's y-range was set before it was added; worth a look.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:28-0700",
+    "case": "look_base",
+    "type": "base_graphics",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "0096a49a7b49",
+    "parts": {
+      "main": "0096a49a7b49"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_base/diagnose": {
+    "agent_note": "Three panels in a row: Residuals vs Fitted and the Q-Q plot (titled 'Q-Q Residuals' by plot.lm, not 'Normal Q-Q' as ?diagnose says), and Residuals vs Index with a dotted zero line, red lowess and the top three residuals (23, 35, 49) labelled. Matches the README.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:28-0700",
+    "case": "look_base",
+    "type": "base_graphics",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "a9c8fe5c9c2c",
+    "parts": {
+      "main": "a9c8fe5c9c2c"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_base/slice_2d_default": {
+    "agent_note": "slice_2d(log(mpg) ~ disp + hp): steelblue points, black back-transformed line, the formula as title, 'hp: 146.7' caption in grey at top left. Matches the README.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:27-0700",
+    "case": "look_base",
+    "type": "base_graphics",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "9c767956c707",
+    "parts": {
+      "main": "9c767956c707"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_base/slice_2d_styled": {
+    "agent_note": "x_axis = hp, disp held at 250, a thick blue line and a translucent blue prediction band; the y-axis covers the band, the caption says disp: 250.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:28-0700",
+    "case": "look_base",
+    "type": "base_graphics",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "318076f88f02",
+    "parts": {
+      "main": "318076f88f02"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_geom_slice/confidence": {
+    "agent_note": "Quadratic hwy~displ slice with a narrow skyblue confidence ribbon that widens at the sparse right end. Matches the README.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:24-0700",
+    "case": "look_geom_slice",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "45d9055c6c54",
+    "parts": {
+      "main": "45d9055c6c54"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_geom_slice/default": {
+    "agent_note": "Iris points with one straight skyblue slice through them, in the default grey theme; nothing else added. Matches ?geom_slice's basic example.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:24-0700",
+    "case": "look_geom_slice",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "979aa570155c",
+    "parts": {
+      "main": "979aa570155c"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_geom_slice/fill_set": {
+    "agent_note": "fill = \"grey50\" turns every ribbon grey while the lines keep their colours; the legend keys follow.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:24-0700",
+    "case": "look_geom_slice",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "f07ade983e78",
+    "parts": {
+      "main": "f07ade983e78"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_geom_slice/full_range": {
+    "agent_note": "The three drv curves now all span the panel's 1.6 to 7 range.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:25-0700",
+    "case": "look_geom_slice",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "0d6afff351a1",
+    "parts": {
+      "main": "0d6afff351a1"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_geom_slice/prediction": {
+    "agent_note": "The same slice with a much wider prediction ribbon covering most points. Points under the ribbon look slightly dimmed by it; the ribbon is drawn over the points because geom_point comes first.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:24-0700",
+    "case": "look_geom_slice",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "8882b544e008",
+    "parts": {
+      "main": "8882b544e008"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_geom_slice/ribbon_per_group": {
+    "agent_note": "Three drv curves, each with its ribbon in its own colour and stopping at its group's data range; the legend keys show line plus ribbon.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:24-0700",
+    "case": "look_geom_slice",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "47b9b3636067",
+    "parts": {
+      "main": "47b9b3636067"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_geom_slice/styled": {
+    "agent_note": "The same slice drawn thick, dashed and firebrick: colour, linewidth and linetype all reach the line.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:24-0700",
+    "case": "look_geom_slice",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "1b61ba9a7f20",
+    "parts": {
+      "main": "1b61ba9a7f20"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_labels/caption": {
+    "agent_note": "The same text as a right-aligned caption below the plot, wrapped without the hanging indent.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:27-0700",
+    "case": "look_labels",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "498344eede66",
+    "parts": {
+      "main": "498344eede66"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_labels/colour_by_group": {
+    "agent_note": "Six lines, three per g colour, each labelled 'x2: 0/2/4' at the right in its line's colour; labels fit inside the widened panel.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:26-0700",
+    "case": "look_labels",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "7a8765b14eb5",
+    "parts": {
+      "main": "7a8765b14eb5"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_labels/left_offset": {
+    "agent_note": "Labels at the left ends, right-justified, 15pt from the lines, in black; the panel widens on the left to fit them.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:26-0700",
+    "case": "look_labels",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "7b75712e44fe",
+    "parts": {
+      "main": "7b75712e44fe"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_labels/legend_one_colour": {
+    "agent_note": "Two dark-green lines with bare labels and a dark-green key; key and labels match the fixed line colour.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:26-0700",
+    "case": "look_labels",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "f0dc828da81d",
+    "parts": {
+      "main": "f0dc828da81d"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_labels/legend_style": {
+    "agent_note": "Six skyblue lines labelled with bare values ('4, B'), and a 'labels: x2; g' key in the top-right corner, also skyblue; headroom keeps the key clear of the top label. The key uses the lines' shared colour, as designed.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:26-0700",
+    "case": "look_labels",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "1f9a2edc2e9e",
+    "parts": {
+      "main": "1f9a2edc2e9e"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_labels/manual_hjust": {
+    "agent_note": "hjust = 0.5 turns the offset off: labels sit centred on the line ends and lifted by vjust = -0.5.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:27-0700",
+    "case": "look_labels",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "e4adaa261053",
+    "parts": {
+      "main": "e4adaa261053"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_labels/no_expand": {
+    "agent_note": "expand = FALSE: the scales are untouched, so the labels are clipped at the right edge. That's the documented trade-off.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:27-0700",
+    "case": "look_labels",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "b9713623f67e",
+    "parts": {
+      "main": "b9713623f67e"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_labels/subtitle": {
+    "agent_note": "Iris species curves with ribbons; the subtitle's equation wraps at 6 inches with continuation lines hanging under the right-hand side, then 'held at: Sepal.Width = 3.057'. Clear of the panel.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:27-0700",
+    "case": "look_labels",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "00830b817db7",
+    "parts": {
+      "main": "00830b817db7"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_labels/subtitle_narrow": {
+    "agent_note": "wrap = 3.5 inches with a squeezed panel: the equation wraps term by term without an indent, full factor names kept. Fits the narrow space.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:27-0700",
+    "case": "look_labels",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "f4147c1f9390",
+    "parts": {
+      "main": "f4147c1f9390"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_slicing/band_inferred": {
+    "agent_note": "band = TRUE finds cyl and spans 4 to 8: one translucent band per drv with both edges drawn and labelled cyl: 4 / cyl: 8 in the group colour. The green and red bands overlap in the middle, so the green 'cyl: 8' label sits over the red band; readable but busy. Matches the README.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:25-0700",
+    "case": "look_slicing",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "803703f3c58a",
+    "parts": {
+      "main": "803703f3c58a"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_slicing/band_named": {
+    "agent_note": "Bands spanning cyl 5 to 7, narrower than the inferred ones, each edge labelled. Matches the README.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:25-0700",
+    "case": "look_slicing",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "b0b262db6180",
+    "parts": {
+      "main": "b0b262db6180"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_slicing/exact_fit_clear": {
+    "agent_note": "The README's four-predictor exact fit: two facets by x4, one band per x3 colour spanning x2 0 to 10, every point inside its band, edges labelled, equation and band line in the subtitle. The x-axis runs to 12.5 for labels on data that ends at 10, a wider dead band than the labels need (they were sized for one 7-inch panel, not two facets).",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:25-0700",
+    "case": "look_slicing",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "c44f4690174f",
+    "parts": {
+      "main": "c44f4690174f"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_slicing/facet_grid": {
+    "agent_note": "facet_grid(drv ~ cyl): each panel's line and ribbon are pinned to that panel's drv and cyl. Panels with one or two points at the same displ draw no visible line (zero range), and empty panels draw nothing. Reasonable; worth a look.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:25-0700",
+    "case": "look_slicing",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "caec78ef8940",
+    "parts": {
+      "main": "caec78ef8940"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_slicing/y_expression": {
+    "agent_note": "The same model on a log(mpg) axis: a straight line, as it should be on the model's own scale.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:26-0700",
+    "case": "look_slicing",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "0157cfb34315",
+    "parts": {
+      "main": "0157cfb34315"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_slicing/y_raw": {
+    "agent_note": "log(mpg) model back-transformed onto raw mpg: a gently curved line through the points.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:25-0700",
+    "case": "look_slicing",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "6a2c43d09deb",
+    "parts": {
+      "main": "6a2c43d09deb"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
+  },
+  "look_slicing/y_scale": {
+    "agent_note": "The same model under scale_y_log10(): straight on the log axis, with mpg tick labels.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:26-0700",
+    "case": "look_slicing",
+    "type": "static_plot",
+    "view": "image",
+    "states": "plot",
+    "fingerprint": "51d5af2b583c",
+    "parts": {
+      "main": "51d5af2b583c"
+    },
+    "engine_version": "2.0",
+    "status": "Agent approved"
   },
   "scatter_3d_two_predictors/widget": {
-    "agent_note": "",
+    "agent_note": "Demo: mpg ~ wt + hp, a flat translucent plane through the points, axis titles wt, hp, mpg, readable from all three cameras. In every camera a stray 'trace 0' legend entry overlaps the colour bar's title in the top-right corner (the marker trace's legend isn't turned off), and the surface uses plotly's default colourscale, unrelated to the marker gradient.",
     "rejection_note": "",
-    "who": "runner",
-    "when": "2026-11-09T19:36:33-0700",
+    "who": "agent",
+    "when": "2026-11-11T20:10:30-0700",
     "case": "scatter_3d_two_predictors",
     "type": "plotly_3d",
     "view": "states",
@@ -51,22 +2131,184 @@
       "shell": "3634b05d2a92"
     },
     "engine_version": "",
-    "status": "Unreviewed"
+    "status": "Agent approved"
   },
   "single_predictor_line/plot": {
-    "agent_note": "",
+    "agent_note": "Demo: one predictor, skyblue line through the points, title, default theme.",
     "rejection_note": "",
-    "who": "runner",
-    "when": "2026-10-15T22:14:52-0600",
+    "who": "agent",
+    "when": "2026-11-11T20:10:30-0700",
     "fingerprint": "cda9191215fe",
     "parts": {
       "main": "cda9191215fe"
     },
     "engine_version": "2.0",
-    "status": "Unreviewed",
+    "status": "Agent approved",
     "case": "single_predictor_line",
     "type": "static_plot",
     "view": "image",
     "states": "plot"
+  },
+  "text_equations/equations": {
+    "agent_note": "Eight models' equations. Simple, multiple, transformed (log(mpg) response, I(wt^2) kept), no intercept, rank-deficient (NA term dropped) and exact fit ('y = 0 + 2*x', residue zeroed) all read well. KNOWN BUG: intercept-only gives 'mpg = 20.1 + *'. The 0 intercept in 'y = 0 + 2*x' is arguably noise worth dropping; your call.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:29-0700",
+    "case": "text_equations",
+    "type": "returned_text",
+    "view": "text",
+    "states": "text",
+    "fingerprint": "00431553d2e8",
+    "parts": {
+      "main": "00431553d2e8"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "text_equations/latex": {
+    "agent_note": "The same eight as LaTeX. Underbraces and numbering read well. KNOWN BUGS: intercept-only gives an empty '\\underbrace{X_{i}}_{\\text{}}' term, and 'wt_lb' goes into \\text{} unescaped, which breaks typesetting.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:29-0700",
+    "case": "text_equations",
+    "type": "returned_text",
+    "view": "text",
+    "states": "text",
+    "fingerprint": "353fa04fa463",
+    "parts": {
+      "main": "353fa04fa463"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "text_labels/labels": {
+    "agent_note": "Label strings: 'x2: 0; g: A' (variable), bare '0; A' (value and legend), the 'labels: x2; g' key, group labels 'g: A'. Values to 4 significant figures (2.123). Worth judging: with predict_vars holding one value plus a colour group, both lines read 'x2: 2', so the labels don't tell the lines apart (group_and_single_value); likewise group_and_values repeats 'x2: 0' and 'x2: 4' per group, relying on colour.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:29-0700",
+    "case": "text_labels",
+    "type": "returned_text",
+    "view": "text",
+    "states": "text",
+    "fingerprint": "42926fd7183c",
+    "parts": {
+      "main": "42926fd7183c"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "text_lm_equation_styles/equations": {
+    "agent_note": "One interaction model in the three styles: spelled out, [level] brackets, and raw design-matrix names. All three read as intended; prettier is long but unambiguous.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:29-0700",
+    "case": "text_lm_equation_styles",
+    "type": "returned_text",
+    "view": "text",
+    "states": "text",
+    "fingerprint": "9c649e04a75f",
+    "parts": {
+      "main": "9c649e04a75f"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "text_subtitles/subtitles": {
+    "agent_note": "Representative subtitles: equation then 'held at:' line, multi-values as 'cyl = 4, 8', a band line, model = FALSE, prepend/append (append lands after the held line, as documented), brackets style, a quoted string value. slice_2d()'s caption reads 'drv: f; cyl: 5.9; year: 2003.5' where geom_slice() would say year = 2004 (engines differ); its empty caption is ''.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:29-0700",
+    "case": "text_subtitles",
+    "type": "returned_text",
+    "view": "text",
+    "states": "text",
+    "fingerprint": "123cb7877d95",
+    "parts": {
+      "main": "123cb7877d95"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "text_wrapping/wrapped": {
+    "agent_note": "One long iris subtitle at fixed widths. 6 in: breaks between terms, continuation lines hang under the right-hand side. 3.5 in and with prepend: the short [level] form, keeping the indent, with prepend's indent still under the equation. 2 in: spelled-out names without the indent. KNOWN ISSUE at 1 in: 'held at: Sepal.Width' / '= 3.057' splits a single held value. The shared-level model never uses brackets (correct), but its held line breaks after 'a = \"Low\";', fine.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:29-0700",
+    "case": "text_wrapping",
+    "type": "returned_text",
+    "view": "text",
+    "states": "text",
+    "fingerprint": "a30ceee8e8a8",
+    "parts": {
+      "main": "a30ceee8e8a8"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "widget_scatter_3d/curved": {
+    "agent_note": "mpg ~ wt + I(wt^2) + hp with a purple-to-orange gradient: a curved translucent surface, points readable through it from default, top and side. In every camera a stray 'trace 0' legend entry overlaps the colour bar's title in the top-right corner (the marker trace's legend isn't turned off), and the surface uses plotly's default colourscale, unrelated to the marker gradient.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:30-0700",
+    "case": "widget_scatter_3d",
+    "type": "plotly_3d",
+    "view": "states",
+    "states": [
+      "default",
+      "top",
+      "side"
+    ],
+    "fingerprint": "d9ce10a86df1",
+    "parts": {
+      "figure": "02e2e057a8fa",
+      "presets": "4d0746003d0e",
+      "shell": "3634b05d2a92"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "widget_scatter_3d/log_response": {
+    "agent_note": "KNOWN BUG, shown on purpose: log(mpg) model whose surface lies flat near 2 to 3.5 while the points sit at 10 to 34, so the surface is nowhere near the data. In every camera a stray 'trace 0' legend entry overlaps the colour bar's title in the top-right corner (the marker trace's legend isn't turned off), and the surface uses plotly's default colourscale, unrelated to the marker gradient.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:30-0700",
+    "case": "widget_scatter_3d",
+    "type": "plotly_3d",
+    "view": "states",
+    "states": [
+      "default",
+      "top",
+      "side"
+    ],
+    "fingerprint": "245dd007cf3f",
+    "parts": {
+      "figure": "1bac21472da5",
+      "presets": "4d0746003d0e",
+      "shell": "3634b05d2a92"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
+  },
+  "widget_scatter_3d/twisted": {
+    "agent_note": "Interaction surface for iris: nearly flat from the default camera, its twist plain from the side. Points readable. In every camera a stray 'trace 0' legend entry overlaps the colour bar's title in the top-right corner (the marker trace's legend isn't turned off), and the surface uses plotly's default colourscale, unrelated to the marker gradient.",
+    "rejection_note": "",
+    "who": "agent",
+    "when": "2026-11-11T20:10:30-0700",
+    "case": "widget_scatter_3d",
+    "type": "plotly_3d",
+    "view": "states",
+    "states": [
+      "default",
+      "top",
+      "side"
+    ],
+    "fingerprint": "ce0725f6ae52",
+    "parts": {
+      "figure": "ca1c298ff9e6",
+      "presets": "4d0746003d0e",
+      "shell": "3634b05d2a92"
+    },
+    "engine_version": "",
+    "status": "Agent approved"
   }
 }

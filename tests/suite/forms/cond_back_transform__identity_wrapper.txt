@@ -1,0 +1,3 @@
+warning
+Could not infer the inverse of the model's response `I(1/mpg)`.
+    Supply it directly, such as 'back_transform = exp'.

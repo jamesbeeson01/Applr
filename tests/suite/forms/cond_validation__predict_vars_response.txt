@@ -1,0 +1,3 @@
+error
+`mpg` is the model's response and cannot be held at a value.
+    Only predictors can be set in `predict_vars`.

@@ -1,0 +1,3 @@
+error
+`x_axis` must be the name of one model predictor, as a string.
+    For example, 'x_axis = "wt"'.

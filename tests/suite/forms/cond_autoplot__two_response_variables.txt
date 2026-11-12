@@ -1,0 +1,3 @@
+error
+The model's response `I(mpg/hp)` does not use exactly one variable, so autoplot() cannot choose a y-axis.
+    Build the plot yourself with ggplot() + geom_slice().

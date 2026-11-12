@@ -25,7 +25,8 @@ raises("no_inverse", on_mpg(lm(abs(mpg) ~ disp, mtcars)), "warning",
        "Could not infer the inverse of the model's response `abs(mpg)`")
 raises("identity_wrapper", on_mpg(lm(I(1 / mpg) ~ disp, mtcars)), "warning",
        "Could not infer the inverse")
-raises("slice_2d_back_transformed", base_slice(lm(log(mpg) ~ disp, mtcars)), "message",
+# Only the x-axis choice is announced; the back-transformation is silent.
+raises("slice_2d_back_transform_silent", base_slice(lm(log(mpg) ~ disp, mtcars)), "message",
        "X-axis not specified")
 raises("slice_2d_no_inverse", base_slice(lm(abs(mpg) ~ disp, mtcars), x_axis = "disp"), "message",
        "Error creating inverse", format = FALSE)

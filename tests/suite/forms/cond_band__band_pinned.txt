@@ -1,0 +1,11 @@
+warning
+`band` variable `drv` is used by the plot's grouping or faceting, so each line already uses its own value. No band is drawn.
+    Use one of `cyl`, `year`, such as 'band = "cyl"', or 'band = TRUE' to choose automatically.
+
+message
+Value for `cyl` not specified - Used mean: 5.889
+    To choose a slice, use 'predict_vars = list(cyl = 5.889)'.
+
+message
+Value for `year` not specified - Used mean: 2004
+    To choose a slice, use 'predict_vars = list(year = 2004)'.

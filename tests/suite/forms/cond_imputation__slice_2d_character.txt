@@ -1,0 +1,3 @@
+error
+The model variable `s` has unsupported class "character".
+    slice_2d() supports numeric and factor predictors.

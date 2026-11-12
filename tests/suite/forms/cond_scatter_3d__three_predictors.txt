@@ -1,0 +1,3 @@
+error
+scatter_3d() needs exactly two predictor variables, but the model has 3.
+    Reduce the model to two predictors, such as 'lm(z ~ x + y, data = your_data)'.

@@ -1,0 +1,3 @@
+error
+scatter_3d() needs a single response variable, but `I(mpg + hp)` uses 2.
+    Use a model whose left-hand side is one variable, such as 'lm(z ~ x + y, data = your_data)'.

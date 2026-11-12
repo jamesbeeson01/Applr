@@ -22,11 +22,13 @@ raises("model_data_gone", function() {
   fit <- function() { d <- mtcars; m <- lm(mpg ~ wt, data = d); rm(d); m }
   ggplot2::ggplot(mtcars, ggplot2::aes(wt, mpg)) + geom_slice(fit())
 }, "error", "The data the model was fitted on could not be found.")
-raises("no_data_argument", function() {
+# Fitted without `data`, the model's variables are found in the formula's
+# environment, so the slice is drawn with nothing to say.
+raises("no_data_argument_recovered", function() {
   wt <- mtcars$wt
-  y <- mtcars$mpg
-  ggplot2::ggplot(mtcars, ggplot2::aes(wt, mpg)) + geom_slice(lm(y ~ wt))
-}, "warning", "does not match the model's response")
+  mpg <- mtcars$mpg
+  ggplot2::ggplot(mtcars, ggplot2::aes(wt, mpg)) + geom_slice(lm(mpg ~ wt))
+}, character())
 raises("axis_unmapped", function() ggplot2::ggplot(mtcars, ggplot2::aes(wt)) + geom_slice(model),
        "error", "needs both `x` and `y` mapped")
 raises("inherit_aes_false", on_mtcars(ggplot2::aes(wt, mpg), model, inherit.aes = FALSE),

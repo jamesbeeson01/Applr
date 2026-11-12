@@ -1,0 +1,3 @@
+error
+`predict_vars` variable "cyl" not found in the model.
+    The model's predictors are `wt`, `hp`.

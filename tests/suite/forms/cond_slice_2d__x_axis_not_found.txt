@@ -1,0 +1,3 @@
+error
+`x_axis` variable "disp" not found in the model.
+    Specify one of the model's predictors (`wt`, `hp`), such as 'x_axis = "wt"', or an expression of them.

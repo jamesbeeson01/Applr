@@ -1,0 +1,8 @@
+[prettier]
+Sepal.Length = 2.64 + 0.69*Sepal.Width + 0.901*(Species="versicolor") + 1.27*(Species="virginica") + 0.175*Sepal.Width:(Species="versicolor") + 0.211*Sepal.Width:(Species="virginica")
+
+[brackets]
+Sepal.Length = 2.64 + 0.69*Sepal.Width + 0.901*[versicolor] + 1.27*[virginica] + 0.175*Sepal.Width:[versicolor] + 0.211*Sepal.Width:[virginica]
+
+[raw]
+Sepal.Length = 2.64 + 0.69*Sepal.Width + 0.901*Speciesversicolor + 1.27*Speciesvirginica + 0.175*Sepal.Width:Speciesversicolor + 0.211*Sepal.Width:Speciesvirginica

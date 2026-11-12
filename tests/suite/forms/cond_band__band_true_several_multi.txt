@@ -1,0 +1,3 @@
+warning
+band = TRUE is ambiguous: several `predict_vars` variables have multiple values (`cyl`, `year`). No band is drawn.
+    Name the one to span, such as 'band = "cyl"'.

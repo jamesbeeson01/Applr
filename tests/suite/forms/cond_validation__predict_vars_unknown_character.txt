@@ -1,0 +1,5 @@
+warning
+Computation failed in `stat_slice()`.
+Caused by error:
+! predict() failed for this slice: factor drv has new level x
+    Check that `predict_vars` values match the model's variable types.

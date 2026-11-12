@@ -1,0 +1,5 @@
+warning
+Slice is outside the current plot range; the line may not be visible or aligned.
+
+error
+plot.new has not been called yet

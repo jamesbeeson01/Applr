@@ -1,0 +1,3 @@
+warning
+`style` must be one of "prettier", "brackets", "raw", so "prettier" was used.
+    For example, 'style = "brackets"' to label factor terms by level alone.

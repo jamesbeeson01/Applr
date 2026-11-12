@@ -1,0 +1,3 @@
+warning
+`predict_vars` value for `wt` is ignored because it is on the x-axis.
+    The x-axis variable varies along the line and cannot be held.

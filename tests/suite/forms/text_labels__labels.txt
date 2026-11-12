@@ -1,0 +1,34 @@
+[variable]
+x2: 0; g: A
+x2: 0; g: B
+x2: 2.123; g: A
+x2: 2.123; g: B
+
+[value]
+0; A
+0; B
+2.123; A
+2.123; B
+
+[legend]
+0; A
+0; B
+2.123; A
+2.123; B
+
+[legend_key]
+labels: x2; g
+
+[group]
+g: A
+g: B
+
+[group_and_single_value]
+x2: 2
+x2: 2
+
+[group_and_values]
+x2: 0
+x2: 0
+x2: 4
+x2: 4

@@ -1,0 +1,56 @@
+[unwrapped]
+Sepal.Length = 1.67 + 0.624*Sepal.Width + 0.283*(Species="versicolor") - 0.646*(Species="virginica") + 0.822*Petal.Length - 0.448*Sepal.Width:(Species="versicolor") - 0.286*Sepal.Width:(Species="virginica")
+held at: Sepal.Width = 3.057
+
+[wide_6in]
+Sepal.Length = 1.67 + 0.624*Sepal.Width + 0.283*(Species="versicolor")
+                         - 0.646*(Species="virginica") + 0.822*Petal.Length
+                         - 0.448*Sepal.Width:(Species="versicolor")
+                         - 0.286*Sepal.Width:(Species="virginica")
+held at: Sepal.Width = 3.057
+
+[brackets_3.5in]
+Sepal.Length = 1.67 + 0.624*Sepal.Width
+                         + 0.283*[versicolor]
+                         - 0.646*[virginica]
+                         + 0.822*Petal.Length
+                         - 0.448*Sepal.Width:[versicolor]
+                         - 0.286*Sepal.Width:[virginica]
+held at: Sepal.Width = 3.057
+
+[narrow_2in]
+Sepal.Length = 1.67
++ 0.624*Sepal.Width
++ 0.283*(Species="versicolor")
+- 0.646*(Species="virginica")
++ 0.822*Petal.Length
+- 0.448*Sepal.Width:(Species="versicolor")
+- 0.286*Sepal.Width:(Species="virginica")
+held at: Sepal.Width = 3.057
+
+[prepend_4in]
+Fitted: Sepal.Length = 1.67 + 0.624*Sepal.Width
+                                    + 0.283*[versicolor]
+                                    - 0.646*[virginica]
+                                    + 0.822*Petal.Length
+                                    - 0.448*Sepal.Width:[versicolor]
+                                    - 0.286*Sepal.Width:[virginica]
+held at: Sepal.Width = 3.057
+
+[overlong_1in]
+Sepal.Length = 1.67
++ 0.624*Sepal.Width
++ 0.283*(Species="versicolor")
+- 0.646*(Species="virginica")
++ 0.822*Petal.Length
+- 0.448*Sepal.Width:(Species="versicolor")
+- 0.286*Sepal.Width:(Species="virginica")
+held at: Sepal.Width
+= 3.057
+
+[shared_level_1.5in]
+y = 1.31 + 1.08*x
++ 2.42*(a="High")
+- 0.115*(b="High")
+held at: a = "Low";
+b = "Mid"

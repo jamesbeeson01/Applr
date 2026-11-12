@@ -1,0 +1,3 @@
+error
+The model has no predictors, so autoplot() cannot choose an x-axis.
+    Fit a model with at least one predictor, such as 'lm(y ~ x, data = your_data)'.

@@ -1,0 +1,23 @@
+[simple]
+mpg = 37.3 - 5.34*wt
+
+[multiple]
+mpg = 30.7 - 0.0303*disp - 0.0248*hp
+
+[transformed]
+log(mpg) = 4.13 - 0.464*wt + 0.028*I(wt^2)
+
+[no_intercept]
+mpg = 5.29*wt
+
+[rank_deficient]
+mpg = 37.3 - 5.34*wt
+
+[exact_fit]
+y = 0 + 2*x
+
+[intercept_only]
+mpg = 20.1 + *
+
+[underscore_name]
+mpg = 37.3 - 0.00534*wt_lb

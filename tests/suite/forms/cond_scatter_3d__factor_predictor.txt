@@ -1,0 +1,3 @@
+error
+scatter_3d() needs numeric predictors, but `Species` is a "factor".
+    Use two numeric predictors, or reach for geom_slice() to show a categorical predictor as groups.

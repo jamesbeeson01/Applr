@@ -1,0 +1,7 @@
+message
+Value for `f` not specified - Used most common: "c"
+    To choose a slice, use 'predict_vars = list(f = "c")'.
+
+message
+Value for `s` not specified - Used most common: "q"
+    To choose a slice, use 'predict_vars = list(s = "q")'.

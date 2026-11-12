@@ -1,0 +1,15 @@
+message
+The first predictor `drv` is not numeric - used `displ` for the x-axis.
+    To choose the x-axis, use 'mapping = aes(x = displ)'.
+
+message
+Coloured the plot by `drv` - one slice line per level.
+    To choose the colour, use 'mapping = aes(color = ...)'.
+
+message
+Faceted the plot by `cyl` - one panel per level.
+    For a single panel, drop `cyl` from the model.
+
+message
+Value for `year` not specified - Used mean: 2004
+    To choose a slice, use 'predict_vars = list(year = 2004)'.

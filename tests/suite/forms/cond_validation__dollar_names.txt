@@ -1,0 +1,3 @@
+error
+Models with `$` in their variable names (`cars$mpg`) are not supported.
+    Refit using the data argument, such as 'lm(y ~ x, data = your_data)'.

@@ -1,0 +1,2 @@
+error
+model must be an object of class 'lm'

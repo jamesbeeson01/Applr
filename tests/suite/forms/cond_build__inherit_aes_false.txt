@@ -1,0 +1,6 @@
+error
+Problem while computing stat.
+i Error occurred in the 1st layer.
+Caused by error:
+! geom_slice() needs both `x` and `y` mapped in aes().
+    For example, 'ggplot(your_data, aes(x = disp, y = mpg))'.

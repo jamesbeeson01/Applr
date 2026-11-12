@@ -1,0 +1,3 @@
+error
+None of the model's predictors are numeric, but geom_slice() needs a continuous x-axis.
+    Fit a model with at least one numeric predictor, or set one with 'mapping = aes(x = ...)'.
