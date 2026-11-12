@@ -26,7 +26,10 @@ output: html_document
   - A `box_cox(y, lambda)` response is inverted with `ifelse()` on a scalar condition, so only the first point of the line survives and the rest are `NA` (`get_inverse_function()`; `test-case_num_back_transform.R`).
   - A response wrapped in `I()`, such as `lm(I(1/mpg) ~ wt)`, isn't inverted: `get_inverse_function()` knows no inverse for `I`, so `geom_slice()` warns and draws raw predictions. Without `I()` it works.
   - `geom_slice_text()` opens a graphics device when none is open (`Rplots.pdf` under Rscript, the plot window in RStudio): `slice_text_probe()` calls `dev.size()`, which `with_measuring_device()` was written to avoid (`test-case_num_companions.R`).
-  - `lm_equation(lm(mpg ~ 1))` returns `"mpg = 20.1 + *"`: an intercept-only model leaves an empty term.
+  - `lm_equation(lm(mpg ~ 1))` returns `"mpg = 20.1 + *"`: an intercept-only model leaves an empty term (`test-case_text_equations.R`).
+  - `lm_latex()` puts names into `\text{}` unescaped, so `wt_lb` breaks the typeset equation (`test-case_text_equations.R`).
+  - A wrapped subtitle with a single held value can break between the name and its value (`held at: Sepal.Width` / `= 3.057`): `annotation_line_parts()` splits that line at every space when there's no `"; "` (`test-case_text_wrapping.R`).
+  - A layer error raised inside the stat (a discrete x-axis, a `predict()` failure such as the `factor(cyl)` one) reaches the user as ggplot2's "Computation failed in `stat_slice()`" warning, and the plot is drawn without the line, rather than as Applr's own error.
 
 ## Resolved
 
