@@ -723,6 +723,11 @@ shared:
         source: "get_inverse_function() build_inverse()"
         options: ["Numeric: line equals the hand-inverted prediction. log10/log2 nested inside another call may lose the outer step (the map returns a fixed quote(10^x))."]
         test_type: numeric
+      - id: shared.back-transform.identity-wrapper
+        principle: A response wrapped in I(), such as I(1/mpg), should invert like the unwrapped one. Today it warns that no inverse could be inferred and draws raw predictions.
+        source: "get_inverse_function() (no inverse known for I); found 2026-11-11"
+        options: ["Condition: geom_slice(lm(I(1/mpg) ~ wt)) warns; wording judged."]
+        test_type: condition
       - id: shared.back-transform.box-cox
         principle: A box_cox(y, lambda) response is inverted, with lambda = 0 as exp.
         source: "get_inverse_function() box_cox branch"
@@ -762,7 +767,6 @@ shared:
         options:
           - "Expectation: geom_slice(lm(mpg ~ wt + factor(cyl), mtcars)) builds, and the imputed cyl is one of 4, 6, 8."
           - "Judged output: the imputation message's wording names a level."
-        deferred: "Package bug on main: factor(cyl) is imputed with its mean and predict() fails. Write the case once that's fixed."
         test_type: numeric
       - id: shared.imputation.engines-differ
         principle: The two engines disagree for factors (most common vs first level - drawit's docs say most common), for characters (geom_slice() supports them, slice_2d() stops), and in wording and rounding (4 significant figures vs 1 decimal).
