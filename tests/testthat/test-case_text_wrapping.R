@@ -67,5 +67,5 @@ test_that("a single held value splits between its name and value today (known is
   # broken at any space, so "Sepal.Width = 3.057" can split. When this
   # fails, the pair stays together.
   over <- lines("overlong_1in")
-  expect_equal(utils::tail(over, 2), c("held at: Sepal.Width", "= 3.057"))
+  expect_equal(tail(over, 2), c("held at: Sepal.Width", "= 3.057"))
 })

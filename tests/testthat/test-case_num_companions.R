@@ -51,11 +51,11 @@ test_that("adding companions opens no device and draws no page", {
   # KNOWN BUG (for_devs/known_issues.Rmd): geom_slice_text() calls dev.size()
   # with no device open, which opens one (Rplots.pdf under Rscript, a window
   # in RStudio). When this fails, the bug is fixed: expect the null device.
-  withr::with_dir(tempdir(), {
-    quiet(coloured + geom_slice(model, predict_vars = list(cyl = c(4, 8))) + geom_slice_text())
-    expect_false(grDevices::dev.cur() == 1L)
-    grDevices::graphics.off()
-  })
+  old <- setwd(tempdir())
+  quiet(coloured + geom_slice(model, predict_vars = list(cyl = c(4, 8))) + geom_slice_text())
+  expect_false(grDevices::dev.cur() == 1L)
+  grDevices::graphics.off()
+  setwd(old)
   # With a device already open, nothing is drawn on it
   file <- tempfile(fileext = ".svg")
   grDevices::svg(file)

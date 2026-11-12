@@ -22,7 +22,7 @@ test_that("several values are crossed into one line per combination, each its ow
   combos <- expand.grid(cyl = c(4, 6, 8), drv = c("f", "r"), stringsAsFactors = FALSE)
   for (i in seq_len(nrow(combos))) {
     line <- d[d$group == sort(unique(d$group))[i], ]
-    expect_equal(line$y, predicted(model, data.frame(displ = line$x, combos[i, ])))
+    expect_equal(line$y, predicted(model, data.frame(displ = line$x, cyl = combos$cyl[i], drv = combos$drv[i])))
   }
 })
 

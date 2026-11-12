@@ -24,9 +24,9 @@ test_that("the plot is points, a slice with a confidence ribbon and a subtitle, 
 })
 
 test_that("summary() prints before the plot is returned, unless summary = FALSE", {
-  out <- utils::capture.output(p <- suppressMessages(autoplot(lm(mpg ~ wt, mtcars))))
+  out <- capture.output(p <- suppressMessages(autoplot(lm(mpg ~ wt, mtcars))))
   expect_true(any(grepl("Residual standard error", out)))
-  expect_length(utils::capture.output(quiet_autoplot(lm(mpg ~ wt, mtcars))), 0)
+  expect_length(capture.output(quiet_autoplot(lm(mpg ~ wt, mtcars))), 0)
 })
 
 test_that("the first numeric predictor goes on x, unless the mapping says otherwise", {

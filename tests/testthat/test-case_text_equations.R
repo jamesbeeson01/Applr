@@ -14,7 +14,7 @@ models <- list(
 )
 equations <- vapply(models, lm_equation, "")
 latex <- vapply(models, function(m) {
-  out <- utils::capture.output(v <- lm_latex(m))
+  out <- capture.output(v <- lm_latex(m))
   v
 }, "")
 

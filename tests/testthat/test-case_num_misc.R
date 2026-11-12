@@ -46,7 +46,7 @@ test_that("a glm is sliced on the link scale", {
 
 test_that("lm_latex() prints its string and returns it invisibly", {
   m <- lm(mpg ~ wt, mtcars)
-  out <- utils::capture.output(v <- withVisible(lm_latex(m)))
+  out <- capture.output(v <- withVisible(lm_latex(m)))
   expect_false(v$visible)
   expect_equal(out, v$value)
   expect_match(v$value, "^\\$\\$.*\\$\\$$")
