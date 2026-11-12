@@ -38,11 +38,14 @@ test_that("slice_2d() holds numeric at the mean and factor at the first level", 
   expect_equal(prep$line$fit, predicted(m, data.frame(x = prep$line$x, num = mean(df$num), fac = "a")))
 })
 
-test_that("a predictor converted in the formula fails today (known bug)", {
+test_that("a predictor converted in the formula draws no line today (known bug)", {
   # KNOWN BUG (for_devs/known_issues.Rmd): factor(cyl) is imputed with the
   # mean of the raw cyl, which predict() rejects. When this expectation fails,
   # the bug is fixed: rewrite it to expect the line predicted at a level.
   m <- lm(mpg ~ wt + factor(cyl), data = mtcars)
   p <- ggplot2::ggplot(mtcars, ggplot2::aes(wt, mpg)) + geom_slice(m)
-  expect_error(suppressMessages(ggplot2::ggplot_build(p)), "predict\\(\\) failed")
+  r <- conditions_of(function() p)
+  expect_equal(r$kinds, c("message", "warning"))
+  expect_match(r$messages[2], "predict() failed for this slice", fixed = TRUE)
+  expect_equal(nrow(r$value$data[[1]]), 0)
 })
