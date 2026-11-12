@@ -141,7 +141,7 @@
 </ol>
 
 <h3>Output types</h3>
-<p>Every kind of judged output is one registration in its own file under <code>tests/suite/types/</code>: how to turn the object into text parts, which states a reviewer sees, how to draw each state, and how this page shows it (an image with comparison, a text diff, or states side by side plus the live widget). The runner, the review state and this page never name a type, so a new kind of output (sliders, animations) is added by writing one file. Registered now: static ggplot, base graphics, condition text, and plotly 3D.</p>
+<p>Every kind of judged output is one registration in its own file under <code>tests/suite/types/</code>: how to turn the object into text parts, which states a reviewer sees, how to draw each state, and how this page shows it (an image with comparison, a text diff, or states side by side plus the live widget). The runner, the review state and this page never name a type, so a new kind of output (sliders, animations) is added by writing one file. Registered now: static ggplot, base graphics, condition text, returned text (equations, subtitles, labels), and plotly 3D.</p>
 
 <h3>The behaviour inventory</h3>
 <p><code>for_devs/behaviour_inventory.yml</code> lists what each function must do and the edge cases that come up, each with a stable ID. Cases cite the IDs they cover with <code>covers()</code>. The <a href="?view=inventory" data-go="inventory">inventory page</a> shows which cases cover each entry, what's deferred and why, and what's not covered yet; each case shows its expected behaviour from the entries it cites. The inventory is temporary: it's deleted at the end of the test-suite revision.</p>

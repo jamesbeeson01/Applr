@@ -138,6 +138,7 @@ page reach a type only through the contract in `types.R`, and never name one
 judged_output("plot", p)                                  # type worked out: a ggplot
 judged_output("plot", function() slice_2d(m), type = "base_graphics")
 judged_output("wording", function() geom_slice(m), type = "conditions")
+judged_output("equation", lm_equation(m))                 # type worked out: a string
 judged_output("widget", scatter_3d(m), states = list(top = list(eye = list(x = 0, y = 0, z = 2.5))))
 ```
 
@@ -159,9 +160,13 @@ A registration gives:
 | `mutations` | Named functions, each changing one input of `list(object, states)`. The shared tests assert that each one changes the fingerprint. |
 | `demo` | The case the shared tests use. |
 
-Registered: `static_plot`, `base_graphics`, `conditions` and `plotly_3d`, with
-demo cases `single_predictor_line`, `base_slice_2d`,
-`condition_imputed_values` and `scatter_3d_two_predictors`.
+Registered: `static_plot`, `base_graphics`, `conditions`, `returned_text` and
+`plotly_3d`, with demo cases `single_predictor_line`, `base_slice_2d`,
+`condition_imputed_values`, `text_lm_equation_styles` and
+`scatter_3d_two_predictors`. `returned_text` is for strings a function
+returns (an equation, a subtitle, a label), judged for wording like
+condition text; a named vector shows several examples under `[name]`
+headers.
 
 Views are rendered only for Unreviewed outputs, when the fingerprint is new
 or the views are missing. A human approval keeps a copy of them under
