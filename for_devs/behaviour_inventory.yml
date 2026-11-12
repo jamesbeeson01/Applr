@@ -1,16 +1,20 @@
-# Behaviour inventory (spec: "Write, then salvage"). Temporary: ticket 4
-# deletes it. Ticket 2 writes it in full; the entries below only cover the
-# demo cases, so the review page has something to show.
+# TEMPORARY. Behaviour inventory (spec: "Write, then salvage"). Ticket 2
+# writes it, ticket 4 audits against it and then deletes it. Written from the
+# roxygen docs, README.Rmd, the vignette, GLOSSARY.md, the dev docs and the
+# source in R/, without reading the old suite.
 #
 # Format (tests/suite/README.md, "Behaviour inventory"):
 #   functions:            one group per exported function
 #     <function>:
 #       family:           overview row; defaults to the function name
 #       purpose:          one line on what the function is for
+#       plots:            doc and vignette plots that show its purpose, the
+#                         starting point for its appearance outputs
 #       behaviours:       what it must do, as principles
 #         - id:           stable, unique, lower case: <group>.<short-name>
 #           principle:    the rule, in plain language (required)
 #           source:       where it comes from (docs, source file, dev notes)
+#           test_type:    numeric | condition | text | appearance | interactive
 #       edge_cases:       situations that come up; same fields, plus
 #           options:      workable ways to test it (a list)
 #           deferred:     why it isn't covered yet, if it isn't
@@ -20,46 +24,737 @@
 #       functions:        the functions it applies to (a list)
 #       behaviours / edge_cases: as above
 # Cases cite IDs with covers("<id>", ...).
+#
+# test_type: "numeric" is an expectation on computed data (plotted data,
+# prepared slice data, built traces); "condition" is class, key fields and "a
+# plot is still built", with the wording as a judged output; "text" is a
+# returned string (equation, subtitle, label), with expectations on what it
+# contains and its wording judged; "appearance" is a static judged plot;
+# "interactive" is the plotly widget's states.
 
 functions:
+
+  # ---------------------------------------------------------------------------
   geom_slice:
     family: geom_slice
-    purpose: A ggplot layer that draws the model's prediction along the x-axis variable.
+    purpose: A ggplot layer that draws a fitted lm()'s prediction along the x-axis variable, holding every other predictor at a stated value.
+    plots:
+      - "?geom_slice examples: basic iris slice; Sepal.Width = c(2, 3, 4); prediction ribbon; colour = drv groups; full_range; facet_wrap(~drv); band cyl 5-7; log(mpg) on mpg, log(mpg) and with back_transform = exp; n = 10"
+      - "README: minimal (four-predictor exact fit, imputed), geom-slice (band + colour + facet + text + subtitle), predict-vars, interval, band, back-transform (three y-axes), grouping (full_range)"
+      - "vignette: Present with geom_slice() and its subsections (same plots as the README)"
     behaviours:
       - id: geom_slice.line-is-prediction
         principle: The drawn line is the model's prediction over an evenly spaced grid spanning the x-axis variable's data range.
         source: "?geom_slice; R/geom_slice.R"
+        test_type: numeric
       - id: geom_slice.user-theme
         principle: The layer draws inside the user's plot and theme; it adds no theme of its own.
         source: "?geom_slice"
+        test_type: appearance
+      - id: geom_slice.n-points
+        principle: Each line has exactly `n` points (default 100).
+        source: "?geom_slice (n); compute_slice_group()"
+        test_type: numeric
+      - id: geom_slice.range-per-group
+        principle: Each group's line spans that group's own x range, not the panel's, so a short group doesn't stretch the y-axis.
+        source: "for_devs/decisions.Rmd (X Range); compute_slice_group()"
+        test_type: numeric
+      - id: geom_slice.full-range
+        principle: With `full_range = TRUE` (alias `fullrange`), every line spans the panel's full x range instead of its group's.
+        source: "?geom_slice (full_range); README grouping"
+        test_type: numeric
+      - id: geom_slice.fixed-aesthetics
+        principle: Fixed aesthetics passed through `...` (colour, linewidth, linetype) style the line.
+        source: "?geom_slice (...)"
+        test_type: appearance
+      - id: geom_slice.default-look
+        principle: "By default the line is skyblue, linewidth 1, and any ribbon is the line's colour at alpha 0.4; the legend key matches."
+        source: "GeomSlice default_aes; draw_key"
+        test_type: appearance
+      - id: geom_slice.ribbon-follows-line
+        principle: An interval or band ribbon takes its own line's colour (so a colour aesthetic tints each ribbon) unless `fill` is set, mapped or fixed.
+        source: "?geom_slice; slice_ribbon_fill()"
+        test_type: appearance
+      - id: geom_slice.scale-transforms
+        principle: Transformed position scales are respected. Under scale_x_log10() the grid is spaced in panel units and predicted at the data-unit x; under scale_y_log10() predictions are placed in panel units.
+        source: "?geom_slice; scale_transformation(); README back-transform (scale_y_log10)"
+        test_type: numeric
+      - id: geom_slice.model-name
+        principle: Messages about the model name it as the user did (the symbol passed), or "model" for a complex call.
+        source: "geom_slice() model_name"
+        test_type: condition
+    edge_cases:
+      - id: geom_slice.stray-aes
+        principle: An aes() passed as an argument (a common slip for ggplot users) stops with a pointer to put the mapping in the plot.
+        source: "geom_slice() uneval check"
+        options: ["Condition: geom_slice(model, aes(x, y)) errors; wording judged."]
+        test_type: condition
+      - id: geom_slice.full-range-twice
+        principle: Giving both `full_range` and `fullrange` stops; giving a non-logical `full_range` stops.
+        source: "geom_slice()"
+        options: ["Condition: both forms; wording judged."]
+        test_type: condition
+      - id: geom_slice.unmapped-axis
+        principle: A plot with no `x` or `y` mapped (including inherit.aes = FALSE, since geom_slice() takes no mapping) stops at build time naming the fix.
+        source: "build_slice_spec()"
+        options: ["Condition: ggplot(mtcars) + geom_slice(m); and inherit.aes = FALSE."]
+        test_type: condition
+      - id: geom_slice.discrete-axis
+        principle: A discrete x or y scale stops; the slice needs continuous axes.
+        source: "scale_transformation()"
+        options: ["Condition: aes(factor(cyl), mpg) with a model using cyl."]
+        test_type: condition
+      - id: geom_slice.x-uses-no-predictor
+        principle: An x-axis that uses none of the model's predictors warns that the line will be flat, and the plot is still built.
+        source: "build_slice_spec()"
+        options: ["Condition: aes(drat, mpg) with lm(mpg ~ wt); line is constant."]
+        test_type: condition
+      - id: geom_slice.empty-group
+        principle: A group with no rows draws nothing and doesn't break the other groups.
+        source: "compute_slice_group() nrow == 0"
+        options: ["Numeric: a factor colour with an unused level; other lines intact."]
+        test_type: numeric
+      - id: geom_slice.na-in-x
+        principle: Missing x values in the data don't change the grid's range; it spans the non-missing values.
+        source: "compute_slice_group() range(na.rm = TRUE)"
+        options: ["Numeric: data with NA x rows, model fitted with na.omit."]
+        test_type: numeric
 
+  # ---------------------------------------------------------------------------
+  geom_slice_text:
+    family: geom_slice_text
+    purpose: End-of-line labels naming the values that produced each geom_slice() line, borrowed from the plot's slice layers.
+    plots:
+      - "?geom_slice_text examples: Sepal.Width = c(2, 3, 4); band = TRUE edges; colour = drv with cyl = c(4, 8); style = \"legend\" with cyl x drv"
+      - "README: slice-text-band, slice-text-color, slice-text-multiple, slice-text-legend; band; geom-slice"
+      - "vignette: Labeling the slices (style = \"legend\")"
+    behaviours:
+      - id: geom_slice_text.label-per-line
+        principle: Each line gets one label at its end, placed at the line's endpoint.
+        source: "?geom_slice_text; StatSliceText"
+        test_type: numeric
+      - id: geom_slice_text.label-predict-vars
+        principle: "Labels name the predict_vars values that made the line (\"x2: 0\"), joined with \"; \" when variables are crossed, in predict_vars order; numbers to 4 significant figures, no quotes."
+        source: "?geom_slice_text; label_text(), label_value()"
+        test_type: text
+      - id: geom_slice_text.label-group
+        principle: "With no predict_vars, labels name the grouping-aesthetic value pinning the line (\"g: A\"); with neither, the label is empty."
+        source: "?geom_slice_text; StatSliceText compute_group()"
+        test_type: text
+      - id: geom_slice_text.style
+        principle: "style = \"variable\" writes \"x2: 0\"; \"value\" writes \"0\"; \"legend\" writes \"0\" plus a corner key \"labels: x2; x3\"."
+        source: "?geom_slice_text (style)"
+        test_type: text
+      - id: geom_slice_text.legend-key-colour
+        principle: The legend key takes the lines' colour when they all share one, grey when they differ or colour is mapped, and `color` when given.
+        source: "ggplot_add.slice_text_spec()"
+        test_type: appearance
+      - id: geom_slice_text.colour-follows-line
+        principle: Each label takes its line's colour (a fixed colour on the slice layer or the mapped group colour) unless `color` is given.
+        source: "?geom_slice_text (color)"
+        test_type: appearance
+      - id: geom_slice_text.location
+        principle: location = "right" labels the right end, left-justified; "left" labels the left end, right-justified.
+        source: "?geom_slice_text (location)"
+        test_type: numeric
+      - id: geom_slice_text.offset-points
+        principle: The gap between line end and label is `offset` points, constant whatever the label text, axis range or plot size; setting `hjust` turns the offset off.
+        source: "?geom_slice_text (offset, hjust); GeomSliceText"
+        test_type: appearance
+      - id: geom_slice_text.band-edges
+        principle: A projection band's two edges are each labelled with the value that produced it, the right way up even when the effect decreases.
+        source: "?geom_slice_text example; slice_text_predict_vars()"
+        test_type: numeric
+      - id: geom_slice_text.one-layer-per-slice
+        principle: Each slice layer gets its own text layer, so several slice layers of one model are labelled as if their predict_vars were combined.
+        source: "ggplot_add.slice_text_spec()"
+        test_type: numeric
+      - id: geom_slice_text.expand-fits-labels
+        principle: With expand = TRUE the x-range widens on the label side by the measured width of the widest label, so labels fit without a dead band; expand = FALSE leaves scales alone.
+        source: "?geom_slice_text (expand); x_expand_for_labels()"
+        test_type: appearance
+      - id: geom_slice_text.expand-keeps-scale
+        principle: Widening edits only the expansion. A user's scale_x_*() keeps its limits, breaks, name and transform, an expansion set on the other side is kept, and ggplot2 prints no "Scale for x is already present" message.
+        source: "for_devs/known_issues.Rmd (Resolved 2026-08-19); set_scale_expand()"
+        test_type: numeric
+      - id: geom_slice_text.legend-headroom
+        principle: style = "legend" also adds headroom at the top so the corner key clears the topmost label.
+        source: "ggplot_add.slice_text_spec()"
+        test_type: appearance
+      - id: geom_slice_text.silent-rebuild
+        principle: The labels re-resolve the slice without repeating geom_slice()'s imputation or back-transform messages.
+        source: "StatSliceText compute_layer()"
+        test_type: condition
+    edge_cases:
+      - id: geom_slice_text.arg-validation
+        principle: An invalid style, location, offset or expand stops at construction with an example.
+        source: "geom_slice_text()"
+        options: ["Condition: one call per argument; wording judged together."]
+        test_type: condition
+      - id: geom_slice_text.too-wide
+        principle: Labels needing more than half the panel warn and clip rather than crowding out the data; the plot is still built.
+        source: "x_expand_for_labels()"
+        options: ["Condition: long label values on a narrow device.", "Appearance: the clipped plot."]
+        test_type: condition
+      - id: geom_slice_text.facets
+        principle: Labels appear in every facet panel, sized against one panel's width rather than the whole plot.
+        source: "facet_col_count(); panel_width_from_gtable()"
+        options: ["Numeric: one label per line per panel.", "Appearance: facet_wrap plot with labels."]
+        test_type: appearance
+      - id: geom_slice_text.date-or-log-axis
+        principle: A defaulted Date or log x scale stays a Date or log scale after widening.
+        source: "set_scale_expand() probe scale"
+        options: ["Numeric: built x scale class and transform after scale_x_log10() + geom_slice_text()."]
+        test_type: numeric
+
+  # ---------------------------------------------------------------------------
+  geom_slice_subtitle:
+    family: geom_slice_subtitle
+    purpose: Fills the plot subtitle with the model equation and the held values the plot doesn't otherwise show.
+    plots:
+      - "?geom_slice_subtitle example: iris Species curves with confidence ribbons"
+      - "README: slice-subtitle, geom-slice; quickstart"
+      - "vignette: Labeling the slices"
+    behaviours:
+      - id: geom_slice_subtitle.equation-line
+        principle: The first line is the model equation as lm_equation() writes it; model = FALSE drops it.
+        source: "?geom_slice_subtitle (model)"
+        test_type: text
+      - id: geom_slice_subtitle.held-line
+        principle: "The second line lists held values not shown elsewhere (\"held at: x2 = 2.507; g = \\\"A\\\"\"), formatted like geom_slice()'s messages; multi-value entries join with \", \"; it is dropped when nothing is held."
+        source: "?geom_slice_subtitle; slice_subtitle_held_line()"
+        test_type: text
+      - id: geom_slice_subtitle.skips-shown
+        principle: Variables on the x-axis, pinned by a grouping aesthetic or facet, or labelled by geom_slice_text() are left out of the held line; predict_vars values and imputed defaults are treated alike.
+        source: "?geom_slice_subtitle; slice_subtitle_held()"
+        test_type: numeric
+      - id: geom_slice_subtitle.band-line
+        principle: "A banded variable is reported on its own line (\"projection band: x2 spanning from 0 to 10\") instead of as held."
+        source: "slice_subtitle_band_line()"
+        test_type: text
+      - id: geom_slice_subtitle.prepend-append
+        principle: prepend and append are pasted before the first line and after the last.
+        source: "?geom_slice_subtitle (prepend, append)"
+        test_type: text
+      - id: geom_slice_subtitle.nothing-to-say
+        principle: With model = FALSE and nothing held, no subtitle is set and the plot is unchanged.
+        source: "slice_annotation_text() returns NULL"
+        test_type: numeric
+      - id: geom_slice_subtitle.dots-to-equation
+        principle: Arguments in `...` go to lm_equation(), chiefly `style`; naming `style` pins it and turns off the automatic choice.
+        source: "?geom_slice_subtitle (...)"
+        test_type: text
+      - id: geom_slice_subtitle.no-repeat-messages
+        principle: Imputed values already announced by geom_slice() are not announced again.
+        source: "slice_subtitle_held() suppressMessages"
+        test_type: condition
+      - id: geom_slice_subtitle.readable
+        principle: The subtitle reads as an equation in the rendered plot, sits clear of the panel, and isn't clipped at the default size.
+        source: "README slice-subtitle"
+        test_type: appearance
+    edge_cases:
+      - id: geom_slice_subtitle.arg-validation
+        principle: An invalid model, prepend, append or wrap stops at construction with an example (shared with geom_slice_caption()).
+        source: "new_slice_annotation_spec()"
+        options: ["Condition: one call per argument; wording judged together."]
+        test_type: condition
+
+  # ---------------------------------------------------------------------------
+  geom_slice_caption:
+    family: geom_slice_subtitle
+    purpose: geom_slice_subtitle() for the plot caption, right-aligned by ggplot2's default themes.
+    plots:
+      - "?geom_slice_caption example: iris Species with caption"
+    behaviours:
+      - id: geom_slice_caption.same-text-in-caption
+        principle: The caption holds exactly the text geom_slice_subtitle() would write, in the caption slot, with every argument behaving the same.
+        source: "?geom_slice_caption; R/geom_slice_caption.R"
+        test_type: text
+      - id: geom_slice_caption.no-indent-right-aligned
+        principle: A right-aligned caption wraps without the hanging indent.
+        source: "wrap_annotation_text() hjust check"
+        test_type: appearance
+
+  # ---------------------------------------------------------------------------
   slice_2d:
     family: slice_2d
-    purpose: Base graphics plot of a model's slice along one predictor.
+    purpose: A base graphics plot of the model's data with a slice line, every other predictor held, and the held values in a caption.
+    plots:
+      - "?slice_2d examples: log(mpg) ~ disp + hp default; x_axis = \"hp\", disp = 250, n = 150, col = \"blue\", lwd = 2; interval = \"confidence\""
+      - "README: slice-2d"
     behaviours:
       - id: slice_2d.line-is-prediction
         principle: The drawn line is the model's prediction along x_axis, with every predictor named in ... held at the value given.
         source: "?slice_2d; R/slice_2d.R (prepare_slice_data)"
+        test_type: numeric
+      - id: slice_2d.default-x-axis
+        principle: With no x_axis, the first predictor is used and a message says so.
+        source: "?slice_2d (x_axis); prepare_slice_data()"
+        test_type: condition
+      - id: slice_2d.plot-labels
+        principle: The plot shows the model's data as points, titled with the formula, the x-axis labelled with x_axis and the y-axis with the raw response.
+        source: "slice_2d()"
+        test_type: appearance
+      - id: slice_2d.caption
+        principle: "The caption (on by default) lists every held predictor as \"var: value\" joined with \"; \", numbers rounded to 1 decimal; caption = FALSE drops it."
+        source: "?slice_2d (caption); for_devs/decisions.Rmd (Captions)"
+        test_type: text
+      - id: slice_2d.ylim-covers-band
+        principle: With an interval, the y-axis range covers the band as well as the data.
+        source: "slice_2d() ylim"
+        test_type: appearance
+      - id: slice_2d.graphical-params
+        principle: Graphical parameters in ... (col, lwd, lty) style the line, and any band takes a translucent version of the line's colour.
+        source: "?slice_2d (...); draw_slice_line()"
+        test_type: appearance
+    edge_cases:
+      - id: slice_2d.held-named-x
+        principle: A held predictor literally named `x` is taken as a held value, not as a partial match for x_axis.
+        source: "slice_2d() dots comment"
+        options: ["Numeric: lm(y ~ w + x) with slice_2d(m, x_axis = \"w\", x = 2); prepared line uses x = 2."]
+        test_type: numeric
+      - id: slice_2d.x-axis-errors
+        principle: An x_axis that isn't one string, names no predictor, or isn't numeric stops, listing the model's predictors.
+        source: "prepare_slice_data()"
+        options: ["Condition: x_axis = 1; x_axis = \"nope\"; a factor x_axis."]
+        test_type: condition
+      - id: slice_2d.caption-nothing-held
+        principle: A one-predictor model has an empty caption and draws no stray separator.
+        source: "prepare_slice_data() caption loop"
+        options: ["Numeric: caption_text is \"\"."]
+        test_type: numeric
 
+  # ---------------------------------------------------------------------------
+  add_slice_2d:
+    family: slice_2d
+    purpose: Adds a slice line to an existing base graphics plot, so several slices can be overlaid.
+    plots:
+      - "?add_slice_2d examples: one slice on plot(mpg ~ disp); hp at min (blue) and max (red, dashed)"
+      - "README: add-slice-2d"
+    behaviours:
+      - id: add_slice_2d.adds-to-plot
+        principle: The line is drawn on the current plot without starting a new one, so slices overlay.
+        source: "?add_slice_2d"
+        test_type: appearance
+      - id: add_slice_2d.caption-off
+        principle: The caption is off by default, because base graphics can't replace text already painted.
+        source: "?add_slice_2d (caption); for_devs/decisions.Rmd (Captions)"
+        test_type: appearance
+      - id: add_slice_2d.line-is-prediction
+        principle: The added line is the same prediction slice_2d() would draw for the same arguments.
+        source: "prepare_slice_data() shared"
+        test_type: numeric
+    edge_cases:
+      - id: add_slice_2d.outside-plot
+        principle: A slice wholly outside the current plot window warns that it may not be visible, and is still drawn.
+        source: "add_slice_2d() usr check"
+        options: ["Condition: plot(1:2, 1:2) then add_slice_2d(m)."]
+        test_type: condition
+      - id: add_slice_2d.no-plot
+        principle: Calling it with no plot open fails rather than drawing somewhere unexpected.
+        source: "add_slice_2d() comment: errors if none is active"
+        options: ["Condition: on a fresh pdf(NULL) device, expect an error."]
+        test_type: condition
+
+  # ---------------------------------------------------------------------------
   scatter_3d:
     family: scatter_3d
-    purpose: Interactive plotly 3D scatter of the data with the model's fitted surface.
+    purpose: Interactive plotly 3D scatter of a two-predictor model's data with its fitted surface.
+    plots:
+      - "?scatter_3d examples: mpg ~ wt + I(wt^2) + hp; n = 200 with purple/orange; twisted interaction surface (iris)"
+      - "README: scatter-3d, autoplot-3d"
     behaviours:
       - id: scatter_3d.surface-is-prediction
         principle: The surface is the model's prediction over an n-by-n grid of the two predictors' ranges.
         source: "?scatter_3d; R/scatter_3d.R"
+        test_type: numeric
       - id: scatter_3d.readable-from-any-angle
         principle: Points, surface and axis titles stay readable from the default, top and side cameras.
         source: "?scatter_3d"
+        test_type: interactive
+      - id: scatter_3d.points-are-data
+        principle: The markers are the model's own data, one per row, at (first predictor, second predictor, response).
+        source: "?scatter_3d"
+        test_type: numeric
+      - id: scatter_3d.raw-predictors
+        principle: Transformed terms graph over their raw predictors, so lm(z ~ x + I(x^2) + y) has axes x and y.
+        source: "?scatter_3d; all.vars() comment"
+        test_type: numeric
+      - id: scatter_3d.marker-colours
+        principle: Markers are coloured by the response along `colors` (default blue to yellow), with a colour bar titled with the response; a single colour gives a flat two-stop ramp.
+        source: "?scatter_3d (colors)"
+        test_type: numeric
+      - id: scatter_3d.axis-titles
+        principle: The scene's axes are titled with the two predictor names and the response.
+        source: "scatter_3d() layout"
+        test_type: numeric
+      - id: scatter_3d.surface-style
+        principle: The surface is semi-transparent (opacity 0.6) with no colour bar of its own, so points behind it stay visible.
+        source: "scatter_3d() add_trace"
+        test_type: interactive
+      - id: scatter_3d.twisted-surface
+        principle: An interaction model's non-planar surface reads as twisted from the sampled cameras.
+        source: "?scatter_3d example (twisted)"
+        test_type: interactive
+      - id: scatter_3d.no-build-warnings
+        principle: Building the widget raises no plotly warnings.
+        source: "scatter_3d() colorscale comment"
+        test_type: condition
+    edge_cases:
+      - id: scatter_3d.shape-errors
+        principle: A model whose response uses more than one variable, or that doesn't have exactly two predictors, or whose predictors aren't numeric, stops with a pointer to a model that works.
+        source: "scatter_3d()"
+        options: ["Condition: lm(mpg ~ wt); lm(mpg ~ wt + hp + qsec); lm(mpg ~ wt + factor(am)) via a factor column; lm(I(mpg + hp) ~ wt + qsec)."]
+        test_type: condition
+      - id: scatter_3d.predict-fails
+        principle: A predictor converted inside the formula, such as factor(x), stops with a hint to transform the data and refit.
+        source: "scatter_3d() predict tryCatch"
+        options: ["Condition: lm(mpg ~ wt + factor(cyl)); wording judged."]
+        test_type: condition
+      - id: scatter_3d.transformed-response
+        principle: "With a transformed response (lm(log(mpg) ~ wt + hp)) the points are raw mpg (10.4 to 33.9) but the surface is log(mpg) (2.2 to 3.4), so they don't line up (checked 2026-11-11). Unclear whether the surface should be back-transformed."
+        source: "scatter_3d() (no back-transform; points use the raw response)"
+        options: ["Numeric: compare surface z with log or raw predictions.", "Interactive: look at it."]
+        test_type: numeric
+
+  # ---------------------------------------------------------------------------
+  autoplot.lm:
+    family: autoplot
+    purpose: A complete ggplot from a fitted lm() in one call - data as points, a geom_slice() line with a confidence ribbon, and a subtitle - or the 3D surface.
+    plots:
+      - "?autoplot.lm examples: iris I(Sepal.Length^2):Species; hwy ~ displ + drv + cyl (colour then facet); aes(color = factor(cyl)) + facet_wrap(~drv); aes(x = cyl, color = factor(drv)), interval = \"none\"; log(mpg) model; type = \"3d\""
+      - "README: quickstart-autoplot, autoplot, autoplot-mapping, autoplot-3d"
+      - "vignette: Explore with autoplot()"
+    behaviours:
+      - id: autoplot.complete-plot
+        principle: The result is an ordinary ggplot of the model's own data as points, with a geom_slice() line, a confidence ribbon by default, and a geom_slice_subtitle(); `+` works on it.
+        source: "?autoplot.lm"
+        test_type: numeric
+      - id: autoplot.summary-first
+        principle: summary(model) prints to the console before the plot is returned; summary = FALSE suppresses it.
+        source: "?autoplot.lm (summary)"
+        test_type: numeric
+      - id: autoplot.x-first-numeric
+        principle: The first numeric predictor goes on the x-axis; when the first predictor isn't numeric, a message names the one used. mapping = aes(x = ...) overrides it, and aes(y = ...) overrides the response.
+        source: "?autoplot.lm (mapping)"
+        test_type: numeric
+      - id: autoplot.categorical-to-colour-facet
+        principle: The first categorical-like predictor not already shown (non-numeric, or numeric with at most five values) becomes colour, wrapped in factor() if numeric; the second facets the plot. Each choice is announced, and a mapped colour is never replaced.
+        source: "?autoplot.lm; categorical_like()"
+        test_type: numeric
+      - id: autoplot.mapping-any-column
+        principle: A mapping can use any column of the model's data, even one the model doesn't use.
+        source: "?autoplot.lm (mapping); for_devs/decisions.Rmd (No data argument)"
+        test_type: numeric
+      - id: autoplot.dots-to-geom-slice
+        principle: Arguments in ... go to geom_slice(); interval sets the ribbon; asking for a band drops the default ribbon instead of erroring.
+        source: "?autoplot.lm (interval, ...)"
+        test_type: numeric
+      - id: autoplot.type-3d
+        principle: type = "3d" returns scatter_3d(model, ...) instead, with ... going to scatter_3d().
+        source: "?autoplot.lm (type)"
+        test_type: numeric
+      - id: autoplot.looks-complete
+        principle: The default plot reads as a finished figure - points, line and ribbon, legend for the colour, facet strips, subtitle - at the default size.
+        source: "README autoplot, quickstart"
+        test_type: appearance
+    edge_cases:
+      - id: autoplot.input-errors
+        principle: A mapping not made by aes(), a model fitted without `data`, a response using more than one variable, no predictors, or no numeric predictor each stops with a fix.
+        source: "autoplot.lm()"
+        options: ["Condition: one call each; wording judged together."]
+        test_type: condition
+      - id: autoplot.facet-before-subtitle
+        principle: The automatic facet is added before the subtitle, so the facet variable isn't reported as held.
+        source: "autoplot.lm() comment"
+        options: ["Numeric: subtitle of the hwy ~ displ + drv + cyl plot has no held line for the facet variable."]
+        test_type: numeric
+      - id: autoplot.user-facet-after
+        principle: A facet the user adds after autoplot() (README's + facet_wrap(~drv)) still pins drv per panel for the line, though the subtitle was written before it.
+        source: "README autoplot-mapping; for_devs/known_issues.Rmd (add time vs build time)"
+        options: ["Numeric: line per panel uses that panel's drv.", "Appearance: the README plot."]
+        test_type: numeric
+
+  # ---------------------------------------------------------------------------
+  lm_equation:
+    family: lm_equation
+    purpose: The fitted model as a one-line equation string.
+    plots: []
+    behaviours:
+      - id: lm_equation.format
+        principle: "The string is \"<response> = <intercept> + <coef>*<term> ...\" with coefficients to 3 significant figures, the response as written in the formula, and \"+ -\" written as \"- \"."
+        source: "?lm_equation"
+        test_type: text
+      - id: lm_equation.terms-from-coefficients
+        principle: Terms are named from the fitted coefficients, so a factor gives one term per non-reference level, interactions are rewritten per piece, and I() terms are left as written.
+        source: "?lm_equation; lm_equation_parts()"
+        test_type: text
+      - id: lm_equation.style
+        principle: "style \"prettier\" (default) writes (Species=\"setosa\"), \"brackets\" writes [setosa], \"raw\" keeps Speciessetosa; partial names match."
+        source: "?lm_equation (style)"
+        test_type: text
+      - id: lm_equation.no-intercept
+        principle: A model without an intercept prints no intercept.
+        source: "?lm_equation"
+        test_type: text
+      - id: lm_equation.na-and-residue
+        principle: NA coefficients from a rank-deficient fit are dropped, and floating-point residue (an exact fit's 2e-15) prints as 0.
+        source: "lm_equation_parts() comment"
+        test_type: text
+    edge_cases:
+      - id: lm_equation.bad-style
+        principle: An unknown style warns and falls back to "prettier".
+        source: "check_equation_style()"
+        options: ["Condition: style = \"fancy\"; result equals the prettier string."]
+        test_type: condition
+      - id: lm_equation.intercept-only
+        principle: An intercept-only model, lm(y ~ 1), should give "y = b0". It currently gives "mpg = 20.1 + *" (checked 2026-11-11).
+        source: "lm_equation() rhs paste with no slopes"
+        options: ["Numeric: lm_equation(lm(mpg ~ 1, mtcars))."]
+        test_type: text
+
+  # ---------------------------------------------------------------------------
+  lm_latex:
+    family: lm_equation
+    purpose: The fitted model as a display-math LaTeX equation with underbraced term names.
+    plots: []
+    behaviours:
+      - id: lm_latex.format
+        principle: "Returns $$\\underbrace{\\hat{Y_i}}_{\\text{Pred. <response>}} = <b0> + <b1>\\underbrace{X_{1i}}_{\\text{<term>}} ...$$, numbered from 1, with the same coefficients, names and styles as lm_equation()."
+        source: "?lm_latex"
+        test_type: text
+      - id: lm_latex.prints-and-returns
+        principle: The string is printed with cat() and also returned invisibly.
+        source: "?lm_latex (Value)"
+        test_type: numeric
+    edge_cases:
+      - id: lm_latex.special-characters
+        principle: Variable names with LaTeX special characters (`_`, `%`, `&`) go inside \text{} unescaped and would break the typeset equation.
+        source: "lm_latex() (no escaping)"
+        options: ["Numeric: lm(y ~ my_var) output contains an escaped \\_ (fails today)."]
+        test_type: text
+
+  # ---------------------------------------------------------------------------
+  diagnose:
+    family: diagnose
+    purpose: Three base graphics diagnostic plots side by side - Residuals vs Fitted, Normal Q-Q, residuals in data order.
+    plots:
+      - "?diagnose examples: mpg ~ wt; mpg ~ wt + hp + disp; dist ~ speed (curvature)"
+      - "README: diagnose"
+    behaviours:
+      - id: diagnose.three-panels
+        principle: Draws Residuals vs Fitted, Normal Q-Q, and Residuals vs Index (dotted zero line, red lowess, the three largest absolute residuals labelled by row name) in one row.
+        source: "?diagnose"
+        test_type: appearance
+      - id: diagnose.restores-par
+        principle: The device's mfrow is restored on exit.
+        source: "?diagnose"
+        test_type: numeric
+    edge_cases:
+      - id: diagnose.not-lm
+        principle: A non-lm stops. Its message is a bare stop() with the call shown, not the package's two-part format.
+        source: "diagnose(); for_devs/decisions.Rmd (Error Messages)"
+        options: ["Condition: diagnose(1); wording judged (will likely be rejected until it uses slice_abort())."]
+        test_type: condition
+      - id: diagnose.few-rows
+        principle: With fewer than three observations, labelling "the three largest residuals" shouldn't fail or label NA.
+        source: "diagnose() order()[1:3]"
+        options: ["Condition: diagnose(lm(y ~ x, data.frame(x = 1:3, y = c(1, 3, 2)))) draws."]
+        test_type: condition
+
+  # ---------------------------------------------------------------------------
+  drawit:
+    family: deprecated
+    purpose: Deprecated shim that warns and forwards to slice_2d().
+    plots: []
+    behaviours:
+      - id: drawit.warns-and-forwards
+        principle: drawit() warns that it is deprecated, with a slice_2d() call to copy, then draws what slice_2d(model, x_axis = xaxis, ...) draws, graphical parameters included.
+        source: "?drawit"
+        test_type: condition
+    edge_cases:
+      - id: drawit.no-xaxis
+        principle: Without xaxis it still forwards (x_axis defaults to the first predictor), but the hint names "wt" whatever the model.
+        source: "drawit() hint"
+        options: ["Condition: drawit(lm(mpg ~ disp)); the hint's example names a variable the model doesn't have."]
+        test_type: condition
+
+  # ---------------------------------------------------------------------------
+  geom_fit:
+    family: deprecated
+    purpose: Defunct stub that errors with a pointer to geom_slice().
+    plots: []
+    behaviours:
+      - id: geom_fit.errors-with-pointer
+        principle: Any call errors, naming geom_slice() and how its arguments map (interval, predict_vars).
+        source: "?geom_fit"
+        test_type: condition
+
+  # ---------------------------------------------------------------------------
+  ggproto_objects:
+    family: geom_slice
+    purpose: StatSlice, GeomSlice, GeomSliceBand, StatSliceText and GeomSliceText, exported for custom layers.
+    functions: [StatSlice, GeomSlice, GeomSliceBand, StatSliceText, GeomSliceText]
+    plots:
+      - "README: statslice (raw layer() with mapping in params)"
+    behaviours:
+      - id: ggproto_objects.raw-layer
+        principle: A raw layer(stat = StatSlice, geom = GeomSlice, params = list(model, predict_vars, mapping)) draws the same line geom_slice() would.
+        source: "README (Advanced: StatSlice and GeomSlice)"
+        test_type: numeric
+    edge_cases:
+      - id: ggproto_objects.raw-layer-no-mapping
+        principle: A raw layer without `mapping` in params stops asking for x and y, rather than failing obscurely.
+        source: "build_slice_spec(); README note"
+        options: ["Condition: the README call without mapping."]
+        test_type: condition
 
 shared:
+
+  # ---------------------------------------------------------------------------
+  validation:
+    purpose: Arguments and models are checked up front, with the same rules and wording wherever they're shared.
+    functions: [geom_slice, slice_2d, add_slice_2d, scatter_3d, autoplot.lm]
+    behaviours:
+      - id: shared.validation.model
+        principle: A missing or NULL model, or one not fitted by lm(), stops naming what was received.
+        source: "check_slice_model()"
+        test_type: condition
+      - id: shared.validation.dollar-names
+        principle: A model with `$` in its variable names stops with a hint to refit using `data`.
+        source: "check_slice_model(); for_devs/decisions.Rmd (Exclusion of $)"
+        test_type: condition
+      - id: shared.validation.n
+        principle: n must be one number of at least 2.
+        source: "geom_slice(); prepare_slice_data()"
+        test_type: condition
+      - id: shared.validation.interval
+        principle: interval must be one of "none", "confidence", "prediction".
+        source: "check_slice_interval()"
+        test_type: condition
+      - id: shared.validation.back-transform-arg
+        principle: back_transform must be TRUE/FALSE/NULL, a known name (case-insensitive), or a one-argument function; anything else stops listing the choices.
+        source: "check_back_transform()"
+        test_type: condition
+    edge_cases:
+      - id: shared.validation.function-name
+        principle: The model error names the function the user called. scatter_3d() and autoplot() currently pass no name, so they say "geom_slice() needs a fitted model".
+        source: "check_slice_model(fn = \"geom_slice\") default; scatter_3d(); autoplot.lm()"
+        options: ["Condition: scatter_3d(NULL); wording judged (will likely be rejected)."]
+        test_type: condition
+      - id: shared.validation.glm
+        principle: A glm() inherits from lm and passes the model check; its slice uses predict.glm on the link scale.
+        source: "check_slice_model() inherits(model, \"lm\")"
+        options: ["Numeric: geom_slice(glm(am ~ wt, binomial, mtcars)) line equals predict(type = \"link\").", "Condition: should it be refused?"]
+        test_type: numeric
+      - id: shared.validation.bracket-access
+        principle: Variables accessed by brackets (mtcars['mpg']) are not refused yet, though they fail in predict() like `$`.
+        source: "for_devs/known_issues.Rmd"
+        options: ["Condition: lm(mtcars[['mpg']] ~ mtcars[['wt']]) errors clearly."]
+        test_type: condition
+        deferred: Known issue with no decided behaviour yet; write the case when known_issues.Rmd's extension of the `$` rule is made.
+
+  # ---------------------------------------------------------------------------
+  model-data:
+    purpose: The slice is drawn from the data the model was fitted on, recovered from the model, and refused over different data.
+    functions: [geom_slice, slice_2d, add_slice_2d, scatter_3d, autoplot.lm, geom_slice_text, geom_slice_subtitle]
+    behaviours:
+      - id: shared.model-data.raw-variables
+        principle: The raw variables are recovered from the formula, not model$model, so lm(y ~ I(x^2)) slices along x.
+        source: "slice_model_frame()"
+        test_type: numeric
+      - id: shared.model-data.no-data-arg
+        principle: A model fitted without `data` is recovered from the formula's environment where possible, and stops with a hint to refit with `data` where not.
+        source: "slice_model_frame()"
+        test_type: condition
+      - id: shared.model-data.plot-data-mismatch
+        principle: geom_slice() stops when the plot's data is visibly not the model's data, but the same rows in another order, or data sharing no columns with the model, are accepted.
+        source: "check_slice_plot_data()"
+        test_type: condition
+      - id: shared.model-data.refit-needed
+        principle: slice_2d() and add_slice_2d() stop when the data changed after the model was fitted; subset= fits and model = FALSE fits are not checked.
+        source: "check_slice_fit_data()"
+        test_type: condition
+    edge_cases:
+      - id: shared.model-data.fitted-in-function
+        principle: A model fitted inside a function, whose data no longer exists, gives the "could not be found" error rather than a confusing one.
+        source: "slice_model_frame(); autoplot.lm() comment"
+        options: ["Condition: f <- function() { d <- mtcars; lm(mpg ~ wt, d) }; geom_slice(f())."]
+        test_type: condition
+
+  # ---------------------------------------------------------------------------
+  back-transform:
+    purpose: Predictions of a transformed response are mapped onto the plotted y-axis, inferred from the formula or set by back_transform.
+    functions: [geom_slice, slice_2d, add_slice_2d, autoplot.lm]
+    behaviours:
+      - id: shared.back-transform.auto
+        principle: A transformed response (log(y), sqrt(y), exp(y), y + 1, 1/y, ...) shown on a raw y-axis is inverted, so the line is in raw units; geom_slice() says so with a message.
+        source: "?geom_slice; resolve_y_fn(); get_inverse_function()"
+        test_type: numeric
+      - id: shared.back-transform.axis-expression
+        principle: In geom_slice(), a y-axis expression of the response (aes(y = log(mpg))) gets predictions in that expression's units, whether the model's response matches it or is raw.
+        source: "resolve_y_fn()"
+        test_type: numeric
+      - id: shared.back-transform.override
+        principle: back_transform = FALSE plots raw predictions; a function or a name ("log", "log10", "log2", "sqrt", "exp", "inverse"/"1/x") applies that mapping instead of the inferred one.
+        source: "?geom_slice (back_transform); back_transform_names"
+        test_type: numeric
+      - id: shared.back-transform.message
+        principle: geom_slice()'s message names the response and the axis and says how to turn it off.
+        source: "resolve_y_fn()"
+        test_type: condition
+      - id: shared.back-transform.ribbons-upright
+        principle: Under a decreasing inverse (1/y) ribbons stay upright - lower edge below upper.
+        source: "compute_slice_group() and prepare_slice_data() pmin/pmax"
+        test_type: numeric
+    edge_cases:
+      - id: shared.back-transform.y-mismatch
+        principle: A y-axis that isn't the response warns that the line may not display correctly, and draws raw predictions.
+        source: "resolve_y_fn()"
+        options: ["Condition: aes(wt, hp) with lm(mpg ~ wt)."]
+        test_type: condition
+      - id: shared.back-transform.no-inverse
+        principle: A response whose inverse can't be inferred (an unknown function such as abs(y)) warns, pointing to back_transform =, and draws raw predictions.
+        source: "resolve_y_fn(); get_inverse_function()"
+        options: ["Condition: lm(abs(y) ~ x) in geom_slice(); also in slice_2d(), where the raw message 'Error creating inverse: ...' leaks out unformatted."]
+        test_type: condition
+      - id: shared.back-transform.nested
+        principle: Nested transforms are inverted in order (sqrt(log(y)), log(y + 1), 2 * log(y)).
+        source: "get_inverse_function() build_inverse()"
+        options: ["Numeric: line equals the hand-inverted prediction. log10/log2 nested inside another call may lose the outer step (the map returns a fixed quote(10^x))."]
+        test_type: numeric
+      - id: shared.back-transform.box-cox
+        principle: A box_cox(y, lambda) response is inverted, with lambda = 0 as exp.
+        source: "get_inverse_function() box_cox branch"
+        options: ["Numeric: needs a box_cox() function in scope; check the inverse round-trips."]
+        test_type: numeric
+      - id: shared.back-transform.engines-differ
+        principle: slice_2d() back-transforms silently and always plots the raw response; geom_slice() announces it and adapts to the y-axis. Intended difference or gap?
+        source: "prepare_slice_data() vs resolve_y_fn()"
+        options: ["Condition: record each engine's conditions on log(mpg) ~ disp + hp."]
+        test_type: condition
+
+  # ---------------------------------------------------------------------------
   imputation:
     purpose: Predictors that aren't on the x-axis and aren't held are imputed, and the user is told.
-    functions: [geom_slice, slice_2d, geom_slice_subtitle]
+    functions: [geom_slice, slice_2d, add_slice_2d, geom_slice_subtitle, autoplot.lm]
     behaviours:
       - id: shared.imputation.message
         principle: Each imputed predictor gets one message naming it and the value used, and the plot is still built.
         source: "R/geom_slice.R; R/conditions.R; ?geom_slice (Details)"
+        test_type: condition
+      - id: shared.imputation.values
+        principle: geom_slice() imputes the mean for numeric and the most common value for factor or character predictors; the line is predicted at exactly that value.
+        source: "?geom_slice; impute_value()"
+        test_type: numeric
+      - id: shared.imputation.once-per-layer
+        principle: The message fires once per layer, not once per group or panel.
+        source: "StatSlice compute_layer() comment"
+        test_type: condition
+      - id: shared.imputation.base-values
+        principle: slice_2d() and add_slice_2d() impute the mean for numeric and the first level for factors, and report the value rounded to 1 decimal.
+        source: "?slice_2d; prepare_slice_data()"
+        test_type: numeric
     edge_cases:
       - id: shared.imputation.factor-in-formula
         principle: A predictor converted inside the formula, such as factor(cyl), is imputed as a level, never as a mean.
@@ -68,3 +763,270 @@ shared:
           - "Expectation: geom_slice(lm(mpg ~ wt + factor(cyl), mtcars)) builds, and the imputed cyl is one of 4, 6, 8."
           - "Judged output: the imputation message's wording names a level."
         deferred: "Package bug on main: factor(cyl) is imputed with its mean and predict() fails. Write the case once that's fixed."
+        test_type: numeric
+      - id: shared.imputation.engines-differ
+        principle: The two engines disagree for factors (most common vs first level - drawit's docs say most common), for characters (geom_slice() supports them, slice_2d() stops), and in wording and rounding (4 significant figures vs 1 decimal).
+        source: "impute_value() vs prepare_slice_data(); ?drawit"
+        options: ["Numeric: pin each engine's current choice.", "Condition: wording of both, judged side by side."]
+        test_type: condition
+      - id: shared.imputation.unsupported-class
+        principle: A predictor of an unsupported class (logical, Date) stops naming its class.
+        source: "impute_value(); prepare_slice_data()"
+        options: ["Condition: a logical predictor left unheld."]
+        test_type: condition
+      - id: shared.imputation.na-values
+        principle: Missing values are ignored when imputing (mean with na.rm, counts without NA).
+        source: "impute_value()"
+        options: ["Numeric: data with NA in the held column."]
+        test_type: numeric
+
+  # ---------------------------------------------------------------------------
+  held-values:
+    purpose: Predictors the user names are held at the values given; several values give one line per value, crossed.
+    functions: [geom_slice, slice_2d, add_slice_2d, geom_slice_text, geom_slice_subtitle]
+    behaviours:
+      - id: shared.held-values.single
+        principle: A predictor in predict_vars (geom_slice) or ... (slice_2d) is held at that value along the whole line, with no imputation message for it.
+        source: "?geom_slice (predict_vars); ?slice_2d"
+        test_type: numeric
+      - id: shared.held-values.multi-crossed
+        principle: Several values draw one line per value, and several multi-value variables are crossed (3 x 2 = 6 lines), each a distinct group.
+        source: "?geom_slice (predict_vars)"
+        test_type: numeric
+      - id: shared.held-values.coerced
+        principle: Values are coerced to the predictor's type - a string for a factor becomes that level, "3" for a numeric becomes 3.
+        source: "coerce_like()"
+        test_type: numeric
+      - id: shared.held-values.beats-pinning
+        principle: A predictor in predict_vars is held at the given value even if a grouping aesthetic or facet would otherwise pin it.
+        source: "build_slice_spec() comment"
+        test_type: numeric
+    edge_cases:
+      - id: shared.held-values.malformed
+        principle: predict_vars that isn't a named list, names the response, names a non-predictor, or gives an empty or non-atomic value stops with an example.
+        source: "check_predict_vars()"
+        options: ["Condition: one call per form; wording judged together."]
+        test_type: condition
+      - id: shared.held-values.bad-level
+        principle: A value that isn't a level of a factor predictor, or isn't a number for a numeric one, stops listing the levels or suggesting a number.
+        source: "coerce_like()"
+        options: ["Condition: predict_vars = list(drv = \"x\"); list(cyl = \"six\")."]
+        test_type: condition
+      - id: shared.held-values.on-x-axis
+        principle: A predict_vars entry for the x-axis variable warns that it is ignored, and the line still varies along x.
+        source: "build_slice_spec()"
+        options: ["Condition: predict_vars = list(wt = 3) with aes(wt, mpg)."]
+        test_type: condition
+      - id: shared.held-values.base-not-coerced
+        principle: slice_2d() passes ... values to predict() as given; a factor value given as a string should still predict at that level.
+        source: "prepare_slice_data() (no coerce_like)"
+        options: ["Numeric: slice_2d(lm(hwy ~ displ + drv, mpg), drv = \"r\") line equals predict at drv = \"r\"."]
+        test_type: numeric
+
+  # ---------------------------------------------------------------------------
+  slicing:
+    purpose: Grouping aesthetics and facets pin their predictor to each group's or panel's own value.
+    functions: [geom_slice, geom_slice_text, geom_slice_subtitle, geom_slice_caption, autoplot.lm]
+    behaviours:
+      - id: shared.slicing.group-pins
+        principle: A visible aesthetic (colour, linetype, ...) mapped to exactly one predictor draws one line per group, each predicted at that group's value.
+        source: "?geom_slice; build_slice_spec()"
+        test_type: numeric
+      - id: shared.slicing.facet-pins
+        principle: A facet variable that is a predictor pins it to each panel's value, for facet_wrap and facet_grid alike.
+        source: "?geom_slice; build_slice_spec()"
+        test_type: numeric
+      - id: shared.slicing.factor-wrapped-aes
+        principle: colour = factor(cyl) pins the numeric predictor cyl per group at its numeric value.
+        source: "resolve_group_pins() comment; README geom-slice (factor(x3))"
+        test_type: numeric
+      - id: shared.slicing.facets-look
+        principle: Faceted, grouped slices read correctly - each panel's lines in its own colours, strips labelling the pinned values.
+        source: "README geom-slice, autoplot-mapping"
+        test_type: appearance
+    edge_cases:
+      - id: shared.slicing.bare-group
+        principle: A bare group = var can't pin var (ggplot2 turns groups into ids), so it warns and holds the variable instead.
+        source: "build_slice_spec(); for_devs/known_issues.Rmd"
+        options: ["Condition: aes(wt, mpg, group = cyl)."]
+        test_type: condition
+      - id: shared.slicing.continuous-colour
+        principle: A numeric predictor on a continuous colour scale can't pin per group, so it warns, suggests factor(), and holds (imputes) it.
+        source: "resolve_group_pins()"
+        options: ["Condition: aes(wt, mpg, colour = hp) with hp in the model."]
+        test_type: condition
+      - id: shared.slicing.facet-not-predictor
+        principle: A facet on a variable the model doesn't use doesn't pin anything; every panel gets the same line.
+        source: "build_slice_spec() intersect(layout_cols, predictor_vars)"
+        options: ["Numeric: facet_wrap(~gear) with lm(mpg ~ wt); identical lines per panel."]
+        test_type: numeric
+      - id: shared.slicing.added-after
+        principle: A facet, layer aes() or %+% data swap added after geom_slice_text() or geom_slice_subtitle() can make their add-time reading disagree with the build; the drawn lines stay right.
+        source: "for_devs/known_issues.Rmd (noted 2026-08-18)"
+        options: ["Numeric: subtitle still lists a variable a later facet pins.", "Appearance: label set on a later-faceted plot."]
+        test_type: numeric
+        deferred: Documented limitation with no decided correct output yet; never observed in practice and the docs say to add companions last.
+
+  # ---------------------------------------------------------------------------
+  band:
+    purpose: A projection band spans one predictor between two values, as two edge slices with a ribbon between.
+    functions: [geom_slice, geom_slice_text, geom_slice_subtitle, autoplot.lm]
+    behaviours:
+      - id: shared.band.edges-are-predictions
+        principle: The band's edges are the predictions at the banded variable's two values; the line is their midpoint, with ymin/ymax ordered.
+        source: "compute_slice_group() band branch"
+        test_type: numeric
+      - id: shared.band.range
+        principle: The band spans the predict_vars values when given (their min and max), otherwise the variable's data range, with a message naming it.
+        source: "?geom_slice (band); resolve_slice_band()"
+        test_type: numeric
+      - id: shared.band.infer-true
+        principle: band = TRUE picks the one multi-value predict_vars entry, otherwise the single predictor the plot doesn't show.
+        source: "?geom_slice (band)"
+        test_type: numeric
+      - id: shared.band.look
+        principle: A band is one translucent ribbon in its lines' colour with both edges drawn as lines.
+        source: "GeomSliceBand"
+        test_type: appearance
+    edge_cases:
+      - id: shared.band.with-interval
+        principle: band and interval in one layer stop; a band that isn't TRUE, FALSE or one name stops.
+        source: "check_slice_band()"
+        options: ["Condition: band = TRUE, interval = \"confidence\"; band = 3."]
+        test_type: condition
+      - id: shared.band.unresolvable
+        principle: An ambiguous band = TRUE, or a named band that isn't a predictor, is on the x-axis, is pinned, or isn't numeric, warns, draws the slice line without a band, and names the predictors that could band.
+        source: "resolve_slice_band()"
+        options: ["Condition: one plot per reason; wording judged together; plot still built with a line."]
+        test_type: condition
+
+  # ---------------------------------------------------------------------------
+  intervals:
+    purpose: Confidence and prediction intervals from predict.lm() are drawn around the line.
+    functions: [geom_slice, slice_2d, add_slice_2d, autoplot.lm]
+    behaviours:
+      - id: shared.intervals.match-predict
+        principle: The ribbon's lower and upper edges equal predict(interval = ...)'s lwr and upr, back-transformed like the line.
+        source: "?geom_slice (interval); ?slice_2d (interval)"
+        test_type: numeric
+      - id: shared.intervals.look
+        principle: The ribbon is translucent in its line's colour; the prediction ribbon is visibly wider than the confidence one.
+        source: "README interval"
+        test_type: appearance
+
+  # ---------------------------------------------------------------------------
+  composite-x:
+    purpose: An x-axis that is an expression of several predictors is drawn by predicting at the model's own data points.
+    functions: [geom_slice, slice_2d, add_slice_2d]
+    behaviours:
+      - id: shared.composite-x.at-data-points
+        principle: With an expression x-axis (aes(x * x2) or x_axis = "x * x2"), each prediction is made at a data row (filtered to the group's pinned values) and placed at that row's expression value; n is ignored.
+        source: "?geom_slice; ?slice_2d (x_axis); for_devs/known_issues.Rmd"
+        test_type: numeric
+      - id: shared.composite-x.exact-fit
+        principle: Against the model's full linear predictor an exact-fit model puts every point on the line.
+        source: "README minimal (Same Model, Different X-Axis)"
+        test_type: appearance
+    edge_cases:
+      - id: shared.composite-x.zigzag
+        principle: When predictions aren't a function of the axis expression, the connected line can zigzag; that is the honest picture, not a bug.
+        source: "for_devs/known_issues.Rmd"
+        options: ["Appearance: a judged plot whose note says the zigzag is expected."]
+        test_type: appearance
+      - id: shared.composite-x.full-range-ignored
+        principle: full_range has no effect with an expression x-axis; lines keep their data extent.
+        source: "?geom_slice (full_range)"
+        options: ["Numeric: same layer data with and without full_range."]
+        test_type: numeric
+
+  # ---------------------------------------------------------------------------
+  conditions:
+    purpose: Every user-facing condition follows the two-part format, and the package's own condition helpers carry no call.
+    functions: [geom_slice, geom_slice_text, geom_slice_subtitle, geom_slice_caption, slice_2d, add_slice_2d, scatter_3d, autoplot.lm, lm_equation, lm_latex, drawit, geom_fit]
+    behaviours:
+      - id: shared.conditions.two-part-format
+        principle: A first line saying what happened and naming the offending value; when the user can act, an indented second line with a copy-pasteable fix. Backticks for names, single quotes for syntax, double quotes for values.
+        source: "for_devs/decisions.Rmd (Error Messages); R/conditions.R"
+        test_type: condition
+      - id: shared.conditions.severity
+        principle: Errors mean the request can't proceed, warnings mean it proceeds but is likely wrong (and the plot is still built), messages report a normal hidden choice.
+        source: "for_devs/decisions.Rmd (Severity)"
+        test_type: condition
+      - id: shared.conditions.xaxis-deprecated
+        principle: The old `xaxis` argument of slice_2d() and add_slice_2d() warns and still works; if both are given, x_axis wins.
+        source: "resolve_deprecated_xaxis()"
+        test_type: condition
+
+  # ---------------------------------------------------------------------------
+  companions:
+    purpose: geom_slice_text(), geom_slice_subtitle() and geom_slice_caption() borrow everything from the plot's geom_slice() layers when added.
+    functions: [geom_slice_text, geom_slice_subtitle, geom_slice_caption]
+    behaviours:
+      - id: shared.companions.no-slice-layer
+        principle: Added to a plot with no geom_slice() layer, a companion warns and adds nothing; the plot still builds.
+        source: "ggplot_add.slice_text_spec(); slice_annotation_text()"
+        test_type: condition
+      - id: shared.companions.different-models
+        principle: Slice layers with different models make a companion warn, naming the models, and add nothing.
+        source: "ggplot_add.slice_text_spec(); slice_annotation_text()"
+        test_type: condition
+      - id: shared.companions.no-device-side-effect
+        principle: Adding a companion opens no graphics device and draws no page; measuring happens off-screen.
+        source: "label_width_pt(); with_measuring_device()"
+        test_type: numeric
+
+  # ---------------------------------------------------------------------------
+  annotation-wrap:
+    purpose: geom_slice_subtitle() and geom_slice_caption() wrap long text to the room the plot gives them, keeping the equation readable.
+    functions: [geom_slice_subtitle, geom_slice_caption]
+    behaviours:
+      - id: shared.annotation-wrap.fits
+        principle: With wrap = TRUE, lines too long for the subtitle's cell break to fit, measured in the plot's own font on a device of the current size; text that fits comes back unchanged.
+        source: "?geom_slice_subtitle (wrap); wrap_annotation_text()"
+        test_type: text
+      - id: shared.annotation-wrap.between-terms
+        principle: Breaks fall only between terms, and each term keeps its sign, so no operator is stranded at a line end.
+        source: "annotation_line_parts()"
+        test_type: text
+      - id: shared.annotation-wrap.hanging-indent
+        principle: Continuation lines hang under the right-hand side of the equal sign (or after the "held at" prefix), unless the indent would take more than half the line.
+        source: "wrap_annotation_line()"
+        test_type: appearance
+      - id: shared.annotation-wrap.ladder
+        principle: "Layouts are tried in order: spelled-out with indent, brackets with indent, spelled-out, brackets. The first that fits wins; if none fits, spelled-out without indent is used."
+        source: "annotation_layouts(); wrap_annotation_text()"
+        test_type: text
+      - id: shared.annotation-wrap.brackets-message
+        principle: When the brief [level] form is used, a message shows one term written both ways and how to keep the full names.
+        source: "slice_annotation_text()"
+        test_type: condition
+      - id: shared.annotation-wrap.width-or-off
+        principle: wrap = FALSE leaves one line per item; a number wraps to that many inches, whatever the device.
+        source: "?geom_slice_subtitle (wrap)"
+        test_type: text
+    edge_cases:
+      - id: shared.annotation-wrap.ambiguous-brackets
+        principle: The brief form is never offered when two terms would shorten to the same label (two factors sharing a level).
+        source: "brackets_unambiguous()"
+        options: ["Numeric: two factors with a shared non-reference level; result never contains duplicate [level] terms."]
+        test_type: text
+      - id: shared.annotation-wrap.prepend-equals
+        principle: "With prepend = \"Fitted: \", continuation lines still hang under the equation's right-hand side, not under the prepended words."
+        source: "annotation_line_parts() comment"
+        options: ["Numeric: wrapped text's continuation indent width."]
+        test_type: text
+      - id: shared.annotation-wrap.overlong-term
+        principle: A single term wider than the whole line goes on its own line and overflows, rather than breaking inside it.
+        source: "wrap_annotation_line()"
+        options: ["Numeric: wrap = 1 on a long interaction term."]
+        test_type: text
+      - id: shared.annotation-wrap.invalid-style
+        principle: An invalid style through ... warns and falls back to "prettier", but has already disabled the brackets fallback, so the subtitle can overflow.
+        source: "for_devs/known_issues.Rmd (noted 2026-08-18)"
+        options: ["Condition: geom_slice_subtitle(style = \"fancy\") warns once."]
+        test_type: condition
+      - id: shared.annotation-wrap.narrow-and-wide
+        principle: The same model's subtitle on a wide and a narrow device both stay inside the plot, the narrow one wrapped; a narrower plot can bring the full names back by dropping the indent.
+        source: "?geom_slice_subtitle (...)"
+        options: ["Appearance: two judged plots at fixed widths."]
+        test_type: appearance
