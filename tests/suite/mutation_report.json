@@ -1,8 +1,8 @@
 {
-  "when": "2026-11-10T22:50:48-0700",
-  "commit": "6943094 + uncommitted changes",
-  "tests": 60,
-  "caught": 34,
+  "when": "2026-11-11T20:52:20-0700",
+  "commit": "b257c19",
+  "tests": 65,
+  "caught": 35,
   "breaks": [
     {
       "name": "A changed fingerprint keeps its status",
@@ -95,6 +95,7 @@
         "test-contract.R: base_graphics: completeness",
         "test-contract.R: conditions: completeness",
         "test-contract.R: plotly_3d: completeness",
+        "test-contract.R: returned_text: completeness",
         "test-contract.R: static_plot: completeness",
         "test-fake-type.R: the unforeseen type gets the shared trust tests"
       ],
@@ -108,6 +109,7 @@
         "test-contract.R: base_graphics: completeness",
         "test-contract.R: conditions: completeness",
         "test-contract.R: plotly_3d: completeness",
+        "test-contract.R: returned_text: completeness",
         "test-contract.R: static_plot: completeness",
         "test-fake-type.R: the unforeseen type gets the shared trust tests"
       ],
@@ -224,6 +226,16 @@
       "crashed": false
     },
     {
+      "name": "Returned text drops the names that head each example",
+      "file": "types/returned_text.R",
+      "caught": true,
+      "caught_by": [
+        "test-contract.R: returned_text: sensitivity",
+        "test-type-returned-text.R: entries keep their order, with names as headers and a blank line between"
+      ],
+      "crashed": false
+    },
+    {
       "name": "A human decision for an old fingerprint still counts",
       "file": "store.R",
       "caught": true,
@@ -272,7 +284,6 @@
       "file": "server.R",
       "caught": true,
       "caught_by": [
-        "test-contract.R: plotly_3d: completeness",
         "test-decisions.R: a human rejection needs a note, sets Rejected and holds against the agent",
         "test-server.R: a rejection without a note, or on a stale page, is refused"
       ],
