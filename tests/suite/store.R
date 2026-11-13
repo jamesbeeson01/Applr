@@ -76,8 +76,15 @@ run_case_file <- function(file) {
   on.exit(options(old))
   res <- testthat::test_file(file, reporter = "silent", stop_on_failure = FALSE)
   df <- as.data.frame(res)
+  bad <- df$failed > 0 | df$error
+  failures <- unlist(lapply(res[bad], function(t) {
+    msgs <- vapply(Filter(function(e) inherits(e, c("expectation_failure", "expectation_error")),
+                          t$results), conditionMessage, "")
+    paste0(t$test, ": ", msgs)
+  }))
   list(case = case,
-       passed = nrow(df) > 0 && !any(df$failed > 0 | df$error),
+       passed = nrow(df) > 0 && !any(bad),
+       failures = failures,
        outputs = as.list(registry))
 }
 

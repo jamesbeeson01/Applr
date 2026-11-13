@@ -12,9 +12,13 @@ check_run <- function(dir = "tests/testthat", paths = suite_paths(), pattern = "
   rows <- list()
   outs <- list()
   failed_cases <- character()
+  failures <- list()
   for (file in list.files(dir, pattern = pattern, full.names = TRUE)) {
     r <- run_case_file(file)
-    if (!r$passed) failed_cases <- c(failed_cases, r$case)
+    if (!r$passed) {
+      failed_cases <- c(failed_cases, r$case)
+      failures[[r$case]] <- r$failures
+    }
     for (id in names(r$outputs)) {
       out <- tryCatch(serialise_output(r$outputs[[id]]), error = function(e) {
         stop("Couldn't serialise ", id, ": ", conditionMessage(e), call. = FALSE)
@@ -51,7 +55,7 @@ check_run <- function(dir = "tests/testthat", paths = suite_paths(), pattern = "
                          case_failed = TRUE)
   }
   for (id in names(rows)) if (rows[[id]]$case %in% failed_cases) rows[[id]]$case_failed <- TRUE
-  structure(rows, outputs = outs)
+  structure(rows, outputs = outs, failures = failures)
 }
 
 # Writes the forms and views of every output whose fingerprint differs here,
