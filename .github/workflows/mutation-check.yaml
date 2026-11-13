@@ -67,10 +67,13 @@ jobs:
           Rscript tests/suite/pins/install.R
           Rscript -e 'pak::pkg_install(c("chromote", "httpuv", "png", "yaml"), upgrade = FALSE, ask = FALSE)'
 
-      # Three copies, not four: with every core busy, a copy's Chrome can fail to
-      # start within its timeout and fail the unbroken copy's plotly tests.
+      # Chrome's first start on a runner can be slow (fonts the install added).
+      # Taking it alone here keeps the copies' Chromes within their timeout.
+      - name: Start Chrome once
+        run: Rscript -e 'b <- chromote::ChromoteSession$new(); b$close()'
+
       - name: Mutation check
-        run: Rscript tests/suite/mutate.R 3 --shard ${{ matrix.shard }}/${{ inputs.shards }} ${{ inputs.full && '--full' || '' }}
+        run: Rscript tests/suite/mutate.R 4 --shard ${{ matrix.shard }}/${{ inputs.shards }} ${{ inputs.full && '--full' || '' }}
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -102,11 +105,15 @@ jobs:
           pattern: mutation-shard-*
           path: shards
 
+      # The committed report goes first, so a failed merge uploads nothing stale.
       - name: Merge shard reports
-        run: Rscript tests/suite/mutate.R --merge shards
+        run: |
+          rm tests/suite/mutation_report.json
+          Rscript tests/suite/mutate.R --merge shards
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: mutation-report
           path: tests/suite/mutation_report.json
+          if-no-files-found: ignore
