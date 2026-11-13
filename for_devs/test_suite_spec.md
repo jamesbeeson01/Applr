@@ -196,13 +196,44 @@ An output's review status is derived from both files. A human approval for the c
 
 **Screenshots.** Interactive states are captured with headless Chrome via chromote (dev-only), driven by a hook in the widget that sets a given state, so captures are deterministic. They are captured only for the states of Unreviewed outputs, never to compute a fingerprint. A state whose new screenshot is pixel-identical to the one kept from the last approval, on the same machine, is marked unchanged, so a reviewer can skip it; the changed parts of the serialised form say what to look for in the rest.
 
-**CI.** A workflow runs on pushes to the test-suite branch only. It's used first by the cross-platform experiment. How CI maps review statuses to ✓/✗, and whether local fingerprints are authoritative across platforms, are **deferred to the experiment's result**. The working proposal: Rejected and Unreviewed fail, Agent approved warns, and a separate release check requires everything to be Human approved. The maintainer confirmed that Unreviewed fails (2026-11-09): an Unreviewed output reaching `main` is a failure, even if it means CI stays red until a review is done.
+**CI.** A workflow runs on pushes to the test-suite branch only. It runs `tests/suite/ci.R`, which runs every case, fingerprints every judged output without writing the review state, and compares each fingerprint with the one recorded in `review_state.json`. An output the state records but no case produced, or one that fails to serialise, stops the run with an error, so a missing input can never pass as a match. The maintainer confirmed that Unreviewed fails (2026-11-09): an Unreviewed output reaching `main` is a failure, even if it means CI stays red until a review is done.
 
-Partial results (October 2026, R 4.5.3, identical package versions on every machine). For plotly JSON, slider payloads, slider backgrounds and animation frames, GitHub's Windows and macOS runners matched the maintainer's machine exactly. Ubuntu (OpenBLAS) differed only where normalisation had a gap:
-- plotly stores colorscale stops as strings, which `signif()` never reaches;
-- the prototype slider's payload held device coordinates measured with system fonts, which the spec's data-unit payload already avoids.
+**Cross-platform results** (ticket 3, 2026-11-13). R 4.5.3 and the same 82 pinned package versions on every machine. The reference is the maintainer's machine (Windows 11, R's reference BLAS, LAPACK 3.12.1, `English_United States.utf8`). The three runners: Windows Server 2022 (same BLAS and LAPACK); macOS 26 on arm64 (R's own BLAS, LAPACK 3.12.1); Ubuntu 26.04 (OpenBLAS 0.3.32, LAPACK 3.12.0). All three use a UTF-8 English locale. Runs 43353432226 and 43354217559 on the fork.
 
-Static plots, base graphics and condition text were not yet tested. The provisional reading: local fingerprints are authoritative on every platform once those gaps are closed. Ticket 3 confirms it on the new cases.
+| Output type | Outputs | gha-windows | gha-macos | gha-ubuntu |
+|---|---|---|---|---|
+| Static ggplot | 30 | 30/30 match | 30/30 match | 30/30 match |
+| Base graphics | 5 | 5/5 match | 5/5 match | 5/5 match |
+| Condition text | 98 | 98/98 match | 98/98 match | 98/98 match |
+| Returned text | 6 | 6/6 match | 6/6 match | 6/6 match |
+| plotly 3D | 4 | 4/4 match | 4/4 match | 4/4 match |
+| Slider prototype (October) | 2 | match | match | payload differed: device coordinates; the spec's data-unit payload avoids this |
+| Animation prototype (October) | 1 | match | match | match |
+
+No fingerprint differed on any platform. The one failure was an expectation, not a fingerprint: `num_companions` opened `grDevices::svg()`, which needs cairo, and on the macOS runner it wrote no file. The case now checks the device's display list instead, and passes on all three.
+
+What this says about the hypotheses:
+- **H1, engine: confirmed.** All 35 static and base graphics SVGs are byte-identical on all four machines.
+- **H2, floating point: confirmed as real, and absorbed.** Ubuntu's OpenBLAS differs in the last bit (seen in October), but two-decimal SVG rounding and 6 significant figures in JSON hid it in all 143 outputs. No rounding-boundary flip was seen.
+- **H3, negative zero: no mismatch seen.** Whether the normalisation rule fired was not measured separately; it costs nothing to keep.
+- **H4, text wrap: confirmed.** The wrap cases (`text_wrapping`, `look_labels/subtitle_narrow`, `cond_companions/subtitle_wrap`) match everywhere under vdiffr's fixed metrics.
+- **H5, condition wording: confirmed** for UTF-8 English locales. The pinned options plus the quote rule give identical wording in all 98 condition outputs. A non-UTF-8 or non-English locale was not tested.
+- **H6, JSON: confirmed**, now that numeric strings are rounded: the plotly colorscale stop that differed on Ubuntu in October matches.
+- **H7, versions not platforms: confirmed by elimination.** With versions pinned, platforms caused no mismatch. A real mismatch on CI is therefore most likely a version change, so CI installs the pinned versions.
+
+**Decisions** (approved by the maintainer, 2026-11-13):
+1. **Local fingerprints are authoritative on every platform.** The fingerprints the maintainer records locally are what every CI platform is checked against; nothing is recorded per platform up front. A different fingerprint on a CI platform makes that output a **platform variant** for that platform: CI uploads its forms and views as a bundle, and an agent reviews the bundle against the approved version. If the original is Human approved, the variant's agent approval, with a note on what differs, counts as Human approved for that platform. A variant is expected to be rare: none appeared in this experiment.
+2. **How each review status maps to ✓ / ✗ / warning**, on every CI platform:
+
+   | Review status on that platform | CI |
+   |---|---|
+   | Human approved, or an agent-approved platform variant of it | ✓ |
+   | Agent approved | warning (the run passes; the summary lists them) |
+   | Unreviewed, including a new output and an unreviewed platform variant | ✗ |
+   | Rejected | ✗ |
+   | Case expectations fail | ✗ |
+
+   The release check is separate and stricter: it fails unless every output is Human approved (or an agent-approved variant of one), and it runs the release audit.
 
 **Write, then salvage.** The new suite is a reinvention, not a migration. The old suite was deleted from the test suite branch before any new cases were written, and is kept only in the `old-suite` tag (the last `main` commit before the rewrite). It is read once, at the end, to check the new one, and is never used as a starting point. The work happens in four phases.
 
