@@ -22,7 +22,13 @@ screenshot_session <- local({
     if (is.null(session) || !session$is_active()) {
       old <- options(chromote.timeout = screenshot_timeout)
       on.exit(options(old))
-      session <<- chromote::ChromoteSession$new(width = 800, height = 600)
+      # Two processes starting Chrome at once (as the mutation check's copies
+      # do) can leave one without a debugging port; a fresh Chrome fixes it.
+      session <<- tryCatch(chromote::ChromoteSession$new(width = 800, height = 600), error = function(e) {
+        Sys.sleep(stats::runif(1, 1, 5))
+        chromote::set_default_chromote_object(chromote::Chromote$new())
+        chromote::ChromoteSession$new(width = 800, height = 600)
+      })
     }
     session
   }

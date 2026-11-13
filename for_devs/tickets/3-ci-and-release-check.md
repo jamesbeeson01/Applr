@@ -6,7 +6,7 @@
 
 **Blocked by:** 2
 
-**Status:** ready-for-agent
+**Status:** done (see `3-handoff.md`)
 
 ## Starting point
 
@@ -14,10 +14,10 @@ Read `for_devs/experiments/03-cross-platform/HANDOFF.md`. The plotly, slider and
 
 ## Experiment
 
-- [ ] Run the suite's own cases on Windows, macOS and Ubuntu with pinned versions (`install_pinned.R`, `versions.csv`; refresh the pins if ticket 2 needs new packages). Compare their fingerprints with the maintainer's machine.
-- [ ] A missing input stops the run with an error. It never records an output that could "match".
-- [ ] The results table covers every output type that exists, and confirms or refutes hypotheses H1–H7 from the spec, with the cause of each mismatch.
-- [ ] **Pause.** Write the two deferred decisions into the spec's *CI* section:
+- [x] Run the suite's own cases on Windows, macOS and Ubuntu with pinned versions (`install_pinned.R`, `versions.csv`; refresh the pins if ticket 2 needs new packages). Compare their fingerprints with the maintainer's machine.
+- [x] A missing input stops the run with an error. It never records an output that could "match".
+- [x] The results table covers every output type that exists, and confirms or refutes hypotheses H1–H7 from the spec, with the cause of each mismatch.
+- [x] **Pause.** Write the two deferred decisions into the spec's *CI* section:
   - how each review status maps to ✓ / ✗ / warning;
   - whether local fingerprints are authoritative on every platform.
 
@@ -25,9 +25,9 @@ Read `for_devs/experiments/03-cross-platform/HANDOFF.md`. The plotly, slider and
 
 ## Build
 
-- [ ] The ✓/✗ policy per review status, as approved.
-- [ ] States that render with a different fingerprint on another platform are uploaded as a downloadable bundle for review.
-- [ ] A platform variant of a Human approved output needs only agent approval, with a note on what differs.
-- [ ] A release check fails while anything is Unreviewed, Rejected, or Agent approved (other than a platform variant). It also runs the spec's release audit: re-render every state and compare it with the screenshot kept from its approval on the same machine.
-- [ ] Expectations run within CRAN limits under R CMD check.
-- [ ] Once the results are in the spec, delete the throwaway experiment: `for_devs/experiments/03-cross-platform/` and its `xplat-experiment` workflow.
+- [x] The ✓/✗ policy per review status, as approved.
+- [x] States that render with a different fingerprint on another platform are uploaded as a downloadable bundle for review.
+- [x] A platform variant of a Human approved output needs only agent approval, with a note on what differs.
+- [x] A release check fails while anything is Unreviewed, Rejected, or Agent approved (other than a platform variant). It also runs the spec's release audit: re-render every state and compare it with the screenshot kept from its approval on the same machine.
+- [x] Expectations run within CRAN limits under R CMD check.
+- [x] Once the results are in the spec, delete the throwaway experiment: `for_devs/experiments/03-cross-platform/` and its `xplat-experiment` workflow.

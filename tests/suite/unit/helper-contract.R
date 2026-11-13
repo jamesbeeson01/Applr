@@ -62,14 +62,15 @@ expect_complete <- function(type, entries) {
   log$calls <- list()
   probe_type(type, log)
   paths <- temp_paths()
-  apply_case(list(case = "c", passed = TRUE, outputs = entries), paths)
+  report <- apply_case(list(case = "c", passed = TRUE, outputs = entries), paths)
   state <- read_state(paths)
 
   for (id in names(entries)) {
     rec <- state[[id]]
     calls <- Filter(function(cl) cl$id == file_id(id), log$calls)
     n_states <- length(serialise_output(entries[[id]])$states)
-    expect_equal(sum(vapply(calls, function(cl) cl$what != "live", TRUE)), n_states)
+    expect_equal(sum(vapply(calls, function(cl) cl$what != "live", TRUE)), n_states,
+                 label = paste(id, "views drawn:", report[[id]]))
     for (cl in calls) expect_identical(cl$probe, rec$fingerprint, label = paste(id, cl$what, "view tag"))
 
     form <- readLines(file.path(paths$forms, paste0(file_id(id), ".txt")), warn = FALSE)
