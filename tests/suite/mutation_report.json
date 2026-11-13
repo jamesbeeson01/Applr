@@ -1,8 +1,9 @@
 {
-  "when": "2026-11-11T20:52:20-0700",
-  "commit": "b257c19",
-  "tests": 65,
-  "caught": 35,
+  "when": "2026-11-12T18:39:41-0700",
+  "commit": "9aad881 + uncommitted changes",
+  "code": "f78bd7f3d86e36eedef3676d6c932493",
+  "tests": 68,
+  "caught": 36,
   "breaks": [
     {
       "name": "A changed fingerprint keeps its status",
@@ -362,6 +363,17 @@
       "caught": true,
       "caught_by": [
         "test-inventory.R: covers() is read from anywhere in a case file, without running it"
+      ],
+      "crashed": false
+    },
+    {
+      "name": "The code hash leaves out the cases the unit tests read",
+      "file": "stamp.R",
+      "caught": true,
+      "caught_by": [
+        "test-fake-type.R: an unforeseen type goes from run to the review page's data",
+        "test-server.R: the page, its data and the views are served",
+        "test-stamp.R: editing suite code, a unit test or a demo case changes the hash"
       ],
       "crashed": false
     }

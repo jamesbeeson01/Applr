@@ -83,7 +83,8 @@ review_api_data <- function(paths, inventory_file, case_dir) {
     inventory = inventory,
     inventory_error = inventory_error,
     health = list(mutation = read_json_or_null(file.path(root, "mutation_report.json")),
-                  tests = read_json_or_null(file.path(root, "test_report.json")))
+                  tests = read_json_or_null(file.path(root, "test_report.json")),
+                  code = suite_code_hash(root, case_dir))
   )
 }
 

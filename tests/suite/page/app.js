@@ -279,7 +279,17 @@ function latestStatus() {
     : `<tr><td>${label}</td><td class="tag-warn">No run recorded yet</td><td></td><td></td></tr>`;
   return `<table><tr><th>Run</th><th>Result</th><th>When</th><th>Commit</th></tr>
     ${line("Unit tests (<code>test.R</code>)", t, t && `<span class="${t.failed ? "tag-bad" : "tag-ok"}">${t.tests - t.failed} of ${t.tests} pass</span>`)}
-    ${line("Mutation check (<code>mutate.R</code>)", m, m && `<span class="${m.caught < arr(m.breaks).length ? "tag-bad" : "tag-ok"}">${m.caught} of ${arr(m.breaks).length} breaks caught</span>`)}</table>`;
+    ${line("Mutation check (<code>mutate.R</code>)", m, m && `<span class="${m.caught < arr(m.breaks).length ? "tag-bad" : "tag-ok"}">${m.caught} of ${arr(m.breaks).length} breaks caught</span>${mutationFreshness(m)}`)}</table>`;
+}
+
+// The check is due again only when the code its verdict rests on (stamp.R:
+// suite_code_files) has changed since the run; adding cases doesn't count.
+function mutationFreshness(m) {
+  const now = DATA.health?.code;
+  const [cls, text] = !m.code ? ["tag-warn", "Ran on unrecorded suite code: rerun to record it"]
+    : m.code === now ? ["tag-ok", "Up to date with the suite's code"]
+    : ["tag-bad", "Out of date: the suite's code has changed since. Rerun <code>mutate.R</code>"];
+  return `<div class="small ${cls}">${text}</div>`;
 }
 
 function healthView() {

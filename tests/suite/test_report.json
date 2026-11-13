@@ -1,10 +1,10 @@
 {
-  "when": "2026-11-11T19:41:40-0700",
-  "commit": "5f6d69e + uncommitted changes",
-  "tests": 65,
+  "when": "2026-11-12T18:03:39-0700",
+  "commit": "9aad881 + uncommitted changes",
+  "tests": 68,
   "failed": 0,
   "skipped": 0,
-  "seconds": 106.1,
+  "seconds": 103.4,
   "results": [
     {
       "file": "test-contract.R",
@@ -12,7 +12,7 @@
       "expectations": 11,
       "passed": true,
       "skipped": false,
-      "seconds": 1.01
+      "seconds": 0.95
     },
     {
       "file": "test-contract.R",
@@ -20,7 +20,7 @@
       "expectations": 4,
       "passed": true,
       "skipped": false,
-      "seconds": 0.25
+      "seconds": 0.24
     },
     {
       "file": "test-contract.R",
@@ -28,7 +28,7 @@
       "expectations": 3,
       "passed": true,
       "skipped": false,
-      "seconds": 8.78
+      "seconds": 6.44
     },
     {
       "file": "test-contract.R",
@@ -36,7 +36,7 @@
       "expectations": 11,
       "passed": true,
       "skipped": false,
-      "seconds": 3.35
+      "seconds": 2.58
     },
     {
       "file": "test-contract.R",
@@ -52,7 +52,7 @@
       "expectations": 3,
       "passed": true,
       "skipped": false,
-      "seconds": 8.56
+      "seconds": 7.7
     },
     {
       "file": "test-contract.R",
@@ -60,7 +60,7 @@
       "expectations": 17,
       "passed": true,
       "skipped": false,
-      "seconds": 23.7
+      "seconds": 26.81
     },
     {
       "file": "test-contract.R",
@@ -68,7 +68,7 @@
       "expectations": 5,
       "passed": true,
       "skipped": false,
-      "seconds": 0.48
+      "seconds": 0.95
     },
     {
       "file": "test-contract.R",
@@ -76,7 +76,7 @@
       "expectations": 3,
       "passed": true,
       "skipped": false,
-      "seconds": 6.62
+      "seconds": 7.17
     },
     {
       "file": "test-contract.R",
@@ -84,7 +84,7 @@
       "expectations": 11,
       "passed": true,
       "skipped": false,
-      "seconds": 0.34
+      "seconds": 0.36
     },
     {
       "file": "test-contract.R",
@@ -92,7 +92,7 @@
       "expectations": 5,
       "passed": true,
       "skipped": false,
-      "seconds": 0.16
+      "seconds": 0.14
     },
     {
       "file": "test-contract.R",
@@ -100,7 +100,7 @@
       "expectations": 3,
       "passed": true,
       "skipped": false,
-      "seconds": 5.67
+      "seconds": 5.75
     },
     {
       "file": "test-contract.R",
@@ -108,7 +108,7 @@
       "expectations": 11,
       "passed": true,
       "skipped": false,
-      "seconds": 2.98
+      "seconds": 2.39
     },
     {
       "file": "test-contract.R",
@@ -116,7 +116,7 @@
       "expectations": 5,
       "passed": true,
       "skipped": false,
-      "seconds": 1.03
+      "seconds": 1.01
     },
     {
       "file": "test-contract.R",
@@ -124,7 +124,7 @@
       "expectations": 3,
       "passed": true,
       "skipped": false,
-      "seconds": 8.41
+      "seconds": 8.79
     },
     {
       "file": "test-contract.R",
@@ -132,7 +132,7 @@
       "expectations": 10,
       "passed": true,
       "skipped": false,
-      "seconds": 0.07
+      "seconds": 0.05
     },
     {
       "file": "test-decisions.R",
@@ -140,7 +140,7 @@
       "expectations": 7,
       "passed": true,
       "skipped": false,
-      "seconds": 1.5
+      "seconds": 1.11
     },
     {
       "file": "test-decisions.R",
@@ -148,7 +148,7 @@
       "expectations": 3,
       "passed": true,
       "skipped": false,
-      "seconds": 1.47
+      "seconds": 1.13
     },
     {
       "file": "test-decisions.R",
@@ -156,7 +156,7 @@
       "expectations": 6,
       "passed": true,
       "skipped": false,
-      "seconds": 0.93
+      "seconds": 0.58
     },
     {
       "file": "test-decisions.R",
@@ -164,7 +164,7 @@
       "expectations": 3,
       "passed": true,
       "skipped": false,
-      "seconds": 0.76
+      "seconds": 0.52
     },
     {
       "file": "test-decisions.R",
@@ -172,7 +172,7 @@
       "expectations": 5,
       "passed": true,
       "skipped": false,
-      "seconds": 1.94
+      "seconds": 1.38
     },
     {
       "file": "test-decisions.R",
@@ -180,7 +180,7 @@
       "expectations": 1,
       "passed": true,
       "skipped": false,
-      "seconds": 1.44
+      "seconds": 1.03
     },
     {
       "file": "test-fake-type.R",
@@ -188,7 +188,7 @@
       "expectations": 20,
       "passed": true,
       "skipped": false,
-      "seconds": 2.22
+      "seconds": 1.36
     },
     {
       "file": "test-fake-type.R",
@@ -196,7 +196,7 @@
       "expectations": 26,
       "passed": true,
       "skipped": false,
-      "seconds": 11.19
+      "seconds": 6.59
     },
     {
       "file": "test-hook.R",
@@ -204,7 +204,7 @@
       "expectations": 3,
       "passed": true,
       "skipped": false,
-      "seconds": 0.05
+      "seconds": 0.01
     },
     {
       "file": "test-hook.R",
@@ -212,7 +212,7 @@
       "expectations": 4,
       "passed": true,
       "skipped": false,
-      "seconds": 1.29
+      "seconds": 1.22
     },
     {
       "file": "test-hook.R",
@@ -220,7 +220,7 @@
       "expectations": 3,
       "passed": true,
       "skipped": false,
-      "seconds": 0.83
+      "seconds": 0.92
     },
     {
       "file": "test-inventory.R",
@@ -228,7 +228,7 @@
       "expectations": 5,
       "passed": true,
       "skipped": false,
-      "seconds": 0.06
+      "seconds": 0.07
     },
     {
       "file": "test-inventory.R",
@@ -244,7 +244,7 @@
       "expectations": 1,
       "passed": true,
       "skipped": false,
-      "seconds": 0.01
+      "seconds": 0.03
     },
     {
       "file": "test-inventory.R",
@@ -252,15 +252,15 @@
       "expectations": 2,
       "passed": true,
       "skipped": false,
-      "seconds": 0.03
+      "seconds": 0.05
     },
     {
       "file": "test-inventory.R",
       "test": "the real inventory parses and every case cites only entries it has",
-      "expectations": 5,
+      "expectations": 39,
       "passed": true,
       "skipped": false,
-      "seconds": 0.03
+      "seconds": 0.17
     },
     {
       "file": "test-normalise.R",
@@ -316,7 +316,7 @@
       "expectations": 1,
       "passed": true,
       "skipped": false,
-      "seconds": 0.02
+      "seconds": 0.01
     },
     {
       "file": "test-normalise.R",
@@ -332,7 +332,7 @@
       "expectations": 1,
       "passed": true,
       "skipped": false,
-      "seconds": 0
+      "seconds": 0.03
     },
     {
       "file": "test-runner.R",
@@ -340,7 +340,7 @@
       "expectations": 8,
       "passed": true,
       "skipped": false,
-      "seconds": 1.41
+      "seconds": 1.43
     },
     {
       "file": "test-runner.R",
@@ -356,7 +356,7 @@
       "expectations": 7,
       "passed": true,
       "skipped": false,
-      "seconds": 1.21
+      "seconds": 1.13
     },
     {
       "file": "test-runner.R",
@@ -364,7 +364,7 @@
       "expectations": 3,
       "passed": true,
       "skipped": false,
-      "seconds": 0.56
+      "seconds": 0.7
     },
     {
       "file": "test-runner.R",
@@ -372,7 +372,7 @@
       "expectations": 2,
       "passed": true,
       "skipped": false,
-      "seconds": 0.7
+      "seconds": 0.78
     },
     {
       "file": "test-runner.R",
@@ -380,7 +380,7 @@
       "expectations": 2,
       "passed": true,
       "skipped": false,
-      "seconds": 0.08
+      "seconds": 0.11
     },
     {
       "file": "test-runner.R",
@@ -388,7 +388,7 @@
       "expectations": 3,
       "passed": true,
       "skipped": false,
-      "seconds": 0.59
+      "seconds": 0.65
     },
     {
       "file": "test-server.R",
@@ -404,7 +404,7 @@
       "expectations": 5,
       "passed": true,
       "skipped": false,
-      "seconds": 0.54
+      "seconds": 0.58
     },
     {
       "file": "test-server.R",
@@ -412,7 +412,7 @@
       "expectations": 4,
       "passed": true,
       "skipped": false,
-      "seconds": 0.56
+      "seconds": 0.58
     },
     {
       "file": "test-server.R",
@@ -420,7 +420,7 @@
       "expectations": 5,
       "passed": true,
       "skipped": false,
-      "seconds": 0.54
+      "seconds": 0.63
     },
     {
       "file": "test-server.R",
@@ -428,7 +428,7 @@
       "expectations": 5,
       "passed": true,
       "skipped": false,
-      "seconds": 0.58
+      "seconds": 0.56
     },
     {
       "file": "test-server.R",
@@ -439,12 +439,36 @@
       "seconds": 0.03
     },
     {
+      "file": "test-stamp.R",
+      "test": "adding or editing a case the unit tests don't read leaves the hash alone",
+      "expectations": 1,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.65
+    },
+    {
+      "file": "test-stamp.R",
+      "test": "editing suite code, a unit test or a demo case changes the hash",
+      "expectations": 4,
+      "passed": true,
+      "skipped": false,
+      "seconds": 3.09
+    },
+    {
+      "file": "test-stamp.R",
+      "test": "line endings don't change the hash",
+      "expectations": 1,
+      "passed": true,
+      "skipped": false,
+      "seconds": 0.7
+    },
+    {
       "file": "test-status.R",
       "test": "every row of the transition table holds",
       "expectations": 46,
       "passed": true,
       "skipped": false,
-      "seconds": 0.33
+      "seconds": 0.36
     },
     {
       "file": "test-status.R",
@@ -452,7 +476,7 @@
       "expectations": 20,
       "passed": true,
       "skipped": false,
-      "seconds": 0.15
+      "seconds": 0.17
     },
     {
       "file": "test-type-conditions.R",
@@ -460,7 +484,7 @@
       "expectations": 3,
       "passed": true,
       "skipped": false,
-      "seconds": 0.17
+      "seconds": 0.18
     },
     {
       "file": "test-type-conditions.R",
@@ -476,7 +500,7 @@
       "expectations": 1,
       "passed": true,
       "skipped": false,
-      "seconds": 0.02
+      "seconds": 0.01
     },
     {
       "file": "test-type-returned-text.R",
@@ -484,7 +508,7 @@
       "expectations": 3,
       "passed": true,
       "skipped": false,
-      "seconds": 0.03
+      "seconds": 0.04
     },
     {
       "file": "test-type-returned-text.R",
@@ -492,7 +516,7 @@
       "expectations": 1,
       "passed": true,
       "skipped": false,
-      "seconds": 0.01
+      "seconds": 0.02
     },
     {
       "file": "test-types.R",
@@ -500,7 +524,7 @@
       "expectations": 4,
       "passed": true,
       "skipped": false,
-      "seconds": 0.03
+      "seconds": 0.04
     },
     {
       "file": "test-types.R",
@@ -516,7 +540,7 @@
       "expectations": 1,
       "passed": true,
       "skipped": false,
-      "seconds": 0.01
+      "seconds": 0.03
     },
     {
       "file": "test-types.R",
@@ -524,7 +548,7 @@
       "expectations": 5,
       "passed": true,
       "skipped": false,
-      "seconds": 0.06
+      "seconds": 0.07
     }
   ]
 }

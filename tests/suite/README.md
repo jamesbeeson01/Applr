@@ -67,7 +67,8 @@ load, so a re-run or an agent decision shows on refresh.
   next/previous in the queue, `a` approve, `r` reject, `Ctrl+Enter` send the
   rejection, `Esc` cancel, `s` swipe/side by side, `o` overview, `[` sidebar.
 - Sidebar pages: the overview, the behaviour inventory with coverage, suite
-  health (latest `test.R` and `mutate.R` runs, with date and commit), and, at
+  health (latest `test.R` and `mutate.R` runs, with date and commit, and
+  whether the mutation report is up to date with the suite's code), and, at
   the bottom, the guide (principles, structure) in `page/guide.html`.
 - Deep links: `?output=<id>`, `?case=<case>`, `?view=overview|inventory|health|principles|structure`.
   `suite.R` prints the link for each output it names.
@@ -193,3 +194,10 @@ defined only in that test file.
 time, and runs the unit tests on each copy. Every break must be caught; a
 break that isn't means a test is missing. Add a break whenever a new rule is
 added to the core or a type.
+
+The report records `suite_code_hash()` (`stamp.R`): a hash of every `.R` file
+here, the unit tests and break list included, plus the case files the unit
+tests read (each type's demo and `helper-judged.R`). The suite health view
+says whether the report is up to date with that code. Adding or editing other
+cases doesn't change it, so the check is due only after changing the suite
+itself, a demo case, or a type.

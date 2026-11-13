@@ -3,7 +3,9 @@
 # tests then run, and the break counts as caught when any test fails. An
 # unbroken copy must pass first. Run from the package root:
 #   Rscript tests/suite/mutate.R [workers]
-# Writes tests/suite/mutation_report.json, which the review page shows.
+# Writes tests/suite/mutation_report.json, which the review page shows. Its
+# `code` is suite_code_hash() (stamp.R), so the page can tell when the suite
+# has changed since and the check is due again.
 # Every break must be caught; one that isn't needs a new test.
 
 source("tests/suite/stamp.R")
@@ -98,7 +100,9 @@ breaks <- list(
   list(name = "An inventory ID used twice is accepted",
        file = "inventory.R", line = "is used more than once", to = "    character()"),
   list(name = "covers() inside a test block is missed",
-       file = "inventory.R", line = "for (i in seq_along(args)) {", to = "    for (i in integer()) {")
+       file = "inventory.R", line = "for (i in seq_along(args)) {", to = "    for (i in integer()) {"),
+  list(name = "The code hash leaves out the cases the unit tests read",
+       file = "stamp.R", line = "c(code, cases[file.exists(cases)]", to = "  code")
 )
 
 apply_break <- function(dir, b) {
@@ -164,6 +168,9 @@ run_all <- function(jobs, workers) {
   results
 }
 
+# Taken before the run, so edits made while it runs leave the report out of date.
+code <- suite_code_hash()
+
 workers <- as.integer(commandArgs(trailingOnly = TRUE)[1])
 if (is.na(workers)) workers <- 4
 
@@ -183,7 +190,7 @@ rows <- Map(function(job, res) {
   list(name = job$name, file = job$file, caught = length(res$failed) > 0,
        caught_by = as.list(res$failed), crashed = !is.null(res$crash) && res$n == 0)
 }, jobs[-1], results[-1])
-report <- list(when = now_stamp(), commit = git_commit(), tests = baseline$n,
+report <- list(when = now_stamp(), commit = git_commit(), code = code, tests = baseline$n,
                caught = sum(vapply(rows, `[[`, TRUE, "caught")), breaks = rows)
 jsonlite::write_json(report, "tests/suite/mutation_report.json", pretty = TRUE, auto_unbox = TRUE)
 
