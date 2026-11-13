@@ -67,13 +67,18 @@ jobs:
           Rscript tests/suite/pins/install.R
           Rscript -e 'pak::pkg_install(c("chromote", "httpuv", "png", "yaml"), upgrade = FALSE, ask = FALSE)'
 
-      # Chrome's first start on a runner can be slow (fonts the install added).
-      # Taking it alone here keeps the copies' Chromes within their timeout.
+      # Without a session bus, Chrome 157 spends its start-up retrying D-Bus, and
+      # four copies starting it at once miss chromote's timeout.
+      - name: Start a D-Bus session
+        run: |
+          env | grep DBUS || true
+          echo "DBUS_SESSION_BUS_ADDRESS=$(dbus-daemon --session --fork --print-address)" >> "$GITHUB_ENV"
+
       - name: Start Chrome once
         run: |
           chrome=$(Rscript -e 'cat(chromote::find_chrome())')
           "$chrome" --version
-          Rscript -e 'b <- chromote::ChromoteSession$new(); b$close()' && exit 0
+          time Rscript -e 'b <- chromote::ChromoteSession$new(); b$close()' && exit 0
           timeout 30 "$chrome" --headless --disable-gpu --remote-debugging-port=9333 about:blank 2>&1 | tail -40
           exit 1
 
