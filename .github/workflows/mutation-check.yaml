@@ -70,7 +70,12 @@ jobs:
       # Chrome's first start on a runner can be slow (fonts the install added).
       # Taking it alone here keeps the copies' Chromes within their timeout.
       - name: Start Chrome once
-        run: Rscript -e 'b <- chromote::ChromoteSession$new(); b$close()'
+        run: |
+          chrome=$(Rscript -e 'cat(chromote::find_chrome())')
+          "$chrome" --version
+          Rscript -e 'b <- chromote::ChromoteSession$new(); b$close()' && exit 0
+          timeout 30 "$chrome" --headless --disable-gpu --remote-debugging-port=9333 about:blank 2>&1 | tail -40
+          exit 1
 
       - name: Mutation check
         run: Rscript tests/suite/mutate.R 4 --shard ${{ matrix.shard }}/${{ inputs.shards }} ${{ inputs.full && '--full' || '' }}
