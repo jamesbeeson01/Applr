@@ -26,6 +26,7 @@ suite_code_files <- function(suite_dir = "tests/suite", case_dir = "tests/testth
 }
 
 # One hash over those files' names and lines, so line endings don't matter.
+# Written in binary, so the hash is the same on Windows as on CI's Linux.
 suite_code_hash <- function(suite_dir = "tests/suite", case_dir = "tests/testthat") {
   files <- suite_code_files(suite_dir, case_dir)
   names <- c(substring(files[startsWith(files, suite_dir)], nchar(suite_dir) + 2),
@@ -33,7 +34,9 @@ suite_code_hash <- function(suite_dir = "tests/suite", case_dir = "tests/testtha
   ord <- order(names, method = "radix")
   tmp <- tempfile()
   on.exit(unlink(tmp))
+  con <- file(tmp, "wb")
   writeLines(unlist(Map(function(n, f) c(n, readLines(f, warn = FALSE)), names[ord], files[ord])),
-             tmp, useBytes = TRUE)
+             con, useBytes = TRUE)
+  close(con)
   unname(tools::md5sum(tmp))
 }
