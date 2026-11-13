@@ -203,6 +203,18 @@ names one catching test per break. `--full` runs every test in every copy and
 lists all that catch it, which helps when a break is caught for an unexpected
 reason. The unbroken copy always runs in full, and if it fails the run stops.
 
+The check takes a long time on one machine, so
+`.github/workflows/mutation-check.yaml` runs it on the fork's Actions,
+started by hand (*Run workflow*, or `gh workflow run mutation-check.yaml
+--ref <branch>`), with inputs for the number of shards (default 8) and
+`full`. Each runner runs `mutate.R --shard i/n`: every n-th break from the
+i-th, plus the unbroken copy, writing a partial report to
+`mutation_shards/`. The last job runs `mutate.R --merge <dir>`, which
+checks that the shards agree on `code`, `full` and the test count and cover
+every break once, then writes `mutation_report.json` as a local run would.
+Download it from the run's `mutation-report` artifact and commit it; the job
+fails if any break was missed or crashed.
+
 The report records `suite_code_hash()` (`stamp.R`): a hash of every `.R` file
 here, the unit tests and break list included, plus the case files the unit
 tests read (each type's demo and `helper-judged.R`). The suite health view

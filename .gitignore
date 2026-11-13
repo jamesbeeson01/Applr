@@ -12,3 +12,4 @@ docs/
 inst/doc/
 scratch/
 debug.log
+tests/suite/mutation_shards/

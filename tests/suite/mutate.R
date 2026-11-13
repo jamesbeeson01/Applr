@@ -2,7 +2,8 @@
 # applied, one at a time, to a fresh copy of tests/suite; the copy's unit
 # tests then run, and the break counts as caught when any test fails. An
 # unbroken copy must pass first. Run from the package root:
-#   Rscript tests/suite/mutate.R [workers] [--full]
+#   Rscript tests/suite/mutate.R [workers] [--full] [--shard i/n]
+#   Rscript tests/suite/mutate.R --merge <dir>
 # By default a broken copy stops at its first failing test, which is all a
 # verdict needs. --full runs every test, so the report lists every test that
 # catches each break. The unbroken copy always runs in full, and if it fails,
@@ -11,6 +12,9 @@
 # `code` is suite_code_hash() (stamp.R), so the page can tell when the suite
 # has changed since and the check is due again.
 # Every break must be caught; one that isn't needs a new test.
+# --shard i/n runs only every n-th break from the i-th, plus the unbroken copy,
+# and writes a partial report to tests/suite/mutation_shards/ instead. --merge
+# combines a folder of them into mutation_report.json (CI: mutation-check.yaml).
 
 source("tests/suite/stamp.R")
 
@@ -147,7 +151,7 @@ suite_copy <- function() {
   dir.create(dir)
   file.copy(list.files("tests/suite", full.names = TRUE, all.files = FALSE), dir, recursive = TRUE)
   unlink(file.path(dir, c("mutation_report.json", "test_report.json", "review_state.json",
-                         "human_decisions.json", "forms")), recursive = TRUE)
+                         "human_decisions.json", "forms", "mutation_shards")), recursive = TRUE)
   normalizePath(dir, winslash = "/")
 }
 
@@ -215,17 +219,74 @@ run_all <- function(jobs, workers, first) {
   results
 }
 
+args <- commandArgs(trailingOnly = TRUE)
+flag_value <- function(flag) {
+  i <- match(flag, args)
+  if (is.na(i)) return(NULL)
+  if (i == length(args)) stop(flag, " needs a value.")
+  args[i + 1]
+}
+
+# Prints the verdict on each break and quits, failing if any was missed.
+summarise <- function(report) {
+  rows <- report$breaks
+  cat(sprintf("\n%d of %d breaks caught (unbroken suite: %d tests pass)\n\n",
+              report$caught, length(rows), report$tests))
+  for (r in rows) {
+    by <- if (r$caught) paste(utils::head(unlist(r$caught_by), 2), collapse = "; ") else "NOT CAUGHT"
+    if (r$crashed) by <- "the unit tests crashed: check the break itself"
+    cat(sprintf("%-4s %s\n       %s\n", if (r$caught) "ok" else "MISS", r$name, by))
+  }
+  quit(status = if (report$caught < length(rows)) 1 else 0)
+}
+
+merge_dir <- flag_value("--merge")
+if (!is.null(merge_dir)) {
+  parts <- lapply(list.files(merge_dir, "\\.json$", full.names = TRUE, recursive = TRUE),
+                  jsonlite::read_json)
+  if (!length(parts)) stop("No shard reports in ", merge_dir, ".")
+  for (field in c("code", "full", "tests", "commit", "total", "of")) {
+    v <- unique(vapply(parts, function(p) as.character(p[[field]]), ""))
+    if (length(v) != 1) stop("The shards disagree on `", field, "`: ", paste(v, collapse = ", "))
+  }
+  shards <- vapply(parts, `[[`, 1, "shard")
+  if (!identical(sort(shards), as.numeric(seq_len(parts[[1]]$of)))) {
+    stop("Expected shards 1 to ", parts[[1]]$of, " once each; got ", paste(sort(shards), collapse = ", "), ".")
+  }
+  rows <- unlist(lapply(parts, `[[`, "breaks"), recursive = FALSE)
+  index <- vapply(rows, `[[`, 1, "index")
+  if (!identical(sort(index), as.numeric(seq_len(parts[[1]]$total)))) stop("The shards don't cover every break once.")
+  rows <- lapply(rows[order(index)], function(r) { r$index <- NULL; r })
+  report <- list(when = now_stamp(), commit = parts[[1]]$commit, code = parts[[1]]$code,
+                 tests = parts[[1]]$tests, full = parts[[1]]$full,
+                 caught = sum(vapply(rows, function(r) isTRUE(r$caught), TRUE)), breaks = rows)
+  jsonlite::write_json(report, "tests/suite/mutation_report.json", pretty = TRUE, auto_unbox = TRUE)
+  summarise(report)
+}
+
 # Taken before the run, so edits made while it runs leave the report out of date.
 code <- suite_code_hash()
 
-args <- commandArgs(trailingOnly = TRUE)
 full <- "--full" %in% args
-workers <- as.integer(setdiff(args, "--full")[1])
+shard <- flag_value("--shard")
+if (!is.null(shard)) {
+  shard <- suppressWarnings(as.integer(strsplit(shard, "/", fixed = TRUE)[[1]]))
+  if (length(shard) != 2 || anyNA(shard) || shard[1] < 1 || shard[1] > shard[2]) {
+    stop("--shard takes i/n, with i from 1 to n.")
+  }
+}
+workers <- as.integer(setdiff(args, c("--full", "--shard", flag_value("--shard")))[1])
 if (is.na(workers)) workers <- 4
 
+mine <- seq_along(breaks)
+if (!is.null(shard)) mine <- mine[(mine - 1) %% shard[2] == shard[1] - 1]
 jobs <- c(list(list(name = "(no break)", dir = suite_copy())),
-          lapply(breaks, function(b) { d <- suite_copy(); apply_break(d, b); list(name = b$name, dir = d, file = b$file) }))
+          lapply(mine, function(i) {
+            b <- breaks[[i]]; d <- suite_copy(); apply_break(d, b)
+            list(name = b$name, dir = d, file = b$file, index = i)
+          }))
 cat("Running", length(jobs), "copies of the unit tests,", workers, "at a time,",
+    if (!is.null(shard)) sprintf("shard %d of %d,", shard[1], shard[2]),
     if (full) "each in full.\n" else "each broken copy stopping at its first failure (--full runs them all).\n")
 results <- run_all(jobs, workers, first = !full)
 
@@ -239,17 +300,18 @@ if (baseline$n == 0 || length(baseline$failed)) {
 
 rows <- Map(function(job, res) {
   list(name = job$name, file = job$file, caught = length(res$failed) > 0,
-       caught_by = as.list(res$failed), crashed = !is.null(res$crash) && res$n == 0)
+       caught_by = as.list(res$failed), crashed = !is.null(res$crash) && res$n == 0,
+       index = job$index)
 }, jobs[-1], results[-1])
 report <- list(when = now_stamp(), commit = git_commit(), code = code, tests = baseline$n, full = full,
                caught = sum(vapply(rows, `[[`, TRUE, "caught")), breaks = rows)
-jsonlite::write_json(report, "tests/suite/mutation_report.json", pretty = TRUE, auto_unbox = TRUE)
-
-cat(sprintf("\n%d of %d breaks caught (unbroken suite: %d tests pass)\n\n",
-            report$caught, length(rows), baseline$n))
-for (r in rows) {
-  by <- if (r$caught) paste(utils::head(unlist(r$caught_by), 2), collapse = "; ") else "NOT CAUGHT"
-  if (r$crashed) by <- "the unit tests crashed: check the break itself"
-  cat(sprintf("%-4s %s\n       %s\n", if (r$caught) "ok" else "MISS", r$name, by))
+if (is.null(shard)) {
+  report$breaks <- lapply(rows, function(r) { r$index <- NULL; r })
+  out <- "tests/suite/mutation_report.json"
+} else {
+  report <- c(report, list(shard = shard[1], of = shard[2], total = length(breaks)))
+  dir.create("tests/suite/mutation_shards", showWarnings = FALSE)
+  out <- sprintf("tests/suite/mutation_shards/shard-%dof%d.json", shard[1], shard[2])
 }
-if (report$caught < length(rows)) quit(status = 1)
+jsonlite::write_json(report, out, pretty = TRUE, auto_unbox = TRUE)
+summarise(report)
