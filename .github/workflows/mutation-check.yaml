@@ -58,8 +58,7 @@ jobs:
           path: ${{ env.R_LIBS_USER }}
           key: r-lib-${{ runner.os }}-4.5.3-${{ hashFiles('tests/suite/pins/versions.csv') }}-v1
 
-      # chromote drives the preinstalled Chrome for the plotly contract tests'
-      # screenshots; httpuv, png and yaml are used by the suite but not pinned.
+      # httpuv, png and yaml are used by the suite but not pinned.
       - name: Install pinned packages
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
@@ -67,20 +66,17 @@ jobs:
           Rscript tests/suite/pins/install.R
           Rscript -e 'pak::pkg_install(c("chromote", "httpuv", "png", "yaml"), upgrade = FALSE, ask = FALSE)'
 
-      # Without a session bus, Chrome 157 spends its start-up retrying D-Bus, and
-      # four copies starting it at once miss chromote's timeout.
-      - name: Start a D-Bus session
+      # The plotly contract tests take screenshots through chromote. The image's
+      # desktop Chrome (157) can take over 10 s to start, and with four copies
+      # starting it at once misses chromote's timeout; the headless shell doesn't.
+      - name: Install Chrome headless shell
         run: |
-          env | grep DBUS || true
-          echo "DBUS_SESSION_BUS_ADDRESS=$(dbus-daemon --session --fork --print-address)" >> "$GITHUB_ENV"
+          out=$(npx -y @puppeteer/browsers@2 install chrome-headless-shell@stable --path "$RUNNER_TEMP/chrome")
+          echo "$out"
+          echo "CHROMOTE_CHROME=${out##* }" >> "$GITHUB_ENV"
 
       - name: Start Chrome once
-        run: |
-          chrome=$(Rscript -e 'cat(chromote::find_chrome())')
-          "$chrome" --version
-          time Rscript -e 'b <- chromote::ChromoteSession$new(); b$close()' && exit 0
-          timeout 30 "$chrome" --headless --disable-gpu --remote-debugging-port=9333 about:blank 2>&1 | tail -40
-          exit 1
+        run: time Rscript -e 'b <- chromote::ChromoteSession$new(); b$close()'
 
       - name: Mutation check
         run: Rscript tests/suite/mutate.R 4 --shard ${{ matrix.shard }}/${{ inputs.shards }} ${{ inputs.full && '--full' || '' }}
