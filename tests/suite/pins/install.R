@@ -1,7 +1,7 @@
-# THROWAWAY (ticket 03). Installs versions.csv exactly, then fails if any
-# installed version differs.
+# Installs versions.csv exactly, then fails if any installed version differs.
+# Used by the CI workflow; needs pak.
 
-pins <- read.csv("for_devs/experiments/03-cross-platform/versions.csv")
+pins <- read.csv("tests/suite/pins/versions.csv")
 pak::pkg_install(paste0(pins$package, "@", pins$version), upgrade = FALSE, ask = FALSE)
 got <- vapply(pins$package, function(p) as.character(packageVersion(p)), "")
 same <- mapply(function(a, b) package_version(a) == package_version(b), got, pins$version)

@@ -1,17 +1,19 @@
-# THROWAWAY (ticket 03): the cross-platform fingerprint experiment. Runs only
-# on the maintainer's fork, on pushes to the test-suite branch. Delete with
-# for_devs/experiments/03-cross-platform/.
+# The judged-output suite's CI check (tests/suite/ci.R, spec: "CI"). Runs on
+# pushes to the test-suite branch, on the maintainer's fork only. Each
+# platform installs the pinned versions, compares every fingerprint with the
+# committed review state, and fails, warns or passes by review status. Forms
+# and views of any platform variant are uploaded as the run's artifact.
 on:
   push:
     branches: [test-suite-revision]
   workflow_dispatch:
 
-name: xplat-experiment
+name: judged-outputs
 
 permissions: read-all
 
 jobs:
-  fingerprint:
+  check:
     if: github.repository == 'jamesbeeson01/Applr'
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.platform }}
@@ -24,8 +26,7 @@ jobs:
           - {os: ubuntu-latest,  platform: gha-ubuntu}
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      PKG_SYSREQS: "true"
-      XPLAT_PLATFORM: ${{ matrix.platform }}
+      APPLR_SUITE_PLATFORM: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v4
 
@@ -42,13 +43,18 @@ jobs:
       - name: Install pinned packages
         run: |
           Rscript -e 'install.packages("pak")'
-          Rscript for_devs/experiments/03-cross-platform/install_pinned.R
+          Rscript tests/suite/pins/install.R
 
-      - name: Fingerprint the suite's cases
+      # Only for screenshots of a variant's interactive states; never fingerprinted.
+      - name: Install chromote
+        continue-on-error: true
+        run: Rscript -e 'pak::pkg_install("chromote", upgrade = FALSE, ask = FALSE)'
+
+      - name: Check judged outputs
         run: Rscript tests/suite/ci.R results/${{ matrix.platform }}
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: xplat-${{ matrix.platform }}
+          name: suite-${{ matrix.platform }}
           path: results/${{ matrix.platform }}

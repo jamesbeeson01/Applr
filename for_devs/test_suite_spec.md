@@ -235,6 +235,8 @@ What this says about the hypotheses:
 
    The release check is separate and stricter: it fails unless every output is Human approved (or an agent-approved variant of one), and it runs the release audit.
 
+**Built** (ticket 3): the workflow `judged-outputs` runs `tests/suite/ci.R` on all three platforms with the versions in `tests/suite/pins/versions.csv`. A variant's approval is stored in `review_state.json` under the output's `variants.<platform>`, with the variant's fingerprint and the original fingerprint it was approved against, so it lapses when the original changes. The release check, `tests/suite/release.R`, runs on the maintainer's machine, because the release audit compares with screenshots kept there.
+
 **Write, then salvage.** The new suite is a reinvention, not a migration. The old suite was deleted from the test suite branch before any new cases were written, and is kept only in the `old-suite` tag (the last `main` commit before the rewrite). It is read once, at the end, to check the new one, and is never used as a starting point. The work happens in four phases.
 
 1. **Inventory.** A temporary **behaviour inventory** next to this spec records what each function must do, written from what the package says and does:

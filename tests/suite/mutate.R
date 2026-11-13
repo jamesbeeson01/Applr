@@ -102,7 +102,25 @@ breaks <- list(
   list(name = "covers() inside a test block is missed",
        file = "inventory.R", line = "for (i in seq_along(args)) {", to = "    for (i in integer()) {"),
   list(name = "The code hash leaves out the cases the unit tests read",
-       file = "stamp.R", line = "c(code, cases[file.exists(cases)]", to = "  code")
+       file = "stamp.R", line = "c(code, cases[file.exists(cases)]", to = "  code"),
+  list(name = "CI passes Agent approved without a warning",
+       file = "check.R", line = "if (identical(status, \"Agent approved\")) return(\"warn\")",
+       to = "  if (identical(status, \"Agent approved\")) return(\"pass\")"),
+  list(name = "CI passes an Unreviewed or Rejected output",
+       file = "check.R", line = "if (startsWith(status, \"Human approved\")) return(\"pass\")",
+       to = "  if (!identical(status, \"Agent approved\")) return(\"pass\")"),
+  list(name = "A missing input passes the CI check",
+       file = "check.R", line = "if (length(missing)) {", to = "  if (FALSE) {"),
+  list(name = "A platform variant still counts after its original changed",
+       file = "check.R", line = "identical(v$of, rec$fingerprint) &&", to = "      TRUE &&"),
+  list(name = "A platform variant counts for an original that isn't Human approved",
+       file = "check.R", line = "identical(rec$status, \"Human approved\")) {", to = "      TRUE) {"),
+  list(name = "The release check accepts Agent approved",
+       file = "check.R", line = "if (!case_failed && startsWith(status, \"Human approved\"))",
+       to = "  if (!case_failed && !identical(status, \"Rejected\")) \"pass\" else \"fail\""),
+  list(name = "The release audit misses a changed view",
+       file = "check.R", line = "changed <- names(out$states)[!mapply(same_view, kept, now)]",
+       to = "    changed <- character()")
 )
 
 apply_break <- function(dir, b) {

@@ -1,8 +1,8 @@
 # Judged-output suite (dev-only)
 
 Not shipped in the package (`.Rbuildignore`). Needs `vdiffr`, `digest`,
-`processx`, `httpuv` and `yaml`, and, for screenshots of interactive states,
-`chromote` with Chrome. Vocabulary: `GLOSSARY.md`; design:
+`processx`, `httpuv` and `yaml`, `png` for the release audit, and, for
+screenshots of interactive states, `chromote` with Chrome. Vocabulary: `GLOSSARY.md`; design:
 `for_devs/test_suite_spec.md`.
 
 > When you change this file, update the review page's suite guide pages
@@ -19,9 +19,12 @@ Rscript tests/suite/suite.R list                # Unreviewed outputs
 Rscript tests/suite/suite.R diff <id>           # text diff vs last human-approved version
 Rscript tests/suite/suite.R approve <id> "note" # agent approval (note required)
 Rscript tests/suite/suite.R reject  <id> "note"
+Rscript tests/suite/suite.R variant <bundle> <id> "what differs"  # platform variant, from CI
 Rscript tests/suite/review.R [port]             # the review page, for the maintainer
 Rscript tests/suite/test.R                      # unit tests for this module
 Rscript tests/suite/mutate.R                    # mutation check of those tests
+Rscript tests/suite/ci.R [out_dir]              # the CI check, without writing state
+Rscript tests/suite/release.R                   # the release check, before CRAN
 ```
 
 `review_state.json`, `human_decisions.json`, `forms/`, `test_report.json` and
@@ -201,3 +204,40 @@ tests read (each type's demo and `helper-judged.R`). The suite health view
 says whether the report is up to date with that code. Adding or editing other
 cases doesn't change it, so the check is due only after changing the suite
 itself, a demo case, or a type.
+
+## CI and the release check
+
+`.github/workflows/judged-outputs.yaml` runs `ci.R` on pushes to
+`test-suite-revision`, on the fork only, on Windows, macOS and Ubuntu. Each
+runner installs `pins/versions.csv` (record it again with `pins/record.R`
+after updating packages locally, then re-run the suite). `ci.R` runs every
+case, fingerprints its outputs without writing the review state, and compares
+each with `review_state.json`. The fingerprints recorded on the maintainer's
+machine are authoritative on every platform (spec: *CI*). An output the state
+records but no case produced, or one that fails to serialise, stops the run.
+
+| Status on that platform | CI |
+|---|---|
+| Human approved, or an approved platform variant of it | ✓ |
+| Agent approved | warning |
+| Unreviewed (new, changed, or an unapproved platform variant), Rejected | ✗ |
+| Case expectations fail | ✗ |
+
+`check.R` holds the policy (`platform_status()`, `ci_verdict()`,
+`release_verdict()`). An output whose fingerprint differs on a runner is a
+**platform variant**: the run's artifact (`suite-<platform>`) holds its form
+and views and a `report.json`. After downloading it
+(`gh run download <run> -R jamesbeeson01/Applr -n suite-gha-ubuntu -D <bundle>`),
+compare the form with `forms/<id>.txt` and approve with
+`suite.R variant <bundle> <id> "<what differs>"`. That needs the original to
+be Human approved, and records the variant under `variants.<platform>` in
+`review_state.json`, tied to the original's fingerprint, so it lapses when
+the original changes.
+
+`release.R` runs on the machine the approvals were made on. It fails while
+any output is anything but Human approved (or an approved variant), or its
+fingerprint differs from the recorded one. It then runs the release audit:
+every state is rendered again and compared with the view kept at its human
+approval (`tests/output/approved/`), pixel for pixel for PNGs and byte for
+byte otherwise. A changed view under an unchanged fingerprint means an input
+is missing from the serialised form, which is a suite bug.

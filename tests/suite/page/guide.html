@@ -41,7 +41,10 @@
 <h3>What CI and CRAN run</h3>
 <ul>
   <li><b>CRAN</b> runs only the expectations, within its time and two-thread limits. Judged outputs do nothing there.</li>
-  <li><b>CI</b> (GitHub Actions, on the test-suite branch) is being set up in ticket 3. The plan: Rejected and Unreviewed fail, Agent approved warns, and a separate release check blocks a CRAN submission until everything is Human approved.</li>
+  <li><b>CRAN</b> takes about 35 seconds for the expectations under <code>R CMD check</code>.</li>
+  <li><b>CI</b> (GitHub Actions, on pushes to the test-suite branch) runs every case on Windows, macOS and Ubuntu with pinned package versions, and checks each output's fingerprint against the one recorded on your machine. Your machine's fingerprints count everywhere: in the cross-platform experiment, all 143 outputs matched on all three. Human approved passes, Agent approved passes with a warning, and Unreviewed, Rejected or a failing expectation fails the run.</li>
+  <li>If an output ever comes out differently on one platform, that's a <b>platform variant</b>. CI uploads its forms and views for download. If you approved the original, an agent can approve the variant with a note on what differs, and you don't need to look again.</li>
+  <li>The <b>release check</b> (<code>Rscript tests/suite/release.R</code>, on your machine, before a CRAN submission) fails until everything is Human approved. It also re-renders every state and compares it with the screenshot kept when you approved it. A difference there means the fingerprint missed something: a suite bug.</li>
 </ul>
 
 <h3>Latest status</h3>
