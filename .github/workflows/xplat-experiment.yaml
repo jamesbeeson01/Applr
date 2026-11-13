@@ -44,11 +44,11 @@ jobs:
           Rscript -e 'install.packages("pak")'
           Rscript for_devs/experiments/03-cross-platform/install_pinned.R
 
-      - name: Fingerprint
-        run: Rscript for_devs/experiments/03-cross-platform/fingerprint_all.R
+      - name: Fingerprint the suite's cases
+        run: Rscript tests/suite/ci.R results/${{ matrix.platform }}
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: xplat-${{ matrix.platform }}
-          path: for_devs/experiments/03-cross-platform/results/${{ matrix.platform }}
+          path: results/${{ matrix.platform }}
