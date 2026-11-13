@@ -67,8 +67,10 @@ jobs:
           Rscript tests/suite/pins/install.R
           Rscript -e 'pak::pkg_install(c("chromote", "httpuv", "png", "yaml"), upgrade = FALSE, ask = FALSE)'
 
+      # Three copies, not four: with every core busy, a copy's Chrome can fail to
+      # start within its timeout and fail the unbroken copy's plotly tests.
       - name: Mutation check
-        run: Rscript tests/suite/mutate.R 4 --shard ${{ matrix.shard }}/${{ inputs.shards }} ${{ inputs.full && '--full' || '' }}
+        run: Rscript tests/suite/mutate.R 3 --shard ${{ matrix.shard }}/${{ inputs.shards }} ${{ inputs.full && '--full' || '' }}
 
       - uses: actions/upload-artifact@v4
         if: always()
