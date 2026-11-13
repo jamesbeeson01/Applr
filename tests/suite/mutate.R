@@ -2,7 +2,11 @@
 # applied, one at a time, to a fresh copy of tests/suite; the copy's unit
 # tests then run, and the break counts as caught when any test fails. An
 # unbroken copy must pass first. Run from the package root:
-#   Rscript tests/suite/mutate.R [workers]
+#   Rscript tests/suite/mutate.R [workers] [--full]
+# By default a broken copy stops at its first failing test, which is all a
+# verdict needs. --full runs every test, so the report lists every test that
+# catches each break. The unbroken copy always runs in full, and if it fails,
+# the run stops there.
 # Writes tests/suite/mutation_report.json, which the review page shows. Its
 # `code` is suite_code_hash() (stamp.R), so the page can tell when the suite
 # has changed since and the check is due again.
@@ -148,19 +152,39 @@ suite_copy <- function() {
 }
 
 # Starts one copy's unit tests in the background; the result lands in out.
-start_tests <- function(dir, out) {
+# With first = TRUE the copy writes its result and quits at the first failure.
+start_tests <- function(dir, out, first = FALSE) {
   script <- file.path(dir, "run_mutation_tests.R")
+  write_result <- sprintf('jsonlite::write_json(list(n = n, failed = failed), "%s")', out)
+  reporter <- if (!first) '"summary"' else 'testthat::MultiReporter$new(list(testthat::SummaryReporter$new(), FirstFailure$new()))'
   writeLines(c(
-    sprintf('res <- testthat::test_dir("%s/unit", reporter = "silent", stop_on_failure = FALSE)', dir),
+    if (first) c(
+      'FirstFailure <- R6::R6Class("FirstFailure", inherit = testthat::Reporter, public = list(',
+      '  file = NULL, tests = 0,',
+      '  start_file = function(name) self$file <- name,',
+      '  start_test = function(context, test) self$tests <- self$tests + 1,',
+      '  add_result = function(context, test, result) {',
+      '    if (!inherits(result, c("expectation_failure", "expectation_error"))) return()',
+      '    n <- self$tests; failed <- paste0(self$file, ": ", test)',
+      '    cat("\\nStopped at the first failure:", failed, "\\n", conditionMessage(result), "\\n")',
+      paste0('    ', write_result),
+      '    quit(status = 0)',
+      '  }))'
+    ),
+    sprintf('res <- testthat::test_dir("%s/unit", reporter = %s, stop_on_failure = FALSE)', dir, reporter),
     'df <- as.data.frame(res)',
     'bad <- df[df$failed > 0 | df$error, , drop = FALSE]',
-    sprintf('jsonlite::write_json(list(n = nrow(df), failed = if (nrow(bad)) unique(paste0(bad$file, ": ", bad$test)) else character()), "%s")', out)
+    'n <- nrow(df); failed <- if (nrow(bad)) unique(paste0(bad$file, ": ", bad$test)) else character()',
+    write_result
   ), script)
   processx::process$new(file.path(R.home("bin"), "Rscript"), script, stdout = file.path(dir, "log.txt"), stderr = "2>&1",
+                        cleanup_tree = TRUE,
                         env = c("current", APPLR_PKG_ROOT = normalizePath(".", winslash = "/")))
 }
 
-run_all <- function(jobs, workers) {
+# Runs every job, `workers` at a time. A failing unbroken copy (job 1) stops
+# the rest, since no break can be judged without it.
+run_all <- function(jobs, workers, first) {
   results <- vector("list", length(jobs))
   running <- list()
   queue <- seq_along(jobs)
@@ -169,7 +193,7 @@ run_all <- function(jobs, workers) {
       i <- queue[1]
       queue <- queue[-1]
       out <- gsub("\\\\", "/", tempfile(fileext = ".json"))
-      running[[as.character(i)]] <- list(i = i, out = out, p = start_tests(jobs[[i]]$dir, out))
+      running[[as.character(i)]] <- list(i = i, out = out, p = start_tests(jobs[[i]]$dir, out, first = first && i > 1))
     }
     for (k in names(running)) {
       job <- running[[k]]
@@ -179,6 +203,11 @@ run_all <- function(jobs, workers) {
                                       crash = readLines(file.path(jobs[[job$i]]$dir, "log.txt")))
         running[[k]] <- NULL
         cat(sprintf("  done: %s\n", jobs[[job$i]]$name))
+        res <- results[[job$i]]
+        if (job$i == 1 && (res$n == 0 || length(res$failed))) {
+          for (other in running) other$p$kill_tree()
+          return(results)
+        }
       }
     }
     Sys.sleep(1)
@@ -189,18 +218,22 @@ run_all <- function(jobs, workers) {
 # Taken before the run, so edits made while it runs leave the report out of date.
 code <- suite_code_hash()
 
-workers <- as.integer(commandArgs(trailingOnly = TRUE)[1])
+args <- commandArgs(trailingOnly = TRUE)
+full <- "--full" %in% args
+workers <- as.integer(setdiff(args, "--full")[1])
 if (is.na(workers)) workers <- 4
 
 jobs <- c(list(list(name = "(no break)", dir = suite_copy())),
           lapply(breaks, function(b) { d <- suite_copy(); apply_break(d, b); list(name = b$name, dir = d, file = b$file) }))
-cat("Running", length(jobs), "copies of the unit tests,", workers, "at a time.\n")
-results <- run_all(jobs, workers)
+cat("Running", length(jobs), "copies of the unit tests,", workers, "at a time,",
+    if (full) "each in full.\n" else "each broken copy stopping at its first failure (--full runs them all).\n")
+results <- run_all(jobs, workers, first = !full)
 
 baseline <- results[[1]]
 if (baseline$n == 0 || length(baseline$failed)) {
   cat("The unbroken suite does not pass, so no break can be judged:\n")
   print(baseline)
+  cat(readLines(file.path(jobs[[1]]$dir, "log.txt"), warn = FALSE), sep = "\n")
   quit(status = 1)
 }
 
@@ -208,7 +241,7 @@ rows <- Map(function(job, res) {
   list(name = job$name, file = job$file, caught = length(res$failed) > 0,
        caught_by = as.list(res$failed), crashed = !is.null(res$crash) && res$n == 0)
 }, jobs[-1], results[-1])
-report <- list(when = now_stamp(), commit = git_commit(), code = code, tests = baseline$n,
+report <- list(when = now_stamp(), commit = git_commit(), code = code, tests = baseline$n, full = full,
                caught = sum(vapply(rows, `[[`, TRUE, "caught")), breaks = rows)
 jsonlite::write_json(report, "tests/suite/mutation_report.json", pretty = TRUE, auto_unbox = TRUE)
 

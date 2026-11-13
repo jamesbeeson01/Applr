@@ -22,7 +22,7 @@ Rscript tests/suite/suite.R reject  <id> "note"
 Rscript tests/suite/suite.R variant <bundle> <id> "what differs"  # platform variant, from CI
 Rscript tests/suite/review.R [port]             # the review page, for the maintainer
 Rscript tests/suite/test.R                      # unit tests for this module
-Rscript tests/suite/mutate.R                    # mutation check of those tests
+Rscript tests/suite/mutate.R [workers] [--full] # mutation check of those tests
 Rscript tests/suite/ci.R [out_dir]              # the CI check, without writing state
 Rscript tests/suite/release.R                   # the release check, before CRAN
 ```
@@ -197,6 +197,11 @@ defined only in that test file.
 time, and runs the unit tests on each copy. Every break must be caught; a
 break that isn't means a test is missing. Add a break whenever a new rule is
 added to the core or a type.
+
+By default each broken copy stops at its first failing test, so the report
+names one catching test per break. `--full` runs every test in every copy and
+lists all that catch it, which helps when a break is caught for an unexpected
+reason. The unbroken copy always runs in full, and if it fails the run stops.
 
 The report records `suite_code_hash()` (`stamp.R`): a hash of every `.R` file
 here, the unit tests and break list included, plus the case files the unit
