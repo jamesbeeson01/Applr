@@ -56,11 +56,12 @@ test_that("adding companions opens no device and draws no page", {
   expect_false(grDevices::dev.cur() == 1L)
   grDevices::graphics.off()
   setwd(old)
-  # With a device already open, nothing is drawn on it
-  file <- tempfile(fileext = ".svg")
-  grDevices::svg(file)
+  # With a device already open, nothing is drawn on it: its display list
+  # stays empty. (svg() needs cairo, which not every platform has.)
+  grDevices::pdf(NULL)
+  grDevices::dev.control("enable")
   quiet(coloured + geom_slice(model, predict_vars = list(cyl = c(4, 8))) + geom_slice_text() +
           geom_slice_subtitle())
+  expect_length(grDevices::recordPlot()[[1]], 0)
   grDevices::dev.off()
-  expect_false(any(grepl("<path|<use", readLines(file, warn = FALSE))))
 })
