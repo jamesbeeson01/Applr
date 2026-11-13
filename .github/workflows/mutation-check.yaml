@@ -3,6 +3,8 @@
 # copy; the last job merges their reports into mutation_report.json, uploads
 # it, and fails if any break was missed or crashed.
 on:
+  push:
+    branches: [claude/mutate-gha-07b5d6]
   workflow_dispatch:
     inputs:
       shards:
